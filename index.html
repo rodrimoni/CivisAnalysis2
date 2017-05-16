@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <!-- jQueryUI library -->
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+        <!-- Plugin for creation of custom context menus-->
+        <script src = "lib/jquery.contextMenu.js" type = "text/javascript"></script>
+
+        <!-- Structure tree-->
+        <script src="lib/tree.js"></script>
+        
+        <!-- D3 library-->
+        <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+
+        <!-- Font Awesome CSS -->
+        <link rel="stylesheet" href="lib/font-awesome.css">
+
+        <title> Windows System Prototype  </title>
+    </head>
+
+    <body id = "windows-system">
+        <div class="container">
+            <svg id ="workspace" width = "100%" height = "100%" class="svg-content-responsive"></svg>
+            <h2>Windows System Prototype</h2>
+            <ul id="contextMenu" class="dropdown-menu" role="menu" style="display:none" >
+                <li><a tabindex="-1" id="circle-child">Create a circle child</a></li>
+                <li><a tabindex="-1" id="square-child">Create a square child</a></li>
+                <li class="divider"></li>
+                <li><a tabindex="-1" id="get-parent">Get parent</a></li>
+            </ul>
+
+        </div>
+
+    </body>
+</html>
+
+<script> 
+    var INITIAL_HEIGHT = 150;
+    var INITIAL_WIDTH = 200;
+    var HEIGHT_ICON = 28;
+    var WIDTH_ICON = 28;
+	
+	var tree = new Tree('painel-1-1');
+	var workspace = $("#workspace");
+	var windowSystem = $("#windows-system");
+
+	$(document).ready(function(){
+		//Initialization of system with first visualization
+	    createNewChild(null, "circle");
+
+        //Check limits whenever a resize event was trigger
+        $(window).on('resize', function(){
+            checkLimits();
+        });
+
+        //Binding event to minimize buttons
+        windowSystem.on("click", ".btn-minimize", minimizeWindow);
+
+        //Binding event to minimized window
+        windowSystem.on("dblclick", ".fa-window-maximize", maximizeWindow);
+	});
+
+    function minimizeWindow()
+    {
+    	var panelID = $(this).parents(".panel").attr("id");
+    	createNewIcon(panelID);
+    	centerLine(panelID, true);
+    	$("#"+ panelID).hide();
+    }
+
+    function maximizeWindow()
+    {
+    	var icon = $(this);
+    	var iconOffset = icon.offset();
+    	var panelID = icon.attr("id").replace("icon-", "");
+    	var panel = $("#"+panelID);
+
+    	panel
+    		.show()
+    		.css({
+    			"left" : iconOffset.left - panel.width()/2,
+	    		"top"  : iconOffset.top - panel.height()/2
+    		});
+
+    	icon.hide();
+
+    	d3.selectAll("line").filter(".class-" + panelID).style("stroke-dasharray", "");
+    }
+
+    function createNewChild(currentId, shape) {
+        var newElem = "";
+        var newID = "";
+
+        if (currentId === null)
+        {
+        	newID = "painel-1-1";
+        	newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" style="padding-top: 7.5px;">' + newID + '</h4> <button class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button> </div><div class="panel-body center-panel"></div></div>').css({"position": "absolute", "z-index":"90"});
+        	
+        	$(".container").append(newElem);
+        	setUpPanel(newID, shape);
+        }
+        else
+        {
+	        var hashID = $("#" + currentId);
+
+	        var top  =  hashID[0].style["top"];
+	        var left =  hashID[0].style["left"];
+	        var offset = 40;
+	        var parentPosition = hashID.position();
+
+	        var newLocation = [];
+
+	        newLocation["top"]	= parentPosition.top + offset;
+	        newLocation["left"]  = parentPosition.left + offset;
+
+	        var node = tree.add('painel-', currentId, tree.traverseBF);
+	        newID = node.data;
+
+	        newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" style="padding-top: 7.5px;">' + newID + '</h4> <button class="btn btn-default"><i class="glyphicon glyphicon-minus"></i></button> </div><div class="panel-body center-panel"></div></div>').css({"position": "absolute", "top": newLocation["top"], "left": newLocation["left"], "z-index":"90"});
+
+	        $('.panel').last().after(newElem);
+        	setUpPanel(newID, shape);
+        	drawLine(currentId, newID);
+        }
+    }
+
+    function setUpPanel(newID, shape) {
+            $( "#" + newID)
+            .draggable({
+                stack: ".container div",
+                handle: ".panel-heading",
+                containment: [10,10, workspace.width() - INITIAL_WIDTH - 10 , workspace.height() - INITIAL_HEIGHT - 10],
+                drag: function(){
+                    centerLine(this.id);
+                }
+            })
+            .find(".panel-body")
+	            .css({
+	            	height: INITIAL_HEIGHT,
+                	width: INITIAL_WIDTH
+            	})
+	            .contextMenu({
+	                menuSelector: "#contextMenu",
+	                menuSelected: function (invokedOn, selectedMenu) {
+	                    			handleContextMenu(invokedOn, selectedMenu);
+	                    		}
+	            })
+            	.resizable({
+        		 	resize: function(){
+                        var aPanel = $(this).parents(".panel")[0];
+            			centerLine(aPanel.id);
+            		},
+        		 	maxHeight: 900,
+      				maxWidth: 900,
+      				minHeight: INITIAL_HEIGHT,
+      				minWidth: INITIAL_WIDTH
+            	})
+            	.append(function(){
+            		createShape($(this), shape);
+            	});
+     }
+
+    function handleContextMenu(invokedOn, selectedMenu)
+    {
+    	if(selectedMenu.context.id === "circle-child")
+       	{
+            createNewChild(invokedOn.parents(".panel")[0].id, "circle");
+        }
+        else
+        	if(selectedMenu.context.id === "square-child")
+        		createNewChild(invokedOn.parents(".panel")[0].id, "rect");
+        	else
+        		if(selectedMenu.context.id === "get-parent")
+        		{
+        			var panelID 	= invokedOn.parents(".panel")[0].id;
+					var parent 		= tree.getParent(panelID, tree.traverseBF) !== null ? tree.getParent(panelID, tree.traverseBF).data : "Root doesn't have parent";
+					alert(parent);
+        		}
+    }
+
+    function createNewIcon(panelID)
+    {
+    	var panelCenter = getCenter(panelID);
+    	var iconExists = $(document).find("#icon-" + panelID).length !== 0;
+
+    	if (!iconExists)
+    	{
+	    	$(".container").append(
+	    		'<i id= "icon-' + panelID + '" class="fa fa-window-maximize fa-2x"></i>'
+	    		);
+	    
+	    	$("#icon-"+panelID)
+	    		.draggable({
+	    			stack: ".container div",
+	    			containment: [10,10, workspace.width() - WIDTH_ICON - 10 , workspace.height() - HEIGHT_ICON - 10],
+	    			drag: function(){
+	    				centerLine(panelID, true);
+	    			},
+	    			stop:function(){
+	    				centerLine(panelID, true);
+	    			}
+	    		})
+	    		.css({
+	    			"left" :  panelCenter["x"],
+	    			"top"  :  panelCenter["y"]
+	    		})
+    	}
+    	else
+    	{
+    		$("#icon-"+panelID)
+    			.show()
+    			.css({
+    				"left" :  panelCenter["x"],
+	    			"top"  :  panelCenter["y"]
+    			})
+    	}
+    	
+        d3.selectAll("line").filter(".class-" + panelID).style("stroke-dasharray", ("3, 3"));
+
+    }
+
+    function createShape(currentBody, shape)
+    { 
+    	
+    	var novoSvg = d3.select(currentBody[0])
+    		.append("svg")
+    		.attr("width", "100%")
+    		.attr("height", "100%")
+    		.attr("viewBox", "0 0 600 400");
+
+    	if (shape === "circle")
+    	{
+            novoSvg.append("g")
+            	.append("circle")
+            		.attr("r", 200)
+            		.attr("cx", 300)
+            		.attr("cy", 200)
+            		.style("fill", "#F00")			
+    	}
+    	else
+    	{
+           novoSvg.append("g")
+            	.append("rect")
+ 					.attr("x", 125)
+ 					.attr("y", 25)
+ 					.attr("width", 350)
+					.attr("height", 350)
+					.style("fill", "blue");
+    	}
+
+     	return novoSvg;
+    }
+
+    function drawLine(panelX, panelY)
+    {
+        var svg = d3.select("#workspace");
+
+        var centerX = getCenter(panelX);
+        var centerY = getCenter(panelY);
+
+        var line = svg.append("line")
+            .style("stroke", "black")
+            .attr("id", panelX + "_"+ panelY)
+            .attr("class", "class-" + panelX + " class-" + panelY)
+            .attr("x1",centerX["x"])
+            .attr("y1", centerX["y"])
+            .attr("x2", centerY["x"])
+            .attr("y2", centerY["y"]);
+    }
+
+    function getCenter(obj)
+    {
+        var $this = $("#" + obj);
+        var offset = $this.offset();
+        var width = $this.width();
+        var height = $this.height();
+        var getSvg = $('#workspace');
+        var centerX = offset.left + width / 2 -  getSvg.offset().left;
+        var centerY = offset.top + height / 2 - getSvg.offset().top;
+        var arr = [];
+        arr["x"] = centerX;
+        arr["y"] = centerY;
+        return arr;
+    }
+
+    function centerLine(d, icon) {
+        if (typeof icon === 'undefined') { icon = false; }
+        var lines =  d3.selectAll("line").filter(".class-" + d);
+        var sizeLines = lines.size();
+
+        for (var i = 0; i < sizeLines; i++)
+        {
+            var aLine = $("#" + lines[0][i].id);
+            var lineID = lines[0][i].id.split("_");
+            if (lineID[0] === d)
+            {
+            	if (!icon)
+            	{
+            		aLine.attr("x1", getCenter(lineID[0])["x"]);
+            		aLine.attr("y1", getCenter(lineID[0])["y"]);
+            	}
+            	else
+            	{
+            		aLine.attr("x1", parseInt(getCenter("icon-" + lineID[0])["x"]));
+            		aLine.attr("y1", parseInt(getCenter("icon-" + lineID[0])["y"]));
+            	}
+            }
+            else
+            {
+            	if (!icon)
+            	{
+            		aLine.attr("x2", getCenter(lineID[1])["x"]);
+            		aLine.attr("y2", getCenter(lineID[1])["y"]);
+            	}
+            	else
+            	{
+            		aLine.attr("x2", parseInt(getCenter("icon-" + lineID[1])["x"]));
+            		aLine.attr("y2", parseInt(getCenter("icon-" + lineID[1])["y"]));	
+            	}
+            }
+        }
+    }
+
+    function checkLimits()
+    {
+    	var workspace =  $("#workspace");
+    	var panels = $(".panel");
+    	
+    	panels.each(function(index){
+    		//console.log(panels[index].id);
+    		var getElem = $( "#"+panels[index].id);
+    		var offsetWidth = workspace.width() - getElem.width() - 10;
+    		var offsetHeight= workspace.height() - getElem.height() - 10;
+    		$(getElem).draggable( "option", "containment", [10,10,offsetWidth,offsetHeight]);
+    	})
+    }
+</script>
+
+
+<style type="text/css">
+    .panel {
+        position: absolute;
+    }
+
+    .panel-heading:hover {
+        cursor: move;
+    }
+
+    #windows-system .panel-body{
+    	height: 100%;
+    	padding: 0;
+    }
+
+    .container {
+        display: inline-block;
+        position: absolute;
+        width: 100%;
+        padding-bottom: 100%;
+        vertical-align: top;
+        overflow: hidden;
+    }
+
+    .container .svg-content-responsive {
+        position: absolute;
+        top: 10px;
+        left: 0;
+    }
+
+    .panel-heading .btn
+    {
+    	float: right;
+    }
+
+    .fa-window-maximize{
+    	background: white;
+  		border-radius: 40%;
+  		height: 0.9em;
+  		position: absolute;
+    	clip: rect(2px,30px,26px,0px);
+    }
+
+    .fa-window-maximize:hover
+    {
+    	cursor: move;
+    }
+
+    i{
+    	position: absolute;
+    }
+
+    a{
+    	cursor: pointer;
+    }
+</style>
