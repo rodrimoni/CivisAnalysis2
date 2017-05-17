@@ -78,15 +78,21 @@
 	});
 
 	function removeWindow() {
-        var panelID = $(this).parents(".panel").attr("id");
-        var parent = tree.getParent(panelID, tree.traverseBF).data;
-        var removedNode = tree.remove(panelID, parent, tree.traverseBF);
+         if (confirm("Deleting this panel will delete all of his children. Are you sure you want to delete this panel?")) 
+         {
+	        var panelID = $(this).parents(".panel").attr("id");
+	        var parent = tree.getParent(panelID, tree.traverseBF).data;
+	        var removedNode = tree.remove(panelID, parent, tree.traverseBF);
 
-        $("#" + panelID).remove();
-        removeRecursively(removedNode[0].children)
+	        $("#" + panelID).remove();
+	        removeLines(panelID);
+	        removeChildren(removedNode[0].children);
+    	}
+    	
+    	return false;
     }
 
-    function removeRecursively(arr) {
+    function removeChildren(arr) {
         var len = arr.length;
         var i = 0;
         var idToRemove = "";
@@ -95,13 +101,27 @@
         {
             for (i = 0; i < len; i ++)
             {
-                removeRecursively(arr[i].children);
+                //recursive call to all children
+                removeChildren(arr[i].children);
                 idToRemove = arr[i].data;
+                removeLines(idToRemove);
                 $("#"+ idToRemove).remove();
             }
         }
-        else
-            return;
+    }
+
+    function removeLines(id)
+    {
+    	var lines =  d3.selectAll("line").filter(".class-" + id);
+        var sizeLines = lines.size();
+        if (sizeLines > 0)
+        {
+	        for (var i = 0; i < sizeLines; i++)
+	        {
+	            var aLine = $("#" + lines[0][i].id);
+	            $(aLine).remove();
+        	}
+    	}
     }
 
     function minimizeWindow()
@@ -123,22 +143,35 @@
     		.show()
     		.css({
     			"left" : iconOffset.left - panel.width()/2,
-	    		"top"  : iconOffset.top - panel.height()/2
+	    		"top"  : iconOffset.top - panel.height()/2,
     		});
 
-    	icon.hide();
+    	
+		$("#"+ panelID + " .btn-default.btn-minimize").css("background", "#fff");
+
+    	icon.remove();
 
     	d3.selectAll("line").filter(".class-" + panelID).style("stroke-dasharray", "");
+    	
+    	//Keep the icons with dotted line
+    	var activeIcons = $(" .fa-window-maximize")
+    	for (var i = 0; i < activeIcons.size(); i++)
+    	{
+    		var iconID = activeIcons[i].id.replace("icon-", "");
+    		d3.selectAll("line").filter(".class-" + iconID).style("stroke-dasharray", ("3, 3"));
+    	}
+
     }
 
     function createNewChild(currentId, shape) {
         var newElem = "";
         var newID = "";
 
+        //Creating the root
         if (currentId === null)
         {
         	newID = "painel-1-1";
-        	newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" style="padding-top: 7.5px;">' + newID + '</h4> <button class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button> </div><div class="panel-body center-panel"></div></div>').css({"position": "absolute", "z-index":"90"});
+        	newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" style="padding-top: 7.5px;">' + newID + '</h4> <button disabled class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button> </div><div class="panel-body center-panel"></div></div>').css({"position": "absolute", "z-index":"90"});
         	
         	$(".container").append(newElem);
         	setUpPanel(newID, shape);
@@ -169,38 +202,47 @@
     }
 
     function setUpPanel(newID, shape) {
-            $( "#" + newID)
-            .draggable({
-                stack: ".container div",
-                handle: ".panel-heading",
-                containment: [10,10, workspace.width() - INITIAL_WIDTH - 10 , workspace.height() - INITIAL_HEIGHT - 10],
-                drag: function(){
-                    centerLine(this.id);
-                }
+         //Guarantee the right colors of minimize buttons
+    	$("#"+ newID + " .btn-default.btn-minimize")
+		.mouseenter(function() {
+			$(this).css("background", "#e6e6e6");
+		})
+		.mouseleave(function() {
+ 			$(this).css("background", "#fff");
+ 		});
+
+        $( "#" + newID)
+        .draggable({
+            stack: ".container div",
+            handle: ".panel-heading",
+            containment: [10,10, workspace.width() - INITIAL_WIDTH - 10 , workspace.height() - INITIAL_HEIGHT - 10],
+            drag: function(){
+                centerLine(this.id);
+            }
+        })
+        .find(".panel-body")
+            .css({
+            	height: INITIAL_HEIGHT,
+            	width: INITIAL_WIDTH
+        	})
+            .contextMenu({
+                menuSelector: "#contextMenu",
+                menuSelected: function (invokedOn, selectedMenu) {
+                    			handleContextMenu(invokedOn, selectedMenu);
+                    		}
             })
-            .find(".panel-body")
-	            .css({
-	            	height: INITIAL_HEIGHT,
-                	width: INITIAL_WIDTH
-            	})
-	            .contextMenu({
-	                menuSelector: "#contextMenu",
-	                menuSelected: function (invokedOn, selectedMenu) {
-	                    			handleContextMenu(invokedOn, selectedMenu);
-	                    		}
-	            })
-            	.resizable({
-        		 	resize: function(){
-                        var aPanel = $(this).parents(".panel")[0];
-            			centerLine(aPanel.id);
-            		},
-        		 	maxHeight: 900,
-      				maxWidth: 900,
-      				minHeight: INITIAL_HEIGHT,
-      				minWidth: INITIAL_WIDTH
-            	})
-            	.append(function(){
-            		createShape($(this), shape);
+        	.resizable({
+    		 	resize: function(){
+                    var aPanel = $(this).parents(".panel")[0];
+        			centerLine(aPanel.id);
+        		},
+    		 	maxHeight: 900,
+  				maxWidth: 900,
+  				minHeight: INITIAL_HEIGHT,
+  				minWidth: INITIAL_WIDTH
+        	})
+        	.append(function(){
+        		createShape($(this), shape);
             	});
      }
 
@@ -224,43 +266,29 @@
 
     function createNewIcon(panelID)
     {
-    	var panelCenter = getCenter(panelID);
-    	var iconExists = $(document).find("#icon-" + panelID).length !== 0;
-
-    	if (!iconExists)
-    	{
-	    	$(".container").append(
-	    		'<i id= "icon-' + panelID + '" class="fa fa-window-maximize fa-2x"></i>'
-	    		);
-	    
-	    	$("#icon-"+panelID)
-	    		.draggable({
-	    			stack: ".container div",
-	    			containment: [10,10, workspace.width() - WIDTH_ICON - 10 , workspace.height() - HEIGHT_ICON - 10],
-	    			drag: function(){
-	    				centerLine(panelID, true);
-	    			},
-	    			stop:function(){
-	    				centerLine(panelID, true);
-	    			}
-	    		})
-	    		.css({
-	    			"left" :  panelCenter["x"],
-	    			"top"  :  panelCenter["y"]
-	    		})
-    	}
-    	else
-    	{
-    		$("#icon-"+panelID)
-    			.show()
-    			.css({
-    				"left" :  panelCenter["x"],
-	    			"top"  :  panelCenter["y"]
-    			})
-    	}
-    	
-        d3.selectAll("line").filter(".class-" + panelID).style("stroke-dasharray", ("3, 3"));
-
+		var panelCenter = getCenter(panelID);
+	
+    	$(".container").append(
+    		'<i id= "icon-' + panelID + '" class="fa fa-window-maximize fa-2x"></i>'
+    		);
+    
+    	$("#icon-"+panelID)
+    		.draggable({
+    			stack: ".container div",
+    			containment: [10,10, workspace.width() - WIDTH_ICON - 10 , workspace.height() - HEIGHT_ICON - 10],
+    			drag: function(){
+    				centerLine(panelID, true);
+    			},
+    			stop:function(){
+    				centerLine(panelID, true);
+    			}
+    		})
+    		.css({
+    			"left" :  panelCenter["x"],
+    			"top"  :  panelCenter["y"]
+    		})
+	
+    	d3.selectAll("line").filter(".class-" + panelID).style("stroke-dasharray", ("3, 3"));
     }
 
     function createShape(currentBody, shape)
