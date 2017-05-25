@@ -2,56 +2,20 @@
 
 ### Table of Contents
 
--   [INITIAL_HEIGHT](#initial_height)
--   [INITIAL_HEIGHT](#initial_height-1)
--   [HEIGHT_ICON](#height_icon)
--   [tree](#tree)
 -   [removeWindow](#removewindow)
 -   [removeChildren](#removechildren)
 -   [removeLines](#removelines)
 -   [minimizeWindow](#minimizewindow)
 -   [maximizeWindow](#maximizewindow)
--   [css](#css)
--   [style](#style)
--   [style](#style-1)
--   [activeIcons](#activeicons)
 -   [createNewChild](#createnewchild)
--   [drawLine](#drawline)
--   [drawLine](#drawline-1)
--   [drawLine](#drawline-2)
 -   [setUpPanel](#setuppanel)
--   [setUpPanel](#setuppanel-1)
--   [setUpPanel](#setuppanel-2)
--   [top](#top)
--   [node](#node)
--   [after](#after)
--   [mouseleave](#mouseleave)
--   [workspace](#workspace)
--   [workspace](#workspace-1)
--   [append](#append)
 -   [handleContextMenu](#handlecontextmenu)
--   [panelID](#panelid)
 -   [createNewIcon](#createnewicon)
 -   [createShape](#createshape)
+-   [drawLine](#drawline)
 -   [getCenter](#getcenter)
 -   [centerLine](#centerline)
 -   [checkLimits](#checklimits)
-
-## INITIAL_HEIGHT
-
-Created by Rodrigo on 25/05/2017.
-
-## INITIAL_HEIGHT
-
-Initial values of panel Height and Width
-
-## HEIGHT_ICON
-
-Constant values of icon Height and Width
-
-## tree
-
-Creating the tree with the first node
 
 ## removeWindow
 
@@ -63,11 +27,9 @@ Remove selected panel and his children
 $('selector').on("event", "element", removeWindow);
 ```
 
-Returns **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** //Confirm event triggered, if false do nothing else remove panels
-
 ## removeChildren
 
-Remove all panel's children
+Remove panel's children
 
 **Parameters**
 
@@ -75,15 +37,15 @@ Remove all panel's children
 
 ## removeLines
 
-Remove all lines that connect to selected id
+Removes all the lines that connects to a selected ID
 
 **Parameters**
 
--   `id` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** ID of line to remove
+-   `id` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Identification of the line to be removed
 
 ## minimizeWindow
 
-Replace a bootsrap panel for a small icon that represents the panel minimized
+Replaces a Bootstrap Panel with a small icon representing it minimized
 
 **Examples**
 
@@ -93,7 +55,7 @@ $('selector').on("event", "element", minimizeWindow);
 
 ## maximizeWindow
 
-Replace a small icon for a bootsrap panel that represents the icon maximized
+Replaces a small icon with a Bootstrap Panel representing it maximized
 
 **Examples**
 
@@ -101,125 +63,47 @@ Replace a small icon for a bootsrap panel that represents the icon maximized
 $('selector').on("event", "element", maximizeWindow);
 ```
 
-## css
-
-Guarantee that hover effect triggered before, when btn-minimize is clicked, is removed
-
-## style
-
-Remove the dotted style of lines
-
-## style
-
-Make all the lines that are connected to a icon dotted
-
-## activeIcons
-
-Keep the icons with dotted line
-
 ## createNewChild
 
-Create a new Panel with a new ID and a selected shape
+Creates a new Panel with a selected shape
 
 **Parameters**
 
--   `currentId` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The panelID that is originating the new panel
--   `shape` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The shape only assume two values: "circle" or "rect"
+-   `currentId` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Identification of the panel that is originating the new one
+-   `shape` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The selected shape, which only assumes two values: "circle" or "rect"
 
 **Examples**
 
 ```javascript
-createNewChild("painel-1-1", "rect") // From "painel-1-1" create a panel child with rect shape
-```
-
-## drawLine
-
-Creating the root
-
-## drawLine
-
-Draw the lines between the two panels
-
-## drawLine
-
-Draw a line between two selected panels
-
-**Parameters**
-
--   `panelX` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** ID of first panel
--   `panelY` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** ID of second panel
-
-**Examples**
-
-```javascript
-drawLine("painel-1-1", "painel-2-1"); // A line will be draw connecting the two centers of panels
+createNewChild("panel-1-1", "rect") // From the "panel-1-1" is created a new panel with a shape of rect inside
+createNewChild("panel-2-1", "circle") // From the "panel-2-1" is created a new panel with a shape of circle inside
 ```
 
 ## setUpPanel
 
-Configure the panel settings as drag, resize, etc
-
-## setUpPanel
-
-Configure the panel settings as drag, resize, etc
-
-## setUpPanel
-
-Set up the settings of each panel
+Sets up the panel settings
 
 **Parameters**
 
--   `newID` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The id of the new panel
--   `shape` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The shape of the new panel
-
-## top
-
-Positions the new panel close to the parent panel
-
-## node
-
-Add the node to the tree structure
-
-## after
-
-Inserts the panel after the last panel in DOM
-
-## mouseleave
-
-Guarantee the right colors of minimize buttons
-
-## workspace
-
-Getting the workspace SVG
-
-## workspace
-
-Getting the workspace SVG
-
-## append
-
-Setting up the panel
+-   `newID` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The identification of the new panel
+-   `shape` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The selected shape of the new panel
 
 ## handleContextMenu
 
-The handle of context menu of each panel
+The handler of context menu of panels
 
 **Parameters**
 
--   `invokedOn`  The place where right mouse button is clicked
--   `selectedMenu`  The option selected in custom context menu
-
-## panelID
-
-Get ID of the panel that was click
+-   `invokedOn`  The place where cursor are when the right mouse button is clicked
+-   `selectedMenu`  The selected option in custom context menu
 
 ## createNewIcon
 
-Create a icon that simulate a panel minimized
+Creates a icon that represents a panel minimized
 
 **Parameters**
 
--   `panelID` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** ID of the panel minimized
+-   `panelID` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Identification of the minimized panel
 
 ## createShape
 
@@ -227,10 +111,25 @@ Create a new shape for a panel body
 
 **Parameters**
 
--   `currentBody`  Body of panel that will receive the new svg with the new shape
+-   `currentBody`  Body of panel that will receive the new SVG with the new shape
 -   `shape`  "Circle" or "Rect"
 
-Returns **any** The new svg with the shape drawn
+Returns **any** The new SVG with the shape drawn
+
+## drawLine
+
+Draws a line between two selected panels
+
+**Parameters**
+
+-   `panelX` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Identification of the first panel
+-   `panelY` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** Identification of the second panel
+
+**Examples**
+
+```javascript
+drawLine("panel-1-1", "panel-2-1"); // A line will be draw connecting the two centers of panels
+```
 
 ## getCenter
 
@@ -238,14 +137,14 @@ Get the center of a panel
 
 **Parameters**
 
--   `obj` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The ID of panel
+-   `obj` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The identification of panel
 
 **Examples**
 
 ```javascript
-var center = getCenter("painel-1-1")
+var center = getCenter("panel-1-1")
 console.log(center["x"]); //10
-console.log(center["y]); // 20
+console.log(center["y"]); // 20
 ```
 
 Returns **[Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)** The coordinates of the center point
@@ -256,16 +155,24 @@ Whenever a panel is moved the lines must follow it
 
 **Parameters**
 
--   `panelID` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The id of the panel
+-   `panelID` **[string](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)** The identification of the panel
 -   `icon` **[boolean](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** icon If is "true" means that we are dealing with icon, if is undefined it is a panel (optional, default `false`)
 
 **Examples**
 
 ```javascript
-centerLine("painel-1-1", true) // Icon with panelID = "painel-1-1"
-centerLine("painel-1-1") // Panel with panelID = "painel-1-1"
+centerLine("panel-1-1", true) // Icon with panelID = "panel-1-1"
+centerLine("panel-1-1") // Panel with panelID = "panel-1-1"
 ```
 
 ## checkLimits
 
 Checks limits of window, guaranteeing that the panels and icons don't overflow
+
+**Examples**
+
+```javascript
+$(window).on('resize', function(){
+checkLimits();
+});
+```
