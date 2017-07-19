@@ -3,15 +3,43 @@
  */
 
 /* Initial values of panel Height and Width */
-var INITIAL_HEIGHT = 150;
-var INITIAL_WIDTH = 200;
+var INITIAL_HEIGHT = 300;
+var INITIAL_WIDTH = 400;
 
 /* Constant values of icon Height and Width */
 var HEIGHT_ICON = 28;
 var WIDTH_ICON = 28;
 
+/* Constant values of Legislatures and Years */
+var FIRST_YEAR = 1991;
+var LAST_YEAR = 2016;
+var FIRST_LEGISLATURE = 0;
+var LAST_LEGISLATURE = 6;
+
+/* Global variable to store all deputies with an ID */
+var deputiesArray = [];
+
+/* Global variable to store the scatter plot nodes */
+var deputiesNodes = [];
+
 /* Creating the tree with the first node */
 var tree = new Tree('panel-1-1');
+
+function init() {
+    loadDeputies(deputiesArray);
+}
+
+function handleDropDown(value) {
+    var type = "";
+
+    if (value >= FIRST_YEAR && value <= LAST_YEAR )
+        type = "year";
+    else
+        if (value >= FIRST_LEGISLATURE && value <= LAST_LEGISLATURE)
+            type = "legislature";
+
+    loadNodes(type, value, deputiesArray, deputiesNodes)
+}
 
 /**
  * Remove selected panel and his children
@@ -109,10 +137,10 @@ function maximizeWindow()
 
     icon.remove();
 
-    /* Removes the dotted style of lines */
+    /* Removes the dotted stylesheets of lines */
     d3.selectAll("line").filter(".class-" + panelID).style("stroke-dasharray", "");
 
-    /* Keeps the icons with dotted line style */
+    /* Keeps the icons with dotted line stylesheets */
     var activeIcons = $(" .fa-window-maximize");
     for (var i = 0; i < activeIcons.size(); i++)
     {
@@ -138,12 +166,15 @@ function createNewChild(currentId, shape) {
     if (currentId === null)
     {
         newID = "panel-1-1";
-        newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" style="padding-top: 7.5px;">' + newID + '</h4> <button disabled class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button> </div><div class="panel-body center-panel"></div></div>').css({"position": "absolute", "z-index":"90"});
+        newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" stylesheets="padding-top: 7.5px;">' + newID + '</h4> <button disabled class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button> </div><div class="panel-body center-panel"></div></div>').css({"position": "absolute"});
 
         $(".container").append(newElem);
 
         /* Sets up the panel settings as drag, resize, etc */
-        setUpPanel(newID, shape);
+        setUpPanel(newID);
+
+        $("#btn-init").appendTo("#panel-1-1 .panel-body");
+        $("#btn-init").show();
     }
     else
     {
@@ -164,7 +195,7 @@ function createNewChild(currentId, shape) {
         var node = tree.add('panel-', currentId, tree.traverseBF);
         newID = node.data;
 
-        newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" style="padding-top: 7.5px;">' + newID + '</h4> <button class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button> </div><div class="panel-body center-panel"></div></div>').css({"position": "absolute", "top": newLocation["top"], "left": newLocation["left"], "z-index":"90"});
+        newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" stylesheets="padding-top: 7.5px;">' + newID + '</h4> <button class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button> </div><div class="panel-body center-panel"></div></div>').css({"position": "absolute", "top": newLocation["top"], "left": newLocation["left"], "z-index":"90"});
 
         /* Inserts the panel after the last one in DOM */
         $('.panel').last().after(newElem);
@@ -225,10 +256,10 @@ function setUpPanel(newID, shape) {
             maxWidth: 900,
             minHeight: INITIAL_HEIGHT,
             minWidth: INITIAL_WIDTH
-        })
-        .append(function(){
-            createShape($(this), shape);
         });
+        //.append(function(){
+        //    createShape($(this), shape);
+        //});
 }
 
 /**
