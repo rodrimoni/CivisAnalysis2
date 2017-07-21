@@ -1,3 +1,4 @@
+var SCATTER_PLOT = 1;
 var parties = [];
 var partyCount  = [];
 var chart;
@@ -25,20 +26,6 @@ function selColor(c){ return partiesArbitraryColor[c]; }
 
 // A $( document ).ready() block.
 $( document ).ready(function() {
-    $('input[type=radio][name=type]').change(function() {
-        if (this.value == 'year') {
-            $("#years").show();
-            $("#legislatures").hide();
-        }
-        else if (this.value == 'legislature') {
-            $("#years").hide();
-            $("#legislatures").show();
-        }
-        init();
-    });
-
-    $(".comboBox").on("change", init);
-
     $("body").on('click', '#applyKmeans', function(){
         var k = $("#kVariable").val();
         getClusters(k, deputyNodes);
@@ -59,13 +46,14 @@ function loadNodes(type, selectedTime, deputiesArray, deputiesNodes)
 {
     d3.json('data/precalc/'+type+'.'+selectedTime +'.json', function (precalc) {
         // SET THE precalc DEPUTIES to their constant object in the app
-        deputiesNodes = precalc.deputyNodes.map( function(precalcDeputy){
+        precalc.deputyNodes.map( function(precalcDeputy){
             var depObj = deputiesArray[precalcDeputy.deputyID];
             depObj.party = precalcDeputy.party;
             depObj.scatterplot  = precalcDeputy.scatterplot;
-            return depObj;
+            deputiesNodes.push(depObj);
         });
 
+        initChart(SCATTER_PLOT);
         /*chart = scatterPlotChart();
 
         d3.select("#scatter")
@@ -74,7 +62,6 @@ function loadNodes(type, selectedTime, deputiesArray, deputiesNodes)
 
         $("#countParties").append("# of parties: <span id= 'count'>" + Object.keys(parties).length + "</span>").show();
         */
-        console.log(deputiesNodes);
     });
 }
 
@@ -128,7 +115,7 @@ function scatterPlotChart()
                 .offset([-10, 0])
                 .html(function(d) {
                     return d.name + " (" + d.party + "-" + d.district + ") ";
-                })
+                });
 
 
             var svg = d3.select(this)
@@ -321,7 +308,7 @@ function scatterPlotChart()
             .attr("stroke", function(d) { return col(d.cluster); });
 
         objects.exit().remove();
-    }
+    };
 
     return chart;
 }

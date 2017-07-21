@@ -23,9 +23,9 @@ var deputiesArray = [];
 var deputiesNodes = [];
 
 /* Creating the tree with the first node */
-var tree = new Tree('panel-1-1');
+var tree = new Tree('panel-1-1', null);
 
-function init() {
+function initSystem() {
     loadDeputies(deputiesArray);
 }
 
@@ -38,7 +38,14 @@ function handleDropDown(value) {
         if (value >= FIRST_LEGISLATURE && value <= LAST_LEGISLATURE)
             type = "legislature";
 
-    loadNodes(type, value, deputiesArray, deputiesNodes)
+    loadNodes(type, value, deputiesArray, deputiesNodes);
+}
+
+function initChart(chart) { console.log(deputiesNodes);
+    if (chart === SCATTER_PLOT)
+        chart = scatterPlotChart();
+
+    createNewChild('panel-1-1', chart);
 }
 
 /**
@@ -153,12 +160,12 @@ function maximizeWindow()
 /**
  * Creates a new Panel with a selected shape
  * @param {string} currentId Identification of the panel that is originating the new one
- * @param {string} shape The selected shape, which only assumes two values: "circle" or "rect"
+ * @param {string} chart The selected chart (e.g Scatter Plot, Pie Chart, etc)
  * @example
  * createNewChild("panel-1-1", "rect") // From the "panel-1-1" is created a new panel with a shape of rect inside
  * createNewChild("panel-2-1", "circle") // From the "panel-2-1" is created a new panel with a shape of circle inside
  */
-function createNewChild(currentId, shape) {
+function createNewChild(currentId, chart) {
     var newElem = "";
     var newID = "";
 
@@ -171,7 +178,7 @@ function createNewChild(currentId, shape) {
         $(".container").append(newElem);
 
         /* Sets up the panel settings as drag, resize, etc */
-        setUpPanel(newID);
+        setUpPanel(newID, null);
 
         $("#btn-init").appendTo("#panel-1-1 .panel-body");
         $("#btn-init").show();
@@ -194,6 +201,7 @@ function createNewChild(currentId, shape) {
         /* Adds the node to the tree structure */
         var node = tree.add('panel-', currentId, tree.traverseBF);
         newID = node.data;
+        node.chart = chart;
 
         newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" stylesheets="padding-top: 7.5px;">' + newID + '</h4> <button class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button> </div><div class="panel-body center-panel"></div></div>').css({"position": "absolute", "top": newLocation["top"], "left": newLocation["left"], "z-index":"90"});
 
@@ -201,7 +209,7 @@ function createNewChild(currentId, shape) {
         $('.panel').last().after(newElem);
 
         /* Sets up the panel settings as drag, resize, etc */
-        setUpPanel(newID, shape);
+        setUpPanel(newID, chart);
 
         /* Draws the lines between the two panels */
         drawLine(currentId, newID);
@@ -211,9 +219,9 @@ function createNewChild(currentId, shape) {
 /**
  * Sets up the panel settings
  * @param {string} newID The identification of the new panel
- * @param {string} shape The selected shape of the new panel
+ * @param {string} chart The selected chart of the new panel
  */
-function setUpPanel(newID, shape) {
+function setUpPanel(newID, chart) {
     /* Guarantees the right colors of btn-minimize */
     $("#"+ newID + " .btn-default.btn-minimize")
         .mouseenter(function() {
@@ -260,6 +268,12 @@ function setUpPanel(newID, shape) {
         //.append(function(){
         //    createShape($(this), shape);
         //});
+
+        if (chart !== null) {
+            d3.select("#" + newID + " .panel-body")
+                .datum(deputiesNodes)
+                .call(chart);
+        }
 }
 
 /**

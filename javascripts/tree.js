@@ -1,13 +1,14 @@
-function Node(data) {
-    this.data     = data;
-    this.parent   = null;
-    this.children = [];
-    this.id       = 1;
-    this.depth    = 1;
+function Node(data, chart) {
+    this.data       = data;
+    this.parent     = null;
+    this.children   = [];
+    this.depth      = 1;
+    this.id         = 1;
+    this.chart      = chart;
 }
 
-function Tree(data) {
-    this._root = new Node(data);
+function Tree(data, chart) {
+    this._root = new Node(data, chart);
 }
 
 Tree.prototype.traverseDF = function(callback) {
