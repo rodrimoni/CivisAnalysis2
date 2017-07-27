@@ -6,6 +6,15 @@
     cursor: move;
 }
 
+.panel-heading .btn-group {
+    float: right;
+}
+
+.panel-heading .btn-group .dropdown-menu {
+    cursor: auto;
+    float: right;
+}
+
 #windows-system .panel-body{
     height: 100%;
     padding: 0;
@@ -51,6 +60,7 @@ i{
 a{
     cursor: pointer;
 }
+
 
 .dropdown-submenu {
     position: relative;
@@ -98,4 +108,8 @@ a{
     -webkit-border-radius: 6px 0 6px 6px;
     -moz-border-radius: 6px 0 6px 6px;
     border-radius: 6px 0 6px 6px;
+}
+
+.panel-heading .dropdown-menu>li{
+    padding: 3px 20px;
 }

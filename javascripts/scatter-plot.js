@@ -53,7 +53,7 @@ function loadNodes(type, selectedTime, deputiesArray, deputiesNodes)
             deputiesNodes.push(depObj);
         });
 
-        initChart(SCATTER_PLOT);
+        createNewChild('panel-1-1', SCATTER_PLOT);
         /*chart = scatterPlotChart();
 
         d3.select("#scatter")
@@ -67,9 +67,9 @@ function loadNodes(type, selectedTime, deputiesArray, deputiesNodes)
 
 function scatterPlotChart()
 {
-    var margin = { top: 50, right: 300, bottom: 50, left: 50 },
-        outerWidth = 1050,
-        outerHeight = 600,
+    var margin = { top: 50, right: 200, bottom: 50, left: 50 },
+        outerWidth = MAX_WIDTH,
+        outerHeight = MAX_HEIGHT,
         width = outerWidth - margin.left - margin.right,
         height = outerHeight - margin.top - margin.bottom;
 
@@ -120,8 +120,9 @@ function scatterPlotChart()
 
             var svg = d3.select(this)
                 .append("svg")
-                .attr("width", outerWidth)
-                .attr("height", outerHeight)
+                .attr("width", "100%")
+                .attr("height", "100%")
+                .attr("viewBox", "0 0 1000 620 ")
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
                 .call(zoomBeh);
@@ -168,7 +169,7 @@ function scatterPlotChart()
                 .data(data)
                 .enter().append("circle")
                 .classed("dot", true)
-                .attr("r", 3.7)
+                .attr("r", 4)
                 .attr("id", function(d) { return "deputy_id_" + d.deputyID; })
                 .attr("transform", function(d) {return "translate(" + x(d.scatterplot[1]) + "," + y(d.scatterplot[0]) + ")";})
                 .style("fill", function(d) { return selColor(d.party); })
@@ -191,35 +192,27 @@ function scatterPlotChart()
                 var legend = svg.selectAll(".legend")
                     .data(d3.map(data, function(d){return d.party;}).keys());
 
-                var t = d3.transition();
-
-                legend
-                    .transition(t).duration(750)
-                    .attr("transform", function(d, i) { if (i % 2 === 0) return "translate(0," + i * 20 + ")"; else return "translate(80," + (i-1) * 20 + ")" ; });
-
                 var updateCircles = d3.selectAll('.legend circle');
 
                 updateCircles
-                    .attr("fill", function (d) {return selColor(d);})
+                    .attr("fill", function (d) {return selColor(d);});
 
                 var enterLegend =
                     legend.enter().append("g")
-                        .classed("legend", true)
+                        .classed("legend", true);
 
                 enterLegend
-                    .attr("transform", function(d, i) { if (i % 2 === 0) return "translate(150," + i * 20 + ")"; else return "translate(230," + (i-1) * 20 + ")" ; })
-                    .transition(t).duration(750)
                     .attr("transform", function(d, i) { if (i % 2 === 0) return "translate(0," + i * 20 + ")"; else return "translate(80," + (i-1) * 20 + ")" ; });
 
                 enterLegend.append("circle")
-                    .attr("r", 4)
+                    .attr("r", 8)
                     .attr("cx", width + 20)
                     .attr("fill", function (d) {return selColor(d);})
                     .on("mouseover", function (d) {
                         var resp = "";
                         partyCount[d].forEach(function(e){
                             resp += e.party + ":" + e.number + " || " + d3.format("%") (e.number/partyCount[d].total) + "<br>";
-                        })
+                        });
                         //console.log(resp);
                         tooltipTest.transition()
                             .duration(200)
@@ -235,16 +228,10 @@ function scatterPlotChart()
                     });
 
                 enterLegend.append("text")
-                    .attr("x", width + 26)
+                    .attr("x", width + 30)
                     .attr("dy", ".35em")
                     .text(function(d) { return d });
 
-                legend
-                    .exit()
-                    .transition(t).duration(750)
-                    .style("fill-opacity", 1e-6)
-                    .attr("transform", function(d, i) { if (i % 2 === 0) return "translate(150," + i * 20 + ")"; else return "translate(230," + (i-1) * 20 + ")" ; })
-                    .remove();
             }
         });
     }
@@ -340,29 +327,29 @@ function getClusters(k, data)
             else
             {
                 var result = $.grep(partyCount[index], function(e){ return e.party === deputy.party; });
-                if (result.length == 0) {
+                if (result.length === 0) {
                     partyCount[index].push({"party" : deputy.party, "number": 1});
                 }
                 else
-                if (result.length == 1) {
+                if (result.length === 1) {
                     result[0].number += 1;
                 }
             }
             //d3.select("#deputy_id_" + deputy.deputyID).transition().stylesheets("fill", col(index)).duration(900);
-        })
+        });
         hullSets.push( {"cluster" : index, "points" : hull(cluster.points.map(function(e) {return e.location; }), 20)} );
-    })
+    });
 
     partyCount.forEach (function(e){
         var count = 0;
         e.sort(function(x,y){
             return d3.descending(x.number, y.number);
-        })
+        });
         e.forEach(function(d){
             count += +d.number;
-        })
+        });
         e.total = count;
-    })
+    });
 
     chart.updateHulls (hullSets);
 }

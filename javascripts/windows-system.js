@@ -6,6 +6,10 @@
 var INITIAL_HEIGHT = 300;
 var INITIAL_WIDTH = 400;
 
+/* Max values of panel Height and Width */
+var MAX_HEIGHT = 620;
+var MAX_WIDTH = 1000;
+
 /* Constant values of icon Height and Width */
 var HEIGHT_ICON = 28;
 var WIDTH_ICON = 28;
@@ -38,6 +42,7 @@ function handleDropDown(value) {
         if (value >= FIRST_LEGISLATURE && value <= LAST_LEGISLATURE)
             type = "legislature";
 
+    deputiesNodes = [];
     loadNodes(type, value, deputiesArray, deputiesNodes);
 }
 
@@ -165,15 +170,16 @@ function maximizeWindow()
  * createNewChild("panel-1-1", "rect") // From the "panel-1-1" is created a new panel with a shape of rect inside
  * createNewChild("panel-2-1", "circle") // From the "panel-2-1" is created a new panel with a shape of circle inside
  */
-function createNewChild(currentId, chart) {
+function createNewChild(currentId, chartID) {
     var newElem = "";
     var newID = "";
+    var chart;
 
     /* Creating the root */
     if (currentId === null)
     {
         newID = "panel-1-1";
-        newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" stylesheets="padding-top: 7.5px;">' + newID + '</h4> <button disabled class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button> </div><div class="panel-body center-panel"></div></div>').css({"position": "absolute"});
+        newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" style="padding-top: 7.5px;">' + newID + '</h4> <button disabled class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button> </div><div class="panel-body center-panel"></div></div>').css({"position": "absolute"});
 
         $(".container").append(newElem);
 
@@ -201,12 +207,23 @@ function createNewChild(currentId, chart) {
         /* Adds the node to the tree structure */
         var node = tree.add('panel-', currentId, tree.traverseBF);
         newID = node.data;
-        node.chart = chart;
 
-        newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" stylesheets="padding-top: 7.5px;">' + newID + '</h4> <button class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button> </div><div class="panel-body center-panel"></div></div>').css({"position": "absolute", "top": newLocation["top"], "left": newLocation["left"], "z-index":"90"});
+        newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" style="padding-top: 7.5px;">' + newID + '</h4> <div class="btn-group"> <button class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button></div></div><div class="panel-body center-panel"></div></div>').css({"position": "absolute", "top": newLocation["top"], "left": newLocation["left"], "z-index":"90"});
+
 
         /* Inserts the panel after the last one in DOM */
         $('.panel').last().after(newElem);
+
+        /* Initialize charts */
+
+        if (chartID === SCATTER_PLOT)
+        {
+            chart = scatterPlotChart();
+            $('#' +newID + ' .panel-heading .btn-group').append('<button class="btn btn-default btn-settings-scatterplot toggle-dropdown" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i></button> </button> <ul class="dropdown-menu panel-settings"><li role="presentation" class="dropdown-header">Clusterization with K-Means</li><li> Select the value of K: <br> <input id= "slider-'+ newID + '" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="14"/></li></ul>')
+            initializeSlider(newID);
+        }
+        /* Bind data chart to node in tree */
+        node.chart = chart;
 
         /* Sets up the panel settings as drag, resize, etc */
         setUpPanel(newID, chart);
@@ -237,12 +254,12 @@ function setUpPanel(newID, chart) {
     /* Setting up the panel */
     $( "#" + newID)
         .draggable({
-            stack: ".container div",
             handle: ".panel-heading",
             containment: [10,10, workspace.width() - INITIAL_WIDTH - 10 , workspace.height() - INITIAL_HEIGHT - 70],
             drag: function(){
                 centerLine(this.id);
-            }
+            },
+            cancel: '.dropdown-menu'
         })
         .find(".panel-body")
         .css({
@@ -260,8 +277,9 @@ function setUpPanel(newID, chart) {
                 var aPanel = $(this).parents(".panel")[0];
                 centerLine(aPanel.id);
             },
-            maxHeight: 900,
-            maxWidth: 900,
+            aspectRatio: true,
+            maxHeight: MAX_HEIGHT,
+            maxWidth: MAX_WIDTH,
             minHeight: INITIAL_HEIGHT,
             minWidth: INITIAL_WIDTH
         });
@@ -487,4 +505,18 @@ function checkLimits()
         var offsetHeight= workspace.height() - getElem.height() - 10;
         $(getElem).draggable( "option", "containment", [10,10,offsetWidth,offsetHeight]);
     })
+}
+
+function  initializeSlider(id) {
+    // With JQuery
+    $('#slider-' + id).bootstrapSlider({
+        formatter: function(value) {
+            return 'Value of K: ' + value;
+        }
+    });
+
+    console.log("#" + id + " .tooltip-main");
+
+    $("#" + id + " .tooltip-main").css({'margin-left': '-45px'});
+
 }
