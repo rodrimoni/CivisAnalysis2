@@ -79,6 +79,8 @@ function scatterPlotChart()
     var y = d3.scale.linear()
         .range([height, 0]).nice();
 
+    var partyCount = [];
+
     function chart(selection){
         selection.each(function (data) {
             var xMax = d3.max(data, function(d) { return d.scatterplot[1]; }),
@@ -162,8 +164,8 @@ function scatterPlotChart()
                 .attr("x2", 0)
                 .attr("y2", height);
 
-            var clusters        = objects.append("g").attr("id", "deputiesClusters");
-            var deputiesNodes   = objects.append("g").attr("id", "deputiesNodes");
+            var clusters        = objects.append("g").attr("class", "deputiesClusters");
+            var deputiesNodes   = objects.append("g").attr("class", "deputiesNodes");
 
             deputiesNodes.selectAll(".dot")
                 .data(data)
@@ -266,11 +268,65 @@ function scatterPlotChart()
         return chart;
     };
 
-    chart.updateHulls = function (data)
+    chart.getClusters = function (k, data, id) {
+        //number of clusters, defaults to undefined
+        clusterMaker.k(k);
+
+        //number of iterations (higher number gives more time to converge), defaults to 1000
+        clusterMaker.iterations(750);
+
+        //data from which to identify clusters, defaults to []
+        clusterMaker.data(data);
+
+        //console.log(clusterMaker.clusters());
+        var allClusters = clusterMaker.clusters();
+        var hullSets = [];
+
+        partyCount = [];
+
+        allClusters.forEach(function(cluster, index){
+            cluster.points.forEach(function(deputy, i){
+                /*$("#"+deputy)[0].stylesheets["fill"] = color(index);*/
+                if (partyCount[index] === undefined)
+                {
+                    partyCount[index] = [{"party" : deputy.party, "number": 1}];
+                }
+                else
+                {
+                    var result = $.grep(partyCount[index], function(e){ return e.party === deputy.party; });
+                    if (result.length === 0) {
+                        partyCount[index].push({"party" : deputy.party, "number": 1});
+                    }
+                    else
+                    if (result.length === 1) {
+                        result[0].number += 1;
+                    }
+                }
+                //d3.select("#deputy_id_" + deputy.deputyID).transition().stylesheets("fill", col(index)).duration(900);
+            });
+            hullSets.push( {"cluster" : index, "points" : hull(cluster.points.map(function(e) {return e.location; }), 20)} );
+        });
+
+        /* Sort and count the number of deputies per party */
+        partyCount.forEach (function(e){
+            var count = 0;
+            e.sort(function(x,y){
+                return d3.descending(x.number, y.number);
+            });
+            e.forEach(function(d){
+                count += +d.number;
+            });
+            e.total = count;
+        });
+
+        updateHulls(hullSets, id);
+    };
+
+    function updateHulls (data,id)
     {
         var col = d3.scale.category10();
 
-        var svg = d3.select("#deputiesClusters");
+        var svg = d3.select("#" + id + " .deputiesClusters");
 
         var objects = svg.selectAll(".hull")
             .data(data, function(d){return d;});
@@ -295,7 +351,7 @@ function scatterPlotChart()
             .attr("stroke", function(d) { return col(d.cluster); });
 
         objects.exit().remove();
-    };
+    }
 
     return chart;
 }
@@ -340,6 +396,7 @@ function getClusters(k, data)
         hullSets.push( {"cluster" : index, "points" : hull(cluster.points.map(function(e) {return e.location; }), 20)} );
     });
 
+    /* Sort and count the number of deputies per party */
     partyCount.forEach (function(e){
         var count = 0;
         e.sort(function(x,y){

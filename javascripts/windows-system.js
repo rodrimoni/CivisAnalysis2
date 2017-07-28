@@ -220,7 +220,7 @@ function createNewChild(currentId, chartID) {
         {
             chart = scatterPlotChart();
             $('#' +newID + ' .panel-heading .btn-group').append('<button class="btn btn-default btn-settings-scatterplot toggle-dropdown" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i></button> </button> <ul class="dropdown-menu panel-settings"><li role="presentation" class="dropdown-header">Clusterization with K-Means</li><li> Select the value of K: <br> <input id= "slider-'+ newID + '" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="14"/></li></ul>')
-            initializeSlider(newID);
+            initializeSlider(newID, chart);
         }
         /* Bind data chart to node in tree */
         node.chart = chart;
@@ -290,7 +290,7 @@ function setUpPanel(newID, chart) {
         if (chart !== null) {
             d3.select("#" + newID + " .panel-body")
                 .datum(deputiesNodes)
-                .call(chart);
+                .call(chart)
         }
 }
 
@@ -507,16 +507,25 @@ function checkLimits()
     })
 }
 
-function  initializeSlider(id) {
-    // With JQuery
+function  initializeSlider(id, chart) {
+    var data = [];
+    var k = 0;
+
+    /* Formatting the slider */
     $('#slider-' + id).bootstrapSlider({
         formatter: function(value) {
             return 'Value of K: ' + value;
         }
     });
 
-    console.log("#" + id + " .tooltip-main");
-
+    /* Setting initial margin */
     $("#" + id + " .tooltip-main").css({'margin-left': '-45px'});
 
+    /* Binding the call of K-Means in slide event */
+    $('#slider-' + id).on("slideStop", function(slideEvt) {
+        k = slideEvt.value;
+        data = d3.select('#' + id + ' .panel-body').data()[0];
+        console.log(data);
+        chart.getClusters(k, data, id);
+    });
 }
