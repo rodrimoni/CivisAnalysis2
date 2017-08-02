@@ -1,0 +1,39 @@
+.toolTip {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    position: absolute;
+    display: none;
+    width: auto;
+    height: auto;
+    background: none repeat scroll 0 0 white;
+    border: 0 none;
+    border-radius: 8px 8px 8px 8px;
+    box-shadow: -3px 3px 15px #888888;
+    color: black;
+    font: 12px sans-serif;
+    padding: 5px;
+    text-align: center;
+    z-index: 99;
+}
+
+.bar-chart text {
+    font: 16px sans-serif;
+    color: white;
+}
+.bar-chart text.value {
+    font-size: 120%;
+    fill: white;
+}
+
+.bar-chart .axisHorizontal path{
+    fill: none;
+}
+
+.bar-chart .axisHorizontal .tick line {
+    stroke-width: 1;
+    stroke: rgba(0, 0, 0, 0.2);
+}
+
+.bar-chart .bar {
+    fill: steelblue;
+    fill-opacity: .9;
+}

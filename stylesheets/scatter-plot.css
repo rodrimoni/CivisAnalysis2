@@ -1,23 +1,23 @@
-rect {
+.scatter-plot rect {
     fill: transparent;
     shape-rendering: crispEdges;
 }
 
-.axis path,
-.axis line {
+.scatter-plot .axis path,
+.scatter-plot .axis line {
     fill: none;
     stroke: rgba(0, 0, 0, 0.1);
     shape-rendering: crispEdges;
 }
 
-.axisLine {
+.scatter-plot .axisLine {
     fill: none;
     shape-rendering: crispEdges;
     stroke: rgba(0, 0, 0, 0.5);
     stroke-width: 2px;
 }
 
-.dot {
+.scatter-plot .dot {
     fill-opacity: 1;
 }
 
@@ -51,6 +51,6 @@ rect {
     left: 0;
 }
 
-.hull {
+.scatter-plot .hull {
     cursor: pointer;
 }

@@ -66,6 +66,18 @@ Tree.prototype.getParent = function(data, traversal) {
     return parent;
 };
 
+Tree.prototype.getNode = function(data, traversal) {
+    var findNode = null,
+        callback = function (node){
+            if (node.data === data)
+                findNode = node;
+        };
+
+    this.contains(callback, traversal);
+
+    return findNode;
+};
+
 Tree.prototype.add = function(data, toData, traversal) {
     var child = new Node(data),
         parent = null,

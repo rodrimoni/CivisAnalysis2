@@ -1,7 +1,3 @@
-var SCATTER_PLOT = 1;
-var parties = [];
-var partyCount  = [];
-var chart;
 var partiesArbitraryColor = {"DEM":"LightCoral", "PFL":"LightCoral", // PFL ==> DEM
     "PSDB":"#1f77b4",
     "PP":"#008000", "PPB": "#008000", // PPB ==> PP
@@ -24,14 +20,6 @@ var partiesArbitraryColor = {"DEM":"LightCoral", "PFL":"LightCoral", // PFL ==> 
 
 function selColor(c){ return partiesArbitraryColor[c]; }
 
-// A $( document ).ready() block.
-$( document ).ready(function() {
-    $("body").on('click', '#applyKmeans', function(){
-        var k = $("#kVariable").val();
-        getClusters(k, deputyNodes);
-    });
-});
-
 function loadDeputies(deputiesArray)
 {
     d3.json('data/deputies.json', function(a_deputiesArray) {
@@ -42,18 +30,25 @@ function loadDeputies(deputiesArray)
     });
 }
 
-function loadNodes(type, selectedTime, deputiesArray, deputiesNodes)
+function loadNodes(type, selectedTime)
 {
+    //console.log(JSON.stringify(d3.select('#panel-2-1 .panel-body').data()[0]));
+    //console.log(JSON.stringify(deputiesNodes[0]));
     d3.json('data/precalc/'+type+'.'+selectedTime +'.json', function (precalc) {
         // SET THE precalc DEPUTIES to their constant object in the app
-        precalc.deputyNodes.map( function(precalcDeputy){
-            var depObj = deputiesArray[precalcDeputy.deputyID];
+        precalc.deputyNodes.forEach( function(precalcDeputy){
+            var deputy = deputiesArray[precalcDeputy.deputyID], depObj = {};
+            depObj.name = deputy.name;
+            depObj.district = deputy.district;
+            depObj.deputyID = precalcDeputy.deputyID;
             depObj.party = precalcDeputy.party;
             depObj.scatterplot  = precalcDeputy.scatterplot;
             deputiesNodes.push(depObj);
         });
-
-        createNewChild('panel-1-1', SCATTER_PLOT);
+        //console.log(JSON.stringify(deputiesNodes[0]));
+       // console.log(JSON.stringify(d3.select('#panel-2-1 .panel-body').data()[0]));
+        var chartObj = {'chartID': SCATTER_PLOT, 'data': deputiesNodes};
+        createNewChild('panel-1-1', chartObj);
         /*chart = scatterPlotChart();
 
         d3.select("#scatter")
@@ -80,6 +75,7 @@ function scatterPlotChart()
         .range([height, 0]).nice();
 
     var partyCount = [];
+
 
     function chart(selection){
         selection.each(function (data) {
@@ -119,12 +115,12 @@ function scatterPlotChart()
                     return d.name + " (" + d.party + "-" + d.district + ") ";
                 });
 
-
             var svg = d3.select(this)
                 .append("svg")
                 .attr("width", "100%")
                 .attr("height", "100%")
                 .attr("viewBox", "0 0 1000 620 ")
+                .classed("scatter-plot", true)
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
                 .call(zoomBeh);
@@ -164,15 +160,17 @@ function scatterPlotChart()
                 .attr("x2", 0)
                 .attr("y2", height);
 
-            var clusters        = objects.append("g").attr("class", "deputiesClusters");
-            var deputiesNodes   = objects.append("g").attr("class", "deputiesNodes");
+            objects.append("g").attr("class", "deputiesClusters");
 
-            deputiesNodes.selectAll(".dot")
+            var deputiesNodesDots   = objects.append("g").attr("class", "deputiesNodesDots");
+
+            deputiesNodesDots.selectAll(".dot")
                 .data(data)
-                .enter().append("circle")
+                .enter()
+                .append("circle")
                 .classed("dot", true)
                 .attr("r", 4)
-                .attr("id", function(d) { return "deputy_id_" + d.deputyID; })
+                //.attr("id", function(d) { return "deputy_id_" + d.deputyID; })
                 .attr("transform", function(d) {return "translate(" + x(d.scatterplot[1]) + "," + y(d.scatterplot[0]) + ")";})
                 .style("fill", function(d) { return selColor(d.party); })
                 .on("mouseover", tip.show)
@@ -194,7 +192,7 @@ function scatterPlotChart()
                 var legend = svg.selectAll(".legend")
                     .data(d3.map(data, function(d){return d.party;}).keys());
 
-                var updateCircles = d3.selectAll('.legend circle');
+                var updateCircles = svg.selectAll('.legend circle');
 
                 updateCircles
                     .attr("fill", function (d) {return selColor(d);});
@@ -268,6 +266,12 @@ function scatterPlotChart()
         return chart;
     };
 
+    chart.partyCount = function(_) {
+        if (!arguments.length) return partyCount;
+        partyCount = _;
+        return chart;
+    };
+
     chart.getClusters = function (k, data, id) {
         //number of clusters, defaults to undefined
         clusterMaker.k(k);
@@ -282,20 +286,20 @@ function scatterPlotChart()
         var allClusters = clusterMaker.clusters();
         var hullSets = [];
 
-        partyCount = [];
+        var currentPartyCount = this.partyCount = [];
 
         allClusters.forEach(function(cluster, index){
             cluster.points.forEach(function(deputy, i){
                 /*$("#"+deputy)[0].stylesheets["fill"] = color(index);*/
-                if (partyCount[index] === undefined)
+                if (currentPartyCount[index] === undefined)
                 {
-                    partyCount[index] = [{"party" : deputy.party, "number": 1}];
+                    currentPartyCount[index] = [{"party" : deputy.party, "number": 1}];
                 }
                 else
                 {
-                    var result = $.grep(partyCount[index], function(e){ return e.party === deputy.party; });
+                    var result = $.grep(currentPartyCount[index], function(e){ return e.party === deputy.party; });
                     if (result.length === 0) {
-                        partyCount[index].push({"party" : deputy.party, "number": 1});
+                        currentPartyCount[index].push({"party" : deputy.party, "number": 1});
                     }
                     else
                     if (result.length === 1) {
@@ -308,7 +312,7 @@ function scatterPlotChart()
         });
 
         /* Sort and count the number of deputies per party */
-        partyCount.forEach (function(e){
+        currentPartyCount.forEach (function(e){
             var count = 0;
             e.sort(function(x,y){
                 return d3.descending(x.number, y.number);
@@ -325,8 +329,8 @@ function scatterPlotChart()
     function updateHulls (data,id)
     {
         var col = d3.scale.category10();
-
-        var svg = d3.select("#" + id + " .deputiesClusters");
+        var deputiesClusters = "#" + id + " .deputiesClusters";
+        var svg = d3.select(deputiesClusters);
 
         var objects = svg.selectAll(".hull")
             .data(data, function(d){return d;});
@@ -350,63 +354,17 @@ function scatterPlotChart()
             .attr("stroke-width", "3px")
             .attr("stroke", function(d) { return col(d.cluster); });
 
+        /* Bind context menu at clusters */
+        $(deputiesClusters)
+            .contextMenu({
+                menuSelector: "#contextMenuScatterPlot",
+                menuSelected: function (invokedOn, selectedMenu) {
+                    handleContextMenuScatterPlot(invokedOn, selectedMenu);
+                }
+            });
+
         objects.exit().remove();
     }
 
     return chart;
-}
-
-function getClusters(k, data)
-{
-    //number of clusters, defaults to undefined
-    clusterMaker.k(k);
-
-    //number of iterations (higher number gives more time to converge), defaults to 1000
-    clusterMaker.iterations(750);
-
-    //data from which to identify clusters, defaults to []
-    clusterMaker.data(data);
-
-    //console.log(clusterMaker.clusters());
-    var allClusters = clusterMaker.clusters();
-    var hullSets = [];
-
-    partyCount = [];
-
-    allClusters.forEach(function(cluster, index){
-        cluster.points.forEach(function(deputy, i){
-            /*$("#"+deputy)[0].stylesheets["fill"] = color(index);*/
-            if (partyCount[index] === undefined)
-            {
-                partyCount[index] = [{"party" : deputy.party, "number": 1}];
-            }
-            else
-            {
-                var result = $.grep(partyCount[index], function(e){ return e.party === deputy.party; });
-                if (result.length === 0) {
-                    partyCount[index].push({"party" : deputy.party, "number": 1});
-                }
-                else
-                if (result.length === 1) {
-                    result[0].number += 1;
-                }
-            }
-            //d3.select("#deputy_id_" + deputy.deputyID).transition().stylesheets("fill", col(index)).duration(900);
-        });
-        hullSets.push( {"cluster" : index, "points" : hull(cluster.points.map(function(e) {return e.location; }), 20)} );
-    });
-
-    /* Sort and count the number of deputies per party */
-    partyCount.forEach (function(e){
-        var count = 0;
-        e.sort(function(x,y){
-            return d3.descending(x.number, y.number);
-        });
-        e.forEach(function(d){
-            count += +d.number;
-        });
-        e.total = count;
-    });
-
-    chart.updateHulls (hullSets);
 }

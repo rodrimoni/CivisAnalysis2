@@ -29,6 +29,9 @@
     <!-- Scatter Plot visualization -->
     <script src="javascripts/scatter-plot.js"></script>
 
+    <!-- Bar Chart visualization -->
+    <script src="javascripts/bar-chart.js"></script>
+
     <!-- Windows System functions -->
     <script src="javascripts/windows-system.js"></script>
 
@@ -54,7 +57,10 @@
     <link rel="stylesheet" href="stylesheets/font-awesome.css">
 
     <!-- Scatter Plot CSS -->
-    <link rel="stylesheet" href="stylesheets/scatterPlot.css">
+    <link rel="stylesheet" href="stylesheets/scatter-plot.css">
+
+    <!-- Bar Chart CSS -->
+    <link rel="stylesheet" href="stylesheets/bar-chart.css">
 
     <title> Windows System Prototype  </title>
 </head>
@@ -63,9 +69,9 @@
     <div class="container">
         <svg id ="workspace" width = "100%" height = "100%" class="svg-content-responsive"></svg>
         <h2>Windows System Prototype</h2>
-        <ul id="contextMenu" class="dropdown-menu" role="menu" style="display:none" >
-            <li><a tabindex="-1" id="circle-child">Create a circle child</a></li>
-            <li><a tabindex="-1" id="square-child">Create a square child</a></li>
+        <ul id="contextMenuScatterPlot" class="dropdown-menu" role="menu" style="display:none" >
+            <li><a tabindex="-1" id="bar-chart">Create a bar chart</a></li>
+            <li><a tabindex="-1" id="force-layout">Create a force layout</a></li>
             <li class="divider"></li>
             <li><a tabindex="-1" id="get-parent">Get parent</a></li>
         </ul>

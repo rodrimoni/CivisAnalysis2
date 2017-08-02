@@ -20,11 +20,18 @@ var LAST_YEAR = 2016;
 var FIRST_LEGISLATURE = 0;
 var LAST_LEGISLATURE = 6;
 
+/* Constant to define the charts */
+var SCATTER_PLOT = 1;
+var BAR_CHART = 2;
+var FORCE_LAYOUT = 3;
+
 /* Global variable to store all deputies with an ID */
 var deputiesArray = [];
 
 /* Global variable to store the scatter plot nodes */
 var deputiesNodes = [];
+
+var globalCount = 0;
 
 /* Creating the tree with the first node */
 var tree = new Tree('panel-1-1', null);
@@ -42,15 +49,31 @@ function handleDropDown(value) {
         if (value >= FIRST_LEGISLATURE && value <= LAST_LEGISLATURE)
             type = "legislature";
 
-    deputiesNodes = [];
-    loadNodes(type, value, deputiesArray, deputiesNodes);
+    deputiesNodes= [];
+    loadNodes(type, value);
 }
 
-function initChart(chart) { console.log(deputiesNodes);
-    if (chart === SCATTER_PLOT)
-        chart = scatterPlotChart();
+function initializeChart(newID, chartID) {
+    var chart;
 
-    createNewChild('panel-1-1', chart);
+    switch (chartID)
+    {
+        case SCATTER_PLOT:
+            chart = scatterPlotChart();
+            $('#' +newID + ' .panel-heading .btn-group').append('<button class="btn btn-default btn-settings-scatterplot toggle-dropdown" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i></button> </button> <ul class="dropdown-menu panel-settings"><li role="presentation" class="dropdown-header">Clusterization with K-Means</li><li> Select the value of K: <br> <input id= "slider-'+ newID + '" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="14"/></li></ul>')
+            initializeSlider(newID, chart);
+            break;
+
+        case BAR_CHART:
+            chart =  barChart();
+            break;
+
+        default:
+            break;
+
+    }
+
+    return chart;
 }
 
 /**
@@ -165,12 +188,12 @@ function maximizeWindow()
 /**
  * Creates a new Panel with a selected shape
  * @param {string} currentId Identification of the panel that is originating the new one
- * @param {string} chart The selected chart (e.g Scatter Plot, Pie Chart, etc)
+ * @param {object} chartObj The selected chart (e.g Scatter Plot, Pie Chart, etc)
  * @example
  * createNewChild("panel-1-1", "rect") // From the "panel-1-1" is created a new panel with a shape of rect inside
  * createNewChild("panel-2-1", "circle") // From the "panel-2-1" is created a new panel with a shape of circle inside
  */
-function createNewChild(currentId, chartID) {
+function createNewChild(currentId, chartObj) {
     var newElem = "";
     var newID = "";
     var chart;
@@ -215,18 +238,20 @@ function createNewChild(currentId, chartID) {
         $('.panel').last().after(newElem);
 
         /* Initialize charts */
+        if (chartObj !== null)
+            chart = initializeChart(newID, chartObj.chartID);
 
-        if (chartID === SCATTER_PLOT)
-        {
-            chart = scatterPlotChart();
-            $('#' +newID + ' .panel-heading .btn-group').append('<button class="btn btn-default btn-settings-scatterplot toggle-dropdown" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i></button> </button> <ul class="dropdown-menu panel-settings"><li role="presentation" class="dropdown-header">Clusterization with K-Means</li><li> Select the value of K: <br> <input id= "slider-'+ newID + '" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="14"/></li></ul>')
-            initializeSlider(newID, chart);
-        }
         /* Bind data chart to node in tree */
         node.chart = chart;
 
         /* Sets up the panel settings as drag, resize, etc */
-        setUpPanel(newID, chart);
+        setUpPanel(newID);
+
+        if (chart !== null) {
+            d3.select("#" + newID + " .panel-body")
+                .datum(chartObj.data)
+                .call(chart);
+        }
 
         /* Draws the lines between the two panels */
         drawLine(currentId, newID);
@@ -236,9 +261,8 @@ function createNewChild(currentId, chartID) {
 /**
  * Sets up the panel settings
  * @param {string} newID The identification of the new panel
- * @param {string} chart The selected chart of the new panel
  */
-function setUpPanel(newID, chart) {
+function setUpPanel(newID) {
     /* Guarantees the right colors of btn-minimize */
     $("#"+ newID + " .btn-default.btn-minimize")
         .mouseenter(function() {
@@ -255,6 +279,7 @@ function setUpPanel(newID, chart) {
     $( "#" + newID)
         .draggable({
             handle: ".panel-heading",
+            stack: ".panel",
             containment: [10,10, workspace.width() - INITIAL_WIDTH - 10 , workspace.height() - INITIAL_HEIGHT - 70],
             drag: function(){
                 centerLine(this.id);
@@ -265,12 +290,6 @@ function setUpPanel(newID, chart) {
         .css({
             height: INITIAL_HEIGHT,
             width: INITIAL_WIDTH
-        })
-        .contextMenu({
-            menuSelector: "#contextMenu",
-            menuSelected: function (invokedOn, selectedMenu) {
-                handleContextMenu(invokedOn, selectedMenu);
-            }
         })
         .resizable({
             resize: function(){
@@ -286,12 +305,6 @@ function setUpPanel(newID, chart) {
         //.append(function(){
         //    createShape($(this), shape);
         //});
-
-        if (chart !== null) {
-            d3.select("#" + newID + " .panel-body")
-                .datum(deputiesNodes)
-                .call(chart)
-        }
 }
 
 /**
@@ -299,25 +312,37 @@ function setUpPanel(newID, chart) {
  * @param invokedOn The place where cursor are when the right mouse button is clicked
  * @param selectedMenu The selected option in custom context menu
  */
-function handleContextMenu(invokedOn, selectedMenu)
+function handleContextMenuScatterPlot(invokedOn, selectedMenu)
 {
     /* Gets ID of the panel that was click */
-    var panelID = invokedOn.parents(".panel")[0].id;
+    var panelID = invokedOn.parents(".panel").attr('id');
 
-    if(selectedMenu.context.id === "circle-child")
-    {
-        createNewChild(panelID, "circle");
+    /* Gets ID of the panel that was click */
+    var clusterID = invokedOn.attr('id').replace('cluster_id_', '');
+
+    var clusterData = tree.getNode(panelID, tree.traverseBF);
+    var chartData;
+
+    if (clusterData !== null)
+        chartData = clusterData.chart;
+
+    var chartObj = {};
+
+    if(selectedMenu.context.id === "bar-chart") {
+        chartObj = {'chartID' : BAR_CHART, 'data': chartData.partyCount[clusterID]};
+        createNewChild(panelID, chartObj );
     }
     else
-    if(selectedMenu.context.id === "square-child")
-        createNewChild(panelID, "rect");
-    else
-    if(selectedMenu.context.id === "get-parent")
-    {
-        var parent = tree.getParent(panelID, tree.traverseBF);
-        var msg = parent !== null ? parent.data : "Root doesn't have parent";
-        alert(msg);
-    }
+        if(selectedMenu.context.id === "force-layout") {
+            chartObj = {'chartID' : FORCE_LAYOUT, 'data': chartData.partyCount[clusterID]};
+            createNewChild(panelID, chartObj);
+        }
+        else
+            if(selectedMenu.context.id === "get-parent") {
+                var parent = tree.getParent(panelID, tree.traverseBF);
+                var msg = parent !== null ? parent.data : "Root doesn't have parent";
+                alert(msg);
+            }
 }
 
 /**
@@ -525,7 +550,6 @@ function  initializeSlider(id, chart) {
     $('#slider-' + id).on("slideStop", function(slideEvt) {
         k = slideEvt.value;
         data = d3.select('#' + id + ' .panel-body').data()[0];
-        console.log(data);
         chart.getClusters(k, data, id);
     });
 }
