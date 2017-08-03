@@ -24,6 +24,11 @@
     fill: white;
 }
 
+.bar-chart text.label {
+    font: 16px sans-serif;
+    fill: black;
+}
+
 .bar-chart .axisHorizontal path{
     fill: none;
 }
@@ -34,6 +39,5 @@
 }
 
 .bar-chart .bar {
-    fill: steelblue;
     fill-opacity: .9;
 }

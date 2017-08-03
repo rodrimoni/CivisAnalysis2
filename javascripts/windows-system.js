@@ -53,10 +53,10 @@ function handleDropDown(value) {
     loadNodes(type, value);
 }
 
-function initializeChart(newID, chartID) {
+function initializeChart(newID, chartObj) {
     var chart;
 
-    switch (chartID)
+    switch (chartObj.chartID)
     {
         case SCATTER_PLOT:
             chart = scatterPlotChart();
@@ -72,6 +72,9 @@ function initializeChart(newID, chartID) {
             break;
 
     }
+
+    /* Set the new tittle */
+    $('#' +newID + ' .panel-title').append(chartObj.title);
 
     return chart;
 }
@@ -215,9 +218,6 @@ function createNewChild(currentId, chartObj) {
     else
     {
         var hashID = $("#" + currentId);
-
-        var top  =  hashID[0].style["top"];
-        var left =  hashID[0].style["left"];
         var offset = 40;
         var parentPosition = hashID.position();
 
@@ -231,7 +231,7 @@ function createNewChild(currentId, chartObj) {
         var node = tree.add('panel-', currentId, tree.traverseBF);
         newID = node.data;
 
-        newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" style="padding-top: 7.5px;">' + newID + '</h4> <div class="btn-group"> <button class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button></div></div><div class="panel-body center-panel"></div></div>').css({"position": "absolute", "top": newLocation["top"], "left": newLocation["left"], "z-index":"90"});
+        newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" style="padding-top: 7.5px;"></h4> <div class="btn-group"> <button class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button></div></div><div class="panel-body center-panel"></div></div>').css({"position": "absolute", "top": newLocation["top"], "left": newLocation["left"], "z-index":"90"});
 
 
         /* Inserts the panel after the last one in DOM */
@@ -239,7 +239,7 @@ function createNewChild(currentId, chartObj) {
 
         /* Initialize charts */
         if (chartObj !== null)
-            chart = initializeChart(newID, chartObj.chartID);
+            chart = initializeChart(newID, chartObj);
 
         /* Bind data chart to node in tree */
         node.chart = chart;
@@ -279,7 +279,7 @@ function setUpPanel(newID) {
     $( "#" + newID)
         .draggable({
             handle: ".panel-heading",
-            stack: ".panel",
+            stack: ".panel, .fa-window-maximize",
             containment: [10,10, workspace.width() - INITIAL_WIDTH - 10 , workspace.height() - INITIAL_HEIGHT - 70],
             drag: function(){
                 centerLine(this.id);
@@ -326,15 +326,18 @@ function handleContextMenuScatterPlot(invokedOn, selectedMenu)
     if (clusterData !== null)
         chartData = clusterData.chart;
 
+    var title = "";
     var chartObj = {};
 
     if(selectedMenu.context.id === "bar-chart") {
-        chartObj = {'chartID' : BAR_CHART, 'data': chartData.partyCount[clusterID]};
+        title = 'Bar Chart: Cluster ' + clusterID;
+        chartObj = {'chartID' : BAR_CHART, 'data': chartData.partyCount[clusterID], 'title': title };
         createNewChild(panelID, chartObj );
     }
     else
         if(selectedMenu.context.id === "force-layout") {
-            chartObj = {'chartID' : FORCE_LAYOUT, 'data': chartData.partyCount[clusterID]};
+            title = 'Force Layout: Cluster ' + clusterID;
+            chartObj = {'chartID' : FORCE_LAYOUT, 'data': chartData.partyCount[clusterID], 'title': title};
             createNewChild(panelID, chartObj);
         }
         else

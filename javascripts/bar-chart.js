@@ -1,16 +1,20 @@
 function barChart() {
-    var axisMargin = 20,
-        margin = 50,
-        width = MAX_WIDTH,
-        height = MAX_HEIGHT;
+    var axisMargin = 20;
+    var margin = 50;
+    var width = MAX_WIDTH;
+    var height = MAX_HEIGHT;
 
         var div = d3.select("body").append("div").attr("class", "toolTip");
 
         function chart(selection){
             selection.each(function (data) {
-                var max = d3.max(data, function(d) { return d.number; });
+                var totalDeputies = d3.sum(data, function(d){
+                    return d.number;
+                });
+
+                var max = d3.max(data, function(d) { return d.number*100/totalDeputies; });
                 var labelWidth = 0;
-                var valueMargin = 8;
+                var valueMargin = 2;
 
                 var barHeight = (height-axisMargin-margin*2)* 0.4/data.length,
                     barPadding = (height-axisMargin-margin*2)*0.6/data.length;
@@ -29,6 +33,7 @@ function barChart() {
 
                 bar.attr("class", "bar")
                     .attr("cx",0)
+                    .attr("fill", function (d) {return selColor(d.party);})
                     .attr("transform", function(d, i) {
                         return "translate(" + margin + "," + (i * (barHeight + barPadding) + barPadding) + ")";
                     });
@@ -43,11 +48,11 @@ function barChart() {
                         labelWidth = Math.ceil(Math.max(labelWidth, this.getBBox().width));
                     });
 
-                scale = d3.scale.linear()
+                var scale = d3.scale.linear()
                     .domain([0, max])
                     .range([0, width - margin*2 - labelWidth]);
 
-                xAxis = d3.svg.axis()
+                var xAxis = d3.svg.axis()
                     .scale(scale)
                     .tickSize(-height + 2*margin )
                     .orient("bottom");
@@ -56,7 +61,7 @@ function barChart() {
                     .attr("transform", "translate("+labelWidth+", 0)")
                     .attr("height", barHeight)
                     .attr("width", function(d){
-                        return scale(d.number);
+                        return scale((d.number * 100)/totalDeputies);
                     });
 
                 bar.append("text")
@@ -66,11 +71,11 @@ function barChart() {
                     .attr("dy", ".35em") //vertical align middle
                     .attr("text-anchor", "end")
                     .text(function(d){
-                        return (d.number+"%");
+                        return (d3.format("%") (d.number/totalDeputies));
                     })
                     .attr("x", function(d){
                         var width = this.getBBox().width;
-                        return Math.max(width + valueMargin, scale(d.number));
+                        return Math.max(width + valueMargin, scale((d.number * 100)/totalDeputies));
                     });
 
                 bar
@@ -78,10 +83,10 @@ function barChart() {
                         div.style("left", d3.event.pageX+10+"px");
                         div.style("top", d3.event.pageY-25+"px");
                         div.style("display", "inline-block");
-                        div.html((d.party)+"<br>"+(d.number)+"%");
+                        div.html((d.party)+"<br>"+(d3.format("%") (d.number/totalDeputies)));
                     });
                 bar
-                    .on("mouseout", function(d){
+                    .on("mouseout", function(){
                         div.style("display", "none");
                     });
 
@@ -92,36 +97,6 @@ function barChart() {
 
             });
     }
-
-    chart.margin = function(_) {
-        if (!arguments.length) return margin;
-        margin = _;
-        return chart;
-    };
-
-    chart.width = function(_) {
-        if (!arguments.length) return width;
-        width = _;
-        return chart;
-    };
-
-    chart.height = function(_) {
-        if (!arguments.length) return height;
-        height = _;
-        return chart;
-    };
-
-    chart.outerWidth = function(_) {
-        if (!arguments.length) return outerWidth;
-        outerWidth = _;
-        return chart;
-    };
-
-    chart.outerHeight = function(_) {
-        if (!arguments.length) return outerHeight;
-        outerHeight = _;
-        return chart;
-    };
 
     return chart;
 }

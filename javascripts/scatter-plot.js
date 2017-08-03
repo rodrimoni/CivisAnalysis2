@@ -47,7 +47,7 @@ function loadNodes(type, selectedTime)
         });
         //console.log(JSON.stringify(deputiesNodes[0]));
        // console.log(JSON.stringify(d3.select('#panel-2-1 .panel-body').data()[0]));
-        var chartObj = {'chartID': SCATTER_PLOT, 'data': deputiesNodes};
+        var chartObj = {'chartID': SCATTER_PLOT, 'data': deputiesNodes, 'title': 'Scatter Plot: ' + type + " " + selectedTime};
         createNewChild('panel-1-1', chartObj);
         /*chart = scatterPlotChart();
 
@@ -313,14 +313,9 @@ function scatterPlotChart()
 
         /* Sort and count the number of deputies per party */
         currentPartyCount.forEach (function(e){
-            var count = 0;
             e.sort(function(x,y){
                 return d3.descending(x.number, y.number);
             });
-            e.forEach(function(d){
-                count += +d.number;
-            });
-            e.total = count;
         });
 
         updateHulls(hullSets, id);
