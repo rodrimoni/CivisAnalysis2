@@ -74,8 +74,10 @@ function scatterPlotChart()
     var y = d3.scale.linear()
         .range([height, 0]).nice();
 
-    var partyCount = [];
+    var clusters = [];
 
+
+    var div = d3.select(".toolTip");
 
     function chart(selection){
         selection.each(function (data) {
@@ -107,14 +109,6 @@ function scatterPlotChart()
                 .scaleExtent([0, 500])
                 .on("zoom", zoom);
 
-            var tip = d3.tip()
-                .attr('class', 'd3-tip')
-                .attr('id', 'tooltip')
-                .offset([-10, 0])
-                .html(function(d) {
-                    return d.name + " (" + d.party + "-" + d.district + ") ";
-                });
-
             var svg = d3.select(this)
                 .append("svg")
                 .attr("width", "100%")
@@ -124,8 +118,6 @@ function scatterPlotChart()
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
                 .call(zoomBeh);
-
-            svg.call(tip);
 
             svg.append("rect")
                 .attr("width", width)
@@ -173,8 +165,15 @@ function scatterPlotChart()
                 //.attr("id", function(d) { return "deputy_id_" + d.deputyID; })
                 .attr("transform", function(d) {return "translate(" + x(d.scatterplot[1]) + "," + y(d.scatterplot[0]) + ")";})
                 .style("fill", function(d) { return selColor(d.party); })
-                .on("mouseover", tip.show)
-                .on("mouseout", tip.hide);
+                .on("mousemove", function(d){
+                    div.style("left", d3.event.pageX+10+"px");
+                    div.style("top", d3.event.pageY-25+"px");
+                    div.style("display", "inline-block");
+                    div.html(d.name + " (" + d.party + "-" + d.district + ") ");
+                })
+                .on("mouseout", function(){
+                    div.style("display", "none");
+                });
 
             updateLegend(data, svg);
 
@@ -207,25 +206,7 @@ function scatterPlotChart()
                 enterLegend.append("circle")
                     .attr("r", 8)
                     .attr("cx", width + 20)
-                    .attr("fill", function (d) {return selColor(d);})
-                    .on("mouseover", function (d) {
-                        var resp = "";
-                        partyCount[d].forEach(function(e){
-                            resp += e.party + ":" + e.number + " || " + d3.format("%") (e.number/partyCount[d].total) + "<br>";
-                        });
-                        //console.log(resp);
-                        tooltipTest.transition()
-                            .duration(200)
-                            .style("opacity", .9);
-                        tooltipTest .html(resp)
-                            .style("left", (d3.event.pageX) + "px")
-                            .style("top", (d3.event.pageY +20) + "px");
-                    })
-                    .on("mouseout", function(d) {
-                        tooltipTest.transition()
-                            .duration(500)
-                            .style("opacity", 0);
-                    });
+                    .attr("fill", function (d) {return selColor(d);});
 
                 enterLegend.append("text")
                     .attr("x", width + 30)
@@ -283,40 +264,13 @@ function scatterPlotChart()
         clusterMaker.data(data);
 
         //console.log(clusterMaker.clusters());
-        var allClusters = clusterMaker.clusters();
+        this.clusters = clusterMaker.clusters();
         var hullSets = [];
 
-        var currentPartyCount = this.partyCount = [];
-
-        allClusters.forEach(function(cluster, index){
-            cluster.points.forEach(function(deputy, i){
-                /*$("#"+deputy)[0].stylesheets["fill"] = color(index);*/
-                if (currentPartyCount[index] === undefined)
-                {
-                    currentPartyCount[index] = [{"party" : deputy.party, "number": 1}];
-                }
-                else
-                {
-                    var result = $.grep(currentPartyCount[index], function(e){ return e.party === deputy.party; });
-                    if (result.length === 0) {
-                        currentPartyCount[index].push({"party" : deputy.party, "number": 1});
-                    }
-                    else
-                    if (result.length === 1) {
-                        result[0].number += 1;
-                    }
-                }
-                //d3.select("#deputy_id_" + deputy.deputyID).transition().stylesheets("fill", col(index)).duration(900);
-            });
+        this.clusters.forEach(function(cluster, index){
             hullSets.push( {"cluster" : index, "points" : hull(cluster.points.map(function(e) {return e.location; }), 20)} );
         });
 
-        /* Sort and count the number of deputies per party */
-        currentPartyCount.forEach (function(e){
-            e.sort(function(x,y){
-                return d3.descending(x.number, y.number);
-            });
-        });
 
         updateHulls(hullSets, id);
     };
@@ -347,7 +301,16 @@ function scatterPlotChart()
             .attr("fill", function(d) { return col(d.cluster); })
             .style("fill-opacity", 0.05)
             .attr("stroke-width", "3px")
-            .attr("stroke", function(d) { return col(d.cluster); });
+            .attr("stroke", function(d) { return col(d.cluster); })
+            .on("mousemove", function(d){
+                div.style("left", d3.event.pageX+10+"px");
+                div.style("top", d3.event.pageY-25+"px");
+                div.style("display", "inline-block");
+                div.html("Cluster " + d.cluster);
+            })
+            .on("mouseout", function(){
+                div.style("display", "none");
+            });
 
         /* Bind context menu at clusters */
         $(deputiesClusters)

@@ -32,6 +32,9 @@
     <!-- Bar Chart visualization -->
     <script src="javascripts/bar-chart.js"></script>
 
+    <!-- Force Layout visualization -->
+    <script src="javascripts/force-layout.js"></script>
+
     <!-- Windows System functions -->
     <script src="javascripts/windows-system.js"></script>
 
@@ -62,6 +65,8 @@
     <!-- Bar Chart CSS -->
     <link rel="stylesheet" href="stylesheets/bar-chart.css">
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
+
     <title> Windows System Prototype  </title>
 </head>
 
@@ -76,6 +81,7 @@
             <li><a tabindex="-1" id="get-parent">Get parent</a></li>
         </ul>
     </div>
+    <div class ="toolTip" style="display: none;"></div>
     <div id = "btn-init" class="dropdown" style="display: none;">
         <a id="dLabel" role="button" data-toggle="dropdown" class="btn btn-primary">
             Dropdown <span class="caret"></span>
@@ -157,7 +163,13 @@
         windowSystem.on("click", ".btn-minimize", minimizeWindow);
 
         /* Binding event to remove buttons */
-        windowSystem.on("click", ".btn-remove", removeWindow);
+        windowSystem.on("click", ".btn-remove", function(){
+            var id = $(this).parents(".panel").attr("id");
+            removeWindow(id, true);
+        });
+
+        /* Binding event to scatter plot settings buttons */
+        windowSystem.on("click", ".btn-settings-scatterplot", checkChildren);
 
         /* Binding event to minimized window */
         windowSystem.on("dblclick", ".fa-window-maximize", maximizeWindow);

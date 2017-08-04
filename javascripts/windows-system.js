@@ -60,12 +60,16 @@ function initializeChart(newID, chartObj) {
     {
         case SCATTER_PLOT:
             chart = scatterPlotChart();
-            $('#' +newID + ' .panel-heading .btn-group').append('<button class="btn btn-default btn-settings-scatterplot toggle-dropdown" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i></button> </button> <ul class="dropdown-menu panel-settings"><li role="presentation" class="dropdown-header">Clusterization with K-Means</li><li> Select the value of K: <br> <input id= "slider-'+ newID + '" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="14"/></li></ul>')
+            $('#' +newID + ' .panel-heading .btn-group').append('<button class="btn btn-default btn-settings-scatterplot toggle-dropdown" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i></button> </button> <ul class="dropdown-menu panel-settings"><li role="presentation" class="dropdown-header">Clusterization with K-Means</li><li> Select the value of K: <br> <input id= "slider-'+ newID + '" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="10"/></li></ul>')
             initializeSlider(newID, chart);
             break;
 
         case BAR_CHART:
             chart =  barChart();
+            break;
+
+        case FORCE_LAYOUT:
+            chart =  forceLayout();
             break;
 
         default:
@@ -84,17 +88,32 @@ function initializeChart(newID, chartObj) {
  * @example
  * $('selector').on("event", "element", removeWindow);
  */
-function removeWindow() {
-    if (confirm("Deleting this panel will delete all of his children. Are you sure you want to delete this panel?"))
-    {
-        var panelID = $(this).parents(".panel").attr("id");
-        var parent = tree.getParent(panelID, tree.traverseBF).data;
-        var removedNode = tree.remove(panelID, parent, tree.traverseBF);
+function removeWindow(panelID, deleteThis) {
+    //var panelID = $(this).parents(".panel").attr("id");
+    var node = tree.getNode(panelID, tree.traverseBF);
+    var parent = node.parent.data;
 
-        $("#" + panelID).remove();
-        removeLines(panelID);
-        removeChildren(removedNode[0].children);
+    if (deleteThis){
+        if (node.children.length > 0)
+        {
+            /* Needs confirmation from user if panel has children */
+            if (confirm("Deleting this panel will delete all of his children. Are you sure you want to delete this panel?"))
+            {
+                var removedNode = tree.remove(panelID, parent, tree.traverseBF);
+                $("#" + panelID).remove();
+                removeLines(panelID);
+                removeChildren(removedNode[0].children);
+            }
+        }
+        else
+        {
+            $("#" + panelID).remove();
+            removeLines(panelID);
+        }
     }
+    else
+        removeChildren(node.children);
+
 }
 
 /**
@@ -231,7 +250,7 @@ function createNewChild(currentId, chartObj) {
         var node = tree.add('panel-', currentId, tree.traverseBF);
         newID = node.data;
 
-        newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" style="padding-top: 7.5px;"></h4> <div class="btn-group"> <button class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button></div></div><div class="panel-body center-panel"></div></div>').css({"position": "absolute", "top": newLocation["top"], "left": newLocation["left"], "z-index":"90"});
+        newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" style="padding-top: 7.5px;"></h4> <div class="btn-group"> <button class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button></div></div><div class="panel-body center-panel"><div class = "modal"></div></div></div>').css({"position": "absolute", "top": newLocation["top"], "left": newLocation["left"], "z-index":"90"});
 
 
         /* Inserts the panel after the last one in DOM */
@@ -307,6 +326,29 @@ function setUpPanel(newID) {
         //});
 }
 
+function getPartyCount(cluster) {
+
+    var currentPartyCount = [];
+
+    cluster.points.forEach(function(deputy){
+        var result = $.grep(currentPartyCount, function(e){ return e.party === deputy.party; });
+        if (result.length === 0) {
+            currentPartyCount.push({"party" : deputy.party, "number": 1});
+        }
+        else
+            if (result.length === 1) {
+                result[0].number += 1;
+            }
+    });
+
+    /* Sort and count the number of deputies per party*/
+    currentPartyCount.sort(function(x,y){
+            return d3.descending(x.number, y.number);
+        });
+
+    return currentPartyCount;
+}
+
 /**
  * The handler of context menu of panels
  * @param invokedOn The place where cursor are when the right mouse button is clicked
@@ -331,13 +373,14 @@ function handleContextMenuScatterPlot(invokedOn, selectedMenu)
 
     if(selectedMenu.context.id === "bar-chart") {
         title = 'Bar Chart: Cluster ' + clusterID;
-        chartObj = {'chartID' : BAR_CHART, 'data': chartData.partyCount[clusterID], 'title': title };
+        var partyCountData = getPartyCount(chartData.clusters[clusterID]);
+        chartObj = {'chartID' : BAR_CHART, 'data': partyCountData, 'title': title };
         createNewChild(panelID, chartObj );
     }
     else
         if(selectedMenu.context.id === "force-layout") {
             title = 'Force Layout: Cluster ' + clusterID;
-            chartObj = {'chartID' : FORCE_LAYOUT, 'data': chartData.partyCount[clusterID], 'title': title};
+            chartObj = {'chartID' : FORCE_LAYOUT, 'data': chartData.clusters[clusterID], 'title': title};
             createNewChild(panelID, chartObj);
         }
         else
@@ -365,7 +408,7 @@ function createNewIcon(panelID)
 
     $("#icon-"+panelID)
         .draggable({
-            stack: ".container div",
+            stack: ".panel, .fa-window-maximize",
             containment: [10,10, workspace.width() - WIDTH_ICON - 10 , workspace.height() - HEIGHT_ICON - 10],
             drag: function(){
                 centerLine(panelID, true);
@@ -551,8 +594,32 @@ function  initializeSlider(id, chart) {
 
     /* Binding the call of K-Means in slide event */
     $('#slider-' + id).on("slideStop", function(slideEvt) {
+        var panel = $(this).parents(".panel");
+        var panelID = panel.attr("id");
+        var node = tree.getNode(panelID, tree.traverseBF);
+
+        if (node.children.length > 0)
+            removeWindow(panelID, false);
+
         k = slideEvt.value;
         data = d3.select('#' + id + ' .panel-body').data()[0];
-        chart.getClusters(k, data, id);
+
+        var spinner = new Spinner().spin();
+
+        $("#" + panelID + " .modal").append(spinner.el);
+
+        panel.addClass("loading");
+        setTimeout(function () {
+            chart.getClusters(k, data, id);
+            panel.removeClass("loading");
+        }, 0);
     });
+}
+
+function checkChildren() {
+    var panelID = $(this).parents(".panel").attr("id");
+    var node = tree.getNode(panelID, tree.traverseBF);
+
+    if (node.children.length > 0)
+        alert("Caution! If you change the value of K the panel's children will be deleted.");
 }
