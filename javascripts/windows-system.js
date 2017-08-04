@@ -99,29 +99,30 @@ function removeWindow(panelID, deleteThis) {
             /* Needs confirmation from user if panel has children */
             if (confirm("Deleting this panel will delete all of his children. Are you sure you want to delete this panel?"))
             {
-                var removedNode = tree.remove(panelID, parent, tree.traverseBF);
+                removeChildren(node);
+                tree.remove(panelID, parent, tree.traverseBF);
                 $("#" + panelID).remove();
                 removeLines(panelID);
-                removeChildren(removedNode[0].children);
             }
         }
         else
         {
+            tree.remove(panelID, parent, tree.traverseBF);
             $("#" + panelID).remove();
             removeLines(panelID);
         }
     }
     else
-        removeChildren(node.children);
-
+        removeChildren(node);
 }
 
 /**
  * Remove panel's children
  * @param {string[]} arr The array of children
  */
-function removeChildren(arr) {
-    var len = arr.length;
+function removeChildren(node) {
+    var children = node.children;
+    var len = children.length;
     var i = 0;
     var idToRemove = "";
 
@@ -130,8 +131,9 @@ function removeChildren(arr) {
         for (i = 0; i < len; i ++)
         {
             //recursive call to all children
-            removeChildren(arr[i].children);
-            idToRemove = arr[i].data;
+            removeChildren(children[0]);
+            idToRemove = children[0].data;
+            tree.remove(idToRemove, node.data, tree.traverseBF);
             removeLines(idToRemove);
             $("#"+ idToRemove).remove();
         }
