@@ -13,8 +13,6 @@ function forceLayout(){
 
             var m = getPartyCount(data).length; // number of distinct clusters
 
-            console.log(data);
-
             // The largest node for each cluster.
             var clusters = new Array(m);
 
@@ -63,8 +61,7 @@ function forceLayout(){
                 })
                 .on("mouseout", function() {
                     div.style("display", "none")
-                })
-                .call(force.drag);
+                });
 
             node.transition()
                 .duration(750)

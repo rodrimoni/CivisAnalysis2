@@ -178,13 +178,26 @@ function scatterPlotChart()
             updateLegend(data, svg);
 
             function zoom() {
+
+                hideToolTipCluster();
+
                 svg.select(".x.axis").call(xAxis);
                 svg.select(".y.axis").call(yAxis);
 
                 svg.selectAll(".dot")
                     .attr("transform", function(d) {return "translate(" + x(d.scatterplot[1]) + "," + y(d.scatterplot[0]) + ")";});
                 svg.selectAll(".hull")
-                    .attr("points", function(d) { var  points = ""; d.points.forEach(function(e) { points += x(e[1]) + "," + y(e[0]) + " "  }); return points; } )
+                .attr("d", function(d) {
+                        var points = "M";
+                        points += x(d.points[0][1]) + " " + y(d.points[0][0]) + " ";
+                        for (var i = 1; i < d.points.length; i++) {
+                            points += "L" + x(d.points[i][1]) + " " + y(d.points[i][0]) + " ";
+                        }
+
+                        points += "Z";
+                        return points;
+                    }
+                )
             }
 
             function updateLegend(data, svg) {
@@ -281,36 +294,62 @@ function scatterPlotChart()
         var deputiesClusters = "#" + id + " .deputiesClusters";
         var svg = d3.select(deputiesClusters);
 
+        var toolTipCluster = d3.select('.toolTipCluster');
+
         var objects = svg.selectAll(".hull")
             .data(data, function(d){return d;});
 
-
         objects
-            .attr("points", function(d) { var  points = ""; d.points.forEach(function(e) { points += x(e[1]) + "," + y(e[0]) + " "  }); return points; } )
+            .attr("d", function(d) {
+                    var points = "M";
+                    points += x(d.points[0][1]) + " " + y(d.points[0][0]) + " ";
+                    for (var i = 1; i < d.points.length; i++) {
+                        points += "L" + x(d.points[i][1]) + " " + y(d.points[i][0]) + " ";
+                    }
+
+                    points += "Z";
+                    console.log(points);
+                    return points;
+                }
+            )
             .attr("fill", function(d) { return col(d.cluster); })
             .style("fill-opacity", 0.05)
             .attr("stroke-width", "2px")
             .attr("stroke", function(d) { return col(d.cluster); });
 
-        objects
+        var enterObjects = objects
             .data(data)
-            .enter().append("polyline")
+            .enter();
+
+        enterObjects
+            .append("path")
             .classed("hull", true)
             .attr("id", function(d) { return "cluster_id_" + d.cluster; })
-            .attr("points", function(d) { var  points = ""; d.points.forEach(function(e) { points += x(e[1]) + "," + y(e[0]) + " "  }); return points; } )
+            .attr("d", function(d) {
+                    var points = "M";
+                    points += x(d.points[0][1]) + " " + y(d.points[0][0]) + " ";
+                    for (var i = 1; i < d.points.length; i++) {
+                        points += "L" + x(d.points[i][1]) + " " + y(d.points[i][0]) + " ";
+                    }
+
+                    points += "Z";
+                    return points;
+                }
+            )
             .attr("fill", function(d) { return col(d.cluster); })
             .style("fill-opacity", 0.05)
-            .attr("stroke-width", "3px")
+            .attr("stroke-width", "1px")
             .attr("stroke", function(d) { return col(d.cluster); })
-            .on("mousemove", function(d){
-                div.style("left", d3.event.pageX+10+"px");
-                div.style("top", d3.event.pageY-25+"px");
-                div.style("display", "inline-block");
-                div.html("Cluster " + d.cluster);
-            })
-            .on("mouseout", function(){
-                div.style("display", "none");
-            });
+            .on("click", function(d){
+                //if (toolTipCluster.style("display") === 'none') {
+                    toolTipCluster.style("left", d3.event.pageX + 10 + "px");
+                    toolTipCluster.style("top", d3.event.pageY - 25 + "px");
+                    toolTipCluster.style("display", "inline-block");
+                    toolTipCluster.html("Cluster " + d.cluster);
+                })
+                //else
+                .on("blur", hideToolTipCluster);
+
 
         /* Bind context menu at clusters */
         $(deputiesClusters)

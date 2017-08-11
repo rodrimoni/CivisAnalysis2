@@ -20,3 +20,7 @@
 .scatter-plot .dot {
     fill-opacity: 1;
 }
+
+.scatter-plot :focus {
+    outline: 0;
+}

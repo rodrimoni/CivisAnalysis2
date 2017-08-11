@@ -3,8 +3,8 @@
  */
 
 /* Initial values of panel Height and Width */
-var INITIAL_HEIGHT = 300;
-var INITIAL_WIDTH = 400;
+var INITIAL_HEIGHT = 250;
+var INITIAL_WIDTH = 350;
 
 /* Max values of panel Height and Width */
 var MAX_HEIGHT = 620;
@@ -102,6 +102,7 @@ function removeWindow(panelID, deleteThis) {
                 removeChildren(node);
                 tree.remove(panelID, parent, tree.traverseBF);
                 $("#" + panelID).remove();
+                $("#icon-"+ panelID).remove();
                 removeLines(panelID);
             }
         }
@@ -109,6 +110,7 @@ function removeWindow(panelID, deleteThis) {
         {
             tree.remove(panelID, parent, tree.traverseBF);
             $("#" + panelID).remove();
+            $("#icon-"+ panelID).remove();
             removeLines(panelID);
         }
     }
@@ -136,6 +138,7 @@ function removeChildren(node) {
             tree.remove(idToRemove, node.data, tree.traverseBF);
             removeLines(idToRemove);
             $("#"+ idToRemove).remove();
+            $("#icon-"+ idToRemove).remove();
         }
     }
 }
@@ -559,6 +562,10 @@ function centerLine(panelID, icon) {
             }
         }
     }
+}
+
+function hideToolTipCluster(){
+    d3.select('.toolTipCluster').style("display", "none");
 }
 
 /**

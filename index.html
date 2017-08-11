@@ -68,6 +68,8 @@
     <!-- Bar Chart CSS -->
     <link rel="stylesheet" href="stylesheets/bar-chart.css">
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
+
     <title> Windows System Prototype  </title>
 </head>
 
@@ -82,7 +84,10 @@
             <li><a tabindex="-1" id="get-parent">Get parent</a></li>
         </ul>
     </div>
+
     <div class ="toolTip" style="display: none;"></div>
+    <div class ="toolTip toolTipCluster" style="display: none;"></div>
+
     <div id = "btn-init" class="dropdown" style="display: none;">
         <a id="dLabel" role="button" data-toggle="dropdown" class="btn btn-primary">
             Dropdown <span class="caret"></span>
@@ -151,6 +156,7 @@
 
         /* Check limits whenever a resize event was trigger */
         $(window).on('resize', function(){
+            hideToolTipCluster();
             checkLimits();
         });
 
