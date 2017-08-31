@@ -334,7 +334,7 @@ function setUpPanel(newID) {
         initialHeight = $(window).height()*0.6;
 
         minWidth = initialWidth/2;
-        minHeight = initialHeight/2
+        minHeight = initialHeight/2;
 
         maxWidth  = initialWidth;
         maxHeight = initialHeight;
