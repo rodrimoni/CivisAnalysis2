@@ -42,17 +42,6 @@ function initSystem() {
     });
 }
 
-function handleDropDown(value) {
-    var type = "";
-
-    if (value >= FIRST_YEAR && value <= LAST_YEAR )
-        type = "year";
-    else
-        if (value >= FIRST_LEGISLATURE && value <= LAST_LEGISLATURE)
-            type = "legislature";
-
-}
-
 function initializeChart(newID, chartObj) {
     var chart;
 
@@ -187,11 +176,20 @@ function maximizeWindow()
     var panelID = icon.attr("id").replace("icon-", "");
     var panel = $("#"+panelID);
 
+    var left = iconOffset.left - panel.width()/2;
+    var top = iconOffset.top - panel.height()/2;
+
+    if (left <= 10)
+        left = 10;
+
+    if (top <= 10)
+        top = 10;
+
     panel
         .show()
         .css({
-            "left" : iconOffset.left - panel.width()/2,
-            "top"  : iconOffset.top - panel.height()/2
+            "left" : left,
+            "top"  : top
         });
 
     /* Guarantees that hover effect that was triggered, when btn-minimize is clicked, is removed */
@@ -209,7 +207,6 @@ function maximizeWindow()
         var iconID = activeIcons[i].id.replace("icon-", "");
         d3.selectAll("line").filter(".class-" + iconID).style("stroke-dasharray", ("3, 3"));
     }
-
 }
 
 /**
@@ -328,11 +325,16 @@ function setUpPanel(newID) {
     /* Getting the workspace SVG */
     var workspace = $("#workspace");
 
-    isTimeline = newID === "panel-1-1";
+    var isTimeline = newID === "panel-1-1";
+
+    var initialWidth, initialHeight, minWidth, minHeight, maxWidth, maxHeight;
 
     if (isTimeline) {
         initialWidth = $(window).width() - 40;
         initialHeight = $(window).height()*0.6;
+
+        minWidth = initialWidth/2;
+        minHeight = initialHeight/2
 
         maxWidth  = initialWidth;
         maxHeight = initialHeight;
@@ -340,6 +342,9 @@ function setUpPanel(newID) {
     else {
         initialWidth = INITIAL_WIDTH;
         initialHeight = INITIAL_HEIGHT;
+
+        minWidth = initialWidth;
+        minHeight = initialHeight;
 
         maxWidth  = MAX_WIDTH;
         maxHeight = MAX_HEIGHT;
@@ -369,8 +374,8 @@ function setUpPanel(newID) {
             aspectRatio: true,
             maxHeight: maxHeight,
             maxWidth: maxWidth,
-            minHeight: initialHeight,
-            minWidth: initialWidth
+            minHeight: minHeight,
+            minWidth: minWidth
         });
 }
 
@@ -727,4 +732,14 @@ function setNewDateRange(period)
     }
 
     return precalc;
+}
+
+function resizeTimeline() {
+    d3.select(window)
+        .on('resize', function () {
+            var maxWidth = $(window).width() - 40;
+            var maxHeight = $(window).height()*0.6;
+            $("#panel-1-1 .panel-body").resizable("option", "maxWidth", maxWidth );
+            $("#panel-1-1 .panel-body").resizable("option", "maxHeight", maxHeight);
+        })
 }

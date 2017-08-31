@@ -40,6 +40,7 @@ d3.chart.timeline = function() {
             svg = div.append("svg")
                 .attr("width", "100%")
                 .attr("height", "100%")
+                .attr("viewBox", "0 0 " + svgwidth + " " + svgheight)
                 .classed("timeline", true);
 
             g =	svg.append("g")
@@ -48,7 +49,7 @@ d3.chart.timeline = function() {
             svg.append("clipPath")
                 .attr("id", "clip-timeline")
                 .append("rect")
-                .attr("width", width)
+                .attr("width", "100%")
                 .attr("height", timelineDim.height);
         }
     }

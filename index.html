@@ -168,17 +168,12 @@
     /* Initialization of System */
     $(document).ready(function(){
         initSystem();
+        resizeTimeline();
 
         /* Check limits whenever a resize event was trigger */
         $(window).on('resize', function(){
             hideToolTipCluster();
             checkLimits();
-        });
-
-        /* Binding event to dropdown lists */
-        windowSystem.on("click", ".option", function () {
-            var value = $(this).data("value");
-            handleDropDown(value);
         });
 
         /* Binding event to minimize buttons */
