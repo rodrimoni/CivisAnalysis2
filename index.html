@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1" />
+
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
@@ -10,12 +12,15 @@
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
 
-    <!-- Latest compiled JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
     <!-- jQueryUI library -->
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <!-- Latest compiled Bootstrap JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <!-- D3 library -->
+    <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
 
     <!-- Bootstrap-slider -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.1/bootstrap-slider.js"></script>
@@ -25,6 +30,9 @@
 
     <!-- Plugin for creation of custom context menus -->
     <script src = "javascripts/jquery.contextMenu.js" type = "text/javascript"></script>
+
+    <!-- Plugin for crossfilter charts -->
+    <script src = "javascripts/crossfilter.v1.min.js" type = "text/javascript"></script>
 
     <!-- Structure tree -->
     <script src="javascripts/tree.js"></script>
@@ -38,6 +46,9 @@
     <!-- Force Layout visualization -->
     <script src="javascripts/force-layout.js"></script>
 
+    <!-- Timeline visualization -->
+    <script src="javascripts/time-line.js"></script>
+
     <!-- Windows System functions -->
     <script src="javascripts/windows-system.js"></script>
 
@@ -47,8 +58,8 @@
     <!-- Convex Hull library -->
     <script src="javascripts/convex-hull.js"></script>
 
-    <!-- D3 library -->
-    <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+    <!-- Congress Definitions -->
+    <script src="javascripts/congress-definitions.js"></script>
 
     <!-- D3-tip library -->
     <script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
@@ -68,6 +79,10 @@
     <!-- Bar Chart CSS -->
     <link rel="stylesheet" href="stylesheets/bar-chart.css">
 
+    <!-- Time Line Chart CSS -->
+    <link rel="stylesheet" href="stylesheets/time-line.css">
+
+    <!-- Spinner gif library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
 
     <title> Windows System Prototype  </title>
@@ -82,6 +97,10 @@
             <li><a tabindex="-1" id="force-layout">Create a force layout</a></li>
             <li class="divider"></li>
             <li><a tabindex="-1" id="get-parent">Get parent</a></li>
+        </ul>
+        <ul id="contextMenuTimeline" class="dropdown-menu" role="menu" style="display:none" >
+            <li><a tabindex="-1" id="scatter-plot">Create a scatter plot</a></li>
+            <li><a tabindex="-1" id="chamber-infographic">Create a chamber infographic</a></li>
         </ul>
     </div>
 
@@ -127,32 +146,28 @@
             <li class="dropdown-submenu">
                 <a tabindex="-1" id= "legislatures"> Legislatures </a>
                 <ul class="dropdown-menu">
-                    <li><a class="option" tabindex="-1" data-value="0"> 49&#170;  Legislature (1991-1994) </a></li>
-                    <li><a class="option" tabindex="-1" data-value="1"> 50&#170;  Legislature (1995-1998) </a></li>
-                    <li><a class="option" tabindex="-1" data-value="2"> 51&#170;  Legislature (1999-2002) </a></li>
-                    <li><a class="option" tabindex="-1" data-value="3"> 52&#170;  Legislature (2003-2009) </a></li>
-                    <li><a class="option" tabindex="-1" data-value="4"> 53&#170;  Legislature (2007-2010) </a></li>
-                    <li><a class="option" tabindex="-1" data-value="5"> 54&#170;  Legislature (2011-2014) </a></li>
-                    <li><a class="option" tabindex="-1" data-value="6"> 55&#170;  Legislature (2015-2016) </a></li>
+                    <li><a class="option" tabindex="-1" data-value="0"> 49ª  Legislature (1991-1994) </a></li>
+                    <li><a class="option" tabindex="-1" data-value="1"> 50ª  Legislature (1995-1998) </a></li>
+                    <li><a class="option" tabindex="-1" data-value="2"> 51ª  Legislature (1999-2002) </a></li>
+                    <li><a class="option" tabindex="-1" data-value="3"> 52ª  Legislature (2003-2009) </a></li>
+                    <li><a class="option" tabindex="-1" data-value="4"> 53ª  Legislature (2007-2010) </a></li>
+                    <li><a class="option" tabindex="-1" data-value="5"> 54ª  Legislature (2011-2014) </a></li>
+                    <li><a class="option" tabindex="-1" data-value="6"> 55ª  Legislature (2015-2016) </a></li>
                 </ul>
             </li>
         </ul>
     </div>
 </body>
-
 </html>
 
 <script>
 
-    /** Getting the document body */
+    /* Getting the document body */
     var windowSystem = $("#windows-system");
 
-    /** Initialization of System */
+    /* Initialization of System */
     $(document).ready(function(){
         initSystem();
-
-        /* Creating the first panel */
-        createNewChild(null);
 
         /* Check limits whenever a resize event was trigger */
         $(window).on('resize', function(){
@@ -176,7 +191,7 @@
         });
 
         /* Binding event to scatter plot settings buttons */
-        windowSystem.on("click", ".btn-settings-scatterplot", checkChildren);
+        windowSystem.on("click", ".btn-settings-scatterplot", checkChildrenScatterPlot);
 
         /* Binding event to minimized window */
         windowSystem.on("dblclick", ".fa-window-maximize", maximizeWindow);

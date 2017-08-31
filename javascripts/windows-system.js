@@ -27,17 +27,19 @@ var FORCE_LAYOUT = 3;
 
 /* Global variable to store all deputies with an ID */
 var deputiesArray = [];
+var rollCallsArray = [];
 
 /* Global variable to store the scatter plot nodes */
 var deputiesNodes = [];
-
-var globalCount = 0;
 
 /* Creating the tree with the first node */
 var tree = new Tree('panel-1-1', null);
 
 function initSystem() {
     loadDeputies(deputiesArray);
+    loadRollCalls(rollCallsArray, function () {
+        createNewChild("timeline");
+    });
 }
 
 function handleDropDown(value) {
@@ -49,8 +51,6 @@ function handleDropDown(value) {
         if (value >= FIRST_LEGISLATURE && value <= LAST_LEGISLATURE)
             type = "legislature";
 
-    deputiesNodes= [];
-    loadNodes(type, value);
 }
 
 function initializeChart(newID, chartObj) {
@@ -226,18 +226,47 @@ function createNewChild(currentId, chartObj) {
     var chart;
 
     /* Creating the root */
-    if (currentId === null)
+    if (currentId === "timeline")
     {
         newID = "panel-1-1";
-        newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" style="padding-top: 7.5px;">' + newID + '</h4> <button disabled class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button> </div><div class="panel-body center-panel"></div></div>').css({"position": "absolute"});
+        newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" style="padding-top: 7.5px;"> Timeline </h4> <button disabled class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button> </div><div class="panel-body center-panel"></div></div>').css({"position": "absolute"});
 
         $(".container").append(newElem);
 
-        /* Sets up the panel settings as drag, resize, etc */
-        setUpPanel(newID, null);
+        timelineWidth = $(window).width() - 40;
+        timelineHeight = $(window).height()*0.6;
 
-        $("#btn-init").appendTo("#panel-1-1 .panel-body");
-        $("#btn-init").show();
+        /* Sets up the panel settings as drag, resize, etc */
+        setUpPanel(newID);
+
+        var timeline = d3.chart.timeline();
+
+        timeline(d3.select("#" + newID + " .panel-body"),
+            timelineWidth,
+            timelineHeight
+        );
+
+        timeline
+            .data(rollCallsArray)
+            .update();
+
+        var dataRange;
+
+        timeline
+            .on("timelineFilter", function(filtered) {
+                console.log("filtered", filtered);
+                dataRange = setNewDateRange(filtered)
+            });
+
+        /* Context menu for Timeline Chart */
+        $(".timeline .extent")
+            .contextMenu({
+                menuSelector: "#contextMenuTimeline",
+                menuSelected: function (invokedOn, selectedMenu) {
+                    handleContextMenuTimeline(invokedOn, selectedMenu, dataRange);
+                }
+            });
+
     }
     else
     {
@@ -299,12 +328,29 @@ function setUpPanel(newID) {
     /* Getting the workspace SVG */
     var workspace = $("#workspace");
 
+    isTimeline = newID === "panel-1-1";
+
+    if (isTimeline) {
+        initialWidth = $(window).width() - 40;
+        initialHeight = $(window).height()*0.6;
+
+        maxWidth  = initialWidth;
+        maxHeight = initialHeight;
+    }
+    else {
+        initialWidth = INITIAL_WIDTH;
+        initialHeight = INITIAL_HEIGHT;
+
+        maxWidth  = MAX_WIDTH;
+        maxHeight = MAX_HEIGHT;
+    }
+
     /* Setting up the panel */
     $( "#" + newID)
         .draggable({
             handle: ".panel-heading",
             stack: ".panel, .fa-window-maximize",
-            containment: [10,10, workspace.width() - INITIAL_WIDTH - 10 , workspace.height() - INITIAL_HEIGHT - 70],
+            containment: [10,10, workspace.width() - initialWidth - 10 , workspace.height() - initialHeight - 70],
             drag: function(){
                 centerLine(this.id);
             },
@@ -312,8 +358,8 @@ function setUpPanel(newID) {
         })
         .find(".panel-body")
         .css({
-            height: INITIAL_HEIGHT,
-            width: INITIAL_WIDTH
+            height: initialHeight,
+            width: initialWidth
         })
         .resizable({
             resize: function(){
@@ -321,14 +367,11 @@ function setUpPanel(newID) {
                 centerLine(aPanel.id);
             },
             aspectRatio: true,
-            maxHeight: MAX_HEIGHT,
-            maxWidth: MAX_WIDTH,
-            minHeight: INITIAL_HEIGHT,
-            minWidth: INITIAL_WIDTH
+            maxHeight: maxHeight,
+            maxWidth: maxWidth,
+            minHeight: initialHeight,
+            minWidth: initialWidth
         });
-        //.append(function(){
-        //    createShape($(this), shape);
-        //});
 }
 
 function getPartyCount(cluster) {
@@ -394,6 +437,21 @@ function handleContextMenuScatterPlot(invokedOn, selectedMenu)
                 var msg = parent !== null ? parent.data : "Root doesn't have parent";
                 alert(msg);
             }
+}
+
+function handleContextMenuTimeline(invokedOn, selectedMenu, dataRange)
+{
+    var title;
+    if (dataRange.type !== "year")
+        title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
+    else
+        title = dataRange.id;
+
+    if (selectedMenu.context.id === "scatter-plot")
+    {
+        var chartObj = {'chartID': SCATTER_PLOT, 'data': deputiesNodes, 'title': title};
+        createNewChild('panel-1-1', chartObj);
+    }
 }
 
 /**
@@ -625,10 +683,48 @@ function  initializeSlider(id, chart) {
     });
 }
 
-function checkChildren() {
+function checkChildrenScatterPlot() {
     var panelID = $(this).parents(".panel").attr("id");
     var node = tree.getNode(panelID, tree.traverseBF);
 
     if (node.children.length > 0)
         alert("Caution! If you change the value of K the panel's children will be deleted.");
+}
+
+function setNewDateRange(period)
+{
+    // find if there is an pre calc of this period
+    var precalc = {found:false, id:''};
+
+    CONGRESS_DEFINE.years.forEach( function(yearObj){
+        if(yearObj.period == period){
+            precalc.found = true;
+            precalc.id = yearObj.name;
+            precalc.type = 'year';
+            console.log('YEAR - preCALC!!'); }
+    });
+
+    if(!precalc.found)
+        CONGRESS_DEFINE.legislatures.forEach( function(legislatureObj,i){
+            if(legislatureObj.period == period){
+                precalc.found = true;
+                precalc.id = i;
+                precalc.type = 'legislature';
+                console.log('LEGISLATURE - preCALC!!'); }
+        });
+
+    if(!precalc.found)
+        CONGRESS_DEFINE.presidents.forEach( function(presidentObj,i){
+            if(presidentObj.period == period){
+                precalc.found = true;
+                precalc.id = i;
+                precalc.type = 'president';
+                console.log('PRESIDENT - preCALC!!'); }
+        });
+
+    if (precalc.found) {
+        loadNodes(precalc.type, precalc.id);
+    }
+
+    return precalc;
 }

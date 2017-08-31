@@ -30,6 +30,19 @@ function loadDeputies(deputiesArray)
     });
 }
 
+function loadRollCalls(arrayRollCalls, callback) {
+    d3.json('data/arrayRollCalls.json', function (a_arrayRollCalls) {
+        a_arrayRollCalls.forEach(
+            function (rollCall, i) {
+                rollCall.datetime = new Date(rollCall.datetime);
+                rollCall.rollCallID = i;
+                arrayRollCalls.push(rollCall)
+            }
+        );
+        callback();
+    });
+}
+
 function loadNodes(type, selectedTime)
 {
     //console.log(JSON.stringify(d3.select('#panel-2-1 .panel-body').data()[0]));
@@ -47,8 +60,7 @@ function loadNodes(type, selectedTime)
         });
         //console.log(JSON.stringify(deputiesNodes[0]));
        // console.log(JSON.stringify(d3.select('#panel-2-1 .panel-body').data()[0]));
-        var chartObj = {'chartID': SCATTER_PLOT, 'data': deputiesNodes, 'title': 'Scatter Plot: ' + type + " " + selectedTime};
-        createNewChild('panel-1-1', chartObj);
+
         /*chart = scatterPlotChart();
 
         d3.select("#scatter")

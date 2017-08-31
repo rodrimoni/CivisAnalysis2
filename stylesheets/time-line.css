@@ -1,0 +1,30 @@
+.timeline{
+    width:99%;
+    margin-top: 0px;
+    margin-left: auto ;
+    margin-right: auto ;
+}
+
+.timeline .background {
+    fill: lightgrey;
+}
+
+.timeline  .foreground {
+    fill: darkgrey;
+}
+.timeline .partiesLabel{
+    fill:grey;
+    writing-mode: tb;
+    glyph-orientation-vertical: 0;
+    font-size:small;
+}
+
+.brush rect.extent {
+    fill: darkgrey;
+    fill-opacity: .125;
+}
+
+.brush .resize path {
+    fill: #eee;
+    stroke: #666;
+}
