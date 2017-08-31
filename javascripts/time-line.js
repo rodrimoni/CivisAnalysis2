@@ -799,24 +799,24 @@ function forceAlgorithmToAproximateTheUnclutteredPositionsToClutteredWithoutOccl
         do{ // repeat this loop til no parties' movment
             movement = false;
             partiesInPeriod.forEach( function(p,i){
-            var idealPoint = p.cluttered.x0,
-                x0 = p.uncluttered.x0,
-                x1 = x0 + p.uncluttered.height,
-                movUp = idealPoint > x0;
+                var idealPoint = p.cluttered.x0,
+                    x0 = p.uncluttered.x0,
+                    x1 = x0 + p.uncluttered.height,
+                    movUp = idealPoint > x0;
 
-            if(x0<1 || x1>timelineHeight || Math.abs(idealPoint-x0)<1) return;
-            var newX0 = Math.max(0,x0 + (movUp? 1 : -1)),
-                newX1 = Math.max(0,x1 + (movUp? 1 : -1)),
-                colision = false;
+                if(x0<1 || x1>timelineHeight || Math.abs(idealPoint-x0)<1) return;
+                var newX0 = Math.max(0,x0 + (movUp? 1 : -1)),
+                    newX1 = Math.max(0,x1 + (movUp? 1 : -1)),
+                    colision = false;
 
-            if(i!==(partiesInPeriod.length-1) && movUp && newX1 > partiesInPeriod[i+1].uncluttered.x0) colision = true;
-            if(i!==0 && !movUp && newX0 < (partiesInPeriod[i-1].uncluttered.x0+partiesInPeriod[i-1].uncluttered.height)) colision = true;
+                if(i!==(partiesInPeriod.length-1) && movUp && newX1 > partiesInPeriod[i+1].uncluttered.x0) colision = true;
+                if(i!==0 && !movUp && newX0 < (partiesInPeriod[i-1].uncluttered.x0+partiesInPeriod[i-1].uncluttered.height)) colision = true;
 
-            if(!colision) {
-                p.uncluttered.x0 = newX0;
-                movement = true;
-            }
-        })
+                if(!colision) {
+                    p.uncluttered.x0 = newX0;
+                    movement = true;
+                }
+            })
         } while(movement);
     });
 }

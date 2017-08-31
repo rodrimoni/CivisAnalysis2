@@ -89,74 +89,74 @@
 </head>
 
 <body id = "windows-system">
-    <div class="container">
-        <svg id ="workspace" width = "100%" height = "100%" class="svg-content-responsive"></svg>
-        <h2>Windows System Prototype</h2>
-        <ul id="contextMenuScatterPlot" class="dropdown-menu" role="menu" style="display:none" >
-            <li><a tabindex="-1" id="bar-chart">Create a bar chart</a></li>
-            <li><a tabindex="-1" id="force-layout">Create a force layout</a></li>
-            <li class="divider"></li>
-            <li><a tabindex="-1" id="get-parent">Get parent</a></li>
-        </ul>
-        <ul id="contextMenuTimeline" class="dropdown-menu" role="menu" style="display:none" >
-            <li><a tabindex="-1" id="scatter-plot">Create a scatter plot</a></li>
-            <li><a tabindex="-1" id="chamber-infographic">Create a chamber infographic</a></li>
-        </ul>
-    </div>
+<div class="container">
+    <svg id ="workspace" width = "100%" height = "100%" class="svg-content-responsive"></svg>
+    <h2>Windows System Prototype</h2>
+    <ul id="contextMenuScatterPlot" class="dropdown-menu" role="menu" style="display:none" >
+        <li><a tabindex="-1" id="bar-chart">Create a bar chart</a></li>
+        <li><a tabindex="-1" id="force-layout">Create a force layout</a></li>
+        <li class="divider"></li>
+        <li><a tabindex="-1" id="get-parent">Get parent</a></li>
+    </ul>
+    <ul id="contextMenuTimeline" class="dropdown-menu" role="menu" style="display:none" >
+        <li><a tabindex="-1" id="scatter-plot">Create a scatter plot</a></li>
+        <li><a tabindex="-1" id="chamber-infographic">Create a chamber infographic</a></li>
+    </ul>
+</div>
 
-    <div class ="toolTip" style="display: none;"></div>
-    <div class ="toolTip toolTipCluster" style="display: none;"></div>
+<div class ="toolTip" style="display: none;"></div>
+<div class ="toolTip toolTipCluster" style="display: none;"></div>
 
-    <div id = "btn-init" class="dropdown" style="display: none;">
-        <a id="dLabel" role="button" data-toggle="dropdown" class="btn btn-primary">
-            Dropdown <span class="caret"></span>
-        </a>
-        <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
-            <li class="dropdown-submenu">
-                <a tabindex="-1" id= "years"> Years </a>
-                <ul class="dropdown-menu">
-                    <li><a class="option" tabindex="-1" data-value="1991"> 1991 </a></li>
-                    <li><a class="option" tabindex="-1" data-value="1992"> 1992 </a></li>
-                    <li><a class="option" tabindex="-1" data-value="1993"> 1993 </a></li>
-                    <li><a class="option" tabindex="-1" data-value="1994"> 1994 </a></li>
-                    <li><a class="option" tabindex="-1" data-value="1995"> 1995 </a></li>
-                    <li><a class="option" tabindex="-1" data-value="1996"> 1996 </a></li>
-                    <li><a class="option" tabindex="-1" data-value="1997"> 1997 </a></li>
-                    <li><a class="option" tabindex="-1" data-value="1998"> 1998 </a></li>
-                    <li><a class="option" tabindex="-1" data-value="1999"> 1999 </a></li>
-                    <li><a class="option" tabindex="-1" data-value="2000"> 2000 </a></li>
-                    <li><a class="option" tabindex="-1" data-value="2001"> 2001 </a></li>
-                    <li><a class="option" tabindex="-1" data-value="2002"> 2002 </a></li>
-                    <li><a class="option" tabindex="-1" data-value="2003"> 2003 </a></li>
-                    <li><a class="option" tabindex="-1" data-value="2004"> 2004 </a></li>
-                    <li><a class="option" tabindex="-1" data-value="2005"> 2005 </a></li>
-                    <li><a class="option" tabindex="-1" data-value="2006"> 2006 </a></li>
-                    <li><a class="option" tabindex="-1" data-value="2007"> 2007 </a></li>
-                    <li><a class="option" tabindex="-1" data-value="2008"> 2008 </a></li>
-                    <li><a class="option" tabindex="-1" data-value="2009"> 2009 </a></li>
-                    <li><a class="option" tabindex="-1" data-value="2010"> 2010 </a></li>
-                    <li><a class="option" tabindex="-1" data-value="2011"> 2011 </a></li>
-                    <li><a class="option" tabindex="-1" data-value="2012"> 2012 </a></li>
-                    <li><a class="option" tabindex="-1" data-value="2013"> 2013 </a></li>
-                    <li><a class="option" tabindex="-1" data-value="2014"> 2014 </a></li>
-                    <li><a class="option" tabindex="-1" data-value="2015"> 2015 </a></li>
-                    <li><a class="option" tabindex="-1" data-value="2016"> 2016 </a></li>
-                </ul>
-            </li>
-            <li class="dropdown-submenu">
-                <a tabindex="-1" id= "legislatures"> Legislatures </a>
-                <ul class="dropdown-menu">
-                    <li><a class="option" tabindex="-1" data-value="0"> 49ª  Legislature (1991-1994) </a></li>
-                    <li><a class="option" tabindex="-1" data-value="1"> 50ª  Legislature (1995-1998) </a></li>
-                    <li><a class="option" tabindex="-1" data-value="2"> 51ª  Legislature (1999-2002) </a></li>
-                    <li><a class="option" tabindex="-1" data-value="3"> 52ª  Legislature (2003-2009) </a></li>
-                    <li><a class="option" tabindex="-1" data-value="4"> 53ª  Legislature (2007-2010) </a></li>
-                    <li><a class="option" tabindex="-1" data-value="5"> 54ª  Legislature (2011-2014) </a></li>
-                    <li><a class="option" tabindex="-1" data-value="6"> 55ª  Legislature (2015-2016) </a></li>
-                </ul>
-            </li>
-        </ul>
-    </div>
+<div id = "btn-init" class="dropdown" style="display: none;">
+    <a id="dLabel" role="button" data-toggle="dropdown" class="btn btn-primary">
+        Dropdown <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
+        <li class="dropdown-submenu">
+            <a tabindex="-1" id= "years"> Years </a>
+            <ul class="dropdown-menu">
+                <li><a class="option" tabindex="-1" data-value="1991"> 1991 </a></li>
+                <li><a class="option" tabindex="-1" data-value="1992"> 1992 </a></li>
+                <li><a class="option" tabindex="-1" data-value="1993"> 1993 </a></li>
+                <li><a class="option" tabindex="-1" data-value="1994"> 1994 </a></li>
+                <li><a class="option" tabindex="-1" data-value="1995"> 1995 </a></li>
+                <li><a class="option" tabindex="-1" data-value="1996"> 1996 </a></li>
+                <li><a class="option" tabindex="-1" data-value="1997"> 1997 </a></li>
+                <li><a class="option" tabindex="-1" data-value="1998"> 1998 </a></li>
+                <li><a class="option" tabindex="-1" data-value="1999"> 1999 </a></li>
+                <li><a class="option" tabindex="-1" data-value="2000"> 2000 </a></li>
+                <li><a class="option" tabindex="-1" data-value="2001"> 2001 </a></li>
+                <li><a class="option" tabindex="-1" data-value="2002"> 2002 </a></li>
+                <li><a class="option" tabindex="-1" data-value="2003"> 2003 </a></li>
+                <li><a class="option" tabindex="-1" data-value="2004"> 2004 </a></li>
+                <li><a class="option" tabindex="-1" data-value="2005"> 2005 </a></li>
+                <li><a class="option" tabindex="-1" data-value="2006"> 2006 </a></li>
+                <li><a class="option" tabindex="-1" data-value="2007"> 2007 </a></li>
+                <li><a class="option" tabindex="-1" data-value="2008"> 2008 </a></li>
+                <li><a class="option" tabindex="-1" data-value="2009"> 2009 </a></li>
+                <li><a class="option" tabindex="-1" data-value="2010"> 2010 </a></li>
+                <li><a class="option" tabindex="-1" data-value="2011"> 2011 </a></li>
+                <li><a class="option" tabindex="-1" data-value="2012"> 2012 </a></li>
+                <li><a class="option" tabindex="-1" data-value="2013"> 2013 </a></li>
+                <li><a class="option" tabindex="-1" data-value="2014"> 2014 </a></li>
+                <li><a class="option" tabindex="-1" data-value="2015"> 2015 </a></li>
+                <li><a class="option" tabindex="-1" data-value="2016"> 2016 </a></li>
+            </ul>
+        </li>
+        <li class="dropdown-submenu">
+            <a tabindex="-1" id= "legislatures"> Legislatures </a>
+            <ul class="dropdown-menu">
+                <li><a class="option" tabindex="-1" data-value="0"> 49ª  Legislature (1991-1994) </a></li>
+                <li><a class="option" tabindex="-1" data-value="1"> 50ª  Legislature (1995-1998) </a></li>
+                <li><a class="option" tabindex="-1" data-value="2"> 51ª  Legislature (1999-2002) </a></li>
+                <li><a class="option" tabindex="-1" data-value="3"> 52ª  Legislature (2003-2009) </a></li>
+                <li><a class="option" tabindex="-1" data-value="4"> 53ª  Legislature (2007-2010) </a></li>
+                <li><a class="option" tabindex="-1" data-value="5"> 54ª  Legislature (2011-2014) </a></li>
+                <li><a class="option" tabindex="-1" data-value="6"> 55ª  Legislature (2015-2016) </a></li>
+            </ul>
+        </li>
+    </ul>
+</div>
 </body>
 </html>
 
@@ -193,8 +193,8 @@
 
         /* Avoid to close settings menu */
         windowSystem.on('click', '.panel-settings', function(event){
-                event.stopPropagation();
-            });
+            event.stopPropagation();
+        });
     });
 
 </script>

@@ -334,7 +334,7 @@ function setUpPanel(newID) {
         initialHeight = $(window).height()*0.6;
 
         minWidth = initialWidth/2;
-        minHeight = initialHeight/2;
+        minHeight = initialHeight/2
 
         maxWidth  = initialWidth;
         maxHeight = initialHeight;
@@ -389,15 +389,15 @@ function getPartyCount(cluster) {
             currentPartyCount.push({"party" : deputy.party, "number": 1});
         }
         else
-            if (result.length === 1) {
-                result[0].number += 1;
-            }
+        if (result.length === 1) {
+            result[0].number += 1;
+        }
     });
 
     /* Sort and count the number of deputies per party*/
     currentPartyCount.sort(function(x,y){
-            return d3.descending(x.number, y.number);
-        });
+        return d3.descending(x.number, y.number);
+    });
 
     return currentPartyCount;
 }
@@ -431,17 +431,17 @@ function handleContextMenuScatterPlot(invokedOn, selectedMenu)
         createNewChild(panelID, chartObj );
     }
     else
-        if(selectedMenu.context.id === "force-layout") {
-            title = 'Force Layout: Cluster ' + clusterID;
-            chartObj = {'chartID' : FORCE_LAYOUT, 'data': chartData.clusters[clusterID], 'title': title};
-            createNewChild(panelID, chartObj);
-        }
-        else
-            if(selectedMenu.context.id === "get-parent") {
-                var parent = tree.getParent(panelID, tree.traverseBF);
-                var msg = parent !== null ? parent.data : "Root doesn't have parent";
-                alert(msg);
-            }
+    if(selectedMenu.context.id === "force-layout") {
+        title = 'Force Layout: Cluster ' + clusterID;
+        chartObj = {'chartID' : FORCE_LAYOUT, 'data': chartData.clusters[clusterID], 'title': title};
+        createNewChild(panelID, chartObj);
+    }
+    else
+    if(selectedMenu.context.id === "get-parent") {
+        var parent = tree.getParent(panelID, tree.traverseBF);
+        var msg = parent !== null ? parent.data : "Root doesn't have parent";
+        alert(msg);
+    }
 }
 
 function handleContextMenuTimeline(invokedOn, selectedMenu, dataRange)
@@ -738,8 +738,8 @@ function resizeTimeline() {
     d3.select(window)
         .on('resize', function () {
             var maxWidth = $(window).width() - 40;
-            var maxHeight = $(window).height()*0.6;
-            $("#panel-1-1 .panel-body").resizable("option", "maxWidth", maxWidth );
+            var maxHeight = $(window).height() * 0.6;
+            $("#panel-1-1 .panel-body").resizable("option", "maxWidth", maxWidth);
             $("#panel-1-1 .panel-body").resizable("option", "maxHeight", maxHeight);
-        })
+        });
 }
