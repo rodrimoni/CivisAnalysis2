@@ -43,7 +43,7 @@ function loadRollCalls(arrayRollCalls, callback) {
     });
 }
 
-function loadNodes(type, selectedTime)
+function loadNodes(type, selectedTime, callback)
 {
     //console.log(JSON.stringify(d3.select('#panel-2-1 .panel-body').data()[0]));
     //console.log(JSON.stringify(deputiesNodes[0]));
@@ -58,6 +58,8 @@ function loadNodes(type, selectedTime)
             depObj.scatterplot  = precalcDeputy.scatterplot;
             deputiesNodes.push(depObj);
         });
+
+        callback();
         //console.log(JSON.stringify(deputiesNodes[0]));
        // console.log(JSON.stringify(d3.select('#panel-2-1 .panel-body').data()[0]));
 

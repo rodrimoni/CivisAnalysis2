@@ -14,12 +14,6 @@ var MAX_WIDTH = 1000;
 var HEIGHT_ICON = 28;
 var WIDTH_ICON = 28;
 
-/* Constant values of Legislatures and Years */
-var FIRST_YEAR = 1991;
-var LAST_YEAR = 2016;
-var FIRST_LEGISLATURE = 0;
-var LAST_LEGISLATURE = 6;
-
 /* Constant to define the charts */
 var SCATTER_PLOT = 1;
 var BAR_CHART = 2;
@@ -27,6 +21,8 @@ var FORCE_LAYOUT = 3;
 
 /* Global variable to store all deputies with an ID */
 var deputiesArray = [];
+
+/* Global variable to store all rollcalls */
 var rollCallsArray = [];
 
 /* Global variable to store the scatter plot nodes */
@@ -237,6 +233,7 @@ function createNewChild(currentId, chartObj) {
         setUpPanel(newID);
 
         var timeline = d3.chart.timeline();
+        var dataRange;
 
         timeline(d3.select("#" + newID + " .panel-body"),
             timelineWidth,
@@ -247,12 +244,9 @@ function createNewChild(currentId, chartObj) {
             .data(rollCallsArray)
             .update();
 
-        var dataRange;
-
         timeline
             .on("timelineFilter", function(filtered) {
-                console.log("filtered", filtered);
-                dataRange = setNewDateRange(filtered)
+                filteredData = filtered;
             });
 
         /* Context menu for Timeline Chart */
@@ -260,7 +254,7 @@ function createNewChild(currentId, chartObj) {
             .contextMenu({
                 menuSelector: "#contextMenuTimeline",
                 menuSelected: function (invokedOn, selectedMenu) {
-                    handleContextMenuTimeline(invokedOn, selectedMenu, dataRange);
+                    handleContextMenuTimeline(invokedOn, selectedMenu, filteredData);
                 }
             });
 
@@ -444,18 +438,29 @@ function handleContextMenuScatterPlot(invokedOn, selectedMenu)
     }
 }
 
-function handleContextMenuTimeline(invokedOn, selectedMenu, dataRange)
+function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
 {
-    var title;
-    if (dataRange.type !== "year")
-        title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
-    else
-        title = dataRange.id;
+    var dataRange;
 
     if (selectedMenu.context.id === "scatter-plot")
     {
-        var chartObj = {'chartID': SCATTER_PLOT, 'data': deputiesNodes, 'title': title};
-        createNewChild('panel-1-1', chartObj);
+        deputiesNodes = [];
+        dataRange = setNewDateRange(filteredData);
+
+        var callback = function(){
+            var chartObj = {'chartID': SCATTER_PLOT, 'data': deputiesNodes, 'title': title};
+            createNewChild('panel-1-1', chartObj);
+        };
+
+        if (dataRange.found) {
+            var title;
+
+            if (dataRange.type !== "year")
+                title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
+            else
+                title = dataRange.id;
+            loadNodes(dataRange.type, dataRange.id, callback);
+        }
     }
 }
 
@@ -726,10 +731,6 @@ function setNewDateRange(period)
                 precalc.type = 'president';
                 console.log('PRESIDENT - preCALC!!'); }
         });
-
-    if (precalc.found) {
-        loadNodes(precalc.type, precalc.id);
-    }
 
     return precalc;
 }
