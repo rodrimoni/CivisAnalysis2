@@ -46,7 +46,7 @@ function loadRollCalls(arrayRollCalls, callback) {
 function loadNodes(type, selectedTime, callback)
 {
     //console.log(JSON.stringify(d3.select('#panel-2-1 .panel-body').data()[0]));
-    //console.log(JSON.stringify(deputiesNodes[0]));
+    //console.log(JSON.stringify(deputyNodes[0]));
     d3.json('data/precalc/'+type+'.'+selectedTime +'.json', function (precalc) {
         // SET THE precalc DEPUTIES to their constant object in the app
         precalc.deputyNodes.forEach( function(precalcDeputy){
@@ -56,11 +56,11 @@ function loadNodes(type, selectedTime, callback)
             depObj.deputyID = precalcDeputy.deputyID;
             depObj.party = precalcDeputy.party;
             depObj.scatterplot  = precalcDeputy.scatterplot;
-            deputiesNodes.push(depObj);
+            deputyNodes.push(depObj);
         });
 
         callback();
-        //console.log(JSON.stringify(deputiesNodes[0]));
+        //console.log(JSON.stringify(deputyNodes[0]));
        // console.log(JSON.stringify(d3.select('#panel-2-1 .panel-body').data()[0]));
 
         /*chart = scatterPlotChart();
