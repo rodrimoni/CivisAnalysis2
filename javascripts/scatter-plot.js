@@ -200,18 +200,16 @@ function scatterPlotChart()
 
                 svg.selectAll(".dot")
                     .attr("transform", function(d) {return "translate(" + x(d.scatterplot[1]) + "," + y(d.scatterplot[0]) + ")";});
-                svg.selectAll(".hull")
-                .attr("d", function(d) {
-                        var points = "M";
-                        points += x(d.points[0][1]) + " " + y(d.points[0][0]) + " ";
-                        for (var i = 1; i < d.points.length; i++) {
-                            points += "L" + x(d.points[i][1]) + " " + y(d.points[i][0]) + " ";
-                        }
 
-                        points += "Z";
-                        return points;
-                    }
-                )
+                var groupPath = function(d) {
+                    return "M" +
+                        d3.geom.hull(d.points.map(function(i) { return [x(i[1]), y(i[0])]; }))
+                            .join("L")
+                        + "Z";
+                };
+
+                svg.selectAll(".hull")
+                    .attr("d", groupPath);
             }
 
             function updateLegend(data, svg) {
@@ -298,9 +296,78 @@ function scatterPlotChart()
             hullSets.push( {"cluster" : index, "points" : hull(cluster.points.map(function(e) {return e.location; }), 20)} );
         });
 
+        var clustersPoints = [];
 
-        updateHulls(hullSets, id);
+        this.clusters.forEach(function (cluster, index) {
+            clustersPoints.push({"cluster": index, "points" : cluster.points.map(function (t) { return t.location; })});
+        });
+
+        console.log(clustersPoints);
+
+        //updateHulls(hullSets, id);
+        updateHullsTest(clustersPoints, id);
     };
+
+    function updateHullsTest(data, id)
+    {
+        var groupPath = function(d) {
+            return "M" +
+                d3.geom.hull(d.points.map(function(i) { return [x(i[1]), y(i[0])]; }))
+                    .join("L")
+                + "Z";
+        };
+
+        var col = d3.scale.category10();
+        var deputiesClusters = "#" + id + " .deputiesClusters";
+        var svg = d3.select(deputiesClusters);
+
+        var toolTipCluster = d3.select('.toolTipCluster');
+
+        var objects = svg.selectAll(".hull")
+            .data(data, function(d){return d;});
+
+        objects
+            .attr("d", groupPath)
+            .style("fill", function(d) { return col(d.cluster); })
+            .style("stroke", function(d) { return col(d.cluster); })
+            .style("stroke-width",8)
+            .style("stroke-linejoin", "round")
+            .style("opacity", .2);
+
+
+        var enterObjects = objects
+                            .data(data)
+                            .enter();
+
+        enterObjects
+            .append("path")
+            .classed("hull", true)
+            .attr("id", function(d) { return "cluster_id_" + d.cluster; })
+            .attr("d", groupPath)
+            .style("fill", function(d) { return col(d.cluster); })
+            .style("stroke", function(d) { return col(d.cluster); })
+            .style("stroke-width", 8)
+            .style("stroke-linejoin", "round")
+            .style("opacity", .2)
+            .on("click", function(d){
+                toolTipCluster.style("left", d3.event.pageX + 10 + "px");
+                toolTipCluster.style("top", d3.event.pageY - 25 + "px");
+                toolTipCluster.style("display", "inline-block");
+                toolTipCluster.html("Cluster " + d.cluster);
+            })
+            .on("blur", hideToolTipCluster);
+
+        $(deputiesClusters)
+            .contextMenu({
+                menuSelector: "#contextMenuScatterPlot",
+                menuSelected: function (invokedOn, selectedMenu) {
+                    handleContextMenuScatterPlot(invokedOn, selectedMenu);
+                }
+            });
+
+        objects.exit().remove();
+
+    }
 
     function updateHulls (data,id)
     {
@@ -332,8 +399,8 @@ function scatterPlotChart()
             .attr("stroke", function(d) { return col(d.cluster); });
 
         var enterObjects = objects
-            .data(data)
-            .enter();
+                            .data(data)
+                            .enter();
 
         enterObjects
             .append("path")

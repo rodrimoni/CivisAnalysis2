@@ -458,8 +458,9 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
             createNewChild('panel-1-1', chartObj);
         };
 
+        var title;
+
         if (dataRange.found) {
-            var title;
 
             if (dataRange.type !== "year")
                 title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
@@ -472,6 +473,7 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
         updateDataforDateRange(filteredData, function(){
             // if the precal was found we dont need to calc the SVD
             if(!dataRange.found) {
+                title = filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString()
                 var filteredDeputies = filterDeputies( deputiesInTheDateRange, rollCallInTheDateRange);
                 var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies,rollCallInTheDateRange);
 
@@ -492,6 +494,8 @@ function createDeputyNodes(data_deputies, selecteddeputies){
 
     for (var i = 0; i < selecteddeputies.length; i++) {
         selecteddeputies[i].scatterplot = data_deputies[i];
+
+        /* Mirroring the x axis to keep the pattern with precalc data */
         selecteddeputies[i].scatterplot[1] = selecteddeputies[i].scatterplot[1] * (-1);
     }
 
@@ -520,7 +524,7 @@ function filterDeputies ( deputiesInTheDateRange, rollCallInTheDateRange) {
                 deputy.scatterplot = null;
                 deputy.svdKey= null;
             }
-        })
+        });
         return dep;
     }
 
