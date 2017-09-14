@@ -20,60 +20,6 @@ var partiesArbitraryColor = {"DEM":"LightCoral", "PFL":"LightCoral", // PFL ==> 
 
 function selColor(c){ return partiesArbitraryColor[c]; }
 
-function loadDeputies(deputiesArray)
-{
-    d3.json('data/deputies.json', function(a_deputiesArray) {
-        a_deputiesArray.forEach( function(deputy,i){
-            deputy.deputyID = i;
-            deputiesArray.push(deputy)
-        });
-    });
-}
-
-function loadRollCalls(arrayRollCalls, callback) {
-    d3.json('data/arrayRollCalls.json', function (a_arrayRollCalls) {
-        a_arrayRollCalls.forEach(
-            function (rollCall, i) {
-                rollCall.datetime = new Date(rollCall.datetime);
-                rollCall.rollCallID = i;
-                arrayRollCalls.push(rollCall)
-            }
-        );
-        callback();
-    });
-}
-
-function loadNodes(type, selectedTime, callback)
-{
-    //console.log(JSON.stringify(d3.select('#panel-2-1 .panel-body').data()[0]));
-    //console.log(JSON.stringify(deputyNodes[0]));
-    d3.json('data/precalc/'+type+'.'+selectedTime +'.json', function (precalc) {
-        // SET THE precalc DEPUTIES to their constant object in the app
-        precalc.deputyNodes.forEach( function(precalcDeputy){
-            var deputy = deputiesArray[precalcDeputy.deputyID], depObj = {};
-            depObj.name = deputy.name;
-            depObj.district = deputy.district;
-            depObj.deputyID = precalcDeputy.deputyID;
-            depObj.party = precalcDeputy.party;
-            depObj.scatterplot  = precalcDeputy.scatterplot;
-            deputyNodes.push(depObj);
-        });
-
-        callback();
-        //console.log(JSON.stringify(deputyNodes[0]));
-       // console.log(JSON.stringify(d3.select('#panel-2-1 .panel-body').data()[0]));
-
-        /*chart = scatterPlotChart();
-
-        d3.select("#scatter")
-            .datum(deputyNodes)
-            .call(chart);
-
-        $("#countParties").append("# of parties: <span id= 'count'>" + Object.keys(parties).length + "</span>").show();
-        */
-    });
-}
-
 function scatterPlotChart()
 {
     var margin = { top: 50, right: 200, bottom: 50, left: 50 },
