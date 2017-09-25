@@ -467,7 +467,7 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
             if (dataRange.found) {
                 if (dataRange.type !== "year")
                 {
-                    title = "timeline crop";
+                    title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
                     var chartObj = {'chartID': TIME_LINE_CROP, 'data': dataRange, 'title': title};
                     createNewChild('panel-1-1', chartObj);
                 }

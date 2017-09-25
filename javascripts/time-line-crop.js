@@ -144,14 +144,14 @@ function timeLineCrop(){
             .data( parties, function(d){ return d.key} );
 
         partiesG.enter().append('g').attr({'class':'party'})
-            .on('mouseover',function(d){ var p={}; p[d.key] = true; chart.partiesMouseover(p); })
-            .on('mouseout',chart.partiesMouseout);
+            .on('mouseover',function(d){ var p={}; p[d.key] = true; partiesMouseover(p); })
+            .on('mouseout',partiesMouseout);
 
 
         partiesG.exit().transition().attr('opacity',0).remove();
 
         drawPartiesSteps(drawingType);
-        //drawPartiesTraces(drawingType);
+        drawPartiesTraces(drawingType);
     }
 
     function calcPartiesStepsUncluttered(height,pixelPercentageToParties){
@@ -171,8 +171,6 @@ function timeLineCrop(){
                 }
             }
         }
-
-        console.log(periods);
 
         // for each period
         for( var period in periods){
@@ -341,8 +339,6 @@ function timeLineCrop(){
             .attr( popoverAttr(partyPopOver,'top') );
 
         function partyPopOver( d ){
-            console.log(d);
-            console.log(CONGRESS_DEFINE.parties[d.value.party]);
             return '<h4>'+d.value.party+'</h4><em>'+((d.value.party)? CONGRESS_DEFINE.parties[d.value.party].name:'')+'</em>';
         }
         $('.timeline-crop .parties .party .steps .step').popover({ trigger: "hover" });
@@ -358,6 +354,62 @@ function timeLineCrop(){
             .attr("opacity", 1 )
             .style("fill", function(d){ return CONGRESS_DEFINE.getPartyColor(d.value.party); } )
     }
+
+    function drawPartiesTraces(type){
+
+        var firstYear = ranges.period[0].getFullYear();
+        var lastYear = ranges.period[1].getFullYear();
+
+        var traces = svg.selectAll('.parties .party')
+            .selectAll('.traces')
+            .data( function(d){return [d.traces]});
+
+        traces.enter().append('g').attr({'class':'traces'});
+
+        var trace = traces.selectAll('.trace')
+            .data( function(d){ return d3.values(d).filter(function(e){return e.firstDate >= firstYear && e.secondDate <= lastYear}) } );
+
+        trace.enter().append('path').attr('class','trace');
+
+        trace.transition(3000)
+            .attr("d", function(d){ return drawPartyTrace(d,type)} )
+            .style("fill", function(d){ return CONGRESS_DEFINE.getPartyColor(d.first.party); } )
+            .attr("opacity", 0.3);
+
+        function drawPartyTrace(trace,type){
+
+            var lineFunction = d3.svg.line()
+                .x(function (d) { return d.x })
+                .y(function (d) { return d.y })
+                .interpolate("linear");
+
+            var dataPath = [];
+            dataPath.push({x:scaleX_middleOfBiennial(trace.firstDate)+partyStepWidth/2,y:trace.first[type].x0});
+            dataPath.push({x:scaleX_middleOfBiennial(trace.secondDate)-partyStepWidth/2,y:trace.second[type].x0});
+            dataPath.push({x:scaleX_middleOfBiennial(trace.secondDate)-partyStepWidth/2,y:trace.second[type].x0 + trace.second[type].height});
+            dataPath.push({x:scaleX_middleOfBiennial(trace.firstDate)+partyStepWidth/2,y:trace.first[type].x0 + trace.first[type].height});
+
+            return lineFunction( dataPath ) + "Z";
+        }
+    }
+
+    function partiesMouseover (p){
+        if(p !== null){
+            svg.selectAll('.party').sort(function (party, b) { // select the parent and sort the path's
+                if(p[party.key]!== undefined){
+                    if (p[party.key]) return 1;  // --> party hovered to front
+                    else return -1;
+                } else return -1;
+            })
+                .transition().attr('opacity',function (party) {
+                return (p[party.key]!== undefined)? 1 : 0.2;
+            })
+        }
+    }
+
+    function partiesMouseout () {
+        svg.selectAll('.party').transition().attr('opacity',1);
+    };
 
     return chart;
 
