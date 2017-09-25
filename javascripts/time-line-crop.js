@@ -10,7 +10,7 @@ function timeLineCrop(){
     var svg;
     var rangeButtonsHeight = 30;
     var timelineDim = {};
-    var partyStepWidth = 15;
+    var partyStepWidth = 40;
     var drawingType = 'uncluttered'; // or cluttered || uncluttered
     var pixelPercentageToParties = 0.5;
 
@@ -99,13 +99,13 @@ function timeLineCrop(){
                 yearlyColumms.append('path').attr({
                     d: 'M '+scaleX_middleOfBiennial(year)+' '+2+' V '+(timelineDim.height+10),
                     stroke:'grey',
-                    'stroke-dasharray':"10,10"
+                    'stroke-dasharray':"15,15"
                 })
         });
         yearlyColumms.append('path').attr({
             d: 'M '+scaleX_middleOfBiennial(firstYear-1)+' '+timelineDim.height/2+' H '+scaleX_middleOfBiennial(lastYear),
             stroke:'lightgrey',
-            'stroke-dasharray':"5,5"
+            'stroke-dasharray':"10,10"
         });
 
         // governemnt X opposition
