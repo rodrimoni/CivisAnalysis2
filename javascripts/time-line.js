@@ -220,7 +220,7 @@ d3.chart.timeline = function() {
         gBrush = g.append("g").attr("class", "brush").on("mousedown", function(){
             if(d3.event.button === 2){
                 d3.event.stopImmediatePropagation();
-            };
+            }
         }).call(brush);
         gBrush.selectAll("rect").attr("height", timelineDim.height+histogramHeight+rangeButtonsHeight*3+40);
         gBrush.selectAll(".resize").append("path").attr("d", resizePath);
@@ -491,9 +491,9 @@ d3.chart.timeline = function() {
     function drawPartiesTraces(type){
         var traces = svg.selectAll('.parties .party')
             .selectAll('.traces')
-            .data( function(d){return [d.traces]})
+            .data( function(d){return [d.traces]});
 
-        traces.enter().append('g').attr({'class':'traces'})
+        traces.enter().append('g').attr({'class':'traces'});
 
         var trace = traces.selectAll('.trace')
             .data( function(d){ return d3.values(d) } );
@@ -589,7 +589,7 @@ d3.chart.timeline = function() {
 
     function appendRangeButtons(ranges, y, fillClass){
 
-        var gb = svg.append('g').attr('transform','translate('+margin.left+','+y+')')
+        var gb = svg.append('g').attr('transform','translate('+margin.left+','+y+')');
 
         var gRects = gb.selectAll('g')
             .data(ranges)
@@ -779,47 +779,47 @@ d3.chart.timeline = function() {
         }
     }
 
+    function forceAlgorithmToAproximateTheUnclutteredPositionsToClutteredWithoutOcclusion(timelineHeight) {
+        d3.range(1991,2017,2).forEach(function(year) {
+            var partiesInPeriod = [];
+            for(var party in CONGRESS_DEFINE.partiesTraces.traces){
+                if(CONGRESS_DEFINE.partiesTraces.traces[party][year])
+                    partiesInPeriod.push(CONGRESS_DEFINE.partiesTraces.traces[party][year]);
+            }
+            // d3.selectAll("rect.step.y"+year).data();
+            partiesInPeriod.sort(function(a,b) {
+                return a.uncluttered.x0 - b.uncluttered.x0;
+            });
+            var movement;
+            do{ // repeat this loop til no parties' movment
+                movement = false;
+                partiesInPeriod.forEach( function(p,i){
+                    var idealPoint = p.cluttered.x0,
+                        x0 = p.uncluttered.x0,
+                        x1 = x0 + p.uncluttered.height,
+                        movUp = idealPoint > x0;
+
+                    if(x0<1 || x1>timelineHeight || Math.abs(idealPoint-x0)<1) return;
+                    var newX0 = Math.max(0,x0 + (movUp? 1 : -1)),
+                        newX1 = Math.max(0,x1 + (movUp? 1 : -1)),
+                        colision = false;
+
+                    if(i!==(partiesInPeriod.length-1) && movUp && newX1 > partiesInPeriod[i+1].uncluttered.x0) colision = true;
+                    if(i!==0 && !movUp && newX0 < (partiesInPeriod[i-1].uncluttered.x0+partiesInPeriod[i-1].uncluttered.height)) colision = true;
+
+                    if(!colision) {
+                        p.uncluttered.x0 = newX0;
+                        movement = true;
+                    }
+                })
+            } while(movement);
+        });
+    }
+
     //return d3.rebind(chart, brush, "on");
     return d3.rebind(chart, dispatch, "on");
 };
 
-
-function forceAlgorithmToAproximateTheUnclutteredPositionsToClutteredWithoutOcclusion(timelineHeight) {
-    d3.range(1991,2017,2).forEach(function(year) {
-        var partiesInPeriod = [];
-        for(var party in CONGRESS_DEFINE.partiesTraces.traces){
-            if(CONGRESS_DEFINE.partiesTraces.traces[party][year])
-                partiesInPeriod.push(CONGRESS_DEFINE.partiesTraces.traces[party][year]);
-        }
-        // d3.selectAll("rect.step.y"+year).data();
-        partiesInPeriod.sort(function(a,b) {
-            return a.uncluttered.x0 - b.uncluttered.x0;
-        });
-        var movement;
-        do{ // repeat this loop til no parties' movment
-            movement = false;
-            partiesInPeriod.forEach( function(p,i){
-                var idealPoint = p.cluttered.x0,
-                    x0 = p.uncluttered.x0,
-                    x1 = x0 + p.uncluttered.height,
-                    movUp = idealPoint > x0;
-
-                if(x0<1 || x1>timelineHeight || Math.abs(idealPoint-x0)<1) return;
-                var newX0 = Math.max(0,x0 + (movUp? 1 : -1)),
-                    newX1 = Math.max(0,x1 + (movUp? 1 : -1)),
-                    colision = false;
-
-                if(i!==(partiesInPeriod.length-1) && movUp && newX1 > partiesInPeriod[i+1].uncluttered.x0) colision = true;
-                if(i!==0 && !movUp && newX0 < (partiesInPeriod[i-1].uncluttered.x0+partiesInPeriod[i-1].uncluttered.height)) colision = true;
-
-                if(!colision) {
-                    p.uncluttered.x0 = newX0;
-                    movement = true;
-                }
-            })
-        } while(movement);
-    });
-}
 
 function popoverAttr(htmlContent,placement){
     return {

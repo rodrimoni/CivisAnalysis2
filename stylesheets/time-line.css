@@ -12,7 +12,30 @@
 .timeline  .foreground {
     fill: darkgrey;
 }
+
 .timeline .partiesLabel{
+    fill:grey;
+    writing-mode: tb;
+    glyph-orientation-vertical: 0;
+    font-size:small;
+}
+
+.timeline-crop{
+    width:99%;
+    margin-top: 0px;
+    margin-left: auto ;
+    margin-right: auto ;
+}
+
+.timeline-crop .background {
+    fill: lightgrey;
+}
+
+.timeline-crop  .foreground {
+    fill: darkgrey;
+}
+
+.timeline-crop .partiesLabel{
     fill:grey;
     writing-mode: tb;
     glyph-orientation-vertical: 0;

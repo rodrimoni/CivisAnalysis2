@@ -1,6 +1,8 @@
 var rollCallInTheDateRange =[];
 var deputiesInTheDateRange ={};
 var motions = {};
+var yearPartyExtent ={};
+var partyTrace = {};
 
 
 function loadDeputies(deputiesArray)
@@ -313,4 +315,132 @@ function filterDeputies () {
     // -------------------------------------------------------------------------------------------------------------------
     var filterFunction = filter513DeputiesMorePresent;
     return filterFunction();
+}
+
+function getPartyCount(cluster) {
+
+    var currentPartyCount = [];
+
+    cluster.points.forEach(function(deputy){
+        var result = $.grep(currentPartyCount, function(e){ return e.party === deputy.party; });
+        if (result.length === 0) {
+            currentPartyCount.push({"party" : deputy.party, "number": 1});
+        }
+        else
+        if (result.length === 1) {
+            result[0].number += 1;
+        }
+    });
+
+    /* Sort and count the number of deputies per party*/
+    currentPartyCount.sort(function(x,y){
+        return d3.descending(x.number, y.number);
+    });
+
+    return currentPartyCount;
+}
+
+function calcThePartyTracesByYear( periodOfYears ){
+    var startYear = 1991, endYear = 2016;
+
+    function calcOneYearRecursive(year) {
+        console.log('calcThePartyTracesByYear ' + year);
+        if(year > endYear){  partyTrace['DEM'] = mergeObjects(partyTrace['PFL'],partyTrace['DEM']);
+            partyTrace['PR'] = mergeObjects(partyTrace['PL'],partyTrace['PR']);
+            partyTrace['PP'] = mergeObjects(partyTrace['PPB'],partyTrace['PP']);
+
+            delete partyTrace['PFL'];
+            delete partyTrace['PL'];
+            delete partyTrace['PPB'];
+//delete partyTrace['PPR']; // ??
+//delete partyTrace['PDS']; // ??
+
+            var saveTrace = {
+                "extents": yearPartyExtent,
+                "traces": partyTrace
+            };
+
+            console.log(JSON.stringify(saveTrace)); return; }
+        var period = [];
+        period[0] = new Date(year,0,1);
+        period[1] = new Date(year+periodOfYears,0,1);
+
+        updateDataforDateRange( period , function(){
+            filteredDeputies = filterDeputies();
+            matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall();
+
+            // var SVDdata = calcSVD(filteredDeputies,rollCallInTheDateRange);
+            calcSVD(matrixDeputiesPerRollCall, function(SVDdata) {
+                // Deputies array
+                deputyNodes = createDeputyNodes(SVDdata.deputies,filteredDeputies);
+
+                scaleAdjustment().setGovernmentTo3rdQuadrant(deputyNodes,period[1]);
+
+                // store parties trace
+                var parties = calcPartiesSizeAndCenter(deputyNodes);
+                // $.each(parties, function(party){
+                // 	if(filter[party] === undefined) { delete parties[party] }
+                // });
+
+                //console.log(parties)
+                $.each(parties, function(party){
+                    if(partyTrace[party] === undefined) partyTrace[party] = {};
+
+                    partyTrace[party][year]={}
+                    partyTrace[party][year].center = this.center;
+                    partyTrace[party][year].size = this.size;
+
+                })
+                yearPartyExtent[year] = d3.extent( d3.entries(parties), function(d){ return d.value.center[1] });
+
+                calcOneYearRecursive(year+periodOfYears);
+            })
+        })
+
+    };
+
+    calcOneYearRecursive(startYear);
+
+}
+
+function createTraces1by1 (){
+    calcThePartyTracesByYear(1); // calc by two years
+}
+
+
+function mergeObjects(obj1,obj2){
+    var obj3 = {};
+    for (var attrname in obj1) { obj3[attrname] = obj1[attrname]; }
+    for (var attrname in obj2) { obj3[attrname] = obj2[attrname]; }
+    return obj3;
+}
+
+function calcPartiesSizeAndCenter( deputies ){
+    if(deputies==null) return null;
+
+    var parties = {};
+
+    deputies.forEach(function(deputy){
+
+        if(parties[deputy.party] === undefined) parties[deputy.party] = {size:0, selected:0, center:[0,0], stdev:[0,0]};
+        parties[deputy.party].size++;
+        if(deputy.selected) parties[deputy.party].selected++;
+        // sum of values
+        parties[deputy.party].center[0] += deputy.scatterplot[0];
+        parties[deputy.party].center[1] += deputy.scatterplot[1];
+        // sum of values²
+        parties[deputy.party].stdev[0] += Math.pow(deputy.scatterplot[0], 2);
+        parties[deputy.party].stdev[1] += Math.pow(deputy.scatterplot[1], 2);
+    })
+
+    $.each(parties, function(party){
+        // calc stdev
+        parties[party].stdev[0] = Math.sqrt(  ( parties[party].stdev[0] - Math.pow(parties[party].center[0],2)/parties[party].size) / (parties[party].size -1) )
+        parties[party].stdev[1] = Math.sqrt(  ( parties[party].stdev[1] - Math.pow(parties[party].center[1],2)/parties[party].size) / (parties[party].size -1) )
+        // calc mean
+        parties[party].center[0] = parties[party].center[0]/parties[party].size;
+        parties[party].center[1] = parties[party].center[1]/parties[party].size;
+    })
+
+    return parties;
 }

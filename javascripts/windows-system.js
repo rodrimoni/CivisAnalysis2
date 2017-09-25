@@ -18,6 +18,7 @@ var WIDTH_ICON = 28;
 var SCATTER_PLOT = 1;
 var BAR_CHART = 2;
 var FORCE_LAYOUT = 3;
+var TIME_LINE_CROP = 4;
 
 /* Global variable to store all deputies with an ID */
 var deputiesArray = [];
@@ -35,6 +36,7 @@ function initSystem() {
     loadDeputies(deputiesArray);
     loadRollCalls(arrayRollCalls, function () {
         createNewChild("timeline");
+        //createTraces1by1();
     });
 }
 
@@ -55,6 +57,10 @@ function initializeChart(newID, chartObj) {
 
         case FORCE_LAYOUT:
             chart =  forceLayout();
+            break;
+
+        case TIME_LINE_CROP:
+            chart = timeLineCrop();
             break;
 
         default:
@@ -260,9 +266,9 @@ function createNewChild(currentId, chartObj) {
     }
     else
     {
-        var hashID = $("#" + currentId);
+        var parentID = $("#" + currentId);
         var offset = 40;
-        var parentPosition = hashID.position();
+        var parentPosition = parentID.position();
 
         var newLocation = [];
 
@@ -401,27 +407,26 @@ function handleContextMenuScatterPlot(invokedOn, selectedMenu)
         createNewChild(panelID, chartObj );
     }
     else
-    if(selectedMenu.context.id === "force-layout") {
-        title = 'Force Layout: Cluster ' + clusterID;
-        chartObj = {'chartID' : FORCE_LAYOUT, 'data': chartData.clusters[clusterID], 'title': title};
-        createNewChild(panelID, chartObj);
-    }
-    else
-    if(selectedMenu.context.id === "get-parent") {
-        var parent = tree.getParent(panelID, tree.traverseBF);
-        var msg = parent !== null ? parent.data : "Root doesn't have parent";
-        alert(msg);
-    }
+        if(selectedMenu.context.id === "force-layout") {
+            title = 'Force Layout: Cluster ' + clusterID;
+            chartObj = {'chartID' : FORCE_LAYOUT, 'data': chartData.clusters[clusterID], 'title': title};
+            createNewChild(panelID, chartObj);
+        }
+        else
+            if(selectedMenu.context.id === "get-parent") {
+                var parent = tree.getParent(panelID, tree.traverseBF);
+                var msg = parent !== null ? parent.data : "Root doesn't have parent";
+                alert(msg);
+            }
 }
 
 function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
 {
-    var dataRange;
+    var dataRange = setNewDateRange(filteredData);
 
     if (selectedMenu.context.id === "scatter-plot")
     {
         deputyNodes = [];
-        dataRange = setNewDateRange(filteredData);
 
         var createScatterPlot = function(){
             var chartObj = {'chartID': SCATTER_PLOT, 'data': deputyNodes, 'title': title};
@@ -456,8 +461,18 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
                 calcSVD(matrixDeputiesPerRollCall,calcCallback);
             }
         })
-
     }
+    else
+        if(selectedMenu.context.id ==='time-line-crop') {
+            if (dataRange.found) {
+                if (dataRange.type !== "year")
+                {
+                    title = "timeline crop";
+                    var chartObj = {'chartID': TIME_LINE_CROP, 'data': dataRange, 'title': title};
+                    createNewChild('panel-1-1', chartObj);
+                }
+            }
+        }
 }
 
 
