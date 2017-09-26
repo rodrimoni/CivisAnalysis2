@@ -250,8 +250,7 @@ d3.chart.timeline = function() {
 
         // Add the traced (stroke-dasharray) lines from top to bottom
         var biennialColumms = partyTraces.append('g');
-        d3.range(1991,2015).forEach(function(year){
-            if((year+1)%2)
+        d3.range(1991,2016).forEach(function(year){
                 biennialColumms.append('path').attr({
                     d: 'M '+scaleX_middleOfBiennial(year)+' '+2+' V '+(timelineDim.height+10),
                     stroke:'grey',
@@ -259,7 +258,7 @@ d3.chart.timeline = function() {
                 })
         });
         biennialColumms.append('path').attr({
-            d: 'M '+scaleX_middleOfBiennial(1990)+' '+timelineDim.height/2+' H '+scaleX_middleOfBiennial(2015),
+            d: 'M '+scaleX_middleOfBiennial(1990)+' '+timelineDim.height/2+' H '+scaleX_middleOfBiennial(2016),
             stroke:'lightgrey',
             'stroke-dasharray':"5,5"
         });
@@ -304,13 +303,13 @@ d3.chart.timeline = function() {
         calcPartiesStepsCluttered(timelineDim.height,chart.pixelPercentageToParties);
         forceAlgorithmToAproximateTheUnclutteredPositionsToClutteredWithoutOcclusion(timelineDim.height);
         // CALC TRACES
-        var parties = d3.entries(CONGRESS_DEFINE.partiesTraces.traces);
+        var parties = d3.entries(CONGRESS_DEFINE.partiesTraces1by1.traces);
         parties.forEach( function(party){
             var partyAtYear = party.value;
             party.traces = [];
-            d3.range(1991,2017,2).forEach(function(year) {
-                if( (partyAtYear[year] !== undefined) && (partyAtYear[year+2] !== undefined) ){
-                    party.traces.push({first:partyAtYear[year],second:partyAtYear[year+2],firstDate:year,secondDate:year+2});
+            d3.range(1991,2017,1).forEach(function(year) {
+                if( (partyAtYear[year] !== undefined) && (partyAtYear[year+1] !== undefined) ){
+                    party.traces.push({first:partyAtYear[year],second:partyAtYear[year+1],firstDate:year,secondDate:year+1});
                 }
             });
         });
@@ -334,14 +333,14 @@ d3.chart.timeline = function() {
         // get parties for each period (biennial)
         periods = {};
         // for each two years starting from 1991
-        for (var i = 1991; i < 2017; i+=2 ) {
+        for (var i = 1991; i < 2017; i++ ) {
             // for each period create an array of parties
             periods[i] = { parties:[] };
-            for( party in CONGRESS_DEFINE.partiesTraces.traces){
+            for( party in CONGRESS_DEFINE.partiesTraces1by1.traces){
                 // if the party did not exist(undefined) - do not push in the party array
-                if(CONGRESS_DEFINE.partiesTraces.traces[party][i] !== undefined){
-                    CONGRESS_DEFINE.partiesTraces.traces[party][i].party = party; //(garbage)
-                    periods[i].parties.push( CONGRESS_DEFINE.partiesTraces.traces[party][i] );
+                if(CONGRESS_DEFINE.partiesTraces1by1.traces[party][i] !== undefined){
+                    CONGRESS_DEFINE.partiesTraces1by1.traces[party][i].party = party; //(garbage)
+                    periods[i].parties.push( CONGRESS_DEFINE.partiesTraces1by1.traces[party][i] );
                 }
             }
         }
@@ -397,14 +396,14 @@ d3.chart.timeline = function() {
         // get parties for each period (biennial)
         periods = {};
         // for each two years starting from 1991
-        for (var i = 1991; i < 2017; i+=2 ) {
+        for (var i = 1991; i < 2017; i++ ) {
             // for each period create an array of parties
             periods[i] = { parties:[] };
-            for( party in CONGRESS_DEFINE.partiesTraces.traces){
+            for( party in CONGRESS_DEFINE.partiesTraces1by1.traces){
                 // if the party did not exist(undefined) - do not push in the party array
-                if(CONGRESS_DEFINE.partiesTraces.traces[party][i] !== undefined){
-                    CONGRESS_DEFINE.partiesTraces.traces[party][i].party = party; //(garbage)
-                    periods[i].parties.push( CONGRESS_DEFINE.partiesTraces.traces[party][i] );
+                if(CONGRESS_DEFINE.partiesTraces1by1.traces[party][i] !== undefined){
+                    CONGRESS_DEFINE.partiesTraces1by1.traces[party][i].party = party; //(garbage)
+                    periods[i].parties.push( CONGRESS_DEFINE.partiesTraces1by1.traces[party][i] );
                 }
             }
         }
@@ -432,8 +431,8 @@ d3.chart.timeline = function() {
             var scaleParties = d3.scale.linear()
                 .domain([
                     // the the political spectrum domain of the period
-                    CONGRESS_DEFINE.partiesTraces.extents[period][1],
-                    CONGRESS_DEFINE.partiesTraces.extents[period][0]
+                    CONGRESS_DEFINE.partiesTraces1by1.extents[period][1],
+                    CONGRESS_DEFINE.partiesTraces1by1.extents[period][0]
                 ])
                 .range([
                     // the (width-height)/2 of first party in the spectrum
@@ -480,7 +479,7 @@ d3.chart.timeline = function() {
             .attr('class',function(d) {
                 return 'step y'+d.key;
             })
-            .attr("x", function (d) { return scaleX_middleOfBiennial(Number.parseInt(d.key)+1) -partyStepWidth/2} )
+            .attr("x", function (d) { return scaleX_middleOfBiennial(Number.parseInt(d.key)) -partyStepWidth/2} )
             .attr("y", function (d) { return d.value[type].x0 })
             .attr("height", function (d) { return d.value[type].height })
             .attr("width", partyStepWidth )
@@ -513,10 +512,10 @@ d3.chart.timeline = function() {
                 .interpolate("linear");
 
             var dataPath = [];
-            dataPath.push({x:scaleX_middleOfBiennial(trace.firstDate+1)+partyStepWidth/2,y:trace.first[type].x0});
-            dataPath.push({x:scaleX_middleOfBiennial(trace.secondDate+1)-partyStepWidth/2,y:trace.second[type].x0});
-            dataPath.push({x:scaleX_middleOfBiennial(trace.secondDate+1)-partyStepWidth/2,y:trace.second[type].x0 + trace.second[type].height});
-            dataPath.push({x:scaleX_middleOfBiennial(trace.firstDate+1)+partyStepWidth/2,y:trace.first[type].x0 + trace.first[type].height});
+            dataPath.push({x:scaleX_middleOfBiennial(trace.firstDate)+partyStepWidth/2,y:trace.first[type].x0});
+            dataPath.push({x:scaleX_middleOfBiennial(trace.secondDate)-partyStepWidth/2,y:trace.second[type].x0});
+            dataPath.push({x:scaleX_middleOfBiennial(trace.secondDate)-partyStepWidth/2,y:trace.second[type].x0 + trace.second[type].height});
+            dataPath.push({x:scaleX_middleOfBiennial(trace.firstDate)+partyStepWidth/2,y:trace.first[type].x0 + trace.first[type].height});
 
             return lineFunction( dataPath ) + "Z";
         }
@@ -780,11 +779,11 @@ d3.chart.timeline = function() {
     }
 
     function forceAlgorithmToAproximateTheUnclutteredPositionsToClutteredWithoutOcclusion(timelineHeight) {
-        d3.range(1991,2017,2).forEach(function(year) {
+        d3.range(1991,2017,1).forEach(function(year) {
             var partiesInPeriod = [];
-            for(var party in CONGRESS_DEFINE.partiesTraces.traces){
-                if(CONGRESS_DEFINE.partiesTraces.traces[party][year])
-                    partiesInPeriod.push(CONGRESS_DEFINE.partiesTraces.traces[party][year]);
+            for(var party in CONGRESS_DEFINE.partiesTraces1by1.traces){
+                if(CONGRESS_DEFINE.partiesTraces1by1.traces[party][year])
+                    partiesInPeriod.push(CONGRESS_DEFINE.partiesTraces1by1.traces[party][year]);
             }
             // d3.selectAll("rect.step.y"+year).data();
             partiesInPeriod.sort(function(a,b) {

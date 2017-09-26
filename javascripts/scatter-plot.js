@@ -296,6 +296,7 @@ function scatterPlotChart()
             .style("stroke-linejoin", "round")
             .style("opacity", .2)
             .on("click", function(d){
+                this.focus();
                 toolTipCluster.style("left", d3.event.pageX + 10 + "px");
                 toolTipCluster.style("top", d3.event.pageY - 25 + "px");
                 toolTipCluster.style("display", "inline-block");
