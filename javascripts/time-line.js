@@ -250,7 +250,7 @@ d3.chart.timeline = function() {
 
         // Add the traced (stroke-dasharray) lines from top to bottom
         var biennialColumms = partyTraces.append('g');
-        d3.range(1991,2016).forEach(function(year){
+        d3.range(1991,2017).forEach(function(year){
                 biennialColumms.append('path').attr({
                     d: 'M '+scaleX_middleOfBiennial(year)+' '+2+' V '+(timelineDim.height+10),
                     stroke:'grey',
@@ -258,7 +258,7 @@ d3.chart.timeline = function() {
                 })
         });
         biennialColumms.append('path').attr({
-            d: 'M '+scaleX_middleOfBiennial(1990)+' '+timelineDim.height/2+' H '+scaleX_middleOfBiennial(2016),
+            d: 'M '+scaleX_middleOfBiennial(1990)+' '+timelineDim.height/2+' H '+scaleX_middleOfBiennial(2017),
             stroke:'lightgrey',
             'stroke-dasharray':"5,5"
         });

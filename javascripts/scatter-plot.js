@@ -248,8 +248,6 @@ function scatterPlotChart()
             clustersPoints.push({"cluster": index, "points" : cluster.points.map(function (t) { return t.location; })});
         });
 
-        console.log(clustersPoints);
-
         //updateHulls(hullSets, id);
         updateHullsTest(clustersPoints, id);
     };
@@ -268,7 +266,7 @@ function scatterPlotChart()
         var svg = d3.select(deputiesClusters);
 
         var toolTipCluster = d3.select('.toolTipCluster');
-
+        
         var objects = svg.selectAll(".hull")
             .data(data, function(d){return d;});
 
@@ -286,6 +284,15 @@ function scatterPlotChart()
                             .enter();
 
         enterObjects
+            .append("a")
+            .attr("xlink:href", "#")
+            .on("click", function(d){
+                toolTipCluster.style("left", d3.event.pageX + 10 + "px");
+                toolTipCluster.style("top", d3.event.pageY - 25 + "px");
+                toolTipCluster.style("display", "inline-block");
+                toolTipCluster.html("Cluster " + d.cluster);
+            })
+            .on("blur", hideToolTipCluster)
             .append("path")
             .classed("hull", true)
             .attr("id", function(d) { return "cluster_id_" + d.cluster; })
@@ -294,15 +301,8 @@ function scatterPlotChart()
             .style("stroke", function(d) { return col(d.cluster); })
             .style("stroke-width", 8)
             .style("stroke-linejoin", "round")
-            .style("opacity", .2)
-            .on("click", function(d){
-                this.focus();
-                toolTipCluster.style("left", d3.event.pageX + 10 + "px");
-                toolTipCluster.style("top", d3.event.pageY - 25 + "px");
-                toolTipCluster.style("display", "inline-block");
-                toolTipCluster.html("Cluster " + d.cluster);
-            })
-            .on("blur", hideToolTipCluster);
+            .style("opacity", .2);
+
 
         $(deputiesClusters)
             .contextMenu({
