@@ -1,18 +1,15 @@
 .scatter-plot rect {
     fill: transparent;
-    shape-rendering: crispEdges;
 }
 
 .scatter-plot .axis path,
 .scatter-plot .axis line {
     fill: none;
     stroke: rgba(0, 0, 0, 0.1);
-    shape-rendering: crispEdges;
 }
 
 .scatter-plot .axisLine {
     fill: none;
-    shape-rendering: crispEdges;
     stroke: rgba(0, 0, 0, 0.5);
     stroke-width: 2px;
 }
