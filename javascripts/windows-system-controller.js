@@ -255,7 +255,7 @@ function createMatrixDeputiesPerRollCall (){
 
 // calc how many votes each congressman made in the period
 function calcNumVotes(deputiesInTheDateRange){
-    $.each(deputiesInTheDateRange, function(deputy){    deputiesInTheDateRange[deputy].numVotes = 0;  })
+    $.each(deputiesInTheDateRange, function(deputy){    deputiesInTheDateRange[deputy].numVotes = 0;  });
 
     rollCallInTheDateRange.forEach( function( rollCall ){
         rollCall.votes.forEach( function(vote){
@@ -353,8 +353,8 @@ function calcThePartyTracesByYear( periodOfYears ){
             delete partyTrace['PFL'];
             delete partyTrace['PL'];
             delete partyTrace['PPB'];
-//delete partyTrace['PPR']; // ??
-//delete partyTrace['PDS']; // ??
+            //delete partyTrace['PPR']; // ??
+            //delete partyTrace['PDS']; // ??
 
             var saveTrace = {
                 "extents": yearPartyExtent,
@@ -387,18 +387,18 @@ function calcThePartyTracesByYear( periodOfYears ){
                 $.each(parties, function(party){
                     if(partyTrace[party] === undefined) partyTrace[party] = {};
 
-                    partyTrace[party][year]={}
+                    partyTrace[party][year]={};
                     partyTrace[party][year].center = this.center;
                     partyTrace[party][year].size = this.size;
 
-                })
+                });
                 yearPartyExtent[year] = d3.extent( d3.entries(parties), function(d){ return d.value.center[1] });
 
                 calcOneYearRecursive(year+periodOfYears);
             })
         })
 
-    };
+    }
 
     calcOneYearRecursive(startYear);
 
@@ -432,7 +432,7 @@ function calcPartiesSizeAndCenter( deputies ){
         // sum of values²
         parties[deputy.party].stdev[0] += Math.pow(deputy.scatterplot[0], 2);
         parties[deputy.party].stdev[1] += Math.pow(deputy.scatterplot[1], 2);
-    })
+    });
 
     $.each(parties, function(party){
         // calc stdev
@@ -441,7 +441,7 @@ function calcPartiesSizeAndCenter( deputies ){
         // calc mean
         parties[party].center[0] = parties[party].center[0]/parties[party].size;
         parties[party].center[1] = parties[party].center[1]/parties[party].size;
-    })
+    });
 
     return parties;
 }
