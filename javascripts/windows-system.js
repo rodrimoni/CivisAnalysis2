@@ -455,6 +455,7 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
                     // Deputies array
                     title = filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString();
                     deputyNodes = createDeputyNodes(twoDimData.deputies,filteredDeputies);
+                    scaleAdjustment().setGovernmentTo3rdQuadrant(deputyNodes,filteredData[1]);
                     createScatterPlot();
                 }
 

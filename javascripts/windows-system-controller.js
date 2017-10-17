@@ -12,6 +12,7 @@ function loadDeputies(deputiesArray)
             deputy.deputyID = i;
             deputiesArray.push(deputy)
         });
+        console.log(deputiesArray);
     });
 }
 
@@ -58,7 +59,7 @@ function createDeputyNodes(data_deputies, selecteddeputies){
         depObj.deputyID = deputy.deputyID;
         depObj.party = deputy.party;
         depObj.scatterplot  = data_deputies[i];
-        depObj.scatterplot[1] = depObj.scatterplot[1] * (-1);
+        //depObj.scatterplot[0] = depObj.scatterplot[0] * (-1);
         deputies.push(depObj);
     }
 

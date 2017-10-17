@@ -105,7 +105,7 @@
             var count = 0;
 
             deputyNodes.forEach( function(d){
-                if(d.party == governmentParty){
+                if(d.party === governmentParty){
                     count++;
                     partyPositionAverage[0] += d.scatterplot[0];
                     partyPositionAverage[1] += d.scatterplot[1];

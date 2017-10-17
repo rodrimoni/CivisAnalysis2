@@ -29,10 +29,10 @@ function scatterPlotChart()
         height = outerHeight - margin.top - margin.bottom;
 
     var x = d3.scale.linear()
-        .range([0, width]).nice();
+        .range([width,0]).nice();
 
     var y = d3.scale.linear()
-        .range([height, 0]).nice();
+        .range([0, height]).nice();
 
     var clusters = [];
 
@@ -123,7 +123,7 @@ function scatterPlotChart()
                 .append("circle")
                 .classed("dot", true)
                 .attr("r", 4)
-                //.attr("id", function(d) { return "deputy_id_" + d.deputyID; })
+                .attr("id", function(d) { return "deputy_id_" + d.deputyID; })
                 .attr("transform", function(d) {return "translate(" + x(d.scatterplot[1]) + "," + y(d.scatterplot[0]) + ")";})
                 .style("fill", function(d) { return selColor(d.party); })
                 .on("mousemove", function(d){

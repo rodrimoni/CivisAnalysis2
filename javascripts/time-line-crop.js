@@ -17,6 +17,10 @@ function timeLineCrop(){
     var ranges;
     var years;
 
+    //TODO: improve this part, wrong use of globals, temporary solution
+    var scaleParties = [];
+    var pixelPerDeputy = [];
+
     function chart(selection) {
         selection.each(function (data) {
             timelineDim.height = height-15 -rangeButtonsHeight;//*0.7;
@@ -119,13 +123,73 @@ function timeLineCrop(){
             });
 
         partyTraces.append('g').attr('class','parties').attr({transform:'translate(0,'+traceMargin+')'});
+        partyTraces.append('g').attr('class','deputies-behave').attr({transform:'translate(0,'+traceMargin+')'});
         drawParties();
+    }
+
+    function drawDeputy(deputies){
+        var firstYear = ranges.period[0].getFullYear();
+        var lastYear = ranges.period[1].getFullYear();
+
+        var deputiesSteps = [];
+        var combinedPositions = [];
+
+        var i = 0;
+        deputies.forEach(function(d,index){
+            for (var year = firstYear; year< lastYear; year++)
+            {
+                //cluttered position - ideal position
+                deputiesSteps[i] = {};
+                deputiesSteps[i].deputyID = index;
+                deputiesSteps[i].x0 = scaleParties[year](deputies[index].info[year][1]) - (pixelPerDeputy[year])/2;
+                deputiesSteps[i].year = year;
+                deputiesSteps[i].party = d.party;
+                i++;
+            }
+
+            //combinedPositions[index] = deputiesSteps[index].map(function(e){ return {x0:e, party: d.party} });
+
+            /*var parties = d3.entries(CONGRESS_DEFINE.partiesTraces1by1.traces);
+
+            var deputyParty = d.party;
+            var deputyValues;
+
+            for (party in parties)
+            {
+                if (parties[party].key === deputyParty)
+                {
+                    deputyValues = parties[party].value;
+                }
+            }*/
+        });
+
+        //console.log(combinedPositions);
+
+        /*for (var i = firstYear; i< lastYear; i++)
+        {
+            var diff = deputyValues[i].cluttered.x0 - deputyValues[i].uncluttered.x0;
+            console.log(diff);
+            var mult  = -1;
+
+            if (diff > 0)
+                mult = 1;
+
+            combinedPositions[i] = deputiesSteps[i] ;
+        }*/
+
+        //console.log(deputyValues);
+        //console.log(deputiesSteps);
+        //console.log(combinedPositions);
+
+        //console.log(combinedPositions);
+        drawDeputySteps((deputiesSteps));
     }
 
     function drawParties(){
         calcPartiesStepsUncluttered(timelineDim.height,pixelPercentageToParties);
         calcPartiesStepsCluttered(timelineDim.height,pixelPercentageToParties);
         forceAlgorithmToAproximateTheUnclutteredPositionsToClutteredWithoutOcclusion(timelineDim.height);
+
         // CALC TRACES
         var parties = d3.entries(CONGRESS_DEFINE.partiesTraces1by1.traces);
 
@@ -152,6 +216,34 @@ function timeLineCrop(){
 
         drawPartiesSteps(drawingType);
         drawPartiesTraces(drawingType);
+
+        // Deputado Marcos Lima - PMDB FHC Segundo Mandato 99,00,01,02 id = 961
+        // 99 - "scatterplot":[0.1506,-0.8453]
+        // 00 - "scatterplot":[-0.1659,-0.6516]
+        // 02 - "scatterplot":[-0.1303,-0.5277]
+        // 01 - "scatterplot":[-0.1251,-0.6942]
+
+        var deputies = [];
+        var sampleDeputy = [];
+        sampleDeputy[1999] = [0.1506,-0.8453];
+        sampleDeputy[2000] = [-0.1659,-0.6516];
+        sampleDeputy[2001] = [-0.1251,-0.6942];
+        sampleDeputy[2002] = [-0.1303,-0.5277];
+
+        deputies.push({party: "PMDB", info: sampleDeputy});
+
+        var sampleDeputy2 = [];
+
+        // nelson otoch psdb id deputyID: 1924
+
+        sampleDeputy2[1999] = [-0.7072,-0.1243];
+        sampleDeputy2[2000] = [-0.6363,0.02066];
+        sampleDeputy2[2001] = [-0.5057,0.0524];
+        sampleDeputy2[2002] = [-0.4775,0.02922];
+
+        deputies.push({party: "PSDB", info: sampleDeputy2});
+
+        drawDeputy(deputies);
     }
 
     function calcPartiesStepsUncluttered(height,pixelPercentageToParties){
@@ -255,9 +347,9 @@ function timeLineCrop(){
             }
             // save half of the spectrum to show the parties
             var partiesPixels = (sumDeputies/513) * (pixelPercentageToParties * (height));
-            var pixelPerDeputy = ( partiesPixels / sumDeputies ); // the amount of pixel that each deputy represent ( - 513 deputies in the brazilian camber)
+            pixelPerDeputy[period] = ( partiesPixels / sumDeputies ); // the amount of pixel that each deputy represent ( - 513 deputies in the brazilian camber)
 
-            var scaleParties = d3.scale.linear()
+            scaleParties[period] = d3.scale.linear()
                 .domain([
                     // the the political spectrum domain of the period
                     CONGRESS_DEFINE.partiesTraces1by1.extents[period][1],
@@ -265,9 +357,9 @@ function timeLineCrop(){
                 ])
                 .range([
                     // the (width-height)/2 of first party in the spectrum
-                    partiesInPeriod[0].size/2 * pixelPerDeputy,
+                    partiesInPeriod[0].size/2 * pixelPerDeputy[period],
                     // height + the (width-height)/2 of last party in the spectrum
-                    height - ( partiesInPeriod[partiesInPeriod.length-1].size/2 * pixelPerDeputy )
+                    height - ( partiesInPeriod[partiesInPeriod.length-1].size/2 * pixelPerDeputy[period] )
                 ]);
 
             // set the pixels positions
@@ -275,8 +367,8 @@ function timeLineCrop(){
                 var party = partiesInPeriod[i];
                 party.cluttered = {};
 
-                party.cluttered.x0 = scaleParties(party.center[1]) - (party.size * pixelPerDeputy)/2;
-                party.cluttered.height = (party.size * pixelPerDeputy);
+                party.cluttered.x0 = scaleParties[period](party.center[1]) - (party.size * pixelPerDeputy[period])/2;
+                party.cluttered.height = (party.size * pixelPerDeputy[period]);
 
                 //.attr("y", function (d) { return scaleYearExtents[d.key](d.value.center[1]) - d.value.size/2} )
 
@@ -319,6 +411,51 @@ function timeLineCrop(){
                 })
             } while(movement);
         });
+    }
+
+    function drawDeputySteps(deputy)
+    {
+        var dep = svg.select('g.deputies-behave');
+
+        dep.selectAll('.deputy .deputy-step')
+            .data(deputy, function (d) { return d.x0; })
+            .enter()
+            .append('rect')
+            .classed('deputy-step',true)
+            .attr('class',function(d) {
+                return 'deputy-step y'+d.year;
+            })
+            .attr("x", function (d) { return scaleX_middleOfBiennial(Number.parseInt(d.year)) -partyStepWidth/2} )
+            .attr("y", function (d) { return d.x0 })
+            .attr("height", 20)
+            .attr("width", partyStepWidth )
+            .attr("opacity", 1)
+            .style("fill", function(d){ return CONGRESS_DEFINE.getPartyColor(d.party); } )
+
+    }
+
+    function drawDeputyTraces(deputy)
+    {
+        var dep=svg.select('.deputies-behave')
+            .append("g")
+            .classed("deputies-steps", true);
+
+
+        dep.selectAll('.deputies-steps .deputy-step')
+            .data(deputy)
+            .enter()
+            .append('rect')
+            .classed('deputy-step',true)
+            .attr('class',function(d) {
+                return 'deputy-step y'+d.key;
+            })
+            .attr("x", function (d) { return scaleX_middleOfBiennial(Number.parseInt(d.key)) -partyStepWidth/2} )
+            .attr("y", function (d) { return d.value.x0 })
+            .attr("height", 20)
+            .attr("width", partyStepWidth )
+            .attr("opacity", 1 )
+            .style("fill", function(d){ return CONGRESS_DEFINE.getPartyColor(d.value.party); } )
+
     }
 
     function drawPartiesSteps(type){
@@ -402,7 +539,7 @@ function timeLineCrop(){
                 } else return -1;
             })
                 .transition().attr('opacity',function (party) {
-                return (p[party.key]!== undefined)? 1 : 0.2;
+                return (p[party.key]!== undefined)? 0.7 : 0.2;
             })
         }
     }
