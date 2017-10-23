@@ -549,6 +549,10 @@ d3.chart.timeline = function() {
         return x(_);
     };
 
+    chart.invertByX = function(_){
+        return x.invert(_);
+    }
+
     chart.x = function(_) {
         if (!arguments.length) return x;
         x = _;

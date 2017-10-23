@@ -10,8 +10,11 @@
 
             // Open context menu
             $(this).on("contextmenu", function (e) {
+                var show = false;
+                if (settings.menuFilter !== undefined)
+                    show = (settings.menuFilter).call(this);
                 // return native menu if pressing control
-                if (e.ctrlKey) return;
+                if (e.ctrlKey || show) return;
 
                 //open menu
                 var $menu = $(settings.menuSelector)

@@ -249,17 +249,41 @@ function createNewChild(currentId, chartObj) {
             .data(arrayRollCalls)
             .update();
 
+        var filteredData;
+
         timeline
             .on("timelineFilter", function(filtered) {
                 filteredData = filtered;
             });
 
+        var currentMouseX;
+        var invertX;
+
+        d3.selectAll('.period').on('mousedown', function () {
+            currentMouseX = d3.mouse(this)[0];
+            invertX = timeline.invertByX(currentMouseX);
+
+        });
+
+
         /* Context menu for Timeline Chart */
         $(".timeline .period")
             .contextMenu({
-                menuSelector: "#contextMenuTimeline",
+                menuSelector:"#contextMenuTimeline",
                 menuSelected: function (invokedOn, selectedMenu) {
                     handleContextMenuTimeline(invokedOn, selectedMenu, filteredData);
+                },
+                menuFilter: function(){
+                    if (filteredData === undefined)
+                        return true;
+                    else
+                    {
+                        if (invertX >= filteredData[0] && invertX <= filteredData[1])
+                            return false;
+                        else
+                            return true;
+                    }
+
                 }
             });
 
