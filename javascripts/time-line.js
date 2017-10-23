@@ -266,10 +266,10 @@ d3.chart.timeline = function() {
         // governemnt X opposition
         var gg = partyTraces.append('g').style('text-anchor','middle');
         gg.append('text')
-            .text('BIENNIAL POLITICAL SPECTRA')
+            .text('YEARLY POLITICAL SPECTRA')
             .attr({
                 'class':"partiesLabel",
-                x:scaleX_middleOfBiennial(1990) +scaleX_middleOfBiennial(1991)/2 -20,
+                x:scaleX_middleOfBiennial(1990) +scaleX_middleOfBiennial(1991)/2 -30,
                 y: timelineDim.height/2 +5
             });
 
@@ -479,7 +479,7 @@ d3.chart.timeline = function() {
             .attr('class',function(d) {
                 return 'step y'+d.key;
             })
-            .attr("x", function (d) { return scaleX_middleOfBiennial(Number.parseInt(d.key)) -partyStepWidth/2} )
+            .attr("x", function (d) { return scaleX_middleOfBiennial(Number.parseInt(d.key)) - partyStepWidth} )
             .attr("y", function (d) { return d.value[type].x0 })
             .attr("height", function (d) { return d.value[type].height })
             .attr("width", partyStepWidth )
@@ -512,10 +512,10 @@ d3.chart.timeline = function() {
                 .interpolate("linear");
 
             var dataPath = [];
-            dataPath.push({x:scaleX_middleOfBiennial(trace.firstDate)+partyStepWidth/2,y:trace.first[type].x0});
-            dataPath.push({x:scaleX_middleOfBiennial(trace.secondDate)-partyStepWidth/2,y:trace.second[type].x0});
-            dataPath.push({x:scaleX_middleOfBiennial(trace.secondDate)-partyStepWidth/2,y:trace.second[type].x0 + trace.second[type].height});
-            dataPath.push({x:scaleX_middleOfBiennial(trace.firstDate)+partyStepWidth/2,y:trace.first[type].x0 + trace.first[type].height});
+            dataPath.push({x:scaleX_middleOfBiennial(trace.firstDate),y:trace.first[type].x0});
+            dataPath.push({x:scaleX_middleOfBiennial(trace.secondDate) - partyStepWidth,y:trace.second[type].x0});
+            dataPath.push({x:scaleX_middleOfBiennial(trace.secondDate)- partyStepWidth,y:trace.second[type].x0 + trace.second[type].height});
+            dataPath.push({x:scaleX_middleOfBiennial(trace.firstDate),y:trace.first[type].x0 + trace.first[type].height});
 
             return lineFunction( dataPath ) + "Z";
         }
@@ -592,7 +592,8 @@ d3.chart.timeline = function() {
 
         var gRects = gb.selectAll('g')
             .data(ranges)
-            .enter().append("g");
+            .enter().append("g")
+            .classed("period", true);
 
 
         gRects.append('rect')

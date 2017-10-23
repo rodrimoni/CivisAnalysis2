@@ -255,7 +255,7 @@ function createNewChild(currentId, chartObj) {
             });
 
         /* Context menu for Timeline Chart */
-        $(".timeline .extent")
+        $(".timeline .period")
             .contextMenu({
                 menuSelector: "#contextMenuTimeline",
                 menuSelected: function (invokedOn, selectedMenu) {

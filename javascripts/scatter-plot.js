@@ -285,7 +285,7 @@ function scatterPlotChart()
 
         enterObjects
             .append("a")
-            .attr("xlink:href", "#")
+            .attr("xlink:href", "javascript:;")
             .on("click", function(d){
                 toolTipCluster.style("left", d3.event.pageX + 10 + "px");
                 toolTipCluster.style("top", d3.event.pageY - 25 + "px");

@@ -260,7 +260,7 @@ function timeLineCrop(){
 
         deputies.push({party: "PSDB", info: sampleDeputy2});
 
-        drawDeputy(deputies);
+        //drawDeputy(deputies);
     }
 
     function calcPartiesStepsUncluttered(height,pixelPercentageToParties){
@@ -573,7 +573,7 @@ function timeLineCrop(){
 
     function partiesMouseout () {
         svg.selectAll('.party').transition().attr('opacity',1);
-    };
+    }
 
     return chart;
 
