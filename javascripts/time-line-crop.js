@@ -260,7 +260,7 @@ function timeLineCrop(){
 
         deputies.push({party: "PSDB", info: sampleDeputy2});
 
-        //drawDeputy(deputies);
+        drawDeputy(deputies);
     }
 
     function calcPartiesStepsUncluttered(height,pixelPercentageToParties){
@@ -432,57 +432,64 @@ function timeLineCrop(){
 
     function drawDeputySteps(deputy)
     {
-        console.log(deputy);
         var dep = svg.select('g.deputies-behave');
 
         dep.selectAll('.deputy .deputy-step')
             .data(deputy, function (d) { return d.x0; })
             .enter()
-            .append('rect')
+            .append('path')
             .classed('deputy-step',true)
             .attr('class',function(d) {
                 return 'deputy-step y'+d.year;
             })
-            .attr("x", function (d) { return scaleX_middleOfBiennial(Number.parseInt(d.year)) -partyStepWidth/2} )
-            .attr("y", function (d) { return d.x0 })
-            .attr("height", 20)
-            .attr("width", partyStepWidth )
+            .attr('d', function (d) {
+                return 'M ' + (scaleX_middleOfBiennial(Number.parseInt(d.year)) - partyStepWidth/2) + ' ' + d.x0 + ' L ' +
+                    (scaleX_middleOfBiennial(Number.parseInt(d.year)) + partyStepWidth/2)+ ' ' + d.x0;
+            })
+            //.attr("x", function (d) { return scaleX_middleOfBiennial(Number.parseInt(d.year)) -partyStepWidth/2} )
+            //.attr("y", function (d) { return d.x0 })
+            //.attr("height", 20)
+            //.attr("width", partyStepWidth )
+            .attr("stroke-width", 4)
             .attr("opacity", 1)
-            .style("fill", function(d){ return CONGRESS_DEFINE.getPartyColor(d.party); } )
+            .style("stroke", function(d){ return CONGRESS_DEFINE.getPartyColor(d.party); } )
 
     }
 
     function drawDeputyTraces(deputy)
     {
-        var dep=svg.select('.deputies-behave')
+        var dep= svg.select('.deputies-behave')
             .append("g")
             .classed("deputies-traces", true);
 
+        var numberOfPathsEachDeputy = 3;
 
-        dep.selectAll('.deputies-traces .deputy-trace')
-            .data(deputy, function (d,i) { return i; })
-            .enter()
+        var enterData = dep.selectAll('.deputies-traces .deputy-trace')
+                .data(deputy, function (d,i) { return i; })
+                .enter();
+
+        var path = enterData
             .append('path')
             .classed('deputy-trace',true)
-            .attr("d", function(d){ return drawDeputyTrace(d)} )
-            .style("fill", function(d){ return CONGRESS_DEFINE.getPartyColor(d.first.party); } )
+            .attr("d", function(d){
+                return 'M ' + (scaleX_middleOfBiennial(Number.parseInt(d.firstDate)) + partyStepWidth/2) + ' ' + d.first.x0 + ' L ' +
+                    (scaleX_middleOfBiennial(Number.parseInt(d.secondDate)) - partyStepWidth/2)+ ' ' + d.second.x0;
+            })
+            .style("stroke", function(d){ return CONGRESS_DEFINE.getPartyColor(d.first.party); } )
+            .attr("stroke-width", 4)
             .attr("opacity", 0.5);
 
-        function drawDeputyTrace(trace){
+        var totalLength = path.node().getTotalLength();
 
-            var lineFunction = d3.svg.line()
-                .x(function (d) { return d.x })
-                .y(function (d) { return d.y })
-                .interpolate("linear");
+        path
+            .attr("stroke-dasharray", totalLength + " " + totalLength)
+            .attr("stroke-dashoffset", totalLength)
+            .transition()
+            .duration(750)
+            .ease("linear")
+            .delay(function(d, i) { return i % numberOfPathsEachDeputy * 900; })
+            .attr("stroke-dashoffset", 0);
 
-            var dataPath = [];
-            dataPath.push({x:scaleX_middleOfBiennial(trace.firstDate)+partyStepWidth/2,y:trace.first.x0});
-            dataPath.push({x:scaleX_middleOfBiennial(trace.secondDate)-partyStepWidth/2,y:trace.second.x0});
-            dataPath.push({x:scaleX_middleOfBiennial(trace.secondDate)-partyStepWidth/2,y:trace.second.x0 + 20});
-            dataPath.push({x:scaleX_middleOfBiennial(trace.firstDate)+partyStepWidth/2,y:trace.first.x0 + 20});
-
-            return lineFunction( dataPath ) + "Z";
-        }
     }
 
     function drawPartiesSteps(type){

@@ -39,9 +39,10 @@
             });
 
             //make sure menu closes on any click
-            $('body').click(function () {
+            $('body').on('click drag', function () {
                 $(settings.menuSelector).hide();
             });
+
         });
 
         function getMenuPosition(mouse, direction, scrollDir) {
