@@ -462,6 +462,14 @@ function timeLineCrop(){
             .append("g")
             .classed("deputies-traces", true);
 
+        var parties = [];
+
+        deputy.forEach(function (t) {
+           if  (parties.indexOf(t.first.party) === -1)
+               parties.push(t.first.party);
+        });
+
+
         var numberOfPathsEachDeputy = 3;
 
         var enterData = dep.selectAll('.deputies-traces .deputy-trace')
@@ -489,6 +497,17 @@ function timeLineCrop(){
             .ease("linear")
             .delay(function(d, i) { return i % numberOfPathsEachDeputy * 900; })
             .attr("stroke-dashoffset", 0);
+
+        console.log(parties);
+
+        svg.selectAll('.party')
+            .attr('opacity', function (d) {
+                console.log(d);
+                if (parties.indexOf(d.key) === -1)
+                    return 0.1;
+                else
+                    return 1;
+            });
 
     }
 
@@ -573,7 +592,7 @@ function timeLineCrop(){
                 } else return -1;
             })
                 .transition().attr('opacity',function (party) {
-                return (p[party.key]!== undefined)? 0.7 : 0.2;
+                return (p[party.key]!== undefined)? 1 : 0.2;
             })
         }
     }
