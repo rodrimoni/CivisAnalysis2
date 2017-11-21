@@ -132,7 +132,6 @@ function timeLineCrop(){
         var lastYear = ranges.period[1].getFullYear();
 
         var deputiesSteps = [];
-        var combinedPositions = [];
 
         var i = 0;
         deputies.forEach(function(d,index){
@@ -146,43 +145,10 @@ function timeLineCrop(){
                 deputiesSteps[i].party = d.party;
                 i++;
             }
-
-            //combinedPositions[index] = deputiesSteps[index].map(function(e){ return {x0:e, party: d.party} });
-
-            /*var parties = d3.entries(CONGRESS_DEFINE.partiesTraces1by1.traces);
-
-            var deputyParty = d.party;
-            var deputyValues;
-
-            for (party in parties)
-            {
-                if (parties[party].key === deputyParty)
-                {
-                    deputyValues = parties[party].value;
-                }
-            }*/
         });
 
-        //console.log(combinedPositions);
 
-        /*for (var i = firstYear; i< lastYear; i++)
-        {
-            var diff = deputyValues[i].cluttered.x0 - deputyValues[i].uncluttered.x0;
-            console.log(diff);
-            var mult  = -1;
-
-            if (diff > 0)
-                mult = 1;
-
-            combinedPositions[i] = deputiesSteps[i] ;
-        }*/
-
-        //console.log(deputyValues);
-        //console.log(deputiesSteps);
-        //console.log(combinedPositions);
-
-        //console.log(combinedPositions);
-        drawDeputySteps((deputiesSteps));
+        drawDeputySteps(deputiesSteps);
 
         var deputiesTraces = [];
 
@@ -497,8 +463,6 @@ function timeLineCrop(){
             .ease("linear")
             .delay(function(d, i) { return i % numberOfPathsEachDeputy * 900; })
             .attr("stroke-dashoffset", 0);
-
-        console.log(parties);
 
         svg.selectAll('.party')
             .attr('opacity', function (d) {

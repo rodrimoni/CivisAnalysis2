@@ -31,8 +31,6 @@ function loadRollCalls(arrayRollCalls, callback) {
 
 function loadNodes(type, selectedTime, callback)
 {
-    //console.log(JSON.stringify(d3.select('#panel-2-1 .panel-body').data()[0]));
-    //console.log(JSON.stringify(deputyNodes[0]));
     d3.json('data/precalc/'+type+'.'+selectedTime +'.json', function (precalc) {
         // SET THE precalc DEPUTIES to their constant object in the app
         precalc.deputyNodes.forEach( function(precalcDeputy){
@@ -44,10 +42,66 @@ function loadNodes(type, selectedTime, callback)
             depObj.scatterplot  = precalcDeputy.scatterplot;
             deputyNodes.push(depObj);
         });
+        loadScatterPlotDataByYear(type, selectedTime);
         callback();
     });
 }
 
+function loadScatterPlotDataByYear(type, selectedTime) {
+    var startYear = 0;
+    var endYear = 0;
+    var  year = 0;
+
+    if (type === 'legislature'){
+        startYear = CONGRESS_DEFINE.legislatures[selectedTime].period[0].getFullYear();
+        endYear = CONGRESS_DEFINE.legislatures[selectedTime].period[1].getFullYear();
+    } else {
+        if (type === 'president') {
+            startYear = CONGRESS_DEFINE.presidents[selectedTime].period[0].getFullYear();
+            endYear = CONGRESS_DEFINE.presidents[selectedTime].period[1].getFullYear();
+
+            switch (selectedTime)
+            {
+                case 0:
+                    endYear += 1;
+                    break;
+                case 1:
+                    startYear += 1;
+                    break;
+            }
+        }
+    }
+
+    calcScatterDataRecursive(startYear);
+
+    function calcScatterDataRecursive(year) {
+        if (year > endYear) {
+            console.log(deputiesArray);
+            return;
+        }
+
+        console.log(year);
+
+        d3.json('data/precalc/year.'+ year +'.json', function (precalc) {
+            precalc.deputyNodes.forEach( function(precalcDeputy){
+                try {
+                    deputiesArray[precalcDeputy.deputyID].nodes.push({
+                        year: year,
+                        scatterplot: precalcDeputy.scatterplot
+                    })
+                }
+                catch(err) {
+                    deputiesArray[precalcDeputy.deputyID].nodes = [];
+                    deputiesArray[precalcDeputy.deputyID].nodes.push({
+                        year: year,
+                        scatterplot: precalcDeputy.scatterplot
+                    })
+                }
+            });
+            calcScatterDataRecursive(year + 1)
+        })
+    }
+}
 
 function createDeputyNodes(data_deputies, selecteddeputies){
     var deputies = [];
@@ -261,7 +315,9 @@ function calcNumVotes(deputiesInTheDateRange){
         rollCall.votes.forEach( function(vote){
             deputiesInTheDateRange[vote.deputyID].numVotes++;
         })
-    })
+    });
+
+    console.log(deputiesInTheDateRange);
 }
 
 function filterDeputies () {
@@ -366,9 +422,12 @@ function calcThePartyTracesByYear( periodOfYears ){
         period[0] = new Date(year,0,1);
         period[1] = new Date(year+periodOfYears,0,1);
 
+        console.log(period);
+
         updateDataforDateRange( period , function(){
             filteredDeputies = filterDeputies();
             matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall();
+            console.log(matrixDeputiesPerRollCall);
 
             // var SVDdata = calcSVD(filteredDeputies,rollCallInTheDateRange);
             calcSVD(matrixDeputiesPerRollCall, function(SVDdata) {
@@ -394,7 +453,7 @@ function calcThePartyTracesByYear( periodOfYears ){
                 });
                 yearPartyExtent[year] = d3.extent( d3.entries(parties), function(d){ return d.value.center[1] });
 
-                calcOneYearRecursive(year+periodOfYears);
+                //calcOneYearRecursive(year+periodOfYears);
             })
         })
 
@@ -417,7 +476,7 @@ function mergeObjects(obj1,obj2){
 }
 
 function calcPartiesSizeAndCenter( deputies ){
-    if(deputies==null) return null;
+    if(deputies===null) return null;
 
     var parties = {};
 

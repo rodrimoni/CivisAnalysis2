@@ -62,7 +62,7 @@ function Point(deputy) {
         });
         self.label(mindex(distancesSquared));
     };
-};
+}
 
 function Centroid(initialLocation, label) {
     var self = this;
@@ -72,7 +72,7 @@ function Centroid(initialLocation, label) {
         var pointsWithThisCentroid = points.filter(function(point) { return point.label() == self.label() });
         if (pointsWithThisCentroid.length > 0) self.location(averageLocation(pointsWithThisCentroid));
     };
-};
+}
 
 // convenience functions
 function getterSetter(initialValue, validator) {
@@ -82,29 +82,29 @@ function getterSetter(initialValue, validator) {
         if (typeof newValue === 'undefined') return thingToGetSet;
         if (isValid(newValue)) thingToGetSet = newValue;
     };
-};
+}
 
 function sumOfSquareDiffs(oneVector, anotherVector) {
     var squareDiffs = oneVector.map(function(component, i) {
         return Math.pow(component - anotherVector[i], 2);
     });
     return squareDiffs.reduce(function(a, b) { return a + b }, 0);
-};
+}
 
 function mindex(array) {
     var min = array.reduce(function(a, b) {
         return Math.min(a, b);
     });
     return array.indexOf(min);
-};
+}
 
 function sumVectors(a, b) {
     return a.map(function(val, i) { return val + b[i] });
-};
+}
 
 function averageLocation(points) {
     var zeroVector = points[0].location().map(function() { return 0 });
     var locations = points.map(function(point) { return point.location() });
     var vectorSum = locations.reduce(function(a, b) { return sumVectors(a, b) }, zeroVector);
     return vectorSum.map(function(val) { return val / points.length });
-};
+}

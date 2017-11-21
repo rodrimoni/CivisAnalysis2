@@ -286,7 +286,6 @@ function createNewChild(currentId, chartObj) {
 
                 }
             });
-
     }
     else
     {
