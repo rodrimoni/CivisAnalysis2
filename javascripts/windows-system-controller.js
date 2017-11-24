@@ -13,6 +13,7 @@ function loadDeputies(deputiesArray)
             deputiesArray.push(deputy)
         });
         console.log(deputiesArray);
+        loadScatterPlotDataByYear();
     });
 }
 
@@ -42,41 +43,21 @@ function loadNodes(type, selectedTime, callback)
             depObj.scatterplot  = precalcDeputy.scatterplot;
             deputyNodes.push(depObj);
         });
-        loadScatterPlotDataByYear(type, selectedTime);
         callback();
     });
 }
 
-function loadScatterPlotDataByYear(type, selectedTime) {
-    var startYear = 0;
-    var endYear = 0;
-    var  year = 0;
+function loadScatterPlotDataByYear() {
+    var startYear = 1991;
+    var endYear = 2016;
 
-    if (type === 'legislature'){
-        startYear = CONGRESS_DEFINE.legislatures[selectedTime].period[0].getFullYear();
-        endYear = CONGRESS_DEFINE.legislatures[selectedTime].period[1].getFullYear();
-    } else {
-        if (type === 'president') {
-            startYear = CONGRESS_DEFINE.presidents[selectedTime].period[0].getFullYear();
-            endYear = CONGRESS_DEFINE.presidents[selectedTime].period[1].getFullYear();
-
-            switch (selectedTime)
-            {
-                case 0:
-                    endYear += 1;
-                    break;
-                case 1:
-                    startYear += 1;
-                    break;
-            }
-        }
-    }
+    var deputiesNodesYearsArray = [];
 
     calcScatterDataRecursive(startYear);
 
     function calcScatterDataRecursive(year) {
         if (year > endYear) {
-            console.log(deputiesArray);
+            console.log(JSON.stringify(deputiesNodesYearsArray));
             return;
         }
 
@@ -84,16 +65,23 @@ function loadScatterPlotDataByYear(type, selectedTime) {
 
         d3.json('data/precalc/year.'+ year +'.json', function (precalc) {
             precalc.deputyNodes.forEach( function(precalcDeputy){
-                try {
-                    deputiesArray[precalcDeputy.deputyID].nodes.push({
+                if (deputiesNodesYearsArray[precalcDeputy.deputyID] === undefined) {
+                    deputiesNodesYearsArray[precalcDeputy.deputyID] = {};
+                    deputiesNodesYearsArray[precalcDeputy.deputyID].deputyID = precalcDeputy.deputyID;
+                    deputiesNodesYearsArray[precalcDeputy.deputyID].name =deputiesArray[precalcDeputy.deputyID].name;
+                }
+                if (deputiesNodesYearsArray[precalcDeputy.deputyID].nodes) {
+                    deputiesNodesYearsArray[precalcDeputy.deputyID].nodes.push({
                         year: year,
+                        party : precalcDeputy.party,
                         scatterplot: precalcDeputy.scatterplot
                     })
                 }
-                catch(err) {
-                    deputiesArray[precalcDeputy.deputyID].nodes = [];
-                    deputiesArray[precalcDeputy.deputyID].nodes.push({
+                else{
+                    deputiesNodesYearsArray[precalcDeputy.deputyID].nodes = [];
+                    deputiesNodesYearsArray[precalcDeputy.deputyID].nodes.push({
                         year: year,
+                        party : precalcDeputy.party,
                         scatterplot: precalcDeputy.scatterplot
                     })
                 }
