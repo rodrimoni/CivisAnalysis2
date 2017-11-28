@@ -69,6 +69,8 @@ function scatterPlotChart()
                 .scaleExtent([0, 500])
                 .on("zoom", zoom);
 
+            var panelID = (d3.select(this.parentNode).attr('id'));
+
             var svg = d3.select(this)
                 .append("svg")
                 .attr("width", "100%")
@@ -122,7 +124,7 @@ function scatterPlotChart()
                 .append("circle")
                 .classed("dot", true)
                 .attr("r", 4)
-                .attr("id", function(d) { return "deputy_id_" + d.deputyID; })
+                .attr("id", function(d) { return panelID + "_deputy-id-" + d.deputyID; })
                 .attr("transform", function(d) {return "translate(" + x(d.scatterplot[1]) + "," + y(d.scatterplot[0]) + ")";})
                 .style("fill", function(d) { return selColor(d.party); })
                 .on("mousemove", function(d){
@@ -136,6 +138,14 @@ function scatterPlotChart()
                 });
 
             updateLegend(data, svg);
+
+            $("#" + panelID + " .dot")
+                .contextMenu({
+                    menuSelector: "#contextMenuDeputy",
+                    menuSelected: function (invokedOn, selectedMenu) {
+                        handleContextMenuDeputy(invokedOn, selectedMenu);
+                    }
+                });
 
             function zoom() {
 
@@ -314,81 +324,6 @@ function scatterPlotChart()
 
         objects.exit().remove();
 
-    }
-
-    function updateHulls (data,id)
-    {
-        var col = d3.scale.category10();
-        var deputiesClusters = "#" + id + " .deputiesClusters";
-        var svg = d3.select(deputiesClusters);
-
-        var toolTipCluster = d3.select('.toolTipCluster');
-
-        var objects = svg.selectAll(".hull")
-            .data(data, function(d){return d;});
-
-        objects
-            .attr("d", function(d) {
-                    var points = "M";
-                    points += x(d.points[0][1]) + " " + y(d.points[0][0]) + " ";
-                    for (var i = 1; i < d.points.length; i++) {
-                        points += "L" + x(d.points[i][1]) + " " + y(d.points[i][0]) + " ";
-                    }
-
-                    points += "Z";
-                    console.log(points);
-                    return points;
-                }
-            )
-            .attr("fill", function(d) { return col(d.cluster); })
-            .style("fill-opacity", 0.05)
-            .attr("stroke-width", "2px")
-            .attr("stroke", function(d) { return col(d.cluster); });
-
-        var enterObjects = objects
-                            .data(data)
-                            .enter();
-
-        enterObjects
-            .append("path")
-            .classed("hull", true)
-            .attr("id", function(d) { return "cluster_id_" + d.cluster; })
-            .attr("d", function(d) {
-                    var points = "M";
-                    points += x(d.points[0][1]) + " " + y(d.points[0][0]) + " ";
-                    for (var i = 1; i < d.points.length; i++) {
-                        points += "L" + x(d.points[i][1]) + " " + y(d.points[i][0]) + " ";
-                    }
-
-                    points += "Z";
-                    return points;
-                }
-            )
-            .attr("fill", function(d) { return col(d.cluster); })
-            .style("fill-opacity", 0.05)
-            .attr("stroke-width", "1px")
-            .attr("stroke", function(d) { return col(d.cluster); })
-            .on("click", function(d){
-                //if (toolTipCluster.style("display") === 'none') {
-                    toolTipCluster.style("left", d3.event.pageX + 10 + "px");
-                    toolTipCluster.style("top", d3.event.pageY - 25 + "px");
-                    toolTipCluster.style("display", "inline-block");
-                    toolTipCluster.html("Cluster " + d.cluster);
-                })
-                //else
-                .on("blur", hideToolTipCluster);
-
-
-        /* Bind context menu at clusters */
-        $(deputiesClusters)
-            .contextMenu({
-                menuSelector: "#contextMenuScatterPlot",
-                menuSelected: function (invokedOn, selectedMenu) {
-                    handleContextMenuScatterPlot(invokedOn, selectedMenu);
-                }
-            });
-
-        objects.exit().remove();
     }
 
     return chart;

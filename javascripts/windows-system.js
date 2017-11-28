@@ -23,6 +23,9 @@ var TIME_LINE_CROP = 4;
 /* Global variable to store all deputies with an ID */
 var deputiesArray = [];
 
+/* Global variable to store all deputies with Scatter Plot Values by Year */
+var deputiesNodesByYear = [];
+
 /* Global variable to store all rollcalls */
 var arrayRollCalls = [];
 
@@ -34,6 +37,7 @@ var tree = new Tree('panel-1-1');
 
 function initSystem() {
     loadDeputies(deputiesArray);
+    loadDeputiesNodesByYear(deputiesNodesByYear);
     loadRollCalls(arrayRollCalls, function () {
         createNewChild("timeline");
         //createTraces1by1();
@@ -49,6 +53,7 @@ function initializeChart(newID, chartObj) {
             chart = scatterPlotChart();
             $('#' +newID + ' .panel-heading .btn-group').append('<button class="btn btn-default btn-settings-scatterplot toggle-dropdown" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i></button> </button> <ul class="dropdown-menu panel-settings"><li role="presentation" class="dropdown-header">Clusterization with K-Means</li><li> Select the value of K: <br> <input id= "slider-'+ newID + '" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="10"/></li></ul>')
             initializeSlider(newID, chart);
+            $('#' +newID).attr('data-type-period', chartObj.panelClass);
             break;
 
         case BAR_CHART:
@@ -61,6 +66,7 @@ function initializeChart(newID, chartObj) {
 
         case TIME_LINE_CROP:
             chart = timeLineCrop();
+            $('#' +newID).attr('data-type-period', chartObj.panelClass);
             break;
 
         default:
@@ -452,18 +458,19 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
         deputyNodes = [];
 
         var createScatterPlot = function(){
-            var chartObj = {'chartID': SCATTER_PLOT, 'data': deputyNodes, 'title': title};
+            var chartObj = {'chartID': SCATTER_PLOT, 'data': deputyNodes, 'title': title, 'panelClass' : panelClass};
             createNewChild('panel-1-1', chartObj);
         };
 
         var title;
+        var panelClass;
 
         if (dataRange.found) {
-
             if (dataRange.type !== "year")
                 title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
             else
                 title = dataRange.id;
+            panelClass = dataRange.type + '-' + dataRange.id;
             loadNodes(dataRange.type, dataRange.id, createScatterPlot);
         }
 
@@ -491,14 +498,52 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
             if (dataRange.found) {
                 if (dataRange.type !== "year")
                 {
-                    title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
-                    var chartObj = {'chartID': TIME_LINE_CROP, 'data': dataRange, 'title': title};
+                    var title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
+                    var panelClass = dataRange.type + '-' + dataRange.id;
+                    var chartObj = {'chartID': TIME_LINE_CROP, 'data': dataRange, 'title': title, 'panelClass': panelClass};
                     createNewChild('panel-1-1', chartObj);
                 }
             }
         }
 }
 
+function handleContextMenuDeputy(invokedOn, selectedMenu)
+{
+    var deputyElem = invokedOn.attr("id").split('-');
+    var deputyID = (deputyElem[deputyElem.length - 1]);
+
+    var deputies = [];
+    var sampleDeputy = [];
+    sampleDeputy[1999] = [0.1506,-0.8453];
+    sampleDeputy[2000] = [-0.1659,-0.6516];
+    sampleDeputy[2001] = [-0.1251,-0.6942];
+    sampleDeputy[2002] = [-0.1303,-0.5277];
+
+    deputies.push({party: "PMDB", info: sampleDeputy});
+
+    var sampleDeputy2 = [];
+
+    // nelson otoch psdb id deputyID: 1924
+
+    sampleDeputy2[1999] = [-0.7072,-0.1243];
+    sampleDeputy2[2000] = [-0.6363,0.02066];
+    sampleDeputy2[2001] = [-0.5057,0.0524];
+    sampleDeputy2[2002] = [-0.4775,0.02922];
+
+    deputies.push({party: "PSDB", info: sampleDeputy2});
+
+    //drawDeputy(deputies);
+
+    var panelID = invokedOn.parents('.panel').attr("id");
+    console.log(panelID);
+    var period = $("#" + panelID).data().typePeriod;
+    var query = "[data-type-period='" + period + "'] .timeline-crop";
+    var timelineCropPanelID = $(query).parents('.panel').attr("id");
+
+    var chart = tree.getNode(timelineCropPanelID, tree.traverseBF).chart;
+    chart.drawDeputy(deputies);
+
+}
 
 /**
  * Creates a icon that represents a panel minimized
@@ -712,4 +757,17 @@ function resizeTimeline() {
             $(querySelector).resizable("option", "maxWidth", maxWidth);
             $(querySelector).resizable("option", "maxHeight", maxHeight);
         });
+}
+
+function checkTimeLineCropExists(event, deputy) {
+    var panelID = deputy.id.split("_")[0];
+    if (event.which === 3)
+    {
+        var period = $("#" + panelID).data().typePeriod;
+        var query = "[data-type-period='" + period + "'] .timeline-crop";
+        if ($(query).length > 0)
+            $("#time-line-crop-behavior").removeClass("disabled");
+        else
+            $("#time-line-crop-behavior").addClass("disabled");
+    }
 }

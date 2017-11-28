@@ -127,47 +127,6 @@ function timeLineCrop(){
         drawParties();
     }
 
-    function drawDeputy(deputies){
-        var firstYear = ranges.period[0].getFullYear();
-        var lastYear = ranges.period[1].getFullYear();
-
-        var deputiesSteps = [];
-
-        var i = 0;
-        deputies.forEach(function(d,index){
-            for (var year = firstYear; year< lastYear; year++)
-            {
-                //cluttered position - ideal position
-                deputiesSteps[i] = {};
-                deputiesSteps[i].deputyID = index;
-                deputiesSteps[i].x0 = scaleParties[year](deputies[index].info[year][1]) - (pixelPerDeputy[year])/2;
-                deputiesSteps[i].year = year;
-                deputiesSteps[i].party = d.party;
-                i++;
-            }
-        });
-
-
-        drawDeputySteps(deputiesSteps);
-
-        var deputiesTraces = [];
-
-        deputiesSteps.forEach(function (t,i) {
-                    if (deputiesSteps[i+1] !== undefined) {
-                        if (deputiesSteps[i+1].year === deputiesSteps[i].year + 1) {
-                            var dep = {};
-                            dep.first = deputiesSteps[i];
-                            dep.firstDate = deputiesSteps[i].year;
-                            dep.second = deputiesSteps[i+1];
-                            dep.secondDate = deputiesSteps[i+1].year;
-                            deputiesTraces.push(dep);
-                        }
-                    }
-        });
-
-        drawDeputyTraces(deputiesTraces);
-    }
-
     function drawParties(){
         calcPartiesStepsUncluttered(timelineDim.height,pixelPercentageToParties);
         calcPartiesStepsCluttered(timelineDim.height,pixelPercentageToParties);
@@ -206,27 +165,6 @@ function timeLineCrop(){
         // 02 - "scatterplot":[-0.1303,-0.5277]
         // 01 - "scatterplot":[-0.1251,-0.6942]
 
-        var deputies = [];
-        var sampleDeputy = [];
-        sampleDeputy[1999] = [0.1506,-0.8453];
-        sampleDeputy[2000] = [-0.1659,-0.6516];
-        sampleDeputy[2001] = [-0.1251,-0.6942];
-        sampleDeputy[2002] = [-0.1303,-0.5277];
-
-        deputies.push({party: "PMDB", info: sampleDeputy});
-
-        var sampleDeputy2 = [];
-
-        // nelson otoch psdb id deputyID: 1924
-
-        sampleDeputy2[1999] = [-0.7072,-0.1243];
-        sampleDeputy2[2000] = [-0.6363,0.02066];
-        sampleDeputy2[2001] = [-0.5057,0.0524];
-        sampleDeputy2[2002] = [-0.4775,0.02922];
-
-        deputies.push({party: "PSDB", info: sampleDeputy2});
-
-        drawDeputy(deputies);
     }
 
     function calcPartiesStepsUncluttered(height,pixelPercentageToParties){
@@ -466,7 +404,6 @@ function timeLineCrop(){
 
         svg.selectAll('.party')
             .attr('opacity', function (d) {
-                console.log(d);
                 if (parties.indexOf(d.key) === -1)
                     return 0.1;
                 else
@@ -564,6 +501,48 @@ function timeLineCrop(){
     function partiesMouseout () {
         svg.selectAll('.party').transition().attr('opacity',1);
     }
+
+    chart.drawDeputy = function(deputies){
+
+        var firstYear = ranges.period[0].getFullYear();
+        var lastYear = ranges.period[1].getFullYear();
+
+        var deputiesSteps = [];
+
+        var i = 0;
+        deputies.forEach(function(d,index){
+            for (var year = firstYear; year< lastYear; year++)
+            {
+                //cluttered position - ideal position
+                deputiesSteps[i] = {};
+                deputiesSteps[i].deputyID = index;
+                deputiesSteps[i].x0 = scaleParties[year](deputies[index].info[year][1]) - (pixelPerDeputy[year])/2;
+                deputiesSteps[i].year = year;
+                deputiesSteps[i].party = d.party;
+                i++;
+            }
+        });
+
+
+        drawDeputySteps(deputiesSteps);
+
+        var deputiesTraces = [];
+
+        deputiesSteps.forEach(function (t,i) {
+            if (deputiesSteps[i+1] !== undefined) {
+                if (deputiesSteps[i+1].year === deputiesSteps[i].year + 1) {
+                    var dep = {};
+                    dep.first = deputiesSteps[i];
+                    dep.firstDate = deputiesSteps[i].year;
+                    dep.second = deputiesSteps[i+1];
+                    dep.secondDate = deputiesSteps[i+1].year;
+                    deputiesTraces.push(dep);
+                }
+            }
+        });
+
+        drawDeputyTraces(deputiesTraces);
+    };
 
     return chart;
 

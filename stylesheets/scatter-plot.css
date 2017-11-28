@@ -21,3 +21,7 @@
 .scatter-plot :focus {
     outline: 0;
 }
+
+.scatter-plot .dot {
+    cursor: pointer;
+}

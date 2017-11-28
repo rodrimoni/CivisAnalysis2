@@ -123,6 +123,9 @@
         <li><a tabindex="-1" id="scatter-plot">Create a scatter plot</a></li>
         <li><a tabindex="-1" id="time-line-crop">Create a timeline crop</a></li>
     </ul>
+    <ul id="contextMenuDeputy" class="dropdown-menu" role="menu" style="display:none" >
+        <li><a class="btn disabled" tabindex="-1" id="time-line-crop-behavior">Create a timeline crop behavior</a></li>
+    </ul>
 </div>
 
 <div class ="toolTip" style="display: none;"></div>
@@ -165,6 +168,10 @@
         /* Avoid to close settings menu */
         windowSystem.on('click', '.panel-settings', function(event){
             event.stopPropagation();
+        });
+
+        windowSystem.on('mousedown', '.panel .dot', function(event){
+            checkTimeLineCropExists(event, this);
         });
     });
 

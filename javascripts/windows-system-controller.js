@@ -13,7 +13,15 @@ function loadDeputies(deputiesArray)
             deputiesArray.push(deputy)
         });
         console.log(deputiesArray);
-        loadScatterPlotDataByYear();
+    });
+}
+
+function loadDeputiesNodesByYear(deputiesNodesByYear) {
+    d3.json('data/deputiesNodesByYear.json', function(a_deputiesArray) {
+        a_deputiesArray.forEach( function(deputy){
+            deputiesNodesByYear.push(deputy)
+        });
+        console.log(deputiesNodesByYear);
     });
 }
 
@@ -101,7 +109,6 @@ function createDeputyNodes(data_deputies, selecteddeputies){
         depObj.deputyID = deputy.deputyID;
         depObj.party = deputy.party;
         depObj.scatterplot  = data_deputies[i];
-        //depObj.scatterplot[0] = depObj.scatterplot[0] * (-1);
         deputies.push(depObj);
     }
 
