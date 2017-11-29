@@ -341,6 +341,24 @@ function timeLineCrop(){
             .attr('class',function(d) {
                 return 'deputy-step y'+d.year;
             })
+            .on('mouseover',function(d){
+                var associatedParty;
+                switch(d.party){
+                    case 'PPB': associatedParty = "PP";
+                        break;
+                    case 'PFL': associatedParty = "DEM";
+                        break;
+                    case 'PL': associatedParty = "PR";
+                        break;
+                    case 'PRONA': associatedParty = "PR";
+                        break;
+                    default: associatedParty = d.party;
+                        break;
+                }
+                var p={}; p[d.deputyID] = true;
+                p[associatedParty] = true;
+                deputiesMouseover(p);
+            })
             .attr('d', function (d) {
                 return 'M ' + (scaleX_middleOfBiennial(Number.parseInt(d.year)) - partyStepWidth/2) + ' ' + d.x0 + ' L ' +
                     (scaleX_middleOfBiennial(Number.parseInt(d.year)) + partyStepWidth/2)+ ' ' + d.x0;
@@ -359,6 +377,7 @@ function timeLineCrop(){
                 div.html(deputiesArray[d.deputyID].name + " (" + d.party + "-" + deputiesArray[d.deputyID].district + ") ");
             })
             .on("mouseout", function(){
+                partiesMouseout();
                 div.style("display", "none");
             });
 
@@ -508,6 +527,46 @@ function timeLineCrop(){
             dataPath.push({x:scaleX_middleOfBiennial(trace.firstDate)+partyStepWidth/2,y:trace.first[type].x0 + trace.first[type].height});
 
             return lineFunction( dataPath ) + "Z";
+        }
+    }
+
+    function deputiesMouseover (p){
+        if(p !== null){
+            svg.selectAll('.party').sort(function (party, b) { // select the parent and sort the path's
+                var associatedParty;
+                switch(p[party.key]){
+                    case 'PPB': associatedParty = "PP";
+                        break;
+                    case 'PFL': associatedParty = "DEM";
+                        break;
+                    case 'PL': associatedParty = "PR";
+                        break;
+                    case 'PRONA': associatedParty = "PR";
+                        break;
+                    default:     associatedParty = p[party.key];
+                        break;
+                }
+                if(p[associatedParty]!== undefined){
+                    if (p[associatedParty]) return 1;  // --> party hovered to front
+                    else return -1;
+                } else return -1;
+            })
+                .transition().attr('opacity',function (party) {
+                    return (p[party.key]!== undefined)? 1 : 0.2;
+            });
+
+            svg.selectAll('.deputy-trace')
+                .transition()
+                .attr('opacity', function (d) {
+                    return (p[d.first.deputyID] !== undefined) ? 0.5 : 0.2;
+                });
+
+            svg.selectAll('.deputy-step')
+                .transition()
+                .attr('opacity', function (d) {
+                    return (p[d.deputyID] !== undefined) ? 1 : 0.2;
+                });
+
         }
     }
 
