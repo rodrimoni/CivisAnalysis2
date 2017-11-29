@@ -99,6 +99,29 @@ function loadScatterPlotDataByYear() {
     }
 }
 
+function calcExtentValuesByYear() {
+    var startYear = 1991;
+    var endYear = 2016;
+
+    var extentValuesArray = {};
+
+    calcExtentRecursive(startYear);
+
+    function calcExtentRecursive(year) {
+        if (year > endYear) {
+            console.log(JSON.stringify(extentValuesArray));
+            return;
+        }
+
+        console.log(year);
+
+        d3.json('data/precalc/year.'+ year +'.json', function (precalc) {
+            extentValuesArray[year] = d3.extent(precalc.deputyNodes, function(d) { return d.scatterplot[1]; });
+            calcExtentRecursive(year + 1);
+        })
+    }
+}
+
 function createDeputyNodes(data_deputies, selecteddeputies){
     var deputies = [];
 
@@ -483,7 +506,7 @@ function calcPartiesSizeAndCenter( deputies ){
         // sum of values
         parties[deputy.party].center[0] += deputy.scatterplot[0];
         parties[deputy.party].center[1] += deputy.scatterplot[1];
-        // sum of values²
+        // sum of values?
         parties[deputy.party].stdev[0] += Math.pow(deputy.scatterplot[0], 2);
         parties[deputy.party].stdev[1] += Math.pow(deputy.scatterplot[1], 2);
     });

@@ -21,6 +21,8 @@ function timeLineCrop(){
     var scaleParties = [];
     var pixelPerDeputy = [];
 
+    var div = d3.select(".toolTip");
+
     function chart(selection) {
         selection.each(function (data) {
             timelineDim.height = height-15 -rangeButtonsHeight;//*0.7;
@@ -158,13 +160,6 @@ function timeLineCrop(){
 
         drawPartiesSteps(drawingType);
         drawPartiesTraces(drawingType);
-
-        // Deputado Marcos Lima - PMDB FHC Segundo Mandato 99,00,01,02 id = 961
-        // 99 - "scatterplot":[0.1506,-0.8453]
-        // 00 - "scatterplot":[-0.1659,-0.6516]
-        // 02 - "scatterplot":[-0.1303,-0.5277]
-        // 01 - "scatterplot":[-0.1251,-0.6942]
-
     }
 
     function calcPartiesStepsUncluttered(height,pixelPercentageToParties){
@@ -273,8 +268,8 @@ function timeLineCrop(){
             scaleParties[period] = d3.scale.linear()
                 .domain([
                     // the the political spectrum domain of the period
-                    CONGRESS_DEFINE.partiesTraces1by1.extents[period][1],
-                    CONGRESS_DEFINE.partiesTraces1by1.extents[period][0]
+                    CONGRESS_DEFINE.timelineCropExtent[period][1],
+                    CONGRESS_DEFINE.timelineCropExtent[period][0]
                 ])
                 .range([
                     // the (width-height)/2 of first party in the spectrum
@@ -339,7 +334,7 @@ function timeLineCrop(){
         var dep = svg.select('g.deputies-behave');
 
         dep.selectAll('.deputy .deputy-step')
-            .data(deputy, function (d) { return d.x0; })
+            .data(deputy, function (d) { return d.year; })
             .enter()
             .append('path')
             .classed('deputy-step',true)
@@ -354,9 +349,18 @@ function timeLineCrop(){
             //.attr("y", function (d) { return d.x0 })
             //.attr("height", 20)
             //.attr("width", partyStepWidth )
-            .attr("stroke-width", 4)
+            .attr("stroke-width", 10)
             .attr("opacity", 1)
             .style("stroke", function(d){ return CONGRESS_DEFINE.getPartyColor(d.party); } )
+            .on("mousemove", function(d){
+                div.style("left", d3.event.pageX+10+"px");
+                div.style("top", d3.event.pageY-25+"px");
+                div.style("display", "inline-block");
+                div.html(deputiesArray[d.deputyID].name + " (" + d.party + "-" + deputiesArray[d.deputyID].district + ") ");
+            })
+            .on("mouseout", function(){
+                div.style("display", "none");
+            });
 
     }
 
@@ -369,8 +373,22 @@ function timeLineCrop(){
         var parties = [];
 
         deputy.forEach(function (t) {
-           if  (parties.indexOf(t.first.party) === -1)
-               parties.push(t.first.party);
+            var party;
+            switch(t.first.party){
+                case 'PPB': party = "PP";
+                    break;
+                case 'PFL': party = "DEM";
+                    break;
+                case 'PL': party = "PR";
+                    break;
+                case 'PRONA':  party = "PR";
+                    break;
+                default:     party = t.first.party;
+                    break;
+            }
+           if  (parties.indexOf(party) === -1){
+               parties.push(party);
+           }
         });
 
 
@@ -389,25 +407,34 @@ function timeLineCrop(){
             })
             .style("stroke", function(d){ return CONGRESS_DEFINE.getPartyColor(d.first.party); } )
             .attr("stroke-width", 4)
-            .attr("opacity", 0.5);
-
-        var totalLength = path.node().getTotalLength();
+            .attr("opacity", 0.5)
+            .on("mousemove", function(d){
+                div.style("left", d3.event.pageX+10+"px");
+                div.style("top", d3.event.pageY-25+"px");
+                div.style("display", "inline-block");
+                div.html(deputiesArray[d.first.deputyID].name + " (" + d.first.party + "-" + deputiesArray[d.first.deputyID].district + ") ");
+            })
+            .on("mouseout", function(){
+                div.style("display", "none");
+            });
 
         path
-            .attr("stroke-dasharray", totalLength + " " + totalLength)
-            .attr("stroke-dashoffset", totalLength)
-            .transition()
-            .duration(750)
+            .attr("stroke-dasharray", function (d,i) { var length = path[0][i].getTotalLength(); return length + " " + length;})
+            .attr("stroke-dashoffset",function (d,i) { var length = path[0][i].getTotalLength(); return length;})
+            .transition("createPath")
+            .duration(800)
             .ease("linear")
             .delay(function(d, i) { return i % numberOfPathsEachDeputy * 900; })
             .attr("stroke-dashoffset", 0);
 
         svg.selectAll('.party')
+            .transition()
             .attr('opacity', function (d) {
                 if (parties.indexOf(d.key) === -1)
                     return 0.1;
-                else
+                else {
                     return 1;
+                }
             });
 
     }
@@ -442,7 +469,7 @@ function timeLineCrop(){
             .attr("y", function (d) { return d.value[type].x0 })
             .attr("height", function (d) { return d.value[type].height })
             .attr("width", partyStepWidth )
-            .attr("opacity", 1 )
+            .attr("opacity", 0.8 )
             .style("fill", function(d){ return CONGRESS_DEFINE.getPartyColor(d.value.party); } )
     }
 
@@ -494,12 +521,93 @@ function timeLineCrop(){
             })
                 .transition().attr('opacity',function (party) {
                 return (p[party.key]!== undefined)? 1 : 0.2;
-            })
+            });
+
+            svg.selectAll('.deputy-trace')
+                .transition()
+                .attr('opacity', function (d) {
+                    var party;
+                    switch(d.first.party){
+                        case 'PPB': party = "PP";
+                            break;
+                        case 'PFL': party = "DEM";
+                            break;
+                        case 'PL': party = "PR";
+                            break;
+                        case 'PRONA': party = "PR";
+                            break;
+                        default:     party = d.first.party;
+                            break;
+                    }
+                    return (p[party] !== undefined) ? 0.5 : 0.2;
+                });
+
+            svg.selectAll('.deputy-step')
+                .transition()
+                .attr('opacity', function (d) {
+                    var party;
+                    switch(d.party){
+                        case 'PPB': party = "PP";
+                            break;
+                        case 'PFL': party = "DEM";
+                            break;
+                        case 'PL': party = "PR";
+                            break;
+                        case 'PRONA': party = "PR";
+                            break;
+                        default:     party = d.party;
+                            break;
+                    }
+                    return (p[party] !== undefined) ? 1 : 0.2;
+                });
+
         }
     }
 
     function partiesMouseout () {
-        svg.selectAll('.party').transition().attr('opacity',1);
+        var deputiesSteps = svg.selectAll('.deputy-step').data();
+        var parties = [];
+
+        if (deputiesSteps.length > 0) {
+            deputiesSteps.forEach(function (value) {
+                var party;
+                switch(value.party){
+                    case 'PPB': party = "PP";
+                        break;
+                    case 'PFL': party = "DEM";
+                        break;
+                    case 'PL': party = "PR";
+                        break;
+                    case 'PRONA': party = "PR";
+                        break;
+                    default:     party = value.party;
+                        break;
+                }
+                if  (parties.indexOf(party) === -1){
+                    parties.push(party);
+                }
+            });
+
+            svg.selectAll('.party')
+                .transition()
+                .attr('opacity', function (d) {
+                    if (parties.indexOf(d.key) === -1)
+                        return 0.2;
+                    else {
+                        return 1;
+                    }
+                });
+
+            svg.selectAll('.deputy-trace')
+                .transition()
+                .attr('opacity', 0.5);
+
+            svg.selectAll('.deputy-step')
+                .transition()
+                .attr('opacity', 1);
+        }
+        else
+            svg.selectAll('.party').transition().attr('opacity',1);
     }
 
     chart.drawDeputy = function(deputies){
@@ -509,20 +617,39 @@ function timeLineCrop(){
 
         var deputiesSteps = [];
 
-        var i = 0;
-        deputies.forEach(function(d,index){
+        //deputies.forEach(function(d,index){
             for (var year = firstYear; year< lastYear; year++)
             {
-                //cluttered position - ideal position
-                deputiesSteps[i] = {};
-                deputiesSteps[i].deputyID = index;
-                deputiesSteps[i].x0 = scaleParties[year](deputies[index].info[year][1]) - (pixelPerDeputy[year])/2;
-                deputiesSteps[i].year = year;
-                deputiesSteps[i].party = d.party;
-                i++;
+                deputies.nodes.forEach(function (value) {
+                    if (value.year === year) {
+                        var step = {};
+                        var lastDeputy = deputiesSteps[deputiesSteps.length-1];
+                        if (lastDeputy !== undefined){
+                            if (year - lastDeputy.year > 1){
+                                console.log(lastDeputy);
+                                step.deputyID = lastDeputy.deputyID;
+                                step.x0 = lastDeputy.x0;
+                                step.party = lastDeputy.party;
+                                step.year = lastDeputy.year +1;
+                                deputiesSteps.push(step);
+                            }
+                        }
+                        step = {};
+                        //cluttered position - ideal position
+                        step.deputyID = deputies.deputyID;
+                        step.x0 = scaleParties[year](value.scatterplot[1]) - (pixelPerDeputy[year]) / 2;
+                        step.party = value.party;
+                        step.year = value.year;
+                        deputiesSteps.push(step);
+                    }
+                });
             }
-        });
+        //});
 
+
+        svg.selectAll('.deputy-step, .deputy-trace')
+            .transition()
+            .attr('opacity', 0.1);
 
         drawDeputySteps(deputiesSteps);
 
@@ -541,6 +668,7 @@ function timeLineCrop(){
             }
         });
 
+        //console.log(deputiesTraces);
         drawDeputyTraces(deputiesTraces);
     };
 

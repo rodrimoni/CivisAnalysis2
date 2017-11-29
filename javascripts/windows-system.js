@@ -452,6 +452,8 @@ function handleContextMenuScatterPlot(invokedOn, selectedMenu)
 function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
 {
     var dataRange = setNewDateRange(filteredData);
+    var title;
+    var panelClass;
 
     if (selectedMenu.context.id === "scatter-plot")
     {
@@ -461,9 +463,6 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
             var chartObj = {'chartID': SCATTER_PLOT, 'data': deputyNodes, 'title': title, 'panelClass' : panelClass};
             createNewChild('panel-1-1', chartObj);
         };
-
-        var title;
-        var panelClass;
 
         if (dataRange.found) {
             if (dataRange.type !== "year")
@@ -498,8 +497,8 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
             if (dataRange.found) {
                 if (dataRange.type !== "year")
                 {
-                    var title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
-                    var panelClass = dataRange.type + '-' + dataRange.id;
+                    title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
+                    panelClass = dataRange.type + '-' + dataRange.id;
                     var chartObj = {'chartID': TIME_LINE_CROP, 'data': dataRange, 'title': title, 'panelClass': panelClass};
                     createNewChild('panel-1-1', chartObj);
                 }
@@ -532,17 +531,18 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
 
     deputies.push({party: "PSDB", info: sampleDeputy2});
 
-    //drawDeputy(deputies);
+    /* Get period of the Scatter Plot Chart */
+    var period = invokedOn.parents('.panel').data().typePeriod;
 
-    var panelID = invokedOn.parents('.panel').attr("id");
-    console.log(panelID);
-    var period = $("#" + panelID).data().typePeriod;
+    /* Get the Time Line Crop Chart with the same period of Scatter Plot Chart */
     var query = "[data-type-period='" + period + "'] .timeline-crop";
     var timelineCropPanelID = $(query).parents('.panel').attr("id");
 
-    var chart = tree.getNode(timelineCropPanelID, tree.traverseBF).chart;
-    chart.drawDeputy(deputies);
+    var timeLineCropChart = tree.getNode(timelineCropPanelID, tree.traverseBF).chart;
 
+    var deputies = deputiesNodesByYear[deputyID];
+
+    timeLineCropChart.drawDeputy(deputies);
 }
 
 /**
