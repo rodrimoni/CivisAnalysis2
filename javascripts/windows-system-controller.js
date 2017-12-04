@@ -21,7 +21,6 @@ function loadDeputiesNodesByYear(deputiesNodesByYear) {
         a_deputiesArray.forEach( function(deputy){
             deputiesNodesByYear.push(deputy)
         });
-        console.log(deputiesNodesByYear);
     });
 }
 
@@ -293,11 +292,10 @@ function loadMotion(type,number,year,defer){
     })
 }
 
-function createMatrixDeputiesPerRollCall (){
+function createMatrixDeputiesPerRollCall (deputies){
     // -------------------------------------------------------------------------------------------------------------------
     // Create the matrix [ Deputy ] X [ RollCall ] => table[Deputy(i)][RollCall(j)] = vote of deputy(i) in the rollCall(j)
     console.log("create matrix deputy X rollCall!!");
-    var deputies = deputiesInTheDateRange;
     var rollCalls = rollCallInTheDateRange;
 
     var tableDepXRollCall = numeric.rep([ Object.keys(deputies).length, Object.keys(rollCalls).length],0);
@@ -334,8 +332,6 @@ function calcNumVotes(deputiesInTheDateRange){
             deputiesInTheDateRange[vote.deputyID].numVotes++;
         })
     });
-
-    console.log(deputiesInTheDateRange);
 }
 
 function filterDeputies () {
@@ -392,6 +388,48 @@ function filterDeputies () {
     return filterFunction();
 }
 
+function createMatrixDistanceDeputies(matrixDeputiesPerRollCall) {
+    var numberOfDeputies = matrixDeputiesPerRollCall.length;
+    var numberOfRollCalls = matrixDeputiesPerRollCall[0].length;
+
+    var matrixMatches   = createArray(numberOfDeputies,numberOfDeputies);
+    var matrixDistances = createArray(numberOfDeputies,numberOfDeputies);
+
+    for (var i = 0; i < numberOfDeputies; i++)
+        for (var j = 0; j < numberOfDeputies; j++)
+            matrixMatches[i][j] = 0;
+
+    for (var d = 0; d < numberOfDeputies; d++)
+        for (var r = 0; r < numberOfRollCalls; r++)
+            for (var compareDeputy = d+1; compareDeputy < numberOfDeputies; compareDeputy++)
+                if (matrixDeputiesPerRollCall[d][r] === matrixDeputiesPerRollCall[compareDeputy][r]) {
+                    matrixMatches[d][compareDeputy] += 1;
+                    matrixMatches[compareDeputy][d] += 1;
+                }
+
+    for (var i = 0; i < numberOfDeputies; i++)
+        for (var j = 0; j < numberOfDeputies; j++)
+            if (matrixMatches[i][j] !== 0)
+                matrixDistances[i][j] = 100 - (matrixMatches[i][j] * 100) / numberOfRollCalls ;
+                //matrixDistances[i][j] = numberOfRollCalls - matrixMatches[i][j];
+            else
+                matrixDistances[i][j] = 0;
+
+    return matrixDistances;
+}
+
+function createArray(length) {
+    var arr = new Array(length || 0),
+        i = length;
+
+    if (arguments.length > 1) {
+        var args = Array.prototype.slice.call(arguments, 1);
+        while(i--) arr[length-1 - i] = createArray.apply(this, args);
+    }
+
+    return arr;
+}
+
 function getPartyCount(cluster) {
 
     var currentPartyCount = [];
@@ -443,8 +481,8 @@ function calcThePartyTracesByYear( periodOfYears ){
         console.log(period);
 
         updateDataforDateRange( period , function(){
-            filteredDeputies = filterDeputies();
-            matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall();
+            var filteredDeputies = filterDeputies();
+            var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall();
             console.log(matrixDeputiesPerRollCall);
 
             // var SVDdata = calcSVD(filteredDeputies,rollCallInTheDateRange);

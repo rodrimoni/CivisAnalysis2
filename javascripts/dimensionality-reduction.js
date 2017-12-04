@@ -1,7 +1,7 @@
 function calcSVD(matrixDepXRollCall,endCalcCallback){
     // -----------------------------------------------------------------------------------------------------------------
     // CALC the Singular Value Decomposition (SVD) ---------------------------------------------------------------------
-    console.log("calc SVD",matrixDepXRollCall)
+    console.log("calc SVD",matrixDepXRollCall);
 
     //!! Uncaught numeric.svd() Need more rows than columns
     //  if(rows < columns)->
@@ -11,8 +11,6 @@ function calcSVD(matrixDepXRollCall,endCalcCallback){
         //TRANSPOSE the table to fit the rowsXcolumns numeric.svd() requirement !!
         matrixDepXRollCall = numeric.transpose(matrixDepXRollCall)
     }
-
-    console.log(matrixDepXRollCall);
 
     var svdDep = numeric.svd(matrixDepXRollCall);
     var eigenValues = numeric.sqrt(svdDep.S);
@@ -82,4 +80,43 @@ function calcTSNE(matrixDepXRollCall,endCalcCallback){
     console.log("CALC TSNE- FINISHED!! => PLOT")
     // ----------------------------------------------------------------------------------------------------------------
     // return {deputies: data_deputies, voting: data_voting};
+}
+
+function calcMDS(matrixDistancesDepXDep,endCalcCallback){
+    // -----------------------------------------------------------------------------------------------------------------
+    // CALC the multidimensional dimensional scaling  (MDS) ------------------------------------------------------------
+    console.log("calc MDS",matrixDistancesDepXDep);
+
+    var dimensions = 2;
+
+    // square distances
+    var M = numeric.mul(-0.5, numeric.pow(matrixDistancesDepXDep, 2));
+
+    // double centre the rows/columns
+    function mean(A) { return numeric.div(numeric.add.apply(null, A), A.length); }
+    var rowMeans = mean(M),
+        colMeans = mean(numeric.transpose(M)),
+        totalMean = mean(rowMeans);
+
+    for (var i = 0; i < M.length; ++i) {
+        for (var j =0; j < M[0].length; ++j) {
+            M[i][j] += totalMean - rowMeans[i] - colMeans[j];
+        }
+    }
+
+    // take the SVD of the double centred matrix, and return the
+    // points from it
+    var ret = numeric.svd(M),
+        eigenValues = numeric.sqrt(ret.S);
+    var data_deputies = ret.U.map(function(row) {
+        return numeric.mul(row, eigenValues).splice(0, dimensions);
+    });
+
+    console.log(data_deputies);
+    console.log(numeric.transpose(data_deputies));
+
+    console.log("CALC MDS- FINISHED!! => PLOT");
+    // ----------------------------------------------------------------------------------------------------------------
+    var result = {deputies: data_deputies};
+    endCalcCallback(result);
 }

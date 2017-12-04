@@ -41,15 +41,15 @@ function scatterPlotChart()
 
     function chart(selection){
         selection.each(function (data) {
-            var xMax = d3.max(data, function(d) { return d.scatterplot[1]; }),
+            var xMax = d3.max(data, function(d) { return d.scatterplot[1]; })  * 1.05,
                 xMin = d3.min(data, function(d) { return d.scatterplot[1]; }),
-                xMin = xMin > 0 ? 0 : xMin,
-                yMax = d3.max(data, function(d) { return d.scatterplot[0]; }),
+                xMin = xMin > 0 ? 0 : xMin* 1.05,
+                yMax = d3.max(data, function(d) { return d.scatterplot[0]; })  * 1.05,
                 yMin = d3.min(data, function(d) { return d.scatterplot[0]; }),
-                yMin = yMin > 0 ? 0 : yMin;
+                yMin = yMin > 0 ? 0 : yMin* 1.05;
 
-            x.domain([xMin - 0.02, xMax + 0.02]);
-            y.domain([yMin - 0.02, yMax + 0.02 ]);
+            x.domain([xMin, xMax]);
+            y.domain([yMin, yMax]);
 
             var xAxis = d3.svg.axis()
                 .scale(x)

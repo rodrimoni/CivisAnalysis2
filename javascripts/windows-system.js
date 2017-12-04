@@ -455,12 +455,13 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
     var title;
     var panelClass;
 
-    if (selectedMenu.context.id === "scatter-plot")
+    if (selectedMenu.context.id === "scatter-plot-svd")
     {
         deputyNodes = [];
 
         var createScatterPlot = function(){
             var chartObj = {'chartID': SCATTER_PLOT, 'data': deputyNodes, 'title': title, 'panelClass' : panelClass};
+            console.log(deputyNodes);
             createNewChild('panel-1-1', chartObj);
         };
 
@@ -478,7 +479,7 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
             // if the precal was found we dont need to calc the SVD
             if(!dataRange.found) {
                 var filteredDeputies = filterDeputies();
-                var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall();
+                var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
 
                 function calcCallback(twoDimData) {
                     // Deputies array
@@ -493,17 +494,45 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
         })
     }
     else
-        if(selectedMenu.context.id ==='time-line-crop') {
-            if (dataRange.found) {
-                if (dataRange.type !== "year")
-                {
-                    title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
-                    panelClass = dataRange.type + '-' + dataRange.id;
-                    var chartObj = {'chartID': TIME_LINE_CROP, 'data': dataRange, 'title': title, 'panelClass': panelClass};
-                    createNewChild('panel-1-1', chartObj);
+        if (selectedMenu.context.id === "scatter-plot-mds") {
+
+            deputyNodes = [];
+
+            var createScatterPlot = function(){
+                var chartObj = {'chartID': SCATTER_PLOT, 'data': deputyNodes, 'title': title, 'panelClass' : panelClass};
+                console.log(deputyNodes);
+                createNewChild('panel-1-1', chartObj);
+            };
+
+            updateDataforDateRange(filteredData, function() {
+                var filteredDeputies = filterDeputies();
+                var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
+                var matrixDistanceDeputies = createMatrixDistanceDeputies(matrixDeputiesPerRollCall);
+
+                function calcCallback(twoDimData) {
+                    console.log(twoDimData.deputies);
+                    // Deputies array
+                    title = filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString();
+                    deputyNodes = createDeputyNodes(twoDimData.deputies, filteredDeputies);
+                    scaleAdjustment().setGovernmentTo3rdQuadrant(deputyNodes, filteredData[1]);
+                    createScatterPlot();
+                }
+
+                calcMDS(matrixDistanceDeputies,calcCallback);
+            });
+        }
+        else
+            if(selectedMenu.context.id ==='time-line-crop') {
+                if (dataRange.found) {
+                    if (dataRange.type !== "year")
+                    {
+                        title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
+                        panelClass = dataRange.type + '-' + dataRange.id;
+                        var chartObj = {'chartID': TIME_LINE_CROP, 'data': dataRange, 'title': title, 'panelClass': panelClass};
+                        createNewChild('panel-1-1', chartObj);
+                    }
                 }
             }
-        }
 }
 
 function handleContextMenuDeputy(invokedOn, selectedMenu)
