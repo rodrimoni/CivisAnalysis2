@@ -427,13 +427,26 @@ function timeLineCrop(){
             .style("stroke", function(d){ return CONGRESS_DEFINE.getPartyColor(d.first.party); } )
             .attr("stroke-width", 4)
             .attr("opacity", 0.5)
-            .on("mousemove", function(d){
-                div.style("left", d3.event.pageX+10+"px");
-                div.style("top", d3.event.pageY-25+"px");
-                div.style("display", "inline-block");
-                div.html(deputiesArray[d.first.deputyID].name + " (" + d.first.party + "-" + deputiesArray[d.first.deputyID].district + ") ");
+            .on('mouseover',function(d){
+                var associatedParty;
+                switch(d.first.party){
+                    case 'PPB': associatedParty = "PP";
+                        break;
+                    case 'PFL': associatedParty = "DEM";
+                        break;
+                    case 'PL': associatedParty = "PR";
+                        break;
+                    case 'PRONA': associatedParty = "PR";
+                        break;
+                    default: associatedParty = d.first.party;
+                        break;
+                }
+                var p={}; p[d.first.deputyID] = true;
+                p[associatedParty] = true;
+                deputiesMouseover(p);
             })
             .on("mouseout", function(){
+                partiesMouseout();
                 div.style("display", "none");
             });
 
@@ -583,7 +596,7 @@ function timeLineCrop(){
             });
 
             svg.selectAll('.deputy-trace')
-                .transition()
+                    .transition()
                 .attr('opacity', function (d) {
                     var party;
                     switch(d.first.party){

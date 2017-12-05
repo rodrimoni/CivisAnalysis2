@@ -133,8 +133,12 @@ function scatterPlotChart()
                     div.style("display", "inline-block");
                     div.html(d.name + " (" + d.party + "-" + d.district + ") ");
                 })
+                .on("mouseover", function (d) {
+                    mouseOverDeputy(d.deputyID, this);
+                })
                 .on("mouseout", function(){
                     div.style("display", "none");
+                    mouseOutDeputy();
                 });
 
             updateLegend(data, svg);

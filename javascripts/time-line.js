@@ -643,7 +643,7 @@ d3.chart.timeline = function() {
                     d3.select(this).select('rect').attr('class','background '+type)
                         .style('opacity',function(d){ if(d.party!==undefined){ return 0.5 }})
             })
-            .on('click', function(d){ presetDateRangeButtonSelected(d); })
+            .on('click', function(d){ console.log("ae"); presetDateRangeButtonSelected(d); })
             .select('rect').style('opacity',function(d){ if(d.party!==undefined){ return 0.5 }})
 
 

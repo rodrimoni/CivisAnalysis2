@@ -238,8 +238,8 @@ function createNewChild(currentId, chartObj) {
 
         $(".container").append(newElem);
 
-        timelineWidth = $(window).width() - 40;
-        timelineHeight = $(window).height()*0.6;
+        var timelineWidth = $(window).width() - 40;
+        var timelineHeight = $(window).height()*0.6;
 
         /* Sets up the panel settings as drag, resize, etc */
         setUpPanel(newID);
@@ -268,7 +268,6 @@ function createNewChild(currentId, chartObj) {
         d3.selectAll('.period').on('mousedown', function () {
             currentMouseX = d3.mouse(this)[0];
             invertX = timeline.invertByX(currentMouseX);
-
         });
 
 
@@ -309,7 +308,7 @@ function createNewChild(currentId, chartObj) {
         var node = tree.add('panel-', currentId, tree.traverseBF);
         newID = node.data;
 
-        newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" style="padding-top: 7.5px;"></h4> <div class="btn-group"> <button class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button></div></div><div class="panel-body center-panel"><div class = "modal"></div></div></div>').css({"position": "absolute", "top": newLocation["top"], "left": newLocation["left"], "z-index":"90"});
+        newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h6 class="panel-title pull-left" style="padding-top: 7.5px;"></h6> <div class="btn-group"> <button class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button></div></div><div class="panel-body center-panel"><div class = "modal"></div></div></div>').css({"position": "absolute", "top": newLocation["top"], "left": newLocation["left"], "z-index":"90"});
 
 
         /* Inserts the panel after the last one in DOM */
@@ -453,6 +452,7 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
 {
     var dataRange = setNewDateRange(filteredData);
     var title;
+    var subtitle;
     var panelClass;
 
     if (selectedMenu.context.id === "scatter-plot-svd")
@@ -461,7 +461,6 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
 
         var createScatterPlot = function(){
             var chartObj = {'chartID': SCATTER_PLOT, 'data': deputyNodes, 'title': title, 'panelClass' : panelClass};
-            console.log(deputyNodes);
             createNewChild('panel-1-1', chartObj);
         };
 
@@ -469,8 +468,11 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
             if (dataRange.type !== "year")
                 title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
             else
-                title = dataRange.id;
+                title = "Year: " + dataRange.id;
             panelClass = dataRange.type + '-' + dataRange.id;
+
+            subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString() + "</span>";
+            title += subtitle;
             loadNodes(dataRange.type, dataRange.id, createScatterPlot);
         }
 
@@ -498,9 +500,21 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
 
             deputyNodes = [];
 
+            if (dataRange.found) {
+                if (dataRange.type !== "year")
+                    title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
+                else
+                    title = "Year: " + dataRange.id;
+                panelClass = dataRange.type + '-' + dataRange.id;
+
+                subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString() + "</span>";
+                title += subtitle;
+            }
+            else
+                title = filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString();
+
             var createScatterPlot = function(){
                 var chartObj = {'chartID': SCATTER_PLOT, 'data': deputyNodes, 'title': title, 'panelClass' : panelClass};
-                console.log(deputyNodes);
                 createNewChild('panel-1-1', chartObj);
             };
 
@@ -512,7 +526,6 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
                 function calcCallback(twoDimData) {
                     console.log(twoDimData.deputies);
                     // Deputies array
-                    title = filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString();
                     deputyNodes = createDeputyNodes(twoDimData.deputies, filteredDeputies);
                     scaleAdjustment().setGovernmentTo3rdQuadrant(deputyNodes, filteredData[1]);
                     createScatterPlot();
@@ -527,6 +540,8 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
                     if (dataRange.type !== "year")
                     {
                         title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
+                        subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString() + "</span>";
+                        title += subtitle;
                         panelClass = dataRange.type + '-' + dataRange.id;
                         var chartObj = {'chartID': TIME_LINE_CROP, 'data': dataRange, 'title': title, 'panelClass': panelClass};
                         createNewChild('panel-1-1', chartObj);
@@ -539,26 +554,6 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
 {
     var deputyElem = invokedOn.attr("id").split('-');
     var deputyID = (deputyElem[deputyElem.length - 1]);
-
-    var deputies = [];
-    var sampleDeputy = [];
-    sampleDeputy[1999] = [0.1506,-0.8453];
-    sampleDeputy[2000] = [-0.1659,-0.6516];
-    sampleDeputy[2001] = [-0.1251,-0.6942];
-    sampleDeputy[2002] = [-0.1303,-0.5277];
-
-    deputies.push({party: "PMDB", info: sampleDeputy});
-
-    var sampleDeputy2 = [];
-
-    // nelson otoch psdb id deputyID: 1924
-
-    sampleDeputy2[1999] = [-0.7072,-0.1243];
-    sampleDeputy2[2000] = [-0.6363,0.02066];
-    sampleDeputy2[2001] = [-0.5057,0.0524];
-    sampleDeputy2[2002] = [-0.4775,0.02922];
-
-    deputies.push({party: "PSDB", info: sampleDeputy2});
 
     /* Get period of the Scatter Plot Chart */
     var period = invokedOn.parents('.panel').data().typePeriod;
@@ -798,5 +793,44 @@ function checkTimeLineCropExists(event, deputy) {
             $("#time-line-crop-behavior").removeClass("disabled");
         else
             $("#time-line-crop-behavior").addClass("disabled");
+    }
+}
+
+function mouseOverDeputy(deputyID, currentDeputy)
+{
+    if (d3.selectAll('.scatter-plot').size() > 1) {
+
+        var deputies = d3.selectAll('.dot');
+
+        var matchDeputy = deputies
+            .filter(function(d){ return d.deputyID === deputyID && currentDeputy !== this; });
+
+        if (matchDeputy.size() > 0)
+        {
+            matchDeputy
+                .transition(600)
+                .attr("r", 8);
+
+            d3.select(currentDeputy)
+                .transition(600)
+                .attr("r", 8);
+
+            deputies
+                .filter(function (d) {
+                    return d.deputyID !== deputyID;
+                })
+                .transition()
+                .attr('opacity', 0.4)
+        }
+    }
+}
+
+function mouseOutDeputy()
+{
+    if (d3.selectAll('.scatter-plot').size() > 1) {
+        d3.selectAll('.dot')
+            .transition(500)
+            .attr('opacity', 1)
+            .attr('r', 4)
     }
 }
