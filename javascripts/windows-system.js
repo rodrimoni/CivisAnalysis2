@@ -838,7 +838,7 @@ function highlightMatchesDeputies(){
             .reduce(function (a,b) { a[b.deputyID] = (a[b.deputyID] || 0) + b.count; return a; }, {});
 
         d3.selectAll('.dot')
-            .transition()
+            .transition("highlightDeputy")
             .duration(500)
             .attr('opacity', function (d) {
                 return uniq[d.deputyID] === undefined ||  uniq[d.deputyID] < numberOfScatterPlots ? 0.1 : 1;
@@ -847,7 +847,8 @@ function highlightMatchesDeputies(){
     }
     else {
         d3.selectAll('.dot')
-            .transition(500)
+            .transition("defaultDeputy")
+            .duration(500)
             .attr('opacity', 1)
             .attr('r', 4)
     }
