@@ -3,12 +3,12 @@
  */
 
 /* Initial values of panel Height and Width */
-var INITIAL_HEIGHT = 250;
-var INITIAL_WIDTH = 350;
+var INITIAL_HEIGHT = 450;
+var INITIAL_WIDTH = 550;
 
 /* Max values of panel Height and Width */
-var MAX_HEIGHT = 620;
-var MAX_WIDTH = 1000;
+var MAX_HEIGHT = 720;
+var MAX_WIDTH = 1200;
 
 /* Constant values of icon Height and Width */
 var HEIGHT_ICON = 28;
@@ -51,7 +51,7 @@ function initializeChart(newID, chartObj) {
     {
         case SCATTER_PLOT:
             chart = scatterPlotChart();
-            $('#' +newID + ' .panel-heading .btn-group').append('<button class="btn btn-default btn-settings-scatterplot toggle-dropdown" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i></button> </button> <ul class="dropdown-menu panel-settings"><li role="presentation" class="dropdown-header">Clusterization with K-Means</li><li> Select the value of K: <br> <input id= "slider-'+ newID + '" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="10"/></li></ul>')
+            $('#' +newID + ' .panel-heading .btn-group').append('<button class="btn btn-default btn-settings-scatterplot toggle-dropdown" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i></button> </button> <ul class="dropdown-menu panel-settings"><li role="presentation" class="dropdown-header">Clustering with K-Means</li><li> Select the value of K: <br> <input id= "slider-'+ newID + '" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="10"/></li></ul>')
             initializeSlider(newID, chart);
             $('#' +newID).attr('data-type-period', chartObj.panelClass);
             break;
@@ -462,7 +462,7 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
     var subtitle;
     var panelClass;
 
-    if (selectedMenu.context.id === "scatter-plot-svd")
+    if (selectedMenu.context.id === "scatter-plot-pca")
     {
         deputyNodes = [];
 
@@ -478,6 +478,7 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
                 title = "Year: " + dataRange.id;
             panelClass = dataRange.type + '-' + dataRange.id;
 
+            title += " (PCA)";
             subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString() + "</span>";
             title += subtitle;
             loadNodes(dataRange.type, dataRange.id, createScatterPlot);
@@ -514,6 +515,7 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
                     title = "Year: " + dataRange.id;
                 panelClass = dataRange.type + '-' + dataRange.id;
 
+                title += " (MDS)";
                 subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString() + "</span>";
                 title += subtitle;
             }

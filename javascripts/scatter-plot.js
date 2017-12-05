@@ -22,7 +22,7 @@ function selColor(c){ return partiesArbitraryColor[c]; }
 
 function scatterPlotChart()
 {
-    var margin = { top: 50, right: 200, bottom: 50, left: 50 },
+    var margin = { top: 30, right: 200, bottom: 30, left: 50 },
         outerWidth = MAX_WIDTH,
         outerHeight = MAX_HEIGHT,
         width = outerWidth - margin.left - margin.right,
@@ -75,7 +75,7 @@ function scatterPlotChart()
                 .append("svg")
                 .attr("width", "100%")
                 .attr("height", "100%")
-                .attr("viewBox", "0 0 1000 620 ")
+                .attr("viewBox", "0 0 " + MAX_WIDTH + " " + MAX_HEIGHT)
                 .classed("scatter-plot", true)
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
@@ -185,7 +185,16 @@ function scatterPlotChart()
 
                 var enterLegend =
                     legend.enter().append("g")
-                        .classed("legend", true);
+                        .classed("legend", true)
+                        .on('mouseover', function() {
+                            var party = d3.select(this).data()[0];
+                            svg.selectAll('.dot')
+                                .transition()
+                                .attr('opacity', function (d) {
+                                    return d.party === party ? 1 : 0.1
+                                })
+                        })
+                        .on("mouseout", highlightMatchesDeputies);
 
                 enterLegend
                     .attr("transform", function(d, i) { if (i % 2 === 0) return "translate(0," + i * 20 + ")"; else return "translate(80," + (i-1) * 20 + ")" ; });
@@ -288,8 +297,8 @@ function scatterPlotChart()
 
         objects
             .attr("d", groupPath)
-            .style("fill", function(d) { return col(d.cluster); })
-            .style("stroke", function(d) { return col(d.cluster); })
+            .style("fill", "#ffffff")
+            .style("stroke", "#000000")
             .style("stroke-width",8)
             .style("stroke-linejoin", "round")
             .style("opacity", .2);
@@ -313,11 +322,11 @@ function scatterPlotChart()
             .classed("hull", true)
             .attr("id", function(d) { return "cluster_id_" + d.cluster; })
             .attr("d", groupPath)
-            .style("fill", function(d) { return col(d.cluster); })
-            .style("stroke", function(d) { return col(d.cluster); })
+            .style("fill", "#ffffff")
+            .style("stroke", "#c4c7c8")
             .style("stroke-width", 8)
             .style("stroke-linejoin", "round")
-            .style("opacity", .2);
+            .style("opacity", .4);
 
 
         $(deputiesClusters)
