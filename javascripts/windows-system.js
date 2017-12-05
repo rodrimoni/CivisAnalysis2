@@ -813,7 +813,7 @@ function mouseOverDeputy(deputyID, currentDeputy) {
 
         if (matchDeputy.size() > 0) {
             deputies
-                .transition(500)
+                .transition()
                 .attr('opacity', function(d){
                   return d.deputyID !== deputyID ? 0.1 : 1;
                 })
@@ -827,8 +827,6 @@ function mouseOverDeputy(deputyID, currentDeputy) {
 function highlightMatchesDeputies(){
     var numberOfScatterPlots = d3.selectAll('.scatter-plot').size();
 
-    console.log(numberOfScatterPlots);
-
     if (numberOfScatterPlots > 1) {
         var allDeputies = d3.selectAll('.dot').data();
         var uniq = allDeputies
@@ -838,7 +836,7 @@ function highlightMatchesDeputies(){
             .reduce(function (a,b) { a[b.deputyID] = (a[b.deputyID] || 0) + b.count; return a; }, {});
 
         d3.selectAll('.dot')
-            .transition("highlightDeputy")
+            .transition()
             .duration(500)
             .attr('opacity', function (d) {
                 return uniq[d.deputyID] === undefined ||  uniq[d.deputyID] < numberOfScatterPlots ? 0.1 : 1;
@@ -847,7 +845,7 @@ function highlightMatchesDeputies(){
     }
     else {
         d3.selectAll('.dot')
-            .transition("defaultDeputy")
+            .transition()
             .duration(500)
             .attr('opacity', 1)
             .attr('r', 4)
