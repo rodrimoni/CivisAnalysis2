@@ -90,6 +90,8 @@ function removeWindow(panelID, deleteThis) {
     var node = tree.getNode(panelID, tree.traverseBF);
     var parent = node.parent.data;
 
+    var isScatterPlot = $("#" + panelID + " .scatter-plot").length > 0;
+
     if (deleteThis){
         if (node.children.length > 0)
         {
@@ -113,6 +115,11 @@ function removeWindow(panelID, deleteThis) {
     }
     else
         removeChildren(node);
+
+
+    if (isScatterPlot)
+        highlightMatchesDeputies();
+
 }
 
 /**
@@ -796,8 +803,7 @@ function checkTimeLineCropExists(event, deputy) {
     }
 }
 
-function mouseOverDeputy(deputyID, currentDeputy)
-{
+function mouseOverDeputy(deputyID, currentDeputy) {
     if (d3.selectAll('.scatter-plot').size() > 1) {
 
         var deputies = d3.selectAll('.dot');
@@ -805,32 +811,45 @@ function mouseOverDeputy(deputyID, currentDeputy)
         var matchDeputy = deputies
             .filter(function(d){ return d.deputyID === deputyID && currentDeputy !== this; });
 
-        if (matchDeputy.size() > 0)
-        {
-            matchDeputy
-                .transition(600)
-                .attr("r", 8);
-
-            d3.select(currentDeputy)
-                .transition(600)
-                .attr("r", 8);
-
+        if (matchDeputy.size() > 0) {
             deputies
-                .filter(function (d) {
-                    return d.deputyID !== deputyID;
+                .transition(500)
+                .attr('opacity', function(d){
+                  return d.deputyID !== deputyID ? 0.1 : 1;
                 })
-                .transition()
-                .attr('opacity', 0.4)
+                .attr('r', function(d){
+                    return d.deputyID === deputyID ? 8 : 4;
+                });
         }
     }
 }
 
-function mouseOutDeputy()
-{
-    if (d3.selectAll('.scatter-plot').size() > 1) {
+function highlightMatchesDeputies(){
+    var numberOfScatterPlots = d3.selectAll('.scatter-plot').size();
+
+    console.log(numberOfScatterPlots);
+
+    if (numberOfScatterPlots > 1) {
+        var allDeputies = d3.selectAll('.dot').data();
+        var uniq = allDeputies
+            .map(function(deputy) {
+                return {count:1, deputyID : deputy.deputyID}
+            })
+            .reduce(function (a,b) { a[b.deputyID] = (a[b.deputyID] || 0) + b.count; return a; }, {});
+
+        d3.selectAll('.dot')
+            .transition()
+            .duration(500)
+            .attr('opacity', function (d) {
+                return uniq[d.deputyID] === undefined ||  uniq[d.deputyID] < numberOfScatterPlots ? 0.1 : 1;
+            } )
+            .attr('r', 4);
+    }
+    else {
         d3.selectAll('.dot')
             .transition(500)
             .attr('opacity', 1)
             .attr('r', 4)
     }
+
 }

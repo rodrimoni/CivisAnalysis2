@@ -138,7 +138,7 @@ function scatterPlotChart()
                 })
                 .on("mouseout", function(){
                     div.style("display", "none");
-                    mouseOutDeputy();
+                    highlightMatchesDeputies();
                 });
 
             updateLegend(data, svg);
@@ -150,6 +150,8 @@ function scatterPlotChart()
                         handleContextMenuDeputy(invokedOn, selectedMenu);
                     }
                 });
+
+            highlightMatchesDeputies();
 
             function zoom() {
 
