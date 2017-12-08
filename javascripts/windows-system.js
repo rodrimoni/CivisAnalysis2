@@ -484,24 +484,29 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
             loadNodes(dataRange.type, dataRange.id, createScatterPlot);
         }
 
-        // update the data for the selected period
-        updateDataforDateRange(filteredData, function(){
-            // if the precal was found we dont need to calc the SVD
-            if(!dataRange.found) {
-                var filteredDeputies = filterDeputies();
-                var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
 
-                function calcCallback(twoDimData) {
-                    // Deputies array
-                    title = filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString();
-                    deputyNodes = createDeputyNodes(twoDimData.deputies,filteredDeputies);
-                    scaleAdjustment().setGovernmentTo3rdQuadrant(deputyNodes,filteredData[1]);
-                    createScatterPlot();
-                }
+        if(!dataRange.found) {
+            // update the data for the selected period
+                updateDataforDateRange(filteredData, function () {
+                    // if the precal was found we dont need to calc the SVD
 
-                calcSVD(matrixDeputiesPerRollCall,calcCallback);
-            }
-        })
+                    var filteredDeputies = filterDeputies();
+                    var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
+
+                    function calcCallback(twoDimData) {
+                        // Deputies array
+                        title = filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString();
+                        title += " (PCA)";
+                        deputyNodes = createDeputyNodes(twoDimData.deputies, filteredDeputies);
+                        scaleAdjustment().setGovernmentTo3rdQuadrant(deputyNodes, filteredData[1]);
+                        createScatterPlot();
+                    }
+
+                    calcSVD(matrixDeputiesPerRollCall, calcCallback);
+                });
+
+        }
+
     }
     else
         if (selectedMenu.context.id === "scatter-plot-mds") {
@@ -519,9 +524,10 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
                 subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString() + "</span>";
                 title += subtitle;
             }
-            else
+            else {
                 title = filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString();
-
+                title += " (MDS)";
+            }
             var createScatterPlot = function(){
                 var chartObj = {'chartID': SCATTER_PLOT, 'data': deputyNodes, 'title': title, 'panelClass' : panelClass};
                 createNewChild('panel-1-1', chartObj);
@@ -533,7 +539,6 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
                 var matrixDistanceDeputies = createMatrixDistanceDeputies(matrixDeputiesPerRollCall);
 
                 function calcCallback(twoDimData) {
-                    console.log(twoDimData.deputies);
                     // Deputies array
                     deputyNodes = createDeputyNodes(twoDimData.deputies, filteredDeputies);
                     scaleAdjustment().setGovernmentTo3rdQuadrant(deputyNodes, filteredData[1]);
@@ -544,19 +549,57 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
             });
         }
         else
-            if(selectedMenu.context.id ==='time-line-crop') {
+            if (selectedMenu.context.id ==='scatter-plot-tsne'){
+                deputyNodes = [];
+
                 if (dataRange.found) {
                     if (dataRange.type !== "year")
-                    {
                         title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
-                        subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString() + "</span>";
-                        title += subtitle;
-                        panelClass = dataRange.type + '-' + dataRange.id;
-                        var chartObj = {'chartID': TIME_LINE_CROP, 'data': dataRange, 'title': title, 'panelClass': panelClass};
-                        createNewChild('panel-1-1', chartObj);
+                    else
+                        title = "Year: " + dataRange.id;
+                    panelClass = dataRange.type + '-' + dataRange.id;
+
+                    title += " (T-SNE)";
+                    subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString() + "</span>";
+                    title += subtitle;
+                }
+                else {
+                    title = filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString();
+                    title += " (T-SNE)";
+                }
+                var createScatterPlot = function(){
+                    var chartObj = {'chartID': SCATTER_PLOT, 'data': deputyNodes, 'title': title, 'panelClass' : panelClass};
+                    createNewChild('panel-1-1', chartObj);
+                };
+
+                updateDataforDateRange(filteredData, function() {
+                    var filteredDeputies = filterDeputies();
+                    var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
+
+                    function calcCallback(twoDimData) {
+                        // Deputies array
+                        deputyNodes = createDeputyNodes(twoDimData.deputies, filteredDeputies);
+                        scaleAdjustment().setGovernmentTo3rdQuadrant(deputyNodes, filteredData[1]);
+                        createScatterPlot();
+                    }
+
+                    calcTSNE(matrixDeputiesPerRollCall,calcCallback);
+                });
+            }
+            else
+                if(selectedMenu.context.id ==='time-line-crop') {
+                    if (dataRange.found) {
+                        if (dataRange.type !== "year")
+                        {
+                            title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
+                            subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString() + "</span>";
+                            title += subtitle;
+                            panelClass = dataRange.type + '-' + dataRange.id;
+                            var chartObj = {'chartID': TIME_LINE_CROP, 'data': dataRange, 'title': title, 'panelClass': panelClass};
+                            createNewChild('panel-1-1', chartObj);
+                        }
                     }
                 }
-            }
 }
 
 function handleContextMenuDeputy(invokedOn, selectedMenu)
@@ -853,4 +896,16 @@ function highlightMatchesDeputies(){
             .attr('r', 4)
     }
 
+}
+
+function addLodadingInfoSystem(foo) {
+    var spinner = new Spinner().spin();
+    var windowsSystem =  $("#windows-system" + " .modal-full-system");
+    windowsSystem.append(spinner.el);
+
+    $("#windows-system").addClass("loading-full-system");
+    setTimeout(function () {
+        foo();
+        $("#windows-system").removeClass("loading-full-system");
+    }, 0);
 }

@@ -20,6 +20,11 @@
     padding: 0;
 }
 
+#windows-system{
+    width:100%;
+    height: 100%;
+}
+
 .container {
     display: inline-block;
     position: absolute;
@@ -166,5 +171,28 @@ a{
 /* Anytime the body has the loading class, our
    modal element will be visible */
 .panel.loading .modal {
+    display: block;
+}
+
+.modal-full-system{
+    display:    none;
+    position:   fixed;
+    z-index:    1000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 );
+}
+
+/* When the body has the loading class, we turn
+   the scrollbar off with overflow:hidden */
+.loading-full-system {
+    overflow: hidden;
+}
+
+/* Anytime the body has the loading class, our
+   modal element will be visible */
+.loading-full-system .modal-full-system{
     display: block;
 }
