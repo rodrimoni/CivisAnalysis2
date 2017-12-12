@@ -194,6 +194,7 @@ function refreshDeputies(defer){
 }
 
 function updateDataforDateRange(period,callback){
+    $('#loading #msg').text('Loading Data');
     // get the data (from db or already loaded in the dataWrapper)
     setDateRange(period[0],period[1], function(arollCallInTheDateRange,adeputiesInTheDateRange){
 

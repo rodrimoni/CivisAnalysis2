@@ -174,25 +174,29 @@ a{
     display: block;
 }
 
-.modal-full-system{
-    display:    none;
-    position:   fixed;
-    z-index:    1000;
-    top:        0;
-    left:       0;
-    height:     100%;
-    width:      100%;
-    background: rgba( 255, 255, 255, .8 );
+#loading {
+    height: 200%;
+    width: 100%;
+    z-index: 1000;
+    position: absolute;
+    top: 0;
+    visibility: hidden;
+}
+#loading #greyScreen{
+    height: 100%;
+    width: 100%;
+    background-color: black;
+    position: absolute;
+    opacity: 0.2;
 }
 
-/* When the body has the loading class, we turn
-   the scrollbar off with overflow:hidden */
-.loading-full-system {
-    overflow: hidden;
-}
-
-/* Anytime the body has the loading class, our
-   modal element will be visible */
-.loading-full-system .modal-full-system{
+#loading .gif {
     display: block;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    top: 20%;
+    color: white;
+    text-align: center;
+    font-size: xx-large;
 }

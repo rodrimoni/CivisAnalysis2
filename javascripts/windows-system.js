@@ -466,6 +466,8 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
     {
         deputyNodes = [];
 
+        $('#loading').css('visibility','visible');
+
         var createScatterPlot = function(){
             var chartObj = {'chartID': SCATTER_PLOT, 'data': deputyNodes, 'title': title, 'panelClass' : panelClass};
             createNewChild('panel-1-1', chartObj);
@@ -481,6 +483,7 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
             title += " (PCA)";
             subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString() + "</span>";
             title += subtitle;
+            $('#loading').css('visibility','hidden');
             loadNodes(dataRange.type, dataRange.id, createScatterPlot);
         }
 
@@ -499,9 +502,10 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
                         title += " (PCA)";
                         deputyNodes = createDeputyNodes(twoDimData.deputies, filteredDeputies);
                         scaleAdjustment().setGovernmentTo3rdQuadrant(deputyNodes, filteredData[1]);
+                        $('#loading').css('visibility','hidden');
                         createScatterPlot();
                     }
-
+                    $('#loading #msg').text('Gerating Political Spectra by PCA');
                     calcSVD(matrixDeputiesPerRollCall, calcCallback);
                 });
 
@@ -512,6 +516,7 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
         if (selectedMenu.context.id === "scatter-plot-mds") {
 
             deputyNodes = [];
+            $('#loading').css('visibility','visible');
 
             if (dataRange.found) {
                 if (dataRange.type !== "year")
@@ -542,15 +547,18 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
                     // Deputies array
                     deputyNodes = createDeputyNodes(twoDimData.deputies, filteredDeputies);
                     scaleAdjustment().setGovernmentTo3rdQuadrant(deputyNodes, filteredData[1]);
+                    $('#loading').css('visibility','hidden');
                     createScatterPlot();
                 }
 
+                $('#loading #msg').text('Gerating Political Spectra by MDS');
                 calcMDS(matrixDistanceDeputies,calcCallback);
             });
         }
         else
             if (selectedMenu.context.id ==='scatter-plot-tsne'){
                 deputyNodes = [];
+                $('#loading').css('visibility','visible');
 
                 if (dataRange.found) {
                     if (dataRange.type !== "year")
@@ -580,9 +588,10 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
                         // Deputies array
                         deputyNodes = createDeputyNodes(twoDimData.deputies, filteredDeputies);
                         scaleAdjustment().setGovernmentTo3rdQuadrant(deputyNodes, filteredData[1]);
+                        $('#loading').css('visibility','hidden');
                         createScatterPlot();
                     }
-
+                    $('#loading #msg').text('Gerating Political Spectra by T-SNE');
                     calcTSNE(matrixDeputiesPerRollCall,calcCallback);
                 });
             }
