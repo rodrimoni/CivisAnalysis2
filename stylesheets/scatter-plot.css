@@ -14,14 +14,25 @@
     stroke-width: 2px;
 }
 
-.scatter-plot .dot {
-    fill-opacity: 1;
-}
-
 .scatter-plot :focus {
     outline: 0;
 }
 
-.scatter-plot .dot, .scatter-plot .legend {
+.scatter-plot .legend {
     cursor: pointer;
+}
+
+.node {
+    stroke: #E0E0E0;
+    stroke-width: 1px;
+    opacity: 0.15;
+    cursor: pointer;
+}
+
+.node.selected {
+    opacity: 1 !important;
+}
+
+.node.hovered {
+    opacity: 0.4;
 }

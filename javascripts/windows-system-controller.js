@@ -37,7 +37,7 @@ function loadRollCalls(arrayRollCalls, callback) {
     });
 }
 
-function loadNodes(type, selectedTime, callback)
+function loadNodes(type, selectedTime, index, callback)
 {
     d3.json('data/precalc/'+type+'.'+selectedTime +'.json', function (precalc) {
         // SET THE precalc DEPUTIES to their constant object in the app
@@ -48,10 +48,38 @@ function loadNodes(type, selectedTime, callback)
             depObj.deputyID = precalcDeputy.deputyID;
             depObj.party = precalcDeputy.party;
             depObj.scatterplot  = precalcDeputy.scatterplot;
-            deputyNodes.push(depObj);
+
+            depObj.selected = checkSelectedValue(depObj.deputyID);
+
+            deputyNodes[index][depObj.deputyID] = depObj;
         });
         callback();
     });
+}
+
+function checkSelectedValue(id) {
+    var selectValue = true;
+    var deputyNodesLength = Object.keys(deputyNodes).length;
+    var cont = 0;
+
+    if (selectionOn)
+    {
+        if ( deputyNodesLength > 1) {
+            for (var key in deputyNodes){
+                if (cont < deputyNodesLength - 1){
+                    var dep = deputyNodes[key][id];
+                    if (dep !== undefined){
+                        selectValue = dep.selected;
+                    }
+                    else
+                        selectValue = false;
+                }
+                cont++;
+            }
+        }
+    }
+
+    return selectValue;
 }
 
 function loadScatterPlotDataByYear() {
@@ -122,7 +150,7 @@ function calcExtentValuesByYear() {
 }
 
 function createDeputyNodes(data_deputies, selecteddeputies){
-    var deputies = [];
+    var deputies = {};
 
     for (var i = 0; i < selecteddeputies.length; i++) {
         var deputy = selecteddeputies[i]; depObj = {};
@@ -131,7 +159,8 @@ function createDeputyNodes(data_deputies, selecteddeputies){
         depObj.deputyID = deputy.deputyID;
         depObj.party = deputy.party;
         depObj.scatterplot  = data_deputies[i];
-        deputies.push(depObj);
+        depObj.selected = true;
+        deputies[depObj.deputyID] = depObj;
     }
 
     return deputies;
@@ -560,4 +589,35 @@ function calcPartiesSizeAndCenter( deputies ){
     });
 
     return parties;
+}
+
+function popoverAttr(htmlContent,placement){
+    return {
+        cursor : 'pointer',
+        href:"#",
+        'data-container':'body',
+        'data-content': htmlContent,
+        'data-html': true,
+        rel:"popover",
+        'data-placement': (placement)?placement:'bottom',
+        'data-trigger':"hover",
+        'data-viewport': 'body'
+    }
+}
+
+function resetSelection(){
+    for (var key in deputyNodes){
+        for (var index in deputyNodes[key])
+            deputyNodes[key][index].selected = true;
+    }
+    selectionOn = false;
+    updateVisualizations();
+}
+
+function updateAllDeputyNodes(deputyID, attr, value ) {
+    for (var key in deputyNodes) {
+        var deputy = deputyNodes[key][deputyID];
+        if (deputy !== undefined)
+            deputy[attr] = value;
+    }
 }

@@ -28,6 +28,8 @@ function scatterPlotChart()
         width = outerWidth - margin.left - margin.right,
         height = outerHeight - margin.top - margin.bottom;
 
+    var nodeRadius = 4;
+
     var x = d3.scale.linear()
         .range([width,0]).nice();
 
@@ -35,17 +37,19 @@ function scatterPlotChart()
         .range([0, height]).nice();
 
     var clusters = [];
+    var svg;
 
-
+    var dispatch = d3.dispatch('update');
     var div = d3.select(".toolTip");
 
     function chart(selection){
         selection.each(function (data) {
-            var xMax = d3.max(data, function(d) { return d.scatterplot[1]; })  * 1.05,
-                xMin = d3.min(data, function(d) { return d.scatterplot[1]; }),
+            var nodes = d3.values(data);
+            var xMax = d3.max(nodes, function(d) { return d.scatterplot[1]; })  * 1.05,
+                xMin = d3.min(nodes, function(d) { return d.scatterplot[1]; }),
                 xMin = xMin > 0 ? 0 : xMin* 1.05,
-                yMax = d3.max(data, function(d) { return d.scatterplot[0]; })  * 1.05,
-                yMin = d3.min(data, function(d) { return d.scatterplot[0]; }),
+                yMax = d3.max(nodes, function(d) { return d.scatterplot[0]; })  * 1.05,
+                yMin = d3.min(nodes, function(d) { return d.scatterplot[0]; }),
                 yMin = yMin > 0 ? 0 : yMin* 1.05;
 
             x.domain([xMin, xMax]);
@@ -71,7 +75,7 @@ function scatterPlotChart()
 
             var panelID = (d3.select(this.parentNode).attr('id'));
 
-            var svg = d3.select(this)
+            svg = d3.select(this)
                 .append("svg")
                 .attr("width", "100%")
                 .attr("height", "100%")
@@ -118,12 +122,12 @@ function scatterPlotChart()
 
             var deputiesNodesDots   = objects.append("g").attr("class", "deputiesNodesDots");
 
-            deputiesNodesDots.selectAll(".dot")
-                .data(data)
+            deputiesNodesDots.selectAll("circle")
+                .data(nodes)
                 .enter()
                 .append("circle")
-                .classed("dot", true)
-                .attr("r", 4)
+                .attr("class", function (d) {return (d.selected)? "node selected": ( (d.hovered)? "node hovered" : "node"); })
+                .attr("r", function(d){ return (d.hovered)? nodeRadius*2 : nodeRadius;})
                 .attr("id", function(d) { return panelID + "_deputy-id-" + d.deputyID; })
                 .attr("transform", function(d) {return "translate(" + x(d.scatterplot[1]) + "," + y(d.scatterplot[0]) + ")";})
                 .style("fill", function(d) { return selColor(d.party); })
@@ -133,15 +137,19 @@ function scatterPlotChart()
                     div.style("display", "inline-block");
                     div.html(d.name + " (" + d.party + "-" + d.district + ") ");
                 })
-                .on("mouseover", function (d) {
-                    mouseOverDeputy(d.deputyID, this);
-                })
-                .on("mouseout", function(){
+                .on('click', mouseClickDeputy)
+                .on("mouseover",
+                    //mouseOverDeputy(d.deputyID, this);
+                    mouseoverDeputy
+                )
+                .on("mouseout", function(d){
                     div.style("display", "none");
+                    mouseoutDeputy(d);
                     highlightMatchesDeputies();
                 });
 
-            updateLegend(data, svg);
+            
+            updateLegend(nodes, svg);
 
             $("#" + panelID + " .dot")
                 .contextMenu({
@@ -160,7 +168,7 @@ function scatterPlotChart()
                 svg.select(".x.axis").call(xAxis);
                 svg.select(".y.axis").call(yAxis);
 
-                svg.selectAll(".dot")
+                svg.selectAll(".node")
                     .attr("transform", function(d) {return "translate(" + x(d.scatterplot[1]) + "," + y(d.scatterplot[0]) + ")";});
 
                 var groupPath = function(d) {
@@ -186,15 +194,9 @@ function scatterPlotChart()
                 var enterLegend =
                     legend.enter().append("g")
                         .classed("legend", true)
-                        .on('mouseover', function() {
-                            var party = d3.select(this).data()[0];
-                            svg.selectAll('.dot')
-                                .transition()
-                                .attr('opacity', function (d) {
-                                    return d.party === party ? 1 : 0.1
-                                })
-                        })
-                        .on("mouseout", highlightMatchesDeputies);
+                        .on('click', clickParty)
+                        .on('mouseover', mouseoverParty)
+                        .on('mouseout', function () { mouseoutParty(); highlightMatchesDeputies();});
 
                 enterLegend
                     .attr("transform", function(d, i) { if (i % 2 === 0) return "translate(0," + i * 20 + ")"; else return "translate(80," + (i-1) * 20 + ")" ; });
@@ -249,7 +251,15 @@ function scatterPlotChart()
         return chart;
     };
 
+    chart.update = function () {
+        svg.selectAll(".deputiesNodesDots .node")
+            .transition()
+            .attr("class", function (d) {return (d.selected)? "node selected": ( (d.hovered)? "node hovered" : "node"); })
+            .attr("r", function(d){ return (d.hovered)? nodeRadius*2 : nodeRadius;});
+    };
+
     chart.getClusters = function (k, data, id) {
+        console.log(data);
         //number of clusters, defaults to undefined
         clusterMaker.k(k);
 
@@ -341,5 +351,80 @@ function scatterPlotChart()
 
     }
 
-    return chart;
+    // mouse OVER circle deputy
+    function mouseoverDeputy(d) {
+        updateAllDeputyNodes(d.deputyID, "hovered", true);
+        dispatch.update();
+    }
+
+    // mouse OUT circle deputy
+    function mouseoutDeputy(d){
+        updateAllDeputyNodes(d.deputyID, "hovered", false);
+        dispatch.update();
+    }
+
+    function mouseClickDeputy(d){
+        d3.event.preventDefault();
+
+        if (d3.event.shiftKey){
+            // using the shiftKey deselect the deputy
+            updateAllDeputyNodes(d.deputyID, "selected", false);
+        } else
+        if (d3.event.ctrlKey || d3.event.metaKey){
+            // using the ctrlKey add deputy to selection
+            updateAllDeputyNodes(d.deputyID, "selected", true);
+        }
+        else {
+            // a left click without any key pressed -> select only the deputy (deselect others)
+            for (var key in deputyNodes){
+                for (var index in deputyNodes[key])
+                    deputyNodes[key][index].selected = false;
+            }
+            updateAllDeputyNodes(d.deputyID, "selected", true);
+            selectionOn = true;
+        }
+        dispatch.update()
+    }
+
+    function mouseoverParty(d) {
+        var deputies = svg.selectAll(".deputiesNodesDots .node").filter(function (dep) {
+            return dep.party === d;
+        }).data();
+
+        deputies.forEach(function (d) {
+            updateAllDeputyNodes(d.deputyID, "hovered", true);
+        });
+
+        dispatch.update();
+
+    }
+
+    function mouseoutParty(){
+        for (var key in deputyNodes){
+            for (var index in deputyNodes[key])
+                deputyNodes[key][index].hovered = false;
+        }
+        dispatch.update();
+    }
+
+    function clickParty(d) {
+        for (var key in deputyNodes){
+            for (var index in deputyNodes[key])
+                deputyNodes[key][index].selected = false;
+        }
+
+        var deputies = svg.selectAll(".deputiesNodesDots .node").filter(function (dep) {
+            return dep.party === d;
+        }).data();
+
+        deputies.forEach(function (d) {
+            updateAllDeputyNodes(d.deputyID, "selected", true);
+        });
+
+        selectionOn = true;
+
+        dispatch.update();
+    }
+
+    return d3.rebind(chart, dispatch, 'on');
 }

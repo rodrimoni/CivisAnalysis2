@@ -7,18 +7,28 @@ var INITIAL_HEIGHT = 450;
 var INITIAL_WIDTH = 550;
 
 /* Max values of panel Height and Width */
-var MAX_HEIGHT = 720;
-var MAX_WIDTH = 1200;
+var MAX_HEIGHT  = 720;
+var MAX_WIDTH   = 1200;
 
 /* Constant values of icon Height and Width */
 var HEIGHT_ICON = 28;
-var WIDTH_ICON = 28;
+var WIDTH_ICON  = 28;
 
 /* Constant to define the charts */
-var SCATTER_PLOT = 1;
-var BAR_CHART = 2;
-var FORCE_LAYOUT = 3;
-var TIME_LINE_CROP = 4;
+var TIME_LINE           = 0;
+var SCATTER_PLOT        = 1;
+var BAR_CHART           = 2;
+var FORCE_LAYOUT        = 3;
+var TIME_LINE_CROP      = 4;
+var CHAMBER_INFOGRAPHIC = 5;
+
+/* Constant to define Dimensional Reduction Techniques */
+var PCA = 1;
+var MDS = 2;
+var TSNE = 3;
+
+/* Global variable to handle deputies selections */
+var selectionOn = false;
 
 /* Global variable to store all deputies with an ID */
 var deputiesArray = [];
@@ -39,7 +49,7 @@ function initSystem() {
     loadDeputies(deputiesArray);
     loadDeputiesNodesByYear(deputiesNodesByYear);
     loadRollCalls(arrayRollCalls, function () {
-        createNewChild("timeline");
+        createNewChild(TIME_LINE);
         //createTraces1by1();
     });
 }
@@ -51,9 +61,10 @@ function initializeChart(newID, chartObj) {
     {
         case SCATTER_PLOT:
             chart = scatterPlotChart();
-            $('#' +newID + ' .panel-heading .btn-group').append('<button class="btn btn-default btn-settings-scatterplot toggle-dropdown" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i></button> </button> <ul class="dropdown-menu panel-settings"><li role="presentation" class="dropdown-header">Clustering with K-Means</li><li> Select the value of K: <br> <input id= "slider-'+ newID + '" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="10"/></li></ul>')
+            $('#' +newID + ' .panel-heading .btn-group').append('<button class="btn btn-default btn-settings-scatterplot toggle-dropdown" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i></button> </button> <ul class="dropdown-menu panel-settings"><li role="presentation" class="dropdown-header">Clustering with K-Means</li><li> Select the value of K: <br> <input id= "slider-'+ newID + '" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="10"/></li></ul>');
             initializeSlider(newID, chart);
             $('#' +newID).attr('data-type-period', chartObj.panelClass);
+            chart.on('update', updateVisualizations);
             break;
 
         case BAR_CHART:
@@ -69,6 +80,10 @@ function initializeChart(newID, chartObj) {
             $('#' +newID).attr('data-type-period', chartObj.panelClass);
             break;
 
+        case CHAMBER_INFOGRAPHIC:
+            chart = chamberInfographic();
+            chart.on('update', updateVisualizations);
+            break;
         default:
             break;
 
@@ -238,7 +253,7 @@ function createNewChild(currentId, chartObj) {
     var chart;
 
     /* Creating the root */
-    if (currentId === "timeline")
+    if (currentId === TIME_LINE)
     {
         newID = "panel-1-1";
         newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" style="padding-top: 7.5px;"> Timeline </h4> <button disabled class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button> </div><div class="panel-body center-panel"></div></div>').css({"position": "absolute"});
@@ -298,6 +313,9 @@ function createNewChild(currentId, chartObj) {
 
                 }
             });
+
+        tree._root.chart = timeline;
+        tree._root.typeChart = TIME_LINE;
     }
     else
     {
@@ -326,7 +344,8 @@ function createNewChild(currentId, chartObj) {
             chart = initializeChart(newID, chartObj);
 
         /* Bind data chart to node in tree */
-        node.chart = chart;
+        node.chart      = chart;
+        node.typeChart  = chartObj.chartID;
 
         /* Sets up the panel settings as drag, resize, etc */
         setUpPanel(newID);
@@ -377,8 +396,8 @@ function setUpPanel(newID) {
         initialWidth = INITIAL_WIDTH;
         initialHeight = INITIAL_HEIGHT;
 
-        minWidth = INITIAL_WIDTH;
-        minHeight = INITIAL_HEIGHT;
+        minWidth = INITIAL_WIDTH - 100;
+        minHeight = INITIAL_HEIGHT - 100;
 
         maxWidth  = MAX_WIDTH;
         maxHeight = MAX_HEIGHT;
@@ -455,160 +474,138 @@ function handleContextMenuScatterPlot(invokedOn, selectedMenu)
             }
 }
 
+function setUpScatterPlotData(filteredData, dataRange, dimensionalReductionTechnique, isInfographic)
+{
+    $('#loading').css('visibility','visible');
+
+    var panelClass, title, key;
+
+    if (isInfographic) {
+        var createChamberInfographic = function(){
+            var nodesValues = d3.values(deputyNodes[key]);
+            var parties = calcPartiesSizeAndCenter(nodesValues);
+            var data = {'deputies': nodesValues, 'partiesMap' : parties };
+            var chartObj = {'chartID': CHAMBER_INFOGRAPHIC, 'data': data, 'title': title, 'panelClass' : panelClass};
+            createNewChild('panel-1-1', chartObj);
+        };
+    }
+    else {
+        var createScatterPlot = function(){
+            var chartObj = {'chartID': SCATTER_PLOT, 'data': deputyNodes[key], 'title': title, 'panelClass' : panelClass};
+            createNewChild('panel-1-1', chartObj);
+        };
+    }
+
+    if (dataRange.found) {
+        if (dataRange.type !== "year")
+            title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
+        else
+            title = "Year: " + dataRange.id;
+        panelClass = dataRange.type + '-' + dataRange.id;
+
+        key = panelClass + "-" + dimensionalReductionTechnique;
+
+        var createChart;
+        title += " ("+ dimensionalReductionTechnique + ")";
+
+        if (isInfographic)
+            createChart = createChamberInfographic;
+        else
+            createChart = createScatterPlot;
+
+        subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString() + "</span>";
+        title += subtitle;
+
+        if (dimensionalReductionTechnique === "PCA") {
+            if (deputyNodes[key] !== undefined)
+                createChart();
+            else {
+                deputyNodes[key] = {};
+                loadNodes(dataRange.type, dataRange.id, key, createChart);
+            }
+            $('#loading').css('visibility','hidden');
+        }
+    }
+
+
+    if((!dataRange.found && dimensionalReductionTechnique === "PCA") || dimensionalReductionTechnique !== "PCA") {
+        // update the data for the selected period
+        updateDataforDateRange(filteredData, function () {
+            // if the precal was found we dont need to calc the SVD
+
+            var filteredDeputies = filterDeputies();
+            var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
+            if (dimensionalReductionTechnique === "MDS")
+                var matrixDistanceDeputies = createMatrixDistanceDeputies(matrixDeputiesPerRollCall);
+
+            function calcCallback(twoDimData) {
+                // Deputies array
+                title = filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString();
+                title += " (" + dimensionalReductionTechnique + ")";
+
+                if (isInfographic)
+                    createChart = createChamberInfographic;
+                else
+                    createChart = createScatterPlot;
+
+                key = title;
+
+                if (deputyNodes[key] === undefined) {
+                    deputyNodes[key] = createDeputyNodes(twoDimData.deputies, filteredDeputies);
+                    scaleAdjustment().setGovernmentTo3rdQuadrant(d3.values(deputyNodes[key]), filteredData[1]);
+                }
+
+                $('#loading').css('visibility','hidden');
+                createChart();
+            }
+            $('#loading #msg').text('Generating Political Visualization');
+            if (dimensionalReductionTechnique === "PCA"){
+                calcSVD(matrixDeputiesPerRollCall, calcCallback);
+            }
+            else
+                if (dimensionalReductionTechnique === "MDS")
+                    calcMDS(matrixDistanceDeputies,calcCallback);
+                else
+                    if (dimensionalReductionTechnique === "TSNE")
+                        calcTSNE(matrixDeputiesPerRollCall,calcCallback);
+        });
+
+    }
+}
+
 function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
 {
-    var dataRange = setNewDateRange(filteredData);
     var title;
     var subtitle;
     var panelClass;
 
+    var dataRange = setNewDateRange(filteredData);
+
     if (selectedMenu.context.id === "scatter-plot-pca")
-    {
-        deputyNodes = [];
-
-        $('#loading').css('visibility','visible');
-
-        var createScatterPlot = function(){
-            var chartObj = {'chartID': SCATTER_PLOT, 'data': deputyNodes, 'title': title, 'panelClass' : panelClass};
-            createNewChild('panel-1-1', chartObj);
-        };
-
-        if (dataRange.found) {
-            if (dataRange.type !== "year")
-                title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
-            else
-                title = "Year: " + dataRange.id;
-            panelClass = dataRange.type + '-' + dataRange.id;
-
-            title += " (PCA)";
-            subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString() + "</span>";
-            title += subtitle;
-            $('#loading').css('visibility','hidden');
-            loadNodes(dataRange.type, dataRange.id, createScatterPlot);
-        }
-
-
-        if(!dataRange.found) {
-            // update the data for the selected period
-                updateDataforDateRange(filteredData, function () {
-                    // if the precal was found we dont need to calc the SVD
-
-                    var filteredDeputies = filterDeputies();
-                    var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
-
-                    function calcCallback(twoDimData) {
-                        // Deputies array
-                        title = filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString();
-                        title += " (PCA)";
-                        deputyNodes = createDeputyNodes(twoDimData.deputies, filteredDeputies);
-                        scaleAdjustment().setGovernmentTo3rdQuadrant(deputyNodes, filteredData[1]);
-                        $('#loading').css('visibility','hidden');
-                        createScatterPlot();
-                    }
-                    $('#loading #msg').text('Gerating Political Spectra by PCA');
-                    calcSVD(matrixDeputiesPerRollCall, calcCallback);
-                });
-
-        }
-
-    }
+        setUpScatterPlotData(filteredData, dataRange, "PCA", false);
     else
-        if (selectedMenu.context.id === "scatter-plot-mds") {
-
-            deputyNodes = [];
-            $('#loading').css('visibility','visible');
-
-            if (dataRange.found) {
-                if (dataRange.type !== "year")
-                    title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
-                else
-                    title = "Year: " + dataRange.id;
-                panelClass = dataRange.type + '-' + dataRange.id;
-
-                title += " (MDS)";
-                subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString() + "</span>";
-                title += subtitle;
-            }
-            else {
-                title = filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString();
-                title += " (MDS)";
-            }
-            var createScatterPlot = function(){
-                var chartObj = {'chartID': SCATTER_PLOT, 'data': deputyNodes, 'title': title, 'panelClass' : panelClass};
-                createNewChild('panel-1-1', chartObj);
-            };
-
-            updateDataforDateRange(filteredData, function() {
-                var filteredDeputies = filterDeputies();
-                var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
-                var matrixDistanceDeputies = createMatrixDistanceDeputies(matrixDeputiesPerRollCall);
-
-                function calcCallback(twoDimData) {
-                    // Deputies array
-                    deputyNodes = createDeputyNodes(twoDimData.deputies, filteredDeputies);
-                    scaleAdjustment().setGovernmentTo3rdQuadrant(deputyNodes, filteredData[1]);
-                    $('#loading').css('visibility','hidden');
-                    createScatterPlot();
-                }
-
-                $('#loading #msg').text('Gerating Political Spectra by MDS');
-                calcMDS(matrixDistanceDeputies,calcCallback);
-            });
-        }
+        if (selectedMenu.context.id === "chamber-infographic")
+            setUpScatterPlotData(filteredData, dataRange, "PCA", true);
         else
-            if (selectedMenu.context.id ==='scatter-plot-tsne'){
-                deputyNodes = [];
-                $('#loading').css('visibility','visible');
-
-                if (dataRange.found) {
-                    if (dataRange.type !== "year")
-                        title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
-                    else
-                        title = "Year: " + dataRange.id;
-                    panelClass = dataRange.type + '-' + dataRange.id;
-
-                    title += " (T-SNE)";
-                    subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString() + "</span>";
-                    title += subtitle;
-                }
-                else {
-                    title = filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString();
-                    title += " (T-SNE)";
-                }
-                var createScatterPlot = function(){
-                    var chartObj = {'chartID': SCATTER_PLOT, 'data': deputyNodes, 'title': title, 'panelClass' : panelClass};
-                    createNewChild('panel-1-1', chartObj);
-                };
-
-                updateDataforDateRange(filteredData, function() {
-                    var filteredDeputies = filterDeputies();
-                    var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
-
-                    function calcCallback(twoDimData) {
-                        // Deputies array
-                        deputyNodes = createDeputyNodes(twoDimData.deputies, filteredDeputies);
-                        scaleAdjustment().setGovernmentTo3rdQuadrant(deputyNodes, filteredData[1]);
-                        $('#loading').css('visibility','hidden');
-                        createScatterPlot();
-                    }
-                    $('#loading #msg').text('Gerating Political Spectra by T-SNE');
-                    calcTSNE(matrixDeputiesPerRollCall,calcCallback);
-                });
-            }
+            if (selectedMenu.context.id === "scatter-plot-mds")
+                setUpScatterPlotData(filteredData, dataRange, "MDS", false);
             else
-                if(selectedMenu.context.id ==='time-line-crop') {
-                    if (dataRange.found) {
-                        if (dataRange.type !== "year")
-                        {
-                            title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
-                            subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString() + "</span>";
-                            title += subtitle;
-                            panelClass = dataRange.type + '-' + dataRange.id;
-                            var chartObj = {'chartID': TIME_LINE_CROP, 'data': dataRange, 'title': title, 'panelClass': panelClass};
-                            createNewChild('panel-1-1', chartObj);
+                if (selectedMenu.context.id ==='scatter-plot-tsne')
+                    setUpScatterPlotData(filteredData, dataRange, "TSNE", false);
+                else
+                    if(selectedMenu.context.id ==='time-line-crop') {
+                        if (dataRange.found) {
+                            if (dataRange.type !== "year")
+                            {
+                                title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
+                                subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString() + "</span>";
+                                title += subtitle;
+                                panelClass = dataRange.type + '-' + dataRange.id;
+                                var chartObj = {'chartID': TIME_LINE_CROP, 'data': dataRange, 'title': title, 'panelClass': panelClass};
+                                createNewChild('panel-1-1', chartObj);
+                            }
                         }
                     }
-                }
 }
 
 function handleContextMenuDeputy(invokedOn, selectedMenu)
@@ -817,7 +814,7 @@ function  initializeSlider(id, chart) {
 
         panel.addClass("loading");
         setTimeout(function () {
-            chart.getClusters(k, data, id);
+            chart.getClusters(k, d3.values(data), id);
             panel.removeClass("loading");
         }, 0);
     });
@@ -879,42 +876,45 @@ function mouseOverDeputy(deputyID, currentDeputy) {
 }
 
 function highlightMatchesDeputies(){
-    var numberOfScatterPlots = d3.selectAll('.scatter-plot').size();
+    if ($("#match:checked").length > 0) {
+        var numberOfScatterPlots = d3.selectAll('.scatter-plot').size();
 
-    if (numberOfScatterPlots > 1) {
-        var allDeputies = d3.selectAll('.dot').data();
-        var uniq = allDeputies
-            .map(function(deputy) {
-                return {count:1, deputyID : deputy.deputyID}
-            })
-            .reduce(function (a,b) { a[b.deputyID] = (a[b.deputyID] || 0) + b.count; return a; }, {});
+        if (numberOfScatterPlots > 1) {
+            var allDeputies = d3.selectAll('.dot').data();
+            var uniq = allDeputies
+                .map(function (deputy) {
+                    return {count: 1, deputyID: deputy.deputyID}
+                })
+                .reduce(function (a, b) {
+                    a[b.deputyID] = (a[b.deputyID] || 0) + b.count;
+                    return a;
+                }, {});
 
-        d3.selectAll('.dot')
-            .transition()
-            .duration(500)
-            .attr('opacity', function (d) {
-                return uniq[d.deputyID] === undefined ||  uniq[d.deputyID] < numberOfScatterPlots ? 0.1 : 1;
-            } )
-            .attr('r', 4);
+            d3.selectAll('.dot')
+                .transition()
+                .duration(500)
+                .attr('opacity', function (d) {
+                    return uniq[d.deputyID] === undefined || uniq[d.deputyID] < numberOfScatterPlots ? 0.1 : 1;
+                })
+        }
+        else {
+            d3.selectAll('.dot')
+                .transition()
+                .duration(500)
+                .attr('opacity', 1)
+        }
     }
     else {
         d3.selectAll('.dot')
             .transition()
             .duration(500)
             .attr('opacity', 1)
-            .attr('r', 4)
     }
-
 }
 
-function addLodadingInfoSystem(foo) {
-    var spinner = new Spinner().spin();
-    var windowsSystem =  $("#windows-system" + " .modal-full-system");
-    windowsSystem.append(spinner.el);
-
-    $("#windows-system").addClass("loading-full-system");
-    setTimeout(function () {
-        foo();
-        $("#windows-system").removeClass("loading-full-system");
-    }, 0);
+function updateVisualizations() {
+    tree.traverseBF(function (n) {
+        if (n.typeChart === SCATTER_PLOT || n.typeChart === CHAMBER_INFOGRAPHIC)
+            n.chart.update();
+    })
 }

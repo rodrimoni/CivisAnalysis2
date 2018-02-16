@@ -756,7 +756,7 @@ d3.chart.timeline = function() {
                 // set the selected election
                 electionIcon.classed('selected',true);
                 dispatch.setAlliances(d);
-                setAlliance(d)
+                setAlliance(d);
 
             }
         })
@@ -823,18 +823,3 @@ d3.chart.timeline = function() {
     //return d3.rebind(chart, brush, "on");
     return d3.rebind(chart, dispatch, "on");
 };
-
-
-function popoverAttr(htmlContent,placement){
-    return {
-        cursor : 'pointer',
-        href:"#",
-        'data-container':'body',
-        'data-content': htmlContent,
-        'data-html': true,
-        rel:"popover",
-        'data-placement': (placement)?placement:'bottom',
-        'data-trigger':"hover",
-        'data-viewport': 'body'
-    }
-}

@@ -1,3 +1,13 @@
+h2 { display: inline-block; }
+
+#navbar button, #navbar label {
+    margin-left: 30px;
+}
+
+#navbar {
+    margin-bottom: 20px;
+}
+
 .panel {
     position: absolute;
 }

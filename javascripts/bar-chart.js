@@ -8,6 +8,7 @@ function barChart() {
 
     function chart(selection){
         selection.each(function (data) {
+            console.log(data);
             var totalDeputies = d3.sum(data, function(d){
                 return d.number;
             });
@@ -23,7 +24,7 @@ function barChart() {
                 .append("svg")
                 .attr("width", "100%")
                 .attr("height", "100%")
-                .attr("viewBox", "0 0 1000 620 ")
+                .attr("viewBox", "0 0 " + width + " " + height)
                 .classed("bar-chart", true);
 
             var bar = svg.selectAll("g")

@@ -22,8 +22,8 @@
                     .show()
                     .css({
                         position: "absolute",
-                        left: getMenuPosition(e.clientX, 'width', 'scrollLeft'),
-                        top: getMenuPosition(e.clientY, 'height', 'scrollTop')
+                        left: getMenuPosition(e.clientX, 'width', 'scrollLeft', 'left'),
+                        top: getMenuPosition(e.clientY, 'height', 'scrollTop', 'top')
                     })
                     .off('click')
                     .on('click', 'a', function (e) {
@@ -45,11 +45,12 @@
 
         });
 
-        function getMenuPosition(mouse, direction, scrollDir) {
+        function getMenuPosition(mouse, direction, scrollDir, offsetDir) {
             var win = $(window)[direction](),
                 scroll = $(window)[scrollDir](),
+                offset = $('.container').offset()[offsetDir],
                 menu = $(settings.menuSelector)[direction](),
-                position = mouse + scroll;
+                position = mouse + scroll - offset;
 
             // opening menu would pass the side of the page
             if (mouse + menu > win && menu < mouse)

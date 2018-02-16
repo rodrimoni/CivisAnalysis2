@@ -5,6 +5,7 @@ function Node(data) {
     this.depth      = 1;
     this.id         = 1;
     this.chart      = null;
+    this.typeChart  = null;
 }
 
 function Tree(data) {

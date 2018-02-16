@@ -58,6 +58,9 @@
     <!-- Timeline crop visualizations -->
     <script src="javascripts/time-line-crop.js"></script>
 
+    <!-- Chamber infographic visualization -->
+    <script src="javascripts/chamber-infographic.js"></script>
+
     <!-- Windows System View Functions -->
     <script src="javascripts/windows-system.js"></script>
 
@@ -115,9 +118,18 @@
     <img src="./images/ajax_loader.gif" width="100px" class="gif">
     <span id="msg" class="gif">Loading</span>
 </div>
+
+
+<div id = "navbar">
+    <h2>CivisAnalysis 2.0</h2>
+    <button id = "resetBtn" type="button" class="btn btn-default">Reset all selections</button>
+    <label style = "display:none"> <input id="match" type="checkbox"> Match Deputies </label>
+</div>
+
+
 <div class="container">
     <svg id ="workspace" width = "100%" height = "100%" class="svg-content-responsive"></svg>
-    <h2>CivisAnalysis 2.0</h2>
+    <!-- Secondary, outline button -->
     <ul id="contextMenuScatterPlot" class="dropdown-menu" role="menu" style="display:none" >
         <li><a tabindex="-1" id="bar-chart">Create a bar chart</a></li>
         <li><a tabindex="-1" id="force-layout">Create a force layout</a></li>
@@ -128,6 +140,7 @@
         <li><a tabindex="-1" id="scatter-plot-pca">Create a scatter plot - PCA</a></li>
         <li><a tabindex="-1" id="scatter-plot-mds">Create a scatter plot - MDS</a></li>
         <li><a tabindex="-1" id="scatter-plot-tsne">Create a scatter plot - T-SNE</a></li>
+        <li><a tabindex="-1" id="chamber-infographic">Create a chamber infographic</a></li>
         <li><a tabindex="-1" id="time-line-crop">Create a timeline crop</a></li>
     </ul>
     <ul id="contextMenuDeputy" class="dropdown-menu" role="menu" style="display:none" >
@@ -180,6 +193,11 @@
         windowSystem.on('mousedown', '.panel .dot', function(event){
             checkTimeLineCropExists(event, this);
         });
+
+        windowSystem.on('change', '#match', highlightMatchesDeputies);
+
+        windowSystem.on('click', '#resetBtn', resetSelection);
+
     });
 
 </script>
