@@ -151,7 +151,7 @@ function scatterPlotChart()
             
             updateLegend(nodes, svg);
 
-            $("#" + panelID + " .dot")
+            $("#" + panelID + " .node")
                 .contextMenu({
                     menuSelector: "#contextMenuDeputy",
                     menuSelected: function (invokedOn, selectedMenu) {

@@ -70,6 +70,8 @@ function checkSelectedValue(id) {
                     var dep = deputyNodes[key][id];
                     if (dep !== undefined){
                         selectValue = dep.selected;
+                        if (selectValue)
+                            break;
                     }
                     else
                         selectValue = false;
@@ -159,7 +161,7 @@ function createDeputyNodes(data_deputies, selecteddeputies){
         depObj.deputyID = deputy.deputyID;
         depObj.party = deputy.party;
         depObj.scatterplot  = data_deputies[i];
-        depObj.selected = true;
+        depObj.selected = checkSelectedValue(depObj.deputyID);
         deputies[depObj.deputyID] = depObj;
     }
 

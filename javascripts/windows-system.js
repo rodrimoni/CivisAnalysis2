@@ -403,12 +403,14 @@ function setUpPanel(newID) {
         maxHeight = MAX_HEIGHT;
     }
 
+    var containerOffset = $('.container').offset();
+
     /* Setting up the panel */
     $( "#" + newID)
         .draggable({
             handle: ".panel-heading",
             stack: ".panel, .fa-window-maximize",
-            containment: [10,10, workspace.width() - initialWidth - 10 , workspace.height() - initialHeight - 70],
+            containment: [10,containerOffset.top, workspace.width() - initialWidth - 10 , workspace.height() - initialHeight - 70],
             drag: function(){
                 centerLine(this.id);
             },
@@ -771,12 +773,13 @@ function hideToolTipCluster(){
 function checkLimits()
 {
     var workspace =  $("#workspace");
+    var containerOffset = $('.container').offset();
     var panels = $(".panel");
     panels.each(function(index){
         var getElem = $( "#"+panels[index].id);
         var offsetWidth = workspace.width() - getElem.width() - 10;
         var offsetHeight= workspace.height() - getElem.height() - 10;
-        $(getElem).draggable( "option", "containment", [10,10,offsetWidth,offsetHeight]);
+        $(getElem).draggable( "option", "containment", [10,containerOffset.top,offsetWidth,offsetHeight]);
     })
 }
 
@@ -854,26 +857,6 @@ function checkTimeLineCropExists(event, deputy) {
     }
 }
 
-function mouseOverDeputy(deputyID, currentDeputy) {
-    if (d3.selectAll('.scatter-plot').size() > 1) {
-
-        var deputies = d3.selectAll('.dot');
-
-        var matchDeputy = deputies
-            .filter(function(d){ return d.deputyID === deputyID && currentDeputy !== this; });
-
-        if (matchDeputy.size() > 0) {
-            deputies
-                .transition()
-                .attr('opacity', function(d){
-                  return d.deputyID !== deputyID ? 0.1 : 1;
-                })
-                .attr('r', function(d){
-                    return d.deputyID === deputyID ? 8 : 4;
-                });
-        }
-    }
-}
 
 function highlightMatchesDeputies(){
     if ($("#match:checked").length > 0) {

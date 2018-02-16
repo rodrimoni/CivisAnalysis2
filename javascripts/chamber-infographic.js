@@ -1,4 +1,4 @@
-//TODO: Bug two chamber infographics selections, transitions on hover and selections
+//TODO: Transitions on hover and selections
 
 function chamberInfographic() {
     var margin = { top: 50, right: 30, bottom: 30, left: 20 },
