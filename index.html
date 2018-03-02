@@ -109,6 +109,13 @@
     <!-- Spinner gif library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
 
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+
+
     <title> CivisAnalysis 2.0  </title>
 </head>
 
@@ -122,6 +129,36 @@
 
 <div id = "navbar">
     <h2>CivisAnalysis 2.0</h2>
+    <label id="selectLabel" for="selStates"></label>
+    <select class="selectpicker" title="Choose one of the following..." multiple id="selStates">
+        <option value="AC">Acre</option>
+        <option value="AL">Alagoas</option>
+        <option value="AP">Amapá</option>
+        <option value="AM">Amazonas</option>
+        <option value="BA">Bahia</option>
+        <option value="CE">Ceará</option>
+        <option value="DF">Distrito Federal</option>
+        <option value="ES">Espírito Santo</option>
+        <option value="GO">Goiás</option>
+        <option value="MA">Maranhão</option>
+        <option value="MT">Mato Grosso</option>
+        <option value="MS">Mato Grosso do Sul</option>
+        <option value="MG">Minas Gerais</option>
+        <option value="PA">Pará</option>
+        <option value="PB">Paraíba</option>
+        <option value="PR">Paraná</option>
+        <option value="PE">Pernambuco</option>
+        <option value="PI">Piauí</option>
+        <option value="RJ">Rio de Janeiro</option>
+        <option value="RN">Rio Grande do Norte</option>
+        <option value="RS">Rio Grande do Sul</option>
+        <option value="RO">Rondônia</option>
+        <option value="RR">Roraima</option>
+        <option value="SC">Santa Catarina</option>
+        <option value="SP">São Paulo</option>
+        <option value="SE">Sergipe</option>
+        <option value="TO">Tocantins</option>
+    </select>
     <button id = "resetBtn" type="button" class="btn btn-default">Reset all selections</button>
     <label style = "display:none"> <input id="match" type="checkbox"> Match Deputies </label>
 </div>
@@ -141,7 +178,6 @@
         <li><a tabindex="-1" id="scatter-plot-mds">Create a scatter plot - MDS</a></li>
         <li><a tabindex="-1" id="scatter-plot-tsne">Create a scatter plot - T-SNE</a></li>
         <li><a tabindex="-1" id="chamber-infographic">Create a chamber infographic</a></li>
-        <li><a tabindex="-1" id="time-line-crop">Create a timeline crop</a></li>
     </ul>
     <ul id="contextMenuDeputy" class="dropdown-menu" role="menu" style="display:none" >
         <li><a class="btn disabled" tabindex="-1" id="time-line-crop-behavior">Create a timeline crop behavior</a></li>
@@ -191,12 +227,14 @@
         });
 
         windowSystem.on('mousedown', '.panel .node', function(event){
-            checkTimeLineCropExists(event, this);
+            checkPeriodTimeLineCrop(event, this);
         });
 
         windowSystem.on('change', '#match', highlightMatchesDeputies);
 
         windowSystem.on('click', '#resetBtn', resetSelection);
+
+        windowSystem.on('change', '#selStates', selectByStates);
 
     });
 

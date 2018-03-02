@@ -1,7 +1,16 @@
-h2 { display: inline-block; }
+h2 {
+    margin-left: 2%;
+    display: inline-block;
+}
 
-#navbar button, #navbar label {
-    margin-left: 30px;
+#navbar #resetBtn, #navbar #match {
+    margin-right: 30px;
+    float: right;
+    margin-top: 20px;
+}
+
+#selectLabel {
+    margin-left: 5%;
 }
 
 #navbar {

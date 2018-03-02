@@ -459,6 +459,26 @@ function timeLineCrop(){
             .delay(function(d, i) { return i % numberOfPathsEachDeputy * 900; })
             .attr("stroke-dashoffset", 0);
 
+        d3.selectAll('.deputy-trace').data().forEach(function (t) {
+            var party;
+            //TODO: Transform this in a function
+            switch(t.first.party){
+                case 'PPB': party = "PP";
+                    break;
+                case 'PFL': party = "DEM";
+                    break;
+                case 'PL': party = "PR";
+                    break;
+                case 'PRONA':  party = "PR";
+                    break;
+                default:     party = t.first.party;
+                    break;
+            }
+            if  (parties.indexOf(party) === -1){
+                parties.push(party);
+            }
+        });
+
         svg.selectAll('.party')
             .transition()
             .attr('opacity', function (d) {
@@ -717,11 +737,6 @@ function timeLineCrop(){
                 });
             }
         //});
-
-
-        svg.selectAll('.deputy-step, .deputy-trace')
-            .transition()
-            .attr('opacity', 0.1);
 
         drawDeputySteps(deputiesSteps);
 

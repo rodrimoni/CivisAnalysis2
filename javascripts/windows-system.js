@@ -582,6 +582,7 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
     var panelClass;
 
     var dataRange = setNewDateRange(filteredData);
+    console.log(dataRange);
 
     if (selectedMenu.context.id === "scatter-plot-pca")
         setUpScatterPlotData(filteredData, dataRange, "PCA", false);
@@ -612,21 +613,50 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
 
 function handleContextMenuDeputy(invokedOn, selectedMenu)
 {
-    var deputyElem = invokedOn.attr("id").split('-');
-    var deputyID = (deputyElem[deputyElem.length - 1]);
+    if(selectedMenu.context.id ==='time-line-crop-behavior') {
 
-    /* Get period of the Scatter Plot Chart */
-    var period = invokedOn.parents('.panel').data().typePeriod;
+        var panelID = invokedOn.parents('.panel').attr("id");
 
-    /* Get the Time Line Crop Chart with the same period of Scatter Plot Chart */
-    var query = "[data-type-period='" + period + "'] .timeline-crop";
-    var timelineCropPanelID = $(query).parents('.panel').attr("id");
+        /* Get period of the Scatter Plot Chart */
+        var period = invokedOn.parents('.panel').data().typePeriod;
 
-    var timeLineCropChart = tree.getNode(timelineCropPanelID, tree.traverseBF).chart;
+        /* Get the Time Line Crop Chart with the same period of Scatter Plot Chart */
+        var query = "[data-type-period='" + period + "'] .timeline-crop";
+        var timelineCropPanel = $(query).parents('.panel');
+        var timelineCropPanelID = timelineCropPanel.attr("id");
 
-    var deputies = deputiesNodesByYear[deputyID];
+        if (timelineCropPanel.length === 0) {
+            var periodID = period.split("-");
+            var type = periodID[0];
+            var id = periodID[1];
+            var dataRange = {'id': id, 'type': type};
 
-    timeLineCropChart.drawDeputy(deputies);
+            var periodData = CONGRESS_DEFINE[type + "s"][id];
+
+            var title = periodData.name;
+            var subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " to " + periodData.period[1].toLocaleDateString() + "</span>";
+
+            title += subtitle;
+
+            var panelClass = type + '-' + id;
+            var chartObj = {'chartID': TIME_LINE_CROP, 'data': dataRange, 'title': title, 'panelClass': panelClass};
+
+            createNewChild(panelID, chartObj);
+
+            /* Update after inserted new Chart */
+            timelineCropPanel = $(query).parents('.panel');
+            timelineCropPanelID = timelineCropPanel.attr("id");
+        }
+
+        var timeLineCropChart = tree.getNode(timelineCropPanelID, tree.traverseBF).chart;
+
+        var deputyElem = invokedOn.attr("id").split('-');
+        var deputyID = (deputyElem[deputyElem.length - 1]);
+
+        var deputies = deputiesNodesByYear[deputyID];
+
+        timeLineCropChart.drawDeputy(deputies);
+    }
 }
 
 /**
@@ -844,14 +874,19 @@ function resizeTimeline() {
         });
 }
 
-function checkTimeLineCropExists(event, deputy) {
+function checkPeriodTimeLineCrop(event, deputy) {
     var panelID = deputy.id.split("_")[0];
+    var contextMenuTimeLineCrop = $("#time-line-crop-behavior");
     if (event.which === 3)
     {
         var period = $("#" + panelID).data().typePeriod;
-        var query = "[data-type-period='" + period + "'] .timeline-crop";
-        if ($(query).length > 0)
-            $("#time-line-crop-behavior").removeClass("disabled");
+        if (period !== undefined) {
+            var periodType = period.split("-")[0];
+                if (periodType === 'year')
+                     $(contextMenuTimeLineCrop).addClass("disabled");
+                else
+                    $("#time-line-crop-behavior").removeClass("disabled");
+        }
         else
             $("#time-line-crop-behavior").addClass("disabled");
     }

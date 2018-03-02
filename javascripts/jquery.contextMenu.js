@@ -39,7 +39,7 @@
             });
 
             //make sure menu closes on any click
-            $('body').on('click drag', function () {
+            $('body').on('click drag resize', function () {
                 $(settings.menuSelector).hide();
             });
 

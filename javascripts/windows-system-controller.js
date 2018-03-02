@@ -623,3 +623,20 @@ function updateAllDeputyNodes(deputyID, attr, value ) {
             deputy[attr] = value;
     }
 }
+
+function selectByStates (){
+
+    var states = $('select[id="selStates"]').val();
+    resetSelection();
+
+    if (states !== null) {
+        console.log("oi");
+        for (var key in deputyNodes) {
+            for (var index in deputyNodes[key])
+                if (states.indexOf(deputyNodes[key][index].district) === -1)
+                    deputyNodes[key][index].selected = false;
+        }
+        selectionOn = true;
+        updateVisualizations();
+    }
+}
