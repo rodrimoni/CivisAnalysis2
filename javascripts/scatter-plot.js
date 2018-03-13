@@ -137,7 +137,7 @@ function scatterPlotChart()
                     div.style("display", "inline-block");
                     div.html(d.name + " (" + d.party + "-" + d.district + ") ");
                 })
-                .on('click', mouseClickDeputy)
+                .on('mousedown', mouseClickDeputy)
                 .on("mouseover",
                     //mouseOverDeputy(d.deputyID, this);
                     mouseoverDeputy
@@ -353,13 +353,13 @@ function scatterPlotChart()
 
     // mouse OVER circle deputy
     function mouseoverDeputy(d) {
-        updateAllDeputyNodes(d.deputyID, "hovered", true);
+        updateDeputyNodeInAllPeriods(d.deputyID, "hovered", true);
         dispatch.update();
     }
 
     // mouse OUT circle deputy
     function mouseoutDeputy(d){
-        updateAllDeputyNodes(d.deputyID, "hovered", false);
+        updateDeputyNodeInAllPeriods(d.deputyID, "hovered", false);
         dispatch.update();
     }
 
@@ -368,20 +368,25 @@ function scatterPlotChart()
 
         if (d3.event.shiftKey){
             // using the shiftKey deselect the deputy
-            updateAllDeputyNodes(d.deputyID, "selected", false);
+            updateDeputyNodeInAllPeriods(d.deputyID, "selected", false);
         } else
         if (d3.event.ctrlKey || d3.event.metaKey){
             // using the ctrlKey add deputy to selection
-            updateAllDeputyNodes(d.deputyID, "selected", true);
+            updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
+            selectionOn = true;
         }
         else {
-            // a left click without any key pressed -> select only the deputy (deselect others)
-            for (var key in deputyNodes){
-                for (var index in deputyNodes[key])
-                    deputyNodes[key][index].selected = false;
+            // a left click without any key pressed and
+            // a right click in a deputy unselected
+            // -> select only the deputy (deselect others)
+            if (d3.event.which === 1 || (d3.event.which ===3 && !d.selected)) {
+                for (var key in deputyNodes) {
+                    for (var index in deputyNodes[key])
+                        deputyNodes[key][index].selected = false;
+                }
+                updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
+                selectionOn = true;
             }
-            updateAllDeputyNodes(d.deputyID, "selected", true);
-            selectionOn = true;
         }
         dispatch.update()
     }
@@ -392,7 +397,7 @@ function scatterPlotChart()
         }).data();
 
         deputies.forEach(function (d) {
-            updateAllDeputyNodes(d.deputyID, "hovered", true);
+            updateDeputyNodeInAllPeriods(d.deputyID, "hovered", true);
         });
 
         dispatch.update();
@@ -418,7 +423,7 @@ function scatterPlotChart()
         }).data();
 
         deputies.forEach(function (d) {
-            updateAllDeputyNodes(d.deputyID, "selected", true);
+            updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
         });
 
         selectionOn = true;
