@@ -125,7 +125,7 @@ function timeLineCrop(){
             });
 
         partyTraces.append('g').attr('class','parties').attr({transform:'translate(0,'+traceMargin+')'});
-        partyTraces.append('g').attr('class','deputies-behave').attr({transform:'translate(0,'+traceMargin+')'});
+        partyTraces.append('g').attr('class','deputies').attr({transform:'translate(0,'+traceMargin+')'});
         drawParties();
     }
 
@@ -329,15 +329,19 @@ function timeLineCrop(){
         });
     }
 
-    function drawDeputySteps(deputy)
+    function drawDeputySteps()
     {
-        var dep = svg.select('g.deputies-behave');
+        var steps = svg.selectAll('.deputies .deputy')
+            .selectAll('.deputy-steps')
+            .data(function(d){ return [d.steps]; });
 
-        dep.selectAll('.deputy .deputy-step')
-            .data(deputy, function (d) { return d.year; })
+        steps.enter().append('g').attr({'class':'deputy-steps'});
+
+        var step = steps.selectAll('.deputy-step').data( function(d){return d; });
+
+        step
             .enter()
             .append('path')
-            .classed('deputy-step',true)
             .attr('class',function(d) {
                 return 'deputy-step y'+d.year;
             })
@@ -383,15 +387,21 @@ function timeLineCrop(){
 
     }
 
-    function drawDeputyTraces(deputy)
+    function drawDeputyTraces()
     {
-        var dep= svg.select('.deputies-behave')
-            .append("g")
-            .classed("deputies-traces", true);
+        console.log("traces");
+        var traces = svg.selectAll('.deputies .deputy')
+            .selectAll('.deputy-traces')
+            .data( function(d){return [d.traces]});
+
+        traces.enter().append('g').attr({'class':'deputy-traces'});
+
+        var trace = traces.selectAll('.deputy-trace')
+            .data( function(d){ return d; } );
 
         var parties = [];
 
-        deputy.forEach(function (t) {
+        /*deputy.forEach(function (t) {
             var party;
             switch(t.first.party){
                 case 'PPB': party = "PP";
@@ -408,14 +418,12 @@ function timeLineCrop(){
            if  (parties.indexOf(party) === -1){
                parties.push(party);
            }
-        });
+        });*/
 
 
         var numberOfPathsEachDeputy = 3;
 
-        var enterData = dep.selectAll('.deputies-traces .deputy-trace')
-                .data(deputy, function (d,i) { return i; })
-                .enter();
+        var enterData = trace.enter();
 
         var path = enterData
             .append('path')
@@ -451,13 +459,15 @@ function timeLineCrop(){
             });
 
         path
-            .attr("stroke-dasharray", function (d,i) { var length = path[0][i].getTotalLength(); return length + " " + length;})
-            .attr("stroke-dashoffset",function (d,i) { var length = path[0][i].getTotalLength(); return length;})
+            .attr("stroke-dasharray", function () { var length = this.getTotalLength(); return length + " " + length;})
+            .attr("stroke-dashoffset",function () { var length = this.getTotalLength(); return length;})
             .transition("createPath")
             .duration(800)
             .ease("linear")
             .delay(function(d, i) { return i % numberOfPathsEachDeputy * 900; })
             .attr("stroke-dashoffset", 0);
+
+
 
         d3.selectAll('.deputy-trace').data().forEach(function (t) {
             var party;
@@ -709,54 +719,64 @@ function timeLineCrop(){
 
         var deputiesSteps = [];
 
-        //deputies.forEach(function(d,index){
+        deputies.forEach(function(d){
+            d.steps = [];
             for (var year = firstYear; year< lastYear; year++)
             {
-                deputies.nodes.forEach(function (value) {
-                    if (value.year === year) {
-                        var step = {};
-                        var lastDeputy = deputiesSteps[deputiesSteps.length-1];
-                        if (lastDeputy !== undefined){
-                            if (year - lastDeputy.year > 1){
-                                console.log(lastDeputy);
-                                step.deputyID = lastDeputy.deputyID;
-                                step.x0 = lastDeputy.x0;
-                                step.party = lastDeputy.party;
-                                step.year = lastDeputy.year +1;
-                                deputiesSteps.push(step);
+                    d.nodes.forEach(function (value) {
+                        if (value.year === year) {
+                            var step = {};
+                            var lastDeputy = d.steps[d.steps.length-1];
+                            if (lastDeputy !== undefined){
+                                if (year - lastDeputy.year > 1){
+                                    console.log(lastDeputy);
+                                    step.deputyID = lastDeputy.deputyID;
+                                    step.x0 = lastDeputy.x0;
+                                    step.party = lastDeputy.party;
+                                    step.year = lastDeputy.year +1;
+                                    d.steps.push(step);
+                                }
                             }
+                            step = {};
+                            //cluttered position - ideal position
+                            step.deputyID = d.deputyID;
+                            step.x0 = scaleParties[year](value.scatterplot[1]) - (pixelPerDeputy[year]) / 2;
+                            step.party = value.party;
+                            step.year = value.year;
+                            d.steps.push(step);
                         }
-                        step = {};
-                        //cluttered position - ideal position
-                        step.deputyID = deputies.deputyID;
-                        step.x0 = scaleParties[year](value.scatterplot[1]) - (pixelPerDeputy[year]) / 2;
-                        step.party = value.party;
-                        step.year = value.year;
-                        deputiesSteps.push(step);
-                    }
-                });
-            }
-        //});
+                    });
 
-        drawDeputySteps(deputiesSteps);
-
-        var deputiesTraces = [];
-
-        deputiesSteps.forEach(function (t,i) {
-            if (deputiesSteps[i+1] !== undefined) {
-                if (deputiesSteps[i+1].year === deputiesSteps[i].year + 1) {
-                    var dep = {};
-                    dep.first = deputiesSteps[i];
-                    dep.firstDate = deputiesSteps[i].year;
-                    dep.second = deputiesSteps[i+1];
-                    dep.secondDate = deputiesSteps[i+1].year;
-                    deputiesTraces.push(dep);
-                }
             }
         });
 
-        //console.log(deputiesTraces);
-        drawDeputyTraces(deputiesTraces);
+        var deputiesTraces = [];
+
+        deputies.forEach(function (d) {
+            d.traces = [];
+            d.steps.forEach(function (t,i) {
+                if (d.steps[i+1] !== undefined) {
+                    if (d.steps[i+1].year === d.steps[i].year + 1) {
+                        var dep = {};
+                        dep.first = d.steps[i];
+                        dep.firstDate = d.steps[i].year;
+                        dep.second = d.steps[i+1];
+                        dep.secondDate = d.steps[i+1].year;
+                        d.traces.push(dep);
+                    }
+                }
+            });
+        });
+
+
+        var deputiesG = svg.select('g.deputies')
+            .selectAll('.deputy')
+            .data( deputies, function(d){ return d.deputyID} );
+
+        deputiesG.enter().append('g').attr({'class':'deputy'});
+
+        drawDeputySteps();
+        drawDeputyTraces();
     };
 
     return chart;

@@ -613,7 +613,7 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
 
 function handleContextMenuDeputy(invokedOn, selectedMenu)
 {
-    if(selectedMenu.context.id ==='time-line-crop-behavior') {
+    if (selectedMenu.context.id ==='time-line-crop-behavior-selection') {
 
         var panelID = invokedOn.parents('.panel').attr("id");
 
@@ -649,11 +649,13 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
         }
 
         var timeLineCropChart = tree.getNode(timelineCropPanelID, tree.traverseBF).chart;
+        var deputies = [];
 
-        var deputyElem = invokedOn.attr("id").split('-');
-        var deputyID = (deputyElem[deputyElem.length - 1]);
-
-        var deputies = deputiesNodesByYear[deputyID];
+        d3.selectAll("#" + panelID + " .node.selected")
+            .data()
+            .forEach(function(d) {
+                deputies.push(deputiesNodesByYear[d.deputyID]);
+            });
 
         timeLineCropChart.drawDeputy(deputies);
     }
@@ -876,19 +878,23 @@ function resizeTimeline() {
 
 function checkPeriodTimeLineCrop(event, deputy) {
     var panelID = deputy.id.split("_")[0];
-    var contextMenuTimeLineCrop = $("#time-line-crop-behavior");
+    var contextMenuTimeLineCropSelection = $("#time-line-crop-behavior-selection");
+
     if (event.which === 3)
     {
         var period = $("#" + panelID).data().typePeriod;
         if (period !== undefined) {
             var periodType = period.split("-")[0];
-                if (periodType === 'year')
-                     $(contextMenuTimeLineCrop).addClass("disabled");
-                else
-                    $("#time-line-crop-behavior").removeClass("disabled");
+                if (periodType === 'year') {
+                    contextMenuTimeLineCropSelection.addClass("disabled");
+                }
+                else {
+                    contextMenuTimeLineCropSelection.removeClass("disabled");
+                }
         }
-        else
-            $("#time-line-crop-behavior").addClass("disabled");
+        else {
+            contextMenuTimeLineCropSelection.addClass("disabled");
+        }
     }
 }
 

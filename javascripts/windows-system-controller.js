@@ -616,7 +616,7 @@ function resetSelection(){
     updateVisualizations();
 }
 
-function updateAllDeputyNodes(deputyID, attr, value ) {
+function updateDeputyNodeInAllPeriods(deputyID, attr, value ) {
     for (var key in deputyNodes) {
         var deputy = deputyNodes[key][deputyID];
         if (deputy !== undefined)
@@ -630,7 +630,6 @@ function selectByStates (){
     resetSelection();
 
     if (states !== null) {
-        console.log("oi");
         for (var key in deputyNodes) {
             for (var index in deputyNodes[key])
                 if (states.indexOf(deputyNodes[key][index].district) === -1)

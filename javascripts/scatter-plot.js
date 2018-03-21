@@ -388,7 +388,7 @@ function scatterPlotChart()
                 selectionOn = true;
             }
         }
-        dispatch.update()
+        dispatch.update();
     }
 
     function mouseoverParty(d) {
