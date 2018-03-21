@@ -49,7 +49,7 @@ function loadNodes(type, selectedTime, index, callback)
             depObj.party = precalcDeputy.party;
             depObj.scatterplot  = precalcDeputy.scatterplot;
 
-            depObj.selected = checkSelectedValue(depObj.deputyID);
+            depObj.selected = true;
 
             deputyNodes[index][depObj.deputyID] = depObj;
         });
@@ -161,7 +161,7 @@ function createDeputyNodes(data_deputies, selecteddeputies){
         depObj.deputyID = deputy.deputyID;
         depObj.party = deputy.party;
         depObj.scatterplot  = data_deputies[i];
-        depObj.selected = checkSelectedValue(depObj.deputyID);
+        depObj.selected = true;
         deputies[depObj.deputyID] = depObj;
     }
 
