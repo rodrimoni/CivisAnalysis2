@@ -54,6 +54,7 @@ function initSystem() {
     });
 }
 
+
 function initializeChart(newID, chartObj) {
     var chart;
 
@@ -61,7 +62,9 @@ function initializeChart(newID, chartObj) {
     {
         case SCATTER_PLOT:
             chart = scatterPlotChart();
-            $('#' +newID + ' .panel-heading .btn-group').append('<button class="btn btn-default btn-settings-scatterplot toggle-dropdown" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i></button> </button> <ul class="dropdown-menu panel-settings"><li role="presentation" class="dropdown-header">Clustering with K-Means</li><li> Select the value of K: <br> <input id= "slider-'+ newID + '" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="10"/></li></ul>');
+            addConfigMenu(newID);
+            addClusteringMenu(newID);
+            addSearchDeputyMenu(newID);
             initializeSlider(newID, chart);
             $('#' +newID).attr('data-type-period', chartObj.panelClass);
             chart.on('update', updateVisualizations);
@@ -94,6 +97,26 @@ function initializeChart(newID, chartObj) {
 
     return chart;
 }
+
+function addConfigMenu(newID) {
+    $('#' +newID + ' .panel-heading .btn-group')
+        .append('<button class="btn btn-default btn-settings-scatterplot toggle-dropdown" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i></button> ')
+        .append('<ul class="dropdown-menu panel-settings"></ul>');
+}
+
+function addClusteringMenu(newID) {
+    $("#" + newID + " .panel-settings")
+        .append('<li role="presentation" class="dropdown-header">Clustering with K-Means</li>')
+        .append('<li> Select the value of K: <br> <input id= "slider-'+ newID +'" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="10"/></li>')
+
+}
+
+function addSearchDeputyMenu(newID) {
+    $("#" + newID + " .panel-settings")
+        .append('<li role="presentation" class="dropdown-header">Select Deputies </li>')
+        .append('<li> <input type="text" class="form-control" id="tokenfield-typeahead"/> </li>')
+}
+
 
 /**
  * Remove selected panel and his children
@@ -851,6 +874,7 @@ function  initializeSlider(id, chart) {
         setTimeout(function () {
             chart.getClusters(k, d3.values(data), id);
             panel.removeClass("loading");
+            spinner.stop();
         }, 0);
     });
 }

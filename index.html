@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1" />
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -109,11 +109,14 @@
     <!-- Spinner gif library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
 
-    <!-- Latest compiled and minified CSS -->
+    <!-- Latest compiled and minified CSS for Bootstrap Select-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
 
-    <!-- Latest compiled and minified JavaScript -->
+    <!-- Latest compiled and minified JavaScript for Bootstrap Select  -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+
+    <script src="javascripts/tokenfield.min.js"></script>
+    <link rel ="stylesheet" href="stylesheets/tokenfield.css">
 
 
     <title> CivisAnalysis 2.0  </title>
@@ -133,29 +136,29 @@
     <select class="selectpicker" title="Choose one of the following..." multiple id="selStates">
         <option value="AC">Acre</option>
         <option value="AL">Alagoas</option>
-        <option value="AP">Amapá</option>
+        <option value="AP">AmapÃ¡</option>
         <option value="AM">Amazonas</option>
         <option value="BA">Bahia</option>
-        <option value="CE">Ceará</option>
+        <option value="CE">CearÃ¡</option>
         <option value="DF">Distrito Federal</option>
-        <option value="ES">Espírito Santo</option>
-        <option value="GO">Goiás</option>
-        <option value="MA">Maranhão</option>
+        <option value="ES">EspÃ­rito Santo</option>
+        <option value="GO">GoiÃ¡s</option>
+        <option value="MA">MaranhÃ£o</option>
         <option value="MT">Mato Grosso</option>
         <option value="MS">Mato Grosso do Sul</option>
         <option value="MG">Minas Gerais</option>
-        <option value="PA">Pará</option>
-        <option value="PB">Paraíba</option>
-        <option value="PR">Paraná</option>
+        <option value="PA">ParÃ¡</option>
+        <option value="PB">ParaÃ­ba</option>
+        <option value="PR">ParanÃ¡</option>
         <option value="PE">Pernambuco</option>
-        <option value="PI">Piauí</option>
+        <option value="PI">PiauÃ­</option>
         <option value="RJ">Rio de Janeiro</option>
         <option value="RN">Rio Grande do Norte</option>
         <option value="RS">Rio Grande do Sul</option>
-        <option value="RO">Rondônia</option>
+        <option value="RO">RondÃ´nia</option>
         <option value="RR">Roraima</option>
         <option value="SC">Santa Catarina</option>
-        <option value="SP">São Paulo</option>
+        <option value="SP">SÃ£o Paulo</option>
         <option value="SE">Sergipe</option>
         <option value="TO">Tocantins</option>
     </select>
@@ -232,10 +235,33 @@
 
         windowSystem.on('change', '#match', highlightMatchesDeputies);
 
-        windowSystem.on('click', '#resetBtn', resetSelection);
+        windowSystem.on('click', '#resetBtn', function() {
+            $('#selStates').selectpicker('val', '');
+            resetSelection();
+        });
 
         windowSystem.on('change', '#selStates', selectByStates);
 
     });
+
+    /* https://github.com/KaneCohen/tokenfield
+    new Tokenfield({
+  el: document.querySelector('#tokenfield-typeahead'), // Attach Tokenfield to the input element with class "text-input"
+  items: [
+    {id: 1, name: 'red'},
+    {id: 2, name:'orange'},
+    {id: 3, name: 'yellow'},
+    {id: 4, name: 'green'},
+    {id: 5, name:'blue'},
+    {id: 6, name: 'indigo'},
+    {id: 7, name: 'violet'},
+    {id: 8, name: 'black'},
+    {id: 9, name: 'white'},
+    {id: 10, name: 'brown'},
+    {id: 11, name: 'pink'}
+  ],
+  newItems: false
+});
+     */
 
 </script>
