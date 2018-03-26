@@ -137,7 +137,12 @@ function scatterPlotChart()
                     div.style("display", "inline-block");
                     div.html(d.name + " (" + d.party + "-" + d.district + ") ");
                 })
-                .on('mousedown', mouseClickDeputy)
+                .on('mousedown', function(d) {
+                    mouseClickDeputy(d);
+                })
+                .on('mouseup', function(){
+                    $('.searchDeputies').tagsinput('removeAll');
+                })
                 .on("mouseover",
                     //mouseOverDeputy(d.deputyID, this);
                     mouseoverDeputy
@@ -194,7 +199,11 @@ function scatterPlotChart()
                 var enterLegend =
                     legend.enter().append("g")
                         .classed("legend", true)
-                        .on('click', clickParty)
+                        .on('click', function(d) {
+                            /* Reset the search input */
+                            $('.searchDeputies').tagsinput('removeAll');
+                            clickParty(d);
+                        })
                         .on('mouseover', mouseoverParty)
                         .on('mouseout', function () { mouseoutParty(); highlightMatchesDeputies();});
 
@@ -430,6 +439,20 @@ function scatterPlotChart()
 
         dispatch.update();
     }
+
+    chart.selectDeputiesBySearch = function (deputies) {
+        for (var key in deputyNodes) {
+            for (var index in deputyNodes[key])
+                deputyNodes[key][index].selected = false;
+        }
+
+        deputies.forEach(function(d){
+            updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
+        });
+
+        selectionOn = true;
+        dispatch.update();
+    };
 
     return d3.rebind(chart, dispatch, 'on');
 }

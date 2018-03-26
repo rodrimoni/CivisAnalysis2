@@ -62,11 +62,21 @@ function initializeChart(newID, chartObj) {
     {
         case SCATTER_PLOT:
             chart = scatterPlotChart();
+
             addConfigMenu(newID);
             addClusteringMenu(newID);
-            addSearchDeputyMenu(newID);
+
+            var deputies = [];
+
+            for (var key in chartObj.data) {
+                deputies.push(chartObj.data[key])
+            }
+
+            addSearchDeputyMenu(newID, deputies);
+
             initializeSlider(newID, chart);
             $('#' +newID).attr('data-type-period', chartObj.panelClass);
+
             chart.on('update', updateVisualizations);
             break;
 
@@ -85,6 +95,10 @@ function initializeChart(newID, chartObj) {
 
         case CHAMBER_INFOGRAPHIC:
             chart = chamberInfographic();
+
+            addConfigMenu(newID);
+            addSearchDeputyMenu(newID, chartObj.data.deputies);
+
             chart.on('update', updateVisualizations);
             break;
         default:
@@ -111,10 +125,82 @@ function addClusteringMenu(newID) {
 
 }
 
-function addSearchDeputyMenu(newID) {
+function addSearchDeputyMenu(newID, deputies) {
     $("#" + newID + " .panel-settings")
         .append('<li role="presentation" class="dropdown-header">Select Deputies </li>')
-        .append('<li> <input type="text" class="form-control" id="tokenfield-typeahead"/> </li>')
+        .append('<li><input type="text" class="form-control typeahead searchDeputies" placeholder="Type a deputy name..."/> </li>');
+
+    deputies = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        local: deputies
+    });
+
+    deputies.initialize();
+
+    var elt = $('#' + newID + ' .searchDeputies');
+
+    var printDeputy = function (data) {
+        return data.name + ' (' + data.party + '-' + data.district + ')';
+    };
+
+    elt.tagsinput({
+        itemValue: 'deputyID',
+        itemText: printDeputy,
+        tagClass: function(item) {
+            return 'label label-info label-' + item.party;
+        },
+        typeaheadjs:[
+            {
+                hint: false,
+                highlight: false
+            },
+            {
+                name: 'deputies',
+                displayKey: printDeputy,
+                limit: 10,
+                source: deputies.ttAdapter(),
+                templates: {
+                    suggestion:
+                        function (data) {
+                            return '<p>' + data.name + ' (' + data.party + '-' + data.district + ')</p>';
+                        }
+                }
+            }
+        ]
+    });
+
+    var chart;
+    elt.on('itemAdded', function(event) {
+        /* Set the correspondent party color */
+        var party = event.item.party;
+        $(".tag.label.label-info.label-"+ party).css({"background-color": selColor(party)});
+
+        /* Select the deputies in input */
+        var deputies = $(this).tagsinput('items');
+        chart = tree.getNode(newID, tree.traverseBF).chart;
+        chart.selectDeputiesBySearch(deputies);
+    });
+
+    elt.on('itemRemoved', function(event) {
+        /* Select the deputies in input */
+        var deputies = $(this).tagsinput('items');
+
+        if (!Array.isArray(deputies) || !deputies.length)
+            resetSelection();
+        else {
+            chart = tree.getNode(newID, tree.traverseBF).chart;
+            chart.selectDeputiesBySearch(deputies);
+        }
+
+    });
+
+
+    /* Prevents click to close the settings menu */
+    $("#" + newID + " .bootstrap-tagsinput").click( function(e){
+        e.stopPropagation();
+    });
+
 }
 
 

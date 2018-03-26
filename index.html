@@ -115,9 +115,11 @@
     <!-- Latest compiled and minified JavaScript for Bootstrap Select  -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
 
-    <script src="javascripts/tokenfield.min.js"></script>
-    <link rel ="stylesheet" href="stylesheets/tokenfield.css">
+    <script src="javascripts/bootstrap-tagsinput.js"></script>
+    <link rel ="stylesheet" href="stylesheets/bootstrap-tagsinput.css">
+    <link rel ="stylesheet" href="stylesheets/typehead.css">
 
+    <script src="javascripts/typeahead.bundle.js"></script>
 
     <title> CivisAnalysis 2.0  </title>
 </head>
@@ -236,6 +238,7 @@
         windowSystem.on('change', '#match', highlightMatchesDeputies);
 
         windowSystem.on('click', '#resetBtn', function() {
+            /* Reset the States select box values */
             $('#selStates').selectpicker('val', '');
             resetSelection();
         });

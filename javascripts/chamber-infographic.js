@@ -198,26 +198,29 @@ function chamberInfographic() {
 
     // mouse OVER circle deputy
     function mouseoverDeputy(d) {
-        updateAllDeputyNodes(d.deputyID, "hovered", true);
+        updateDeputyNodeInAllPeriods(d.deputyID, "hovered", true);
         dispatch.update();
     }
 
     // mouse OUT circle deputy
     function mouseoutDeputy(d){
-        updateAllDeputyNodes(d.deputyID, "hovered", false);
+        updateDeputyNodeInAllPeriods(d.deputyID, "hovered", false);
         dispatch.update();
     }
 
     function mouseClickDeputy(d){
+        /* Reset the search input */
+        $('.searchDeputies').tagsinput('removeAll');
+
         d3.event.preventDefault();
 
         if (d3.event.shiftKey){
             // using the shiftKey deselect the deputy
-            updateAllDeputyNodes(d.deputyID, "selected", false);
+            updateDeputyNodeInAllPeriods(d.deputyID, "selected", false);
         } else
         if (d3.event.ctrlKey || d3.event.metaKey){
             // using the ctrlKey add deputy to selection
-            updateAllDeputyNodes(d.deputyID, "selected", true);
+            updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
         }
         else {
             // a left click without any key pressed -> select only the deputy (deselect others)
@@ -225,7 +228,7 @@ function chamberInfographic() {
                 for (var index in deputyNodes[key])
                     deputyNodes[key][index].selected = false;
             }
-            updateAllDeputyNodes(d.deputyID, "selected", true);
+            updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
             selectionOn = true;
         }
         dispatch.update()
@@ -239,7 +242,7 @@ function chamberInfographic() {
         }).data();
 
         deputies.forEach(function (d) {
-            updateAllDeputyNodes(d.deputyID, "hovered", true);
+            updateDeputyNodeInAllPeriods(d.deputyID, "hovered", true);
         });
 
         // update popover
@@ -257,6 +260,9 @@ function chamberInfographic() {
     }
 
     function clickParty(d) {
+        /* Reset the search input */
+        $('.searchDeputies').tagsinput('removeAll');
+
         d = d.data;
 
         for (var key in deputyNodes){
@@ -269,7 +275,7 @@ function chamberInfographic() {
         }).data();
 
         deputies.forEach(function (d) {
-            updateAllDeputyNodes(d.deputyID, "selected", true);
+            updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
         });
 
         selectionOn = true;
@@ -306,6 +312,20 @@ function chamberInfographic() {
             .attr("opacity", 0.8)
             .attr('visibility', function (d) {	return ( (d.data.value.selected/d.data.value.size)!==1 )? 'visible' : 'hidden';  })
             .style("fill", 'white');
+    };
+
+    chart.selectDeputiesBySearch = function (deputies) {
+        for (var key in deputyNodes) {
+            for (var index in deputyNodes[key])
+                deputyNodes[key][index].selected = false;
+        }
+
+        deputies.forEach(function(d){
+            updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
+        });
+
+        selectionOn = true;
+        dispatch.update();
     };
 
     return d3.rebind(chart, dispatch, 'on');

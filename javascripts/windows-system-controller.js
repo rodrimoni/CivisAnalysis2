@@ -612,6 +612,10 @@ function resetSelection(){
         for (var index in deputyNodes[key])
             deputyNodes[key][index].selected = true;
     }
+
+    /* Reset the deputies selection by search */
+    $('.searchDeputies').tagsinput('removeAll');
+
     selectionOn = false;
     updateVisualizations();
 }
