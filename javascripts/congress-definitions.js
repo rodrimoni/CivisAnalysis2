@@ -1,7 +1,7 @@
 var CONGRESS_DEFINE = {
-    votoToInteger : {"Sim":0,"N„o":1,"AbstenÁ„o":2,"ObstruÁ„o":3,"Art. 17":4,"Branco":5},
-    integerToVote : ["Sim","N„o","AbstenÁ„o","ObstruÁ„o","Art. 17","Branco"],
-    //var integerToVote = {'0':"Sim",'1':"N„o",'2':"AbstenÁ„o",'3':"ObstruÁ„o",'4':"Art. 17",'5':"Branco"};
+    votoToInteger : {"Sim":0,"N√£o":1,"Absten√ß√£o":2,"Obstru√ß√£o":3,"Art. 17":4,"Branco":5},
+    integerToVote : ["Sim","N√£o","Absten√ß√£o","Obstru√ß√£o","Art. 17","Branco"],
+    //var integerToVote = {'0':"Sim",'1':"N√£o",'2':"Absten√ß√£o",'3':"Obstru√ß√£o",'4':"Art. 17",'5':"Branco"};
 
     startingYear : 1991,
     endingYear : 2016,
@@ -69,7 +69,7 @@ var CONGRESS_DEFINE = {
             dates:[new Date(1994,9,2)],
             alliances: [
                 {
-                    president:"FHC (PSDB)", name:"Uni„o,Trabalho e Progresso",
+                    president:"FHC (PSDB)", name:"Uni√£o,Trabalho e Progresso",
                     parties:["PSDB","PFL","DEM","PTB"],
                     result:[0.5427]
                 },
@@ -79,7 +79,7 @@ var CONGRESS_DEFINE = {
                     result:[0.2704]
                 },
                 {
-                    president:"EnÈas (PRONA)", name:'PRONA',
+                    president:"En√©as (PRONA)", name:'PRONA',
                     parties:["PRONA"],
                     result:[0.0738]
                 },
@@ -97,22 +97,22 @@ var CONGRESS_DEFINE = {
             dates:[new Date(1998,9,4)],
             alliances: [
                 {
-                    president:"FHC (PSDB)", name:"ColigaÁ„o Uni„o, trabalho e progresso",
+                    president:"FHC (PSDB)", name:"Coliga√ß√£o Uni√£o, trabalho e progresso",
                     parties:["PSDB","DEM","PFL","PP","PPB","PTB"],
                     result:[0.5306]
                 },
                 {
-                    president:"Lula (PT)" , name:"ColigaÁ„o Uni„o do Povo - Muda Brasil",
+                    president:"Lula (PT)" , name:"Coliga√ß√£o Uni√£o do Povo - Muda Brasil",
                     parties:["PT","PDT","PSB","PCdoB","PCB"],
                     result:[0.3171]
                 },
                 {
-                    president:"Ciro Gomes (PPS)", name:"ColigaÁ„o Brasil Real e Justo",
+                    president:"Ciro Gomes (PPS)", name:"Coliga√ß√£o Brasil Real e Justo",
                     parties:["PPS","PMDB","PR","PL","PAN"],
                     result:[0.1097]
                 },
                 {
-                    president:"EnÈas (PRONA)", name:'PRONA',
+                    president:"En√©as (PRONA)", name:'PRONA',
                     parties:["PRONA"],
                     result:[0.0214]
                 }
@@ -124,22 +124,22 @@ var CONGRESS_DEFINE = {
             dates:[new Date(2002,9,6),new Date(2002,9,27)],
             alliances: [
                 {
-                    president:"Lula (PT)", name:"ColigaÁ„o Lula Presidente",
+                    president:"Lula (PT)", name:"Coliga√ß√£o Lula Presidente",
                     parties:["PT","PL","PR","PV","PCdoB","PMN","PCB"],
                     result:[0.4647,0.6128]
                 },
                 {
-                    president:"Jos? Serra (PSDB)", name:"ColigaÁ„o Grande AlianÁa",
+                    president:"Jos√© Serra (PSDB)", name:"Coliga√ß√£o Grande Alian√ßa",
                     parties:["PSDB","PMDB"],
                     result:[0.2319,0.3872]
                 },
                 {
-                    president:"Anthony Garotinho (PSB)", name:"ColigaÁ„o Brasil EsperanÁa",
+                    president:"Anthony Garotinho (PSB)", name:"Coliga√ß√£o Brasil Esperan√ßa",
                     parties:["PSB","PPB","PP","PTC","PHS","PSL"],
                     result:[0.1786]
                 },
                 {
-                    president:"Ciro Gomes (PPS)", name:"ColigaÁ„o Frente Trabalhista",
+                    president:"Ciro Gomes (PPS)", name:"Coliga√ß√£o Frente Trabalhista",
                     parties:["PPS","PDT","PTB"],
                     result:[0.1197]
                 }
@@ -151,17 +151,17 @@ var CONGRESS_DEFINE = {
             dates:[new Date(2006,9,1),new Date(2006,9,29)],
             alliances: [
                 {
-                    president:"Lula (PT)", name:"ColigaÁ„o A ForÁa do Povo",
+                    president:"Lula (PT)", name:"Coliga√ß√£o A For√ßa do Povo",
                     parties:["PT","PRB","PCdoB"],
                     result:[0.4861,0.6083]
                 },
                 {
-                    president:"Geraldo Alckmin (PSDB)", name:"ColigaÁ„o por um Brasil Decente",
+                    president:"Geraldo Alckmin (PSDB)", name:"Coliga√ß√£o por um Brasil Decente",
                     parties:["PSDB","PFL","DEM"],
                     result:[0.4164,0.3917]
                 },
                 {
-                    president:"HeloÌsa Helena (PSOL)", name:"ColigaÁ„o Frente de Esquerda",
+                    president:"Helo√≠sa Helena (PSOL)", name:"Coliga√ß√£o Frente de Esquerda",
                     parties:["PSOL", "PCB", "PSTU"],
                     result:[0.0685]
                 },
@@ -178,12 +178,12 @@ var CONGRESS_DEFINE = {
             dates:[new Date(2010,9,3),new Date(2010,9,31)],
             alliances: [
                 {
-                    president:"Dilma Rousseff (PT)", name:"ColigaÁ„o Para o Brasil Seguir Mudando",
+                    president:"Dilma Rousseff (PT)", name:"Coliga√ß√£o Para o Brasil Seguir Mudando",
                     parties:["PT", "PMDB", "PDT", "PCdoB", "PSB", "PR","PL", "PRB", "PTN", "PSC", "PTC"],
                     result:[0.4691,0.5605]
                 },
                 {
-                    president:"JosÈ Serra (PSDB)", name:"ColigaÁ„o O Brasil Pode Mais",
+                    president:"Jos√© Serra (PSDB)", name:"Coliga√ß√£o O Brasil Pode Mais",
                     parties:["PSDB", "DEM","PFL", "PTB", "PPS", "PMN", "PTdoB"],
                     result:[0.3261,0.4395]
                 },
@@ -193,7 +193,7 @@ var CONGRESS_DEFINE = {
                     result:[0.1933]
                 },
                 {
-                    president:"PlÌnio de Arruda (PSOL)", name:"PSOL",
+                    president:"Pl√≠nio de Arruda (PSOL)", name:"PSOL",
                     parties:["PSOL"],
                     result:[0.0087]
                 }
@@ -205,17 +205,17 @@ var CONGRESS_DEFINE = {
             dates:[new Date(2014,10,3)],
             alliances: [
                 {
-                    president:"Dilma Rousseff (PT)", vice:"Michel Temer (PMDB)", name:"ColigaÁ„o Com a ForÁa do Povo",
+                    president:"Dilma Rousseff (PT)", vice:"Michel Temer (PMDB)", name:"Coliga√ß√£o Com a For√ßa do Povo",
                     parties:["PT", "PP", "PROS", "PCdoB", "PMDB", "PSD","PR", "PDT", "PRB"],
                     result:[0.4159,0.5164]
                 },
                 {
-                    president:"AÈcio Neves (PSDB)", vice:"Aloysio Nunes (PSDB)", name:"ColigaÁ„o Muda Brasil",
+                    president:"A√©cio Neves (PSDB)", vice:"Aloysio Nunes (PSDB)", name:"Coliga√ß√£o Muda Brasil",
                     parties:["PSDB", "DEM","PFL","PTN","PTC","PTB","SDD", "PEN", "PTdoB","PMN"],
                     result:[0.3355,0.4836]
                 },
                 {
-                    president:"Marina Silva (PSB)", vice:"Beto Albuquerque (PSB)", name:"ColigaÁ„o Unidos pelo Brasil",
+                    president:"Marina Silva (PSB)", vice:"Beto Albuquerque (PSB)", name:"Coliga√ß√£o Unidos pelo Brasil",
                     parties:["PSB","PPS","PHS","PRP","PPL","PSL"],
                     result:[0.2132]
                 },
@@ -231,7 +231,7 @@ var CONGRESS_DEFINE = {
     // COLORS!
     // ===============================================================================================================
     // colors representing the single vote value
-    votoStringToColor : {"Sim":"green","N„o":"red","AbstenÁ„o":"purple","ObstruÁ„o":"blue","Art. 17":"yellow","null":'grey'},
+    votoStringToColor : {"Sim":"green","N√£o":"red","Absten√ß√£o":"purple","Obstru√ß√£o":"blue","Art. 17":"yellow","null":'grey'},
 
     // ===============================================================================================================
     votingColorGradient : ["rgb(165,0,38)","rgb(215,48,39)","rgb(244,109,67)","rgb(253,174,97)",
@@ -264,8 +264,8 @@ var CONGRESS_DEFINE = {
         'right-wing': 'rgb(73, 75, 128)'
     },
     partiesMilitaryColor: {
-        ARENA: {color:'rgb(73, 75, 128)', name:'ARENA - Pro-Military Regime',title:'AlianÁa Renovadora Nacional',wiki:'http://pt.wikipedia.org/wiki/Alian%C3%A7a_Renovadora_Nacional'},
-        MDB: {color:'darkgreen', name:'MDB - Allowed Opposition', title:'Movimento Democr·tico Brasileiro',wiki:'http://pt.wikipedia.org/wiki/Movimento_Democr%C3%A1tico_Brasileiro'},
+        ARENA: {color:'rgb(73, 75, 128)', name:'ARENA - Pro-Military Regime',title:'Alian√ßa Renovadora Nacional',wiki:'http://pt.wikipedia.org/wiki/Alian%C3%A7a_Renovadora_Nacional'},
+        MDB: {color:'darkgreen', name:'MDB - Allowed Opposition', title:'Movimento Democr√°tico Brasileiro',wiki:'http://pt.wikipedia.org/wiki/Movimento_Democr%C3%A1tico_Brasileiro'},
         mix: {color:'darkred', name:'MDB + Anti-Regime',wiki:''},
         Illegal: {color:'red', name:'Anti-Regime',title:'Unionist + No Political Rights + Exile + Guerrilla',wiki:'http://pt.wikipedia.org/wiki/Ditadura_militar_no_Brasil_(1964-1985)#Repress.C3.A3o'}
     },
@@ -368,28 +368,28 @@ CONGRESS_DEFINE.parties = {
     NoParty: {name:'No Party',wing:'',military:''},
     PCB:{name:'Partido Comunista Brasileiro',wing:'left-wing',military:'Illegal',wiki:'http://pt.wikipedia.org/wiki/Partido_Comunista_Brasileiro'},
     PCdoB:{name:'Partido Comunista do Brasil',wing:'left-wing',military:'Illegal',wiki:'http://pt.wikipedia.org/wiki/Partido_Comunista_do_Brasil'},
-    PDC:{name:'Partido Democrata Crist„o',wing:'right-wing',military:'ARENA', wiki:'http://pt.wikipedia.org/wiki/Partido_Democrata_Crist%C3%A3o_(1985-1993)'},
-    PDS:{name:'Partido Democr·tico Social',wing:'right-wing',military:'ARENA',wiki:'http://pt.wikipedia.org/wiki/Partido_Democr%C3%A1tico_Social'},
-    PDT:{name:'Parido Democr·tico Trabalhista',wing:'left-wing',military:'mix',wiki:'http://pt.wikipedia.org/wiki/Partido_Democr%C3%A1tico_Trabalhista'},
-    PEN:{name:'Partido EcolÛgico Nacional',wing:'right-wing',military:'',wiki:'http://pt.wikipedia.org/wiki/Partido_Ecol%C3%B3gico_Nacional'},
+    PDC:{name:'Partido Democrata Crist√£o',wing:'right-wing',military:'ARENA', wiki:'http://pt.wikipedia.org/wiki/Partido_Democrata_Crist%C3%A3o_(1985-1993)'},
+    PDS:{name:'Partido Democr√°tico Social',wing:'right-wing',military:'ARENA',wiki:'http://pt.wikipedia.org/wiki/Partido_Democr%C3%A1tico_Social'},
+    PDT:{name:'Parido Democr√°tico Trabalhista',wing:'left-wing',military:'mix',wiki:'http://pt.wikipedia.org/wiki/Partido_Democr%C3%A1tico_Trabalhista'},
+    PEN:{name:'Partido Ecol√≥gico Nacional',wing:'right-wing',military:'',wiki:'http://pt.wikipedia.org/wiki/Partido_Ecol%C3%B3gico_Nacional'},
     PHS:{name:'Partido Humanista da Solidariedade',wing:'right-wing',military:'',wiki:'http://pt.wikipedia.org/wiki/Partido_Humanista_da_Solidariedade'},
-    PMDB:{name:'Partido do Movimento Democr·tico Brasileiro',wing:'center',military:'MDB',wiki:'http://pt.wikipedia.org/wiki/Partido_do_Movimento_Democr%C3%A1tico_Brasileiro'},
-    PMN:{name:'Partido da MobilizaÁ„o Nacional',wing:'right-wing',military:'',wiki:'http://pt.wikipedia.org/wiki/Partido_da_Mobiliza%C3%A7%C3%A3o_Nacional'},
+    PMDB:{name:'Partido do Movimento Democr√°tico Brasileiro',wing:'center',military:'MDB',wiki:'http://pt.wikipedia.org/wiki/Partido_do_Movimento_Democr%C3%A1tico_Brasileiro'},
+    PMN:{name:'Partido da Mobiliza√ß√£o Nacional',wing:'right-wing',military:'',wiki:'http://pt.wikipedia.org/wiki/Partido_da_Mobiliza%C3%A7%C3%A3o_Nacional'},
     PP: {name:'Partido Progressista',wing:'right-wing',military:'ARENA',wiki:'http://pt.wikipedia.org/wiki/Partido_Progressista_(Brasil)'},
     PPR:{name:'Partido Progressista Renovador',wing:'right-wing',military:'ARENA', wiki:'http://pt.wikipedia.org/wiki/Partido_Progressista_Renovador'},
     PPS:{name:'Partido Popular Socialista',wing:'left-wing',military:'Illegal', wiki:'http://pt.wikipedia.org/wiki/Partido_Popular_Socialista'},
-    PR: {name:'Partido da Rep˙blica',wing:'right-wing',military:'ARENA',wiki:'http://pt.wikipedia.org/wiki/Partido_da_Rep%C3%BAblica'},
+    PR: {name:'Partido da Rep√∫blica',wing:'right-wing',military:'ARENA',wiki:'http://pt.wikipedia.org/wiki/Partido_da_Rep%C3%BAblica'},
     PL: {name:'Partido Liberal',wing:'right-wing',military:'ARENA',wiki:'http://pt.wikipedia.org/wiki/Partido_Liberal_%28Brasil%29'},
     PRB:{name:'Partido Republicano Brasileiro',wing:'right-wing',military:'',wiki:'http://pt.wikipedia.org/wiki/Partido_Republicano_Brasileiro'},
-    PRN:{name:'Partido da RenovaÁ„o Nacional',wing:'right-wing',military:'', wiki:'http://pt.wikipedia.org/wiki/Partido_Trabalhista_Crist%C3%A3o'},
-    PRONA:{name:'Partido da ReedificaÁ„o da Ordem Nacional',wing:'right-wing',military:'',wiki:'http://pt.wikipedia.org/wiki/Partido_de_Reedifica%C3%A7%C3%A3o_da_Ordem_Nacional'},
+    PRN:{name:'Partido da Renova√ß√£o Nacional',wing:'right-wing',military:'', wiki:'http://pt.wikipedia.org/wiki/Partido_Trabalhista_Crist%C3%A3o'},
+    PRONA:{name:'Partido da Reedifica√ß√£o da Ordem Nacional',wing:'right-wing',military:'',wiki:'http://pt.wikipedia.org/wiki/Partido_de_Reedifica%C3%A7%C3%A3o_da_Ordem_Nacional'},
     PROS:{name:'Partido Republicano da Ordem Social',wing:'',military:'',wiki:'http://pt.wikipedia.org/wiki/Partido_Republicano_da_Ordem_Social'},
     PRP:{name:'Partido Republicano Progressista',wing:'right-wing',military:'ARENA',wiki:'http://pt.wikipedia.org/wiki/Partido_Republicano_Progressista'},
-    PRS:{name:'Partido da RenovaÁ„o Social',wing:'right-wing',military:'',wiki:'http://pt.wikipedia.org/wiki/Partido_de_Renova%C3%A7%C3%A3o_Social'},
+    PRS:{name:'Partido da Renova√ß√£o Social',wing:'right-wing',military:'',wiki:'http://pt.wikipedia.org/wiki/Partido_de_Renova%C3%A7%C3%A3o_Social'},
     PRTB:{name:'Partido Renovador Trabalhista Brasileiro',wing:'right-wing',military:'',wiki:'http://pt.wikipedia.org/wiki/Partido_Renovador_Trabalhista_Brasileiro'},
     PSB:{name:'Partido Socialista Brasileiro',wing:'left-wing',military:'Illegal',wiki:'http://pt.wikipedia.org/wiki/Partido_Socialista_Brasileiro'},
-    PSC:{name:'Partido Social Crist„o',wing:'right-wing',military:'ARENA', wiki:'http://pt.wikipedia.org/wiki/Partido_Social_Crist%C3%A3o'},
-    PSD:{name:'Partido Social Democr·tico',wing:'right-wing',military:'ARENA',wiki:'http://pt.wikipedia.org/wiki/Partido_Social_Democr%C3%A1tico_(2011)'},
+    PSC:{name:'Partido Social Crist√£o',wing:'right-wing',military:'ARENA', wiki:'http://pt.wikipedia.org/wiki/Partido_Social_Crist%C3%A3o'},
+    PSD:{name:'Partido Social Democr√°tico',wing:'right-wing',military:'ARENA',wiki:'http://pt.wikipedia.org/wiki/Partido_Social_Democr%C3%A1tico_(2011)'},
     PSDB:{name:'Partido da Social Democracia Brasileira',wing:'center',military:'mix',wiki:'http://pt.wikipedia.org/wiki/Partido_da_Social_Democracia_Brasileira'},
     PSL:{name:'Partido Social Liberal',wing:'right-wing',military:'', wiki:'http://pt.wikipedia.org/wiki/Partido_Social_Liberal'},
     PSOL:{name:'Partido Socialismo e Liberdade',wing:'left-wing',military:'',wiki:'http://pt.wikipedia.org/wiki/Partido_Socialismo_e_Liberdade'},
@@ -397,7 +397,7 @@ CONGRESS_DEFINE.parties = {
     PSTU:{name:'Partido Socialista dos Trabalhadores Unificado',wing:'left-wing',military:'Illegal',wiki:'http://pt.wikipedia.org/wiki/Partido_Socialista_dos_Trabalhadores_Unificado'},
     PT: {name:'Partido dos Trabalhadores',wing:'left-wing',military:'Illegal',wiki:'http://pt.wikipedia.org/wiki/Partido_dos_Trabalhadores'},
     PTB:{name:'Partido Trabalhista Brasileiro',wing:'right-wing',military:'ARENA',wiki:'http://pt.wikipedia.org/wiki/Partido_Trabalhista_Brasileiro'},
-    PTC:{name:'Partido Trabalhista Crist„o',wing:'right-wing',military:'',wiki:'http://pt.wikipedia.org/wiki/Partido_Trabalhista_Crist%C3%A3o'},
+    PTC:{name:'Partido Trabalhista Crist√£o',wing:'right-wing',military:'',wiki:'http://pt.wikipedia.org/wiki/Partido_Trabalhista_Crist%C3%A3o'},
     PTN:{name:'Partido Trabalhista Nacional',wing:'right-wing',military:'',wiki:'http://pt.wikipedia.org/wiki/Partido_Trabalhista_Nacional'},
     PTR:{name:'Partido Trabalhista Reformador',wing:'right-wing',military:'ARENA', wiki:'http://pt.wikipedia.org/wiki/Partido_Trabalhista_Reformador'},
     PTdoB:{name:'Partido Trabalhista do Brasil',wing:'right-wing',military:'',wiki:'http://pt.wikipedia.org/wiki/Partido_Trabalhista_do_Brasil'},

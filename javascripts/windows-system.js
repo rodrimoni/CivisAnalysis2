@@ -519,7 +519,7 @@ function setUpPanel(newID) {
         .draggable({
             handle: ".panel-heading",
             stack: ".panel, .fa-window-maximize",
-            containment: [10,containerOffset.top, workspace.width() - initialWidth - 10 , workspace.height() - initialHeight - 70],
+            containment: [10,containerOffset.top, workspace.width() - initialWidth  - 10 , workspace.height() - initialHeight],
             drag: function(){
                 centerLine(this.id);
             },
@@ -920,7 +920,7 @@ function checkLimits()
         var getElem = $( "#"+panels[index].id);
         var offsetWidth = workspace.width() - getElem.width() - 10;
         var offsetHeight= workspace.height() - getElem.height() - 10;
-        $(getElem).draggable( "option", "containment", [10,containerOffset.top,offsetWidth,offsetHeight]);
+        $(getElem).draggable( "option", "containment", [10,containerOffset.top,offsetWidth,offsetHeight + containerOffset.top]);
     })
 }
 

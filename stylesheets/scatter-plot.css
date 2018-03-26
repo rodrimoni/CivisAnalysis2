@@ -22,6 +22,12 @@
     cursor: pointer;
 }
 
+.scatter-plot .extent {
+    fill: #000;
+    fill-opacity: .125;
+    stroke: #fff;
+}
+
 .node {
     stroke: #E0E0E0;
     stroke-width: 1px;

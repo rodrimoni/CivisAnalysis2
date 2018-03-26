@@ -164,6 +164,7 @@
         <option value="SE">Sergipe</option>
         <option value="TO">Tocantins</option>
     </select>
+    <button id = "statesBtn" type="button" class="btn btn-default">Apply filter</button>
     <button id = "resetBtn" type="button" class="btn btn-default">Reset all selections</button>
     <label style = "display:none"> <input id="match" type="checkbox"> Match Deputies </label>
 </div>
@@ -243,28 +244,8 @@
             resetSelection();
         });
 
-        windowSystem.on('change', '#selStates', selectByStates);
+        windowSystem.on('click', '#statesBtn', selectByStates);
 
     });
-
-    /* https://github.com/KaneCohen/tokenfield
-    new Tokenfield({
-  el: document.querySelector('#tokenfield-typeahead'), // Attach Tokenfield to the input element with class "text-input"
-  items: [
-    {id: 1, name: 'red'},
-    {id: 2, name:'orange'},
-    {id: 3, name: 'yellow'},
-    {id: 4, name: 'green'},
-    {id: 5, name:'blue'},
-    {id: 6, name: 'indigo'},
-    {id: 7, name: 'violet'},
-    {id: 8, name: 'black'},
-    {id: 9, name: 'white'},
-    {id: 10, name: 'brown'},
-    {id: 11, name: 'pink'}
-  ],
-  newItems: false
-});
-     */
 
 </script>

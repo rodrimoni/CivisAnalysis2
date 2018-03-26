@@ -333,7 +333,7 @@ function createMatrixDeputiesPerRollCall (deputies){
     var tableDepXRollCall = numeric.rep([ Object.keys(deputies).length, Object.keys(rollCalls).length],0);
 
     // How the votes will be represented in the matrix for the calc of SVD
-    var votoStringToInteger = {"Sim":1,"Não":-1,"Abstenção":0,"Obstrução":0,"Art. 17":0,"Branco":0};
+    var votoStringToInteger = {"Sim":1,"NÃ£o":-1,"AbstenÃ§Ã£o":0,"ObstruÃ§Ã£o":0,"Art. 17":0,"Branco":0};
 
     // for each rollCall
     rollCalls.forEach( function( rollCallEntry, rollCallKey ){
@@ -631,15 +631,19 @@ function updateDeputyNodeInAllPeriods(deputyID, attr, value ) {
 function selectByStates (){
 
     var states = $('select[id="selStates"]').val();
-    resetSelection();
 
     if (states !== null) {
         for (var key in deputyNodes) {
-            for (var index in deputyNodes[key])
-                if (states.indexOf(deputyNodes[key][index].district) === -1)
-                    deputyNodes[key][index].selected = false;
+            for (var index in deputyNodes[key]) {
+                var deputy = deputyNodes[key][index];
+                if (deputy.selected)
+                    if (states.indexOf(deputy.district) === -1)
+                        deputy.selected = false;
+            }
         }
         selectionOn = true;
         updateVisualizations();
     }
+    else
+        resetSelection();
 }

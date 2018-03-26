@@ -75,6 +75,13 @@ function scatterPlotChart()
 
             var panelID = (d3.select(this.parentNode).attr('id'));
 
+            var brush = d3.svg.brush()
+                .x(x)
+                .y(y)
+                .on("brushstart", brushstart)
+                .on("brush", brushmove)
+                .on("brushend", brushend);
+
             svg = d3.select(this)
                 .append("svg")
                 .attr("width", "100%")
@@ -83,7 +90,7 @@ function scatterPlotChart()
                 .classed("scatter-plot", true)
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-                .call(zoomBeh);
+                //.call(zoomBeh);
 
             svg.append("rect")
                 .attr("width", width)
@@ -117,6 +124,8 @@ function scatterPlotChart()
                 .attr("y1", 0)
                 .attr("x2", 0)
                 .attr("y2", height);
+
+            objects.call(brush);
 
             objects.append("g").attr("class", "deputiesClusters");
 
@@ -221,6 +230,34 @@ function scatterPlotChart()
                     .text(function(d) { return d });
 
             }
+
+            var brushScatter;
+
+            function brushstart(p) {
+                if (brushScatter !== this) {
+                    d3.select(brushScatter).call(brush.clear());
+                    brushScatter = this;
+                }
+            }
+
+            // Highlight the selected circles.
+            function brushmove() {
+                var e = brush.extent();
+                var deps = svg.selectAll(".node").filter(function(d) {
+                    return e[0][0] < d.scatterplot[1] && d.scatterplot[1] < e[1][0]
+                        && e[0][1] < d.scatterplot[0] && d.scatterplot[0] < e[1][1];
+                }).data();
+                chart.selectDeputiesBySearch(deps);
+            }
+
+            //TODO: https://gist.github.com/peterk87/8441728 Zoom and Panning
+
+            // If the brush is empty, select all circles.
+            function brushend() {
+                //console.log(d3.event.target);
+                //if (brush.empty()) resetSelection();
+            }
+
         });
     }
 
