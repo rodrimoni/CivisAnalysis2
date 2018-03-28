@@ -23,9 +23,8 @@
 }
 
 .scatter-plot .extent {
-    fill: #000;
+    fill: darkgrey;
     fill-opacity: .125;
-    stroke: #fff;
 }
 
 .node {
@@ -41,4 +40,8 @@
 
 .node.hovered {
     opacity: 0.4;
+}
+
+.node.selected:active {
+    pointer-events: none;
 }

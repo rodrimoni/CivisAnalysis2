@@ -48,12 +48,12 @@
     stroke: rgb(0,0,0);
 }*/
 
-.brush rect.extent {
+.timeline .brush rect.extent {
     fill: darkgrey;
     fill-opacity: .125;
 }
 
-.brush .resize path {
+.timeline .brush .resize path {
     fill: #eee;
     stroke: #666;
 }

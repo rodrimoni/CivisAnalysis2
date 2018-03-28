@@ -241,7 +241,7 @@ function scatterPlotChart()
             }
 
             // Highlight the selected circles.
-            function brushmove() {
+            function brushmove() { console.log(d3.event)
                 var e = brush.extent();
                 var deps = svg.selectAll(".node").filter(function(d) {
                     return e[0][0] < d.scatterplot[1] && d.scatterplot[1] < e[1][0]
@@ -254,6 +254,8 @@ function scatterPlotChart()
 
             // If the brush is empty, select all circles.
             function brushend() {
+                //d3.event.target.clear();
+                //d3.select(this).call(d3.event.target);
                 //console.log(d3.event.target);
                 //if (brush.empty()) resetSelection();
             }
