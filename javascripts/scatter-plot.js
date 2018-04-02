@@ -41,6 +41,7 @@ function scatterPlotChart()
 
     var dispatch = d3.dispatch('update');
     var div = d3.select(".toolTip");
+    var brush;
 
     function chart(selection){
         selection.each(function (data) {
@@ -75,7 +76,7 @@ function scatterPlotChart()
 
             var panelID = (d3.select(this.parentNode).attr('id'));
 
-            var brush = d3.svg.brush()
+            brush = d3.svg.brush()
                 .x(x)
                 .y(y)
                 .on("brushstart", brushstart)
@@ -90,7 +91,7 @@ function scatterPlotChart()
                 .classed("scatter-plot", true)
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-                //.call(zoomBeh);
+                .call(zoomBeh);
 
             svg.append("rect")
                 .attr("width", width)
@@ -124,8 +125,6 @@ function scatterPlotChart()
                 .attr("y1", 0)
                 .attr("x2", 0)
                 .attr("y2", height);
-
-            objects.call(brush);
 
             objects.append("g").attr("class", "deputiesClusters");
 
@@ -162,8 +161,6 @@ function scatterPlotChart()
                     highlightMatchesDeputies();
                 });
 
-            
-            updateLegend(nodes, svg);
 
             $("#" + panelID + " .node")
                 .contextMenu({
@@ -172,6 +169,9 @@ function scatterPlotChart()
                         handleContextMenuDeputy(invokedOn, selectedMenu);
                     }
                 });
+
+            updateLegend(nodes, svg);
+
 
             highlightMatchesDeputies();
 
@@ -241,21 +241,29 @@ function scatterPlotChart()
             }
 
             // Highlight the selected circles.
-            function brushmove() { console.log(d3.event)
-                var e = brush.extent();
-                var deps = svg.selectAll(".node").filter(function(d) {
-                    return e[0][0] < d.scatterplot[1] && d.scatterplot[1] < e[1][0]
-                        && e[0][1] < d.scatterplot[0] && d.scatterplot[0] < e[1][1];
-                }).data();
-                chart.selectDeputiesBySearch(deps);
+            function brushmove() {
+                if (SHIFTKEY) {
+                    svg = svg.call(d3.behavior.zoom().on("zoom", null));
+                    var e = brush.extent();
+                    var deps = svg.selectAll(".node").filter(function(d) {
+                        return e[0][0] < d.scatterplot[1] && d.scatterplot[1] < e[1][0]
+                            && e[0][1] < d.scatterplot[0] && d.scatterplot[0] < e[1][1];
+                    }).data();
+                    chart.selectDeputiesBySearch(deps);
+                }
+                else {
+                    d3.event.target.clear();
+                    d3.select(this).call(d3.event.target);
+                }
             }
 
             //TODO: https://gist.github.com/peterk87/8441728 Zoom and Panning
 
             // If the brush is empty, select all circles.
             function brushend() {
-                //d3.event.target.clear();
-                //d3.select(this).call(d3.event.target);
+                svg.call(d3.behavior.zoom().x(x).y(y).on("zoom", zoom));
+                d3.event.target.clear();
+                d3.select(this).call(d3.event.target);
                 //console.log(d3.event.target);
                 //if (brush.empty()) resetSelection();
             }
@@ -349,7 +357,7 @@ function scatterPlotChart()
         var svg = d3.select(deputiesClusters);
 
         var toolTipCluster = d3.select('.toolTipCluster');
-        
+
         var objects = svg.selectAll(".hull")
             .data(data, function(d){return d;});
 
@@ -363,8 +371,8 @@ function scatterPlotChart()
 
 
         var enterObjects = objects
-                            .data(data)
-                            .enter();
+            .data(data)
+            .enter();
 
         enterObjects
             .append("a")
@@ -411,7 +419,7 @@ function scatterPlotChart()
         dispatch.update();
     }
 
-    function mouseClickDeputy(d){
+    function mouseClickDeputy(d){  console.log("clique");
         d3.event.preventDefault();
 
         if (d3.event.shiftKey){
@@ -491,6 +499,16 @@ function scatterPlotChart()
 
         selectionOn = true;
         dispatch.update();
+    };
+
+    chart.enableBrush = function(){
+        svg.select(".objects").append("g")
+            .attr("class", "brush")
+            .call(brush);
+    };
+
+    chart.disableBrush = function(){
+        svg.select(".brush").remove();
     };
 
     return d3.rebind(chart, dispatch, 'on');

@@ -41,7 +41,3 @@
 .node.hovered {
     opacity: 0.4;
 }
-
-.node.selected:active {
-    pointer-events: none;
-}

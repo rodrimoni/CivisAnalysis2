@@ -22,6 +22,9 @@ var FORCE_LAYOUT        = 3;
 var TIME_LINE_CROP      = 4;
 var CHAMBER_INFOGRAPHIC = 5;
 
+/* Constant to keep the value of ShiftKey */
+var SHIFTKEY = false;
+
 /* Constant to define Dimensional Reduction Techniques */
 var PCA = 1;
 var MDS = 2;
@@ -1051,4 +1054,24 @@ function updateVisualizations() {
         if (n.typeChart === SCATTER_PLOT || n.typeChart === CHAMBER_INFOGRAPHIC)
             n.chart.update();
     })
+}
+
+function enableBrushForAllScatterPlots(){
+    if (d3.event.shiftKey){
+        SHIFTKEY = true;
+        tree.traverseBF(function (n) {
+            if (n.typeChart === SCATTER_PLOT)
+                n.chart.enableBrush();
+        })
+    }
+}
+
+function disableBrushForAllScatterPlots(){
+    if (!d3.event.shiftKey){
+        SHIFTKEY = false;
+        tree.traverseBF(function (n) {
+            if (n.typeChart === SCATTER_PLOT)
+                n.chart.disableBrush();
+        })
+    }
 }

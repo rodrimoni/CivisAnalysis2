@@ -246,6 +246,14 @@
 
         windowSystem.on('click', '#statesBtn', selectByStates);
 
+        d3.select(window)
+            .on("keydown", function () {
+                enableBrushForAllScatterPlots();
+            })
+            .on("keyup", function(){
+                disableBrushForAllScatterPlots();
+            });
+
     });
 
 </script>
