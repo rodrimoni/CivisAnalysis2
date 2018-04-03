@@ -736,17 +736,33 @@ d3.chart.timeline = function() {
         setAlliance(null);
         svg.select('.election.selected').classed('selected',false);
 
+        var period;
+        if (d3.event.shiftKey){
+            var initialDate = CONGRESS_DEFINE.legislatures[0].period[0];
+            if (brush.extent()[0] > initialDate)
+            {
+                if (d.period[0] <= brush.extent()[0])
+                    period = [d.period[0], brush.extent()[1]];
+                else
+                    period = [brush.extent()[0], d.period[1]];
+            }
+            else
+                period = d.period;
+        }
+        else
+            period = d.period;
+
 
         svg.select(".brush")
-            .call(brush.extent(d.period))
+            .call(brush.extent(period))
             .selectAll(".resize")
             .style("display", null);
 
         svg.select("#clip-timeline rect")
-            .attr("x", x(d.period[0]) )
-            .attr("width", x(d.period[1])- x(d.period[0]) );
+            .attr("x", x(period[0]) )
+            .attr("width", x(period[1])- x(period[0]) );
 
-        dispatch.timelineFilter(d.period)
+        dispatch.timelineFilter(period);
     }
 
     function appendElections( height ){

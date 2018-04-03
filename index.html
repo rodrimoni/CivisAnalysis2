@@ -246,11 +246,17 @@
 
         windowSystem.on('click', '#statesBtn', selectByStates);
 
+        var activeBrush = true;
         d3.select(window)
-            .on("keydown", function () {
+            .on("keydown", function (event) {
+                if (!activeBrush) {
+                    return;
+                }
                 enableBrushForAllScatterPlots();
+                activeBrush = false;
             })
             .on("keyup", function(){
+                activeBrush = true;
                 disableBrushForAllScatterPlots();
             });
 
