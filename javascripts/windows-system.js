@@ -76,7 +76,6 @@ function initializeChart(newID, chartObj) {
             }
 
             addSearchDeputyMenu(newID, deputies);
-
             initializeSlider(newID, chart);
             $('#' +newID).attr('data-type-period', chartObj.panelClass);
 
@@ -627,7 +626,7 @@ function setUpScatterPlotData(filteredData, dataRange, dimensionalReductionTechn
         else
             createChart = createScatterPlot;
 
-        subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString() + "</span>";
+        var subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString() + "</span>";
         title += subtitle;
 
         if (dimensionalReductionTechnique === "PCA") {
@@ -654,7 +653,7 @@ function setUpScatterPlotData(filteredData, dataRange, dimensionalReductionTechn
 
             function calcCallback(twoDimData) {
                 // Deputies array
-                title = filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString();
+                title = filteredData[0].getFullYear() + " to " + filteredData[1].getFullYear();
                 title += " (" + dimensionalReductionTechnique + ")";
 
                 if (isInfographic)
@@ -662,7 +661,8 @@ function setUpScatterPlotData(filteredData, dataRange, dimensionalReductionTechn
                 else
                     createChart = createScatterPlot;
 
-                key = title;
+                panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear();
+                key = panelClass + "-" + dimensionalReductionTechnique;
 
                 if (deputyNodes[key] === undefined) {
                     deputyNodes[key] = createDeputyNodes(twoDimData.deputies, filteredDeputies);
@@ -739,19 +739,29 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
 
         if (timelineCropPanel.length === 0) {
             var periodID = period.split("-");
-            var type = periodID[0];
-            var id = periodID[1];
-            var dataRange = {'id': id, 'type': type};
+            var type, id, periodData, title, subtitle, panelClass, firstYear, lastYear, data;
+            if (periodID.length <= 2) {
+                type = periodID[0];
+                id = periodID[1];
+                periodData = CONGRESS_DEFINE[type + "s"][id];
+                title = periodData.name;
+                subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " to " + periodData.period[1].toLocaleDateString() + "</span>";
+                title += subtitle;
+                panelClass = type + '-' + id;
+                data = [periodData.period[0], periodData.period[1]];
+            }
+            else {
+                type = periodID[0];
+                firstYear = periodID[1];
+                lastYear = periodID[2];
+                title = firstYear + " to " + lastYear;
+                panelClass = type + "-" + firstYear + "-" + lastYear;
+                data = [new Date(firstYear,0,1),new Date(lastYear,0,1)];
+            }
 
-            var periodData = CONGRESS_DEFINE[type + "s"][id];
+            console.log(data);
 
-            var title = periodData.name;
-            var subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " to " + periodData.period[1].toLocaleDateString() + "</span>";
-
-            title += subtitle;
-
-            var panelClass = type + '-' + id;
-            var chartObj = {'chartID': TIME_LINE_CROP, 'data': dataRange, 'title': title, 'panelClass': panelClass};
+            var chartObj = {'chartID': TIME_LINE_CROP, 'data': data, 'title': title, 'panelClass': panelClass};
 
             createNewChild(panelID, chartObj);
 

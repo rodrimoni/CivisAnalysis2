@@ -34,21 +34,21 @@ function timeLineCrop(){
                 .attr("viewBox", "0 0 " + outerWidth + " " + outerHeight)
                 .classed("timeline-crop", true);
 
-            appendGreyRangeButtons(data.type + "s", data.id,0);
+            appendGreyRangeButtons(data,0);
             setPartiesTraces(10+rangeButtonsHeight+10);
 
         })
     }
 
-    function appendGreyRangeButtons(type, data, y ){
-        ranges = CONGRESS_DEFINE[type][data];
-        years = $.map( d3.range(ranges.period[0].getFullYear(), ranges.period[1].getFullYear()+1),
+    function appendGreyRangeButtons(data, y ){
+        ranges = data;
+        years = $.map( d3.range(ranges[0].getFullYear(), ranges[1].getFullYear()+1),
                             function(d){
                                 return {name:d, period:[new Date(d,0,1), new Date(d+1,0,1)] };
                             });
 
         x = d3.time.scale()
-            .domain([ranges.period[0], ranges.period[1]])
+            .domain([ranges[0], ranges[1]])
             .rangeRound([margin.left, width -margin.right]);
 
         var gRects = appendRangeButtons(years, y,'foreground years');
@@ -98,8 +98,8 @@ function timeLineCrop(){
 
         // Add the traced (stroke-dasharray) lines from top to bottom
         var yearlyColumms = partyTraces.append('g');
-        var firstYear = ranges.period[0].getFullYear();
-        var lastYear = ranges.period[1].getFullYear();
+        var firstYear = ranges[0].getFullYear();
+        var lastYear = ranges[1].getFullYear();
 
         d3.range(firstYear,lastYear).forEach(function(year){
                 yearlyColumms.append('path').attr({
@@ -421,7 +421,7 @@ function timeLineCrop(){
         });*/
 
 
-        var numberOfPathsEachDeputy = 3;
+        var numberOfPathsEachDeputy = years.length;
 
         var enterData = trace.enter();
 
@@ -503,8 +503,8 @@ function timeLineCrop(){
 
     function drawPartiesSteps(type){
 
-        var firstYear = ranges.period[0].getFullYear();
-        var lastYear = ranges.period[1].getFullYear();
+        var firstYear = ranges[0].getFullYear();
+        var lastYear = ranges[1].getFullYear();
 
         var steps = svg.selectAll('.parties .party')
             .selectAll('.steps')
@@ -537,8 +537,8 @@ function timeLineCrop(){
 
     function drawPartiesTraces(type){
 
-        var firstYear = ranges.period[0].getFullYear();
-        var lastYear = ranges.period[1].getFullYear();
+        var firstYear = ranges[0].getFullYear();
+        var lastYear = ranges[1].getFullYear();
 
         var traces = svg.selectAll('.parties .party')
             .selectAll('.traces')
@@ -714,8 +714,8 @@ function timeLineCrop(){
 
     chart.drawDeputy = function(deputies){
 
-        var firstYear = ranges.period[0].getFullYear();
-        var lastYear = ranges.period[1].getFullYear();
+        var firstYear = ranges[0].getFullYear();
+        var lastYear = ranges[1].getFullYear();
 
         var deputiesSteps = [];
 

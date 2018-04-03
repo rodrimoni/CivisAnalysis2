@@ -151,7 +151,6 @@ d3.chart.timeline = function() {
     });
 
     brush.on("brushend.chart", function() {
-        if (!d3.event.sourceEvent) return; // only transition after input
         if(brush.extent()[0].toLocaleDateString() === brush.extent()[1].toLocaleDateString()){
             svg.selectAll('.dateLabel').remove();
             svg.select("#clip-timeline rect")
@@ -170,69 +169,8 @@ d3.chart.timeline = function() {
         setAlliance(null);
         svg.select('.election.selected').classed('selected',false);
         //!!!!!!!!!!
-
-        var extentSnapped = snapBrush();
-
-        svg.select(".brush")
-            .call(brush.extent(extentSnapped))
-            .selectAll(".resize")
-            .style("display", null);
-
-        svg.select("#clip-timeline rect")
-            .attr("x", x(extentSnapped[0]))
-            .attr("width", x(extentSnapped[1]) - x(extentSnapped[0]));
-
-        var labels = svg.selectAll('.dateLabel')
-            .data(extentSnapped);
-
-        labels.enter()
-            .append('text')
-            .attr({
-                'class':'dateLabel',
-                opacity: 0.8
-            });
-
-        labels.transition()
-            .attr({
-                x: function(d,i){ return ((i)? +30 : -35) + x(d);},
-                y: function(d,i){ return (i)? histogramHeight : histogramHeight/2; }
-            })
-            .text( function(d){return d.toLocaleDateString();})
-
         dispatch.timelineFilter(brush.extent())
     });
-
-    function snapBrush(){
-
-        var extent0 = brush.extent(),
-            extent1 = [];
-        var timeObjects = CONGRESS_DEFINE.years;
-
-        // Get timespans for each endpoint
-        var leftSpan = getIntersection(extent0[0], timeObjects)[0],
-            rightSpan = getIntersection(extent0[1], timeObjects)[0],
-            centerSpan = getIntersection(new Date((+extent0[0] +(+extent0[1]))/2), timeObjects)[0];
-
-        // Round each endpoint to the closer end of its timespan and save in extent1
-        if (extent0[0] - leftSpan.period[0] <= leftSpan.period[1] - extent0[0]) {
-            extent1[0] = leftSpan.period[0];
-        } else {
-            extent1[0] = leftSpan.period[1];
-        }
-        if (extent0[1] - rightSpan.period[0] <= rightSpan.period[1] - extent0[1]) {
-            extent1[1] = rightSpan.period[0];
-        } else {
-            extent1[1] = rightSpan.period[1];
-        }
-
-        // if empty when rounded, check where the original center was and use start & end of that timespan instead
-        if (extent1[0] >= extent1[1]) {
-            extent1[0] = centerSpan.period[0];
-            extent1[1] = centerSpan.period[1];
-        }
-
-        return extent1;
-    }
 
     function getIntersection(time, timespanArray) {
         return timespanArray.filter(function(d) {
@@ -247,7 +185,7 @@ d3.chart.timeline = function() {
         var dateCF = crossfilter(datetimeList);
         dimension = dateCF.dimension( function(d){ return d });
         group = dimension.group(d3.time.week);
-        round = d3.time.week.round;
+        round = d3.time.year.round;
 
         chart.x(d3.time.scale()
             .domain([new Date(1991, 0, 1), new Date(2017, 0, 1)])
@@ -294,7 +232,7 @@ d3.chart.timeline = function() {
         gBrush.selectAll(".resize").append("path").attr("d", resizePath);
 
         // Only redraw the brush if set externally.
-        if (brushDirty) { console.log("dirty");
+        if (brushDirty) {
             brushDirty = false;
             g.selectAll(".brush").call(brush);
             //div.select(".title a").style("display", brush.empty() ? "none" : null);
@@ -738,8 +676,7 @@ d3.chart.timeline = function() {
 
         var period;
         if (d3.event.shiftKey){
-            var initialDate = CONGRESS_DEFINE.legislatures[0].period[0];
-            if (brush.extent()[0] > initialDate)
+            if (!brush.empty())
             {
                 if (d.period[0] <= brush.extent()[0])
                     period = [d.period[0], brush.extent()[1]];
