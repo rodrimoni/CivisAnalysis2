@@ -42,7 +42,7 @@ function timeLineCrop(){
 
     function appendGreyRangeButtons(data, y ){
         ranges = data;
-        years = $.map( d3.range(ranges[0].getFullYear(), ranges[1].getFullYear()+1),
+        years = $.map( d3.range(ranges[0].getFullYear(), ranges[1].getFullYear()),
                             function(d){
                                 return {name:d, period:[new Date(d,0,1), new Date(d+1,0,1)] };
                             });

@@ -52,7 +52,7 @@ function initSystem() {
     loadDeputies(deputiesArray);
     loadDeputiesNodesByYear(deputiesNodesByYear);
     loadRollCalls(arrayRollCalls, function () {
-        createNewChild(TIME_LINE);
+        createNewChild(TIME_LINE, {});
         //createTraces1by1();
     });
 }
@@ -759,8 +759,6 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
                 data = [new Date(firstYear,0,1),new Date(lastYear,0,1)];
             }
 
-            console.log(data);
-
             var chartObj = {'chartID': TIME_LINE_CROP, 'data': data, 'title': title, 'panelClass': panelClass};
 
             createNewChild(panelID, chartObj);
@@ -1012,7 +1010,18 @@ function checkPeriodTimeLineCrop(event, deputy) {
                     contextMenuTimeLineCropSelection.addClass("disabled");
                 }
                 else {
-                    contextMenuTimeLineCropSelection.removeClass("disabled");
+                    if (periodType === 'period') {
+                        var years = period.split("-");
+                        var firstYear = years[1];
+                        var lastYear = years[2];
+
+                        if (lastYear - firstYear <= 1)
+                            contextMenuTimeLineCropSelection.addClass("disabled");
+                        else
+                            contextMenuTimeLineCropSelection.removeClass("disabled");
+                    }
+                    else
+                        contextMenuTimeLineCropSelection.removeClass("disabled");
                 }
         }
         else {

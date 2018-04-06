@@ -428,7 +428,7 @@ function scatterPlotChart()
         } else
         if (d3.event.ctrlKey || d3.event.metaKey){
             // using the ctrlKey add deputy to selection
-            updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
+            updateDeputyNodeInAllPeriods(d.deputyID, "selected", !d.selected);
             selectionOn = true;
         }
         else {
