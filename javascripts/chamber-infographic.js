@@ -41,8 +41,6 @@ function chamberInfographic() {
             });
             parties.forEach(function(d,i){ data.partiesMap[d.key].rank = i });
 
-            console.log(parties);
-
             data.deputies.sort( function(a,b){
                     return (a.party !== b.party) ?
                         (data.partiesMap[a.party].rank - data.partiesMap[b.party].rank)
@@ -72,7 +70,12 @@ function chamberInfographic() {
         circles.enter().append('circle')
             .on("mouseover", mouseoverDeputy)
             .on("mouseout", mouseoutDeputy)
-            .on("click", mouseClickDeputy)
+            .on('mouseup', function(){
+                $('.searchDeputies').tagsinput('removeAll');
+            })
+            .on('mousedown', function(d) {
+                mouseClickDeputy(d);
+            })
             .attr({
                 r:0,
                 id: function(d) { return panelID + "_deputy-id-" + d.deputyID; }
@@ -103,6 +106,14 @@ function chamberInfographic() {
             });
 
         circles.order(); // sort elements in the svg
+
+        $("#" + panelID + " .node")
+            .contextMenu({
+                menuSelector: "#contextMenuDeputy",
+                menuSelected: function (invokedOn, selectedMenu) {
+                    handleContextMenuDeputy(invokedOn, selectedMenu);
+                }
+            });
     }
 
     function updateParties(){
@@ -209,9 +220,6 @@ function chamberInfographic() {
     }
 
     function mouseClickDeputy(d){
-        /* Reset the search input */
-        $('.searchDeputies').tagsinput('removeAll');
-
         d3.event.preventDefault();
 
         if (d3.event.shiftKey){
@@ -220,18 +228,23 @@ function chamberInfographic() {
         } else
         if (d3.event.ctrlKey || d3.event.metaKey){
             // using the ctrlKey add deputy to selection
-            updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
-        }
-        else {
-            // a left click without any key pressed -> select only the deputy (deselect others)
-            for (var key in deputyNodes){
-                for (var index in deputyNodes[key])
-                    deputyNodes[key][index].selected = false;
-            }
-            updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
+            updateDeputyNodeInAllPeriods(d.deputyID, "selected", !d.selected);
             selectionOn = true;
         }
-        dispatch.update()
+        else {
+            // a left click without any key pressed and
+            // a right click in a deputy unselected
+            // -> select only the deputy (deselect others)
+            if (d3.event.which === 1 || (d3.event.which ===3 && !d.selected)) {
+                for (var key in deputyNodes) {
+                    for (var index in deputyNodes[key])
+                        deputyNodes[key][index].selected = false;
+                }
+                updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
+                selectionOn = true;
+            }
+        }
+        dispatch.update();
     }
 
     function mouseoverParty(d){

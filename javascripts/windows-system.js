@@ -101,6 +101,7 @@ function initializeChart(newID, chartObj) {
             addConfigMenu(newID);
             addSearchDeputyMenu(newID, chartObj.data.deputies);
 
+            $('#' +newID).attr('data-type-period', chartObj.panelClass);
             chart.on('update', updateVisualizations);
             break;
         default:

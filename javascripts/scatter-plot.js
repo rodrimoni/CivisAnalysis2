@@ -419,7 +419,7 @@ function scatterPlotChart()
         dispatch.update();
     }
 
-    function mouseClickDeputy(d){  console.log("clique");
+    function mouseClickDeputy(d){
         d3.event.preventDefault();
 
         if (d3.event.shiftKey){
