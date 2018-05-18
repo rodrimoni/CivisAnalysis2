@@ -616,7 +616,6 @@ function resetSelection(){
     /* Reset the deputies selection by search */
     $('.searchDeputies').tagsinput('removeAll');
 
-    selectionOn = false;
     updateVisualizations();
 }
 
@@ -641,7 +640,6 @@ function selectByStates (){
                         deputy.selected = false;
             }
         }
-        selectionOn = true;
         updateVisualizations();
     }
     else

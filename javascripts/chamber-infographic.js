@@ -229,7 +229,6 @@ function chamberInfographic() {
         if (d3.event.ctrlKey || d3.event.metaKey){
             // using the ctrlKey add deputy to selection
             updateDeputyNodeInAllPeriods(d.deputyID, "selected", !d.selected);
-            selectionOn = true;
         }
         else {
             // a left click without any key pressed and
@@ -241,7 +240,6 @@ function chamberInfographic() {
                         deputyNodes[key][index].selected = false;
                 }
                 updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
-                selectionOn = true;
             }
         }
         dispatch.update();
@@ -278,20 +276,35 @@ function chamberInfographic() {
 
         d = d.data;
 
-        for (var key in deputyNodes){
-            for (var index in deputyNodes[key])
-                deputyNodes[key][index].selected = false;
-        }
-
         var deputies = svg.selectAll(".node").filter(function (dep) {
             return dep.party === d.key;
         }).data();
 
-        deputies.forEach(function (d) {
-            updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
-        });
+        if (d3.event.shiftKey){
+            deputies.forEach(function (d) {
+                updateDeputyNodeInAllPeriods(d.deputyID, "selected", false);
+            });
 
-        selectionOn = true;
+            d.value.selected = d.value.size;
+
+        } else
+        if (d3.event.ctrlKey || d3.event.metaKey){
+            deputies.forEach(function (d) {
+                updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
+            });
+            d.value.selected = 0;
+        }
+        else {
+            for (var key in deputyNodes){
+                for (var index in deputyNodes[key])
+                    deputyNodes[key][index].selected = false;
+            }
+
+            deputies.forEach(function (d) {
+                updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
+            });
+            d.value.selected = d.value.size;
+        }
 
         dispatch.update();
     }
@@ -337,7 +350,6 @@ function chamberInfographic() {
             updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
         });
 
-        selectionOn = true;
         dispatch.update();
     };
 

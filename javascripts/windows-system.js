@@ -33,6 +33,9 @@ var TSNE = 3;
 /* Global variable to handle deputies selections */
 var selectionOn = false;
 
+/* Global variable to handle deputies nodes panels */
+var deputiesNodesPanels = {};
+
 /* Global variable to store all deputies with an ID */
 var deputiesArray = [];
 
@@ -66,6 +69,8 @@ function initializeChart(newID, chartObj) {
         case SCATTER_PLOT:
             chart = scatterPlotChart();
 
+            deputiesNodesPanels[newID] = deputyNodes.length - 1;
+
             addConfigMenu(newID);
             addClusteringMenu(newID);
 
@@ -97,6 +102,8 @@ function initializeChart(newID, chartObj) {
 
         case CHAMBER_INFOGRAPHIC:
             chart = chamberInfographic();
+
+            deputiesNodesPanels[newID] = deputyNodes.length - 1;
 
             addConfigMenu(newID);
             addSearchDeputyMenu(newID, chartObj.data.deputies);
@@ -238,14 +245,11 @@ function removeWindow(panelID, deleteThis) {
             $("#" + panelID).remove();
             $("#icon-"+ panelID).remove();
             removeLines(panelID);
+            updateDeputiesNodes(panelID);
         }
     }
     else
         removeChildren(node);
-
-
-    if (isScatterPlot)
-        highlightMatchesDeputies();
 
 }
 
@@ -272,6 +276,15 @@ function removeChildren(node) {
             $("#icon-"+ idToRemove).remove();
         }
     }
+}
+
+function updateDeputiesNodes(panelID) {
+    var deputiesNodesIndex = deputiesNodesPanels[panelID];
+    if (deputyNodes[deputiesNodesIndex] !== undefined)
+    {
+        deputyNodes.splice(deputiesNodesIndex,1);
+    }
+    console.log(deputyNodes);
 }
 
 /**
@@ -590,8 +603,6 @@ function handleContextMenuScatterPlot(invokedOn, selectedMenu)
 
 function setUpScatterPlotData(filteredData, dataRange, dimensionalReductionTechnique, isInfographic)
 {
-    $('#loading').css('visibility','visible');
-
     var panelClass, title, key;
 
     if (isInfographic) {
@@ -610,14 +621,19 @@ function setUpScatterPlotData(filteredData, dataRange, dimensionalReductionTechn
         };
     }
 
+    $('#loading').css('visibility','visible');
+
     if (dataRange.found) {
+        $('#loading #msg').text('Loading Data');
         if (dataRange.type !== "year")
             title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
         else
             title = "Year: " + dataRange.id;
         panelClass = dataRange.type + '-' + dataRange.id;
 
-        key = panelClass + "-" + dimensionalReductionTechnique;
+        key = deputyNodes.length;
+
+        console.log(deputyNodes);
 
         var createChart;
         title += " ("+ dimensionalReductionTechnique + ")";
@@ -640,7 +656,6 @@ function setUpScatterPlotData(filteredData, dataRange, dimensionalReductionTechn
             $('#loading').css('visibility','hidden');
         }
     }
-
 
     if((!dataRange.found && dimensionalReductionTechnique === "PCA") || dimensionalReductionTechnique !== "PCA") {
         // update the data for the selected period
@@ -673,16 +688,21 @@ function setUpScatterPlotData(filteredData, dataRange, dimensionalReductionTechn
                 $('#loading').css('visibility','hidden');
                 createChart();
             }
-            $('#loading #msg').text('Generating Political Visualization');
+
             if (dimensionalReductionTechnique === "PCA"){
-                calcSVD(matrixDeputiesPerRollCall, calcCallback);
+                $('#loading #msg').text('Generating Political Spectra by PCA');
+                setTimeout(	function(){calcSVD(matrixDeputiesPerRollCall,calcCallback)}, 10);
             }
             else
-                if (dimensionalReductionTechnique === "MDS")
-                    calcMDS(matrixDistanceDeputies,calcCallback);
+                if (dimensionalReductionTechnique === "MDS"){
+                    $('#loading #msg').text('Generating Political Spectra by MDS');
+                    setTimeout(	function(){calcMDS(matrixDistanceDeputies,calcCallback)}, 10);
+                }
                 else
-                    if (dimensionalReductionTechnique === "TSNE")
+                    if (dimensionalReductionTechnique === "TSNE") {
+                        $('#loading #msg').text('Generating Political Spectra by T-SNE');
                         calcTSNE(matrixDeputiesPerRollCall,calcCallback);
+                    }
         });
 
     }
@@ -690,15 +710,12 @@ function setUpScatterPlotData(filteredData, dataRange, dimensionalReductionTechn
 
 function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
 {
-    var title;
-    var subtitle;
-    var panelClass;
-
     var dataRange = setNewDateRange(filteredData);
     console.log(dataRange);
 
-    if (selectedMenu.context.id === "scatter-plot-pca")
+    if (selectedMenu.context.id === "scatter-plot-pca") {
         setUpScatterPlotData(filteredData, dataRange, "PCA", false);
+    }
     else
         if (selectedMenu.context.id === "chamber-infographic")
             setUpScatterPlotData(filteredData, dataRange, "PCA", true);
@@ -708,20 +725,6 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
             else
                 if (selectedMenu.context.id ==='scatter-plot-tsne')
                     setUpScatterPlotData(filteredData, dataRange, "TSNE", false);
-                else
-                    if(selectedMenu.context.id ==='time-line-crop') {
-                        if (dataRange.found) {
-                            if (dataRange.type !== "year")
-                            {
-                                title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
-                                subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString() + "</span>";
-                                title += subtitle;
-                                panelClass = dataRange.type + '-' + dataRange.id;
-                                var chartObj = {'chartID': TIME_LINE_CROP, 'data': dataRange, 'title': title, 'panelClass': panelClass};
-                                createNewChild('panel-1-1', chartObj);
-                            }
-                        }
-                    }
 }
 
 function handleContextMenuDeputy(invokedOn, selectedMenu)
@@ -1028,44 +1031,6 @@ function checkPeriodTimeLineCrop(event, deputy) {
         else {
             contextMenuTimeLineCropSelection.addClass("disabled");
         }
-    }
-}
-
-
-function highlightMatchesDeputies(){
-    if ($("#match:checked").length > 0) {
-        var numberOfScatterPlots = d3.selectAll('.scatter-plot').size();
-
-        if (numberOfScatterPlots > 1) {
-            var allDeputies = d3.selectAll('.dot').data();
-            var uniq = allDeputies
-                .map(function (deputy) {
-                    return {count: 1, deputyID: deputy.deputyID}
-                })
-                .reduce(function (a, b) {
-                    a[b.deputyID] = (a[b.deputyID] || 0) + b.count;
-                    return a;
-                }, {});
-
-            d3.selectAll('.dot')
-                .transition()
-                .duration(500)
-                .attr('opacity', function (d) {
-                    return uniq[d.deputyID] === undefined || uniq[d.deputyID] < numberOfScatterPlots ? 0.1 : 1;
-                })
-        }
-        else {
-            d3.selectAll('.dot')
-                .transition()
-                .duration(500)
-                .attr('opacity', 1)
-        }
-    }
-    else {
-        d3.selectAll('.dot')
-            .transition()
-            .duration(500)
-            .attr('opacity', 1)
     }
 }
 

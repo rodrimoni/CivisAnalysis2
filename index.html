@@ -222,7 +222,7 @@
         });
 
         /* Binding event to scatter plot settings buttons */
-        windowSystem.on("click", ".btn-settings-scatterplot", checkChildrenScatterPlot);
+        //windowSystem.on("click", ".btn-settings-scatterplot", checkChildrenScatterPlot);
 
         /* Binding event to minimized window */
         windowSystem.on("dblclick", ".fa-window-maximize", maximizeWindow);
@@ -235,8 +235,6 @@
         windowSystem.on('mousedown', '.panel .node', function(event){
             checkPeriodTimeLineCrop(event, this);
         });
-
-        windowSystem.on('change', '#match', highlightMatchesDeputies);
 
         windowSystem.on('click', '#resetBtn', function() {
             /* Reset the States select box values */

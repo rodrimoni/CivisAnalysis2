@@ -158,7 +158,6 @@ function scatterPlotChart()
                 .on("mouseout", function(d){
                     div.style("display", "none");
                     mouseoutDeputy(d);
-                    highlightMatchesDeputies();
                 });
 
 
@@ -171,9 +170,6 @@ function scatterPlotChart()
                 });
 
             updateLegend(nodes, svg);
-
-
-            highlightMatchesDeputies();
 
             function zoom() {
 
@@ -209,12 +205,10 @@ function scatterPlotChart()
                     legend.enter().append("g")
                         .classed("legend", true)
                         .on('click', function(d) {
-                            /* Reset the search input */
-                            $('.searchDeputies').tagsinput('removeAll');
                             clickParty(d);
                         })
                         .on('mouseover', mouseoverParty)
-                        .on('mouseout', function () { mouseoutParty(); highlightMatchesDeputies();});
+                        .on('mouseout', mouseoutParty);
 
                 enterLegend
                     .attr("transform", function(d, i) { if (i % 2 === 0) return "translate(0," + i * 20 + ")"; else return "translate(80," + (i-1) * 20 + ")" ; });
@@ -429,7 +423,6 @@ function scatterPlotChart()
         if (d3.event.ctrlKey || d3.event.metaKey){
             // using the ctrlKey add deputy to selection
             updateDeputyNodeInAllPeriods(d.deputyID, "selected", !d.selected);
-            selectionOn = true;
         }
         else {
             // a left click without any key pressed and
@@ -441,7 +434,6 @@ function scatterPlotChart()
                         deputyNodes[key][index].selected = false;
                 }
                 updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
-                selectionOn = true;
             }
         }
         dispatch.update();
@@ -469,20 +461,34 @@ function scatterPlotChart()
     }
 
     function clickParty(d) {
-        for (var key in deputyNodes){
-            for (var index in deputyNodes[key])
-                deputyNodes[key][index].selected = false;
-        }
+
+        /* Reset the search input */
+        $('.searchDeputies').tagsinput('removeAll');
 
         var deputies = svg.selectAll(".deputiesNodesDots .node").filter(function (dep) {
             return dep.party === d;
         }).data();
 
-        deputies.forEach(function (d) {
-            updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
-        });
+        if (d3.event.shiftKey){
+            deputies.forEach(function (d) {
+                updateDeputyNodeInAllPeriods(d.deputyID, "selected", false);
+            });
+        } else
+        if (d3.event.ctrlKey || d3.event.metaKey){
+            deputies.forEach(function (d) {
+                updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
+            });
+        }
+        else {
+            for (var key in deputyNodes){
+                for (var index in deputyNodes[key])
+                    deputyNodes[key][index].selected = false;
+            }
 
-        selectionOn = true;
+            deputies.forEach(function (d) {
+                updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
+            });
+        }
 
         dispatch.update();
     }
@@ -497,7 +503,6 @@ function scatterPlotChart()
             updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
         });
 
-        selectionOn = true;
         dispatch.update();
     };
 
