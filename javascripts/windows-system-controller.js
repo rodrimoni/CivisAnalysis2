@@ -234,7 +234,7 @@ function updateDataforDateRange(period,callback){
         deputiesInTheDateRange = adeputiesInTheDateRange;
 
         //AT THIS POINT rollCallInTheDateRange and deputiesInTheDateRange are updated with the new date range
-
+        console.log("DONE");
         callback();
     });
 }
@@ -644,4 +644,41 @@ function selectByStates (){
     }
     else
         resetSelection();
+}
+
+// for each roll call rate how many yes and no it has, in the range [1(yes),-1(no)]
+function calcRollCallRate(rollCalls,deputies){
+    var mapSelectedDeputies = {};
+
+    for (var key in deputies) {
+        var dep = deputies[key];
+        mapSelectedDeputies[dep.deputyID] = true;
+    }
+
+    $.each(rollCalls, function(d){
+        rollCalls[d].rate='noVotes';
+
+        var totalVotes=0, // total of votes
+            votes = {};   // sum of each type
+
+        rollCalls[d].votes.forEach( function (vote){
+            // if deputy is selected count the vote
+            if(mapSelectedDeputies[vote.deputyID]!== undefined){
+                if( votes[vote.vote] === undefined )
+                    votes[vote.vote]=0;
+
+                votes[vote.vote] ++;
+                totalVotes ++;
+            }
+        });
+
+        if(( (votes['Sim'] ===undefined ) && (votes['Não'] === undefined ) )) {
+            rollCalls[d].rate = 'noVotes'
+        }
+        else {
+            if(votes['Sim'] === undefined) votes['Sim']=0;
+            if(votes['Não'] === undefined) votes['Não']=0;
+            rollCalls[d].rate = (votes['Sim']-votes['Não'])/( votes['Sim']+votes['Não']);
+        }
+    })
 }

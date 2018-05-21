@@ -48,6 +48,9 @@ var arrayRollCalls = [];
 /* Global variable to store the scatter plot nodes */
 var deputyNodes = [];
 
+/* Global variable to store roll calls cards */
+var rollCallsRates = [];
+
 /* Creating the tree with the first node */
 var tree = new Tree('panel-1-1');
 
@@ -278,13 +281,16 @@ function removeChildren(node) {
     }
 }
 
+//TODO: IMPROVE THIS CODE STRUCTURE
 function updateDeputiesNodes(panelID) {
     var deputiesNodesIndex = deputiesNodesPanels[panelID];
     if (deputyNodes[deputiesNodesIndex] !== undefined)
     {
         deputyNodes.splice(deputiesNodesIndex,1);
+        rollCallsRates.splice(deputiesNodesIndex,1);
     }
     console.log(deputyNodes);
+    console.log(rollCallsRates);
 }
 
 /**
@@ -633,7 +639,7 @@ function setUpScatterPlotData(filteredData, dataRange, dimensionalReductionTechn
 
         key = deputyNodes.length;
 
-        console.log(deputyNodes);
+        console.log(arrayRollCalls);
 
         var createChart;
         title += " ("+ dimensionalReductionTechnique + ")";
@@ -647,21 +653,18 @@ function setUpScatterPlotData(filteredData, dataRange, dimensionalReductionTechn
         title += subtitle;
 
         if (dimensionalReductionTechnique === "PCA") {
-            if (deputyNodes[key] !== undefined)
-                createChart();
-            else {
-                deputyNodes[key] = {};
+            deputyNodes[key] = {};
+            setTimeout(function () {
                 loadNodes(dataRange.type, dataRange.id, key, createChart);
-            }
-            $('#loading').css('visibility','hidden');
+                $('#loading').css('visibility','hidden');
+            }, 800);
         }
     }
 
-    if((!dataRange.found && dimensionalReductionTechnique === "PCA") || dimensionalReductionTechnique !== "PCA") {
-        // update the data for the selected period
-        updateDataforDateRange(filteredData, function () {
-            // if the precal was found we dont need to calc the SVD
-
+    // update the data for the selected period
+    updateDataforDateRange(filteredData, function () {
+        // if the precal was found we dont need to calc the SVD
+        if((!dataRange.found && dimensionalReductionTechnique === "PCA") || dimensionalReductionTechnique !== "PCA") {
             var filteredDeputies = filterDeputies();
             var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
             if (dimensionalReductionTechnique === "MDS")
@@ -678,34 +681,37 @@ function setUpScatterPlotData(filteredData, dataRange, dimensionalReductionTechn
                     createChart = createScatterPlot;
 
                 panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear();
-                key = panelClass + "-" + dimensionalReductionTechnique;
+                key = deputyNodes.length;
 
                 if (deputyNodes[key] === undefined) {
                     deputyNodes[key] = createDeputyNodes(twoDimData.deputies, filteredDeputies);
                     scaleAdjustment().setGovernmentTo3rdQuadrant(d3.values(deputyNodes[key]), filteredData[1]);
                 }
 
-                $('#loading').css('visibility','hidden');
+                $('#loading').css('visibility', 'hidden');
                 createChart();
             }
 
-            if (dimensionalReductionTechnique === "PCA"){
+            if (dimensionalReductionTechnique === "PCA") {
                 $('#loading #msg').text('Generating Political Spectra by PCA');
-                setTimeout(	function(){calcSVD(matrixDeputiesPerRollCall,calcCallback)}, 10);
+                setTimeout(function () {
+                    calcSVD(matrixDeputiesPerRollCall, calcCallback)
+                }, 10);
             }
-            else
-                if (dimensionalReductionTechnique === "MDS"){
-                    $('#loading #msg').text('Generating Political Spectra by MDS');
-                    setTimeout(	function(){calcMDS(matrixDistanceDeputies,calcCallback)}, 10);
-                }
-                else
-                    if (dimensionalReductionTechnique === "TSNE") {
-                        $('#loading #msg').text('Generating Political Spectra by T-SNE');
-                        calcTSNE(matrixDeputiesPerRollCall,calcCallback);
-                    }
-        });
-
-    }
+            else if (dimensionalReductionTechnique === "MDS") {
+                $('#loading #msg').text('Generating Political Spectra by MDS');
+                setTimeout(function () {
+                    calcMDS(matrixDistanceDeputies, calcCallback)
+                }, 10);
+            }
+            else if (dimensionalReductionTechnique === "TSNE") {
+                $('#loading #msg').text('Generating Political Spectra by T-SNE');
+                calcTSNE(matrixDeputiesPerRollCall, calcCallback);
+            }
+        }
+        rollCallsRates[key] = rollCallInTheDateRange;
+        calcRollCallRate(rollCallsRates[key], deputyNodes[key]);
+    });
 }
 
 function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
