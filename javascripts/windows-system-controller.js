@@ -37,7 +37,7 @@ function loadRollCalls(arrayRollCalls, callback) {
     });
 }
 
-function loadNodes(type, selectedTime, index, callback)
+function loadNodes(type, selectedTime, callback)
 {
     d3.json('data/precalc/'+type+'.'+selectedTime +'.json', function (precalc) {
         // SET THE precalc DEPUTIES to their constant object in the app
@@ -51,7 +51,7 @@ function loadNodes(type, selectedTime, index, callback)
 
             depObj.selected = true;
 
-            deputyNodes[index][depObj.deputyID] = depObj;
+            currentDeputies[depObj.deputyID] = depObj;
         });
         callback();
     });
@@ -652,7 +652,7 @@ function calcRollCallRate(rollCalls,deputies){
 
     for (var key in deputies) {
         var dep = deputies[key];
-        mapSelectedDeputies[dep.deputyID] = true;
+        mapSelectedDeputies[dep.deputyID]=true;
     }
 
     $.each(rollCalls, function(d){

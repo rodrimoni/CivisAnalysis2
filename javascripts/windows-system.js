@@ -21,6 +21,7 @@ var BAR_CHART           = 2;
 var FORCE_LAYOUT        = 3;
 var TIME_LINE_CROP      = 4;
 var CHAMBER_INFOGRAPHIC = 5;
+var ROLLCALLS_HEATMAP    = 6;
 
 /* Constant to keep the value of ShiftKey */
 var SHIFTKEY = false;
@@ -32,9 +33,6 @@ var TSNE = 3;
 
 /* Global variable to handle deputies selections */
 var selectionOn = false;
-
-/* Global variable to handle deputies nodes panels */
-var deputiesNodesPanels = {};
 
 /* Global variable to store all deputies with an ID */
 var deputiesArray = [];
@@ -50,6 +48,12 @@ var deputyNodes = [];
 
 /* Global variable to store roll calls cards */
 var rollCallsRates = [];
+
+/* Global variable to handle with loaded Deputies */
+var currentDeputies = [];
+
+/* Global variable to handle with loaded rollCalls */
+var currentRollCalls = [];
 
 /* Creating the tree with the first node */
 var tree = new Tree('panel-1-1');
@@ -72,18 +76,20 @@ function initializeChart(newID, chartObj) {
         case SCATTER_PLOT:
             chart = scatterPlotChart();
 
-            deputiesNodesPanels[newID] = deputyNodes.length - 1;
+            deputyNodes[newID] = currentDeputies;
+            rollCallsRates[newID] = currentRollCalls;
+
+            console.log(rollCallsRates);
 
             addConfigMenu(newID);
             addClusteringMenu(newID);
 
             var deputies = [];
-
             for (var key in chartObj.data) {
                 deputies.push(chartObj.data[key])
             }
-
             addSearchDeputyMenu(newID, deputies);
+
             initializeSlider(newID, chart);
             $('#' +newID).attr('data-type-period', chartObj.panelClass);
 
@@ -106,13 +112,17 @@ function initializeChart(newID, chartObj) {
         case CHAMBER_INFOGRAPHIC:
             chart = chamberInfographic();
 
-            deputiesNodesPanels[newID] = deputyNodes.length - 1;
+            deputyNodes[newID] = currentDeputies;
+            rollCallsRates[newID] = currentRollCalls;
 
             addConfigMenu(newID);
             addSearchDeputyMenu(newID, chartObj.data.deputies);
 
             $('#' +newID).attr('data-type-period', chartObj.panelClass);
             chart.on('update', updateVisualizations);
+            break;
+        case ROLLCALLS_HEATMAP:
+            chart = rollCallsHeatmap();
             break;
         default:
             break;
@@ -227,8 +237,6 @@ function removeWindow(panelID, deleteThis) {
     var node = tree.getNode(panelID, tree.traverseBF);
     var parent = node.parent.data;
 
-    var isScatterPlot = $("#" + panelID + " .scatter-plot").length > 0;
-
     if (deleteThis){
         if (node.children.length > 0)
         {
@@ -240,6 +248,7 @@ function removeWindow(panelID, deleteThis) {
                 $("#" + panelID).remove();
                 $("#icon-"+ panelID).remove();
                 removeLines(panelID);
+                removeDeputiesAndRollCalls(panelID);
             }
         }
         else
@@ -248,12 +257,22 @@ function removeWindow(panelID, deleteThis) {
             $("#" + panelID).remove();
             $("#icon-"+ panelID).remove();
             removeLines(panelID);
-            updateDeputiesNodes(panelID);
+            removeDeputiesAndRollCalls(panelID);
         }
     }
     else
         removeChildren(node);
 
+}
+
+function removeDeputiesAndRollCalls(panelID) {
+    if (deputyNodes[panelID] !== undefined && rollCallsRates[panelID] !==undefined)
+    {
+        delete deputyNodes[panelID];
+        delete rollCallsRates[panelID];
+    }
+    console.log(deputyNodes);
+    console.log(rollCallsRates);
 }
 
 /**
@@ -279,18 +298,6 @@ function removeChildren(node) {
             $("#icon-"+ idToRemove).remove();
         }
     }
-}
-
-//TODO: IMPROVE THIS CODE STRUCTURE
-function updateDeputiesNodes(panelID) {
-    var deputiesNodesIndex = deputiesNodesPanels[panelID];
-    if (deputyNodes[deputiesNodesIndex] !== undefined)
-    {
-        deputyNodes.splice(deputiesNodesIndex,1);
-        rollCallsRates.splice(deputiesNodesIndex,1);
-    }
-    console.log(deputyNodes);
-    console.log(rollCallsRates);
 }
 
 /**
@@ -557,7 +564,7 @@ function setUpPanel(newID) {
                 var aPanel = $(this).parents(".panel")[0];
                 centerLine(aPanel.id);
             },
-            aspectRatio: true,
+            aspectRatio: false,
             maxHeight: maxHeight,
             maxWidth: maxWidth,
             minHeight: minHeight,
@@ -607,13 +614,22 @@ function handleContextMenuScatterPlot(invokedOn, selectedMenu)
             }
 }
 
-function setUpScatterPlotData(filteredData, dataRange, dimensionalReductionTechnique, isInfographic)
+function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechnique, isInfographic)
 {
-    var panelClass, title, key;
+    var panelClass, title;
+
+    currentDeputies = [];
+    currentRollCalls = [];
+
+    var dataRange = setNewDateRange(filteredData);
 
     if (isInfographic) {
         var createChamberInfographic = function(){
-            var nodesValues = d3.values(deputyNodes[key]);
+
+            currentRollCalls = rollCallInTheDateRange;
+            calcRollCallRate(currentRollCalls, currentDeputies);
+
+            var nodesValues = d3.values(currentDeputies);
             var parties = calcPartiesSizeAndCenter(nodesValues);
             var data = {'deputies': nodesValues, 'partiesMap' : parties };
             var chartObj = {'chartID': CHAMBER_INFOGRAPHIC, 'data': data, 'title': title, 'panelClass' : panelClass};
@@ -622,44 +638,15 @@ function setUpScatterPlotData(filteredData, dataRange, dimensionalReductionTechn
     }
     else {
         var createScatterPlot = function(){
-            var chartObj = {'chartID': SCATTER_PLOT, 'data': deputyNodes[key], 'title': title, 'panelClass' : panelClass};
+            currentRollCalls = rollCallInTheDateRange;
+            calcRollCallRate(currentRollCalls, currentDeputies);
+
+            var chartObj = {'chartID': SCATTER_PLOT, 'data': currentDeputies, 'title': title, 'panelClass' : panelClass};
             createNewChild('panel-1-1', chartObj);
         };
     }
 
     $('#loading').css('visibility','visible');
-
-    if (dataRange.found) {
-        $('#loading #msg').text('Loading Data');
-        if (dataRange.type !== "year")
-            title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
-        else
-            title = "Year: " + dataRange.id;
-        panelClass = dataRange.type + '-' + dataRange.id;
-
-        key = deputyNodes.length;
-
-        console.log(arrayRollCalls);
-
-        var createChart;
-        title += " ("+ dimensionalReductionTechnique + ")";
-
-        if (isInfographic)
-            createChart = createChamberInfographic;
-        else
-            createChart = createScatterPlot;
-
-        var subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString() + "</span>";
-        title += subtitle;
-
-        if (dimensionalReductionTechnique === "PCA") {
-            deputyNodes[key] = {};
-            setTimeout(function () {
-                loadNodes(dataRange.type, dataRange.id, key, createChart);
-                $('#loading').css('visibility','hidden');
-            }, 800);
-        }
-    }
 
     // update the data for the selected period
     updateDataforDateRange(filteredData, function () {
@@ -681,12 +668,13 @@ function setUpScatterPlotData(filteredData, dataRange, dimensionalReductionTechn
                     createChart = createScatterPlot;
 
                 panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear();
-                key = deputyNodes.length;
 
-                if (deputyNodes[key] === undefined) {
-                    deputyNodes[key] = createDeputyNodes(twoDimData.deputies, filteredDeputies);
-                    scaleAdjustment().setGovernmentTo3rdQuadrant(d3.values(deputyNodes[key]), filteredData[1]);
-                }
+
+                currentDeputies = createDeputyNodes(twoDimData.deputies, filteredDeputies);
+                scaleAdjustment().setGovernmentTo3rdQuadrant(d3.values(currentDeputies), filteredData[1]);
+
+                currentRollCalls = rollCallInTheDateRange;
+                calcRollCallRate(currentRollCalls, currentDeputies);
 
                 $('#loading').css('visibility', 'hidden');
                 createChart();
@@ -709,36 +697,62 @@ function setUpScatterPlotData(filteredData, dataRange, dimensionalReductionTechn
                 calcTSNE(matrixDeputiesPerRollCall, calcCallback);
             }
         }
-        rollCallsRates[key] = rollCallInTheDateRange;
-        calcRollCallRate(rollCallsRates[key], deputyNodes[key]);
+        else {
+            $('#loading #msg').text('Loading Data');
+            if (dataRange.type !== "year")
+                title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
+            else
+                title = "Year: " + dataRange.id;
+            panelClass = dataRange.type + '-' + dataRange.id;
+
+            var createChart;
+            title += " ("+ dimensionalReductionTechnique + ")";
+
+            if (isInfographic)
+                createChart = createChamberInfographic;
+            else
+                createChart = createScatterPlot;
+
+            var subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString() + "</span>";
+            title += subtitle;
+
+            if (dimensionalReductionTechnique === "PCA") {
+                //setTimeout(function () {
+                    loadNodes(dataRange.type, dataRange.id, createChart);
+                    $('#loading').css('visibility','hidden');
+                //}, 10);
+            }
+        }
     });
 }
 
 function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
 {
-    var dataRange = setNewDateRange(filteredData);
-    console.log(dataRange);
+    /* Gets ID of the panel that was click */
+    var panelID = invokedOn.parents(".panel").attr('id');
 
     if (selectedMenu.context.id === "scatter-plot-pca") {
-        setUpScatterPlotData(filteredData, dataRange, "PCA", false);
+        setUpScatterPlotData(filteredData, panelID, "PCA", false);
     }
     else
         if (selectedMenu.context.id === "chamber-infographic")
-            setUpScatterPlotData(filteredData, dataRange, "PCA", true);
+            setUpScatterPlotData(filteredData, panelID, "PCA", true);
         else
             if (selectedMenu.context.id === "scatter-plot-mds")
-                setUpScatterPlotData(filteredData, dataRange, "MDS", false);
+                setUpScatterPlotData(filteredData, panelID, "MDS", false);
             else
                 if (selectedMenu.context.id ==='scatter-plot-tsne')
-                    setUpScatterPlotData(filteredData, dataRange, "TSNE", false);
+                    setUpScatterPlotData(filteredData, panelID, "TSNE", false);
 }
 
 function handleContextMenuDeputy(invokedOn, selectedMenu)
 {
+    var title, data;
+    var chartObj = {};
+
+    var panelID = invokedOn.parents('.panel').attr("id");
+
     if (selectedMenu.context.id ==='time-line-crop-behavior-selection') {
-
-        var panelID = invokedOn.parents('.panel').attr("id");
-
         /* Get period of the Scatter Plot Chart */
         var period = invokedOn.parents('.panel').data().typePeriod;
 
@@ -749,7 +763,7 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
 
         if (timelineCropPanel.length === 0) {
             var periodID = period.split("-");
-            var type, id, periodData, title, subtitle, panelClass, firstYear, lastYear, data;
+            var type, id, periodData, subtitle, panelClass, firstYear, lastYear;
             if (periodID.length <= 2) {
                 type = periodID[0];
                 id = periodID[1];
@@ -769,7 +783,7 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
                 data = [new Date(firstYear,0,1),new Date(lastYear,0,1)];
             }
 
-            var chartObj = {'chartID': TIME_LINE_CROP, 'data': data, 'title': title, 'panelClass': panelClass};
+            chartObj = {'chartID': TIME_LINE_CROP, 'data': data, 'title': title, 'panelClass': panelClass};
 
             createNewChild(panelID, chartObj);
 
@@ -789,6 +803,44 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
 
         timeLineCropChart.drawDeputy(deputies);
     }
+    else
+        if (selectedMenu.context.id ==='rollcalls-heatmap'){
+            title = "RollCalls Heatmap";
+
+            // Get the corresponding rollcalls to this deputyNodes set
+            var rcs =  splitRollCallsByMonth(rollCallsRates[panelID]);
+            console.log(rcs);
+            chartObj = {'chartID' : ROLLCALLS_HEATMAP, 'data': rcs, 'title':title};
+            createNewChild(panelID, chartObj);
+        }
+}
+
+function splitRollCallsByMonth(rcs) {
+    var data = [];
+    var lastMonth;
+    var countRollCalls = 0;
+
+    rcs.forEach(function (rc) {
+        var currentMonth = rc.datetime.getMonth();
+
+        if (lastMonth === undefined)
+            lastMonth = currentMonth;
+        else
+            if (lastMonth !== currentMonth){
+                countRollCalls = 0;
+                lastMonth = currentMonth;
+            }
+
+        var currentYear = rc.datetime.getFullYear();
+        var period = currentMonth + "/" + currentYear;
+        var obj = {};
+        obj.period = period;
+        obj.index = countRollCalls;
+        obj.value = rc.rate;
+        data.push(obj);
+        countRollCalls++;
+    });
+    return data;
 }
 
 /**
@@ -1065,4 +1117,23 @@ function disableBrushForAllScatterPlots(){
                 n.chart.disableBrush();
         })
     }
+}
+
+function getUniqueValues(arr, attr){
+    return [...new Set(arr.map(item => item[attr]))];
+}
+
+function array_flip( trans )
+{
+    var key, tmp_ar = {};
+
+    for ( key in trans )
+    {
+        if ( trans.hasOwnProperty( key ) )
+        {
+            tmp_ar[trans[key]] = key;
+        }
+    }
+
+    return tmp_ar;
 }
