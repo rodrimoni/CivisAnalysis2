@@ -1,16 +1,23 @@
 function rollCallsHeatmap(){
-    var    margin = {top: 120, right: 40, bottom: 20, left: 10};
 
-    var width = 350 - margin.right - margin.left,
-        height = 950 - margin.top - margin.bottom,
+
+    var outerWidth = MAX_WIDTH,
+        outerHeight = MAX_HEIGHT;
+    margin = {top: 60, right: 0, bottom: 20, left: 20};
+
+    var width = 750 - margin.right - margin.left,
+        height = 750 - margin.top - margin.bottom,
         buckets = 11,
         colors = ['#a50026','#d73027','#f46d43','#fdae61','#fee090','#ffffbf','#e0f3f8','#abd9e9','#74add1','#4575b4','#313695']; // RdYlBu colorbrewer scale
 
+    var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+
     function chart(selection) {
         selection.each(function (data) {
-            var maxRollCallsPeriod = d3.max(data, function (d) { return d.index; });
-            var itemSize = 15;
-            //var gridSize = Math.floor(width / maxRollCallsPeriod),
+            //var maxRollCallsPeriod = d3.max(data, function (d) { return d.index; });
+            //var itemSize = 15;
               //  legendElementWidth = gridSize*2;
 
             //var periods = getUniqueValues(data, "period");
@@ -20,9 +27,12 @@ function rollCallsHeatmap(){
             var x_elements = d3.set(data.map(function( rc ) { return rc.index; } )).values(),
                 y_elements = d3.set(data.map(function( rc ) { return rc.period; } )).values();
 
+            var itemWidth = Math.floor(width / x_elements.length);
+            var itemHeight = Math.floor(height / y_elements.length);
+
             var xScale = d3.scale.ordinal()
                 .domain(x_elements)
-                .rangeBands([0, x_elements.length * itemSize]);
+                .rangeBands([0, itemWidth * x_elements.length]);
 
             var xAxis = d3.svg.axis()
                 .scale(xScale)
@@ -33,20 +43,19 @@ function rollCallsHeatmap(){
 
             var yScale = d3.scale.ordinal()
                 .domain(y_elements)
-                .rangeBands([0, y_elements.length * itemSize]);
+                .rangeBands([0, itemHeight * y_elements.length]);
 
             var yAxis = d3.svg.axis()
                 .scale(yScale)
-                .orient("left")
-                .innerTickSize(-width)
-                .outerTickSize(0)
-                .tickPadding(10);
+                .tickValues(y_elements)
+                .tickFormat(function(d) { var period = d.split("/"); return monthNames[period[0]] + "/" + period[1];})
+                .orient("left");
 
             var svg =  d3.select(this)
                 .append("svg")
                 .attr("width", "100%")
                 .attr("height", "100%")
-                .attr("viewBox", "0 0 " + width + " " + height)
+                .attr("viewBox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom))
                 .classed("rollcalls-heatmap", true)
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -78,32 +87,6 @@ function rollCallsHeatmap(){
                 .domain([0, buckets - 1, d3.max(data, function (d) { return d.value; })])
                 .range(colors);*/
 
-            var colorScale = d3.scale.quantize()
-                .domain([-1.0, 1.0])
-                .range(d3.range(buckets).map(function(d) {  return colors[d] }));
-
-            var cards = svg.selectAll(".rollCall")
-                .data(data);
-
-            cards.append("title");
-
-            cards.enter().append("rect")
-                .attr("x", function(d) { return xScale(d.index); })
-                .attr("y", function(d) { return yScale(d.period); })
-                //.attr("rx", 4)
-                //.attr("ry", 4)
-                .attr("class", "rollCall bordered")
-                .attr("width", itemSize)
-                .attr("height", itemSize)
-                .style("fill", "grey");
-
-            cards.transition().duration(1000)
-                .style("fill", function(d) { return colorScale(d.value); });
-
-            cards.select("title").text(function(d) { return d.value; });
-
-            cards.exit().remove();
-
             svg.append("g")
                 .attr("class", "y axis")
                 .call(yAxis)
@@ -116,11 +99,42 @@ function rollCallsHeatmap(){
                 .selectAll('text')
                 .attr('font-weight', 'normal')
                 .style("text-anchor", "start")
-                .attr("dx", ".8em")
-                .attr("dy", ".5em")
-                .attr("transform", function (d) {
-                    return "rotate(-65)";
-                });
+                .attr("dx", "-.4em")
+                .attr("dy", ".5em");
+
+            var colorScale = d3.scale.quantize()
+                .domain([-1.0, 1.0])
+                .range(d3.range(buckets).map(function(d) {  return colors[d] }));
+
+            var cards = svg.selectAll(".rollCall")
+                .data(data);
+
+            cards.append("title");
+
+            cards.enter().append("rect")
+                .attr("x", function(d) { return xScale(d.index); })
+                .attr("y", function(d) { return yScale(d.period); })
+                .attr("rx", 4)
+                .attr("ry", 4)
+                .attr("class", "rollCall bordered")
+                .attr("width", itemWidth)
+                .attr("height", itemHeight)
+                .style("fill", "grey");
+
+            cards.transition().duration(1000)
+                .style("fill", function(d) { return colorScale(d.value); });
+
+            cards.select("title").text(function(d) { return d.value; });
+
+            cards.exit().remove();
+
+            // text label for the x axis
+            svg.append("text")
+                .attr("transform",
+                    "translate(" + (width/2) + " ," +
+                    (0 - margin.top/2) + ")")
+                .style("text-anchor", "middle")
+                .text("Number of Roll Calls");
 
             /*var legend = svg.selectAll(".legend")
                 .data([0].concat(colorScale.quantiles()), function(d) { return d; });

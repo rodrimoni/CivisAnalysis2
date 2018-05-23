@@ -7,8 +7,8 @@ var INITIAL_HEIGHT = 450;
 var INITIAL_WIDTH = 550;
 
 /* Max values of panel Height and Width */
-var MAX_HEIGHT  = 720;
-var MAX_WIDTH   = 1200;
+var MAX_HEIGHT  = 1080;
+var MAX_WIDTH   = 1920;
 
 /* Constant values of icon Height and Width */
 var HEIGHT_ICON = 28;
@@ -564,12 +564,41 @@ function setUpPanel(newID) {
                 var aPanel = $(this).parents(".panel")[0];
                 centerLine(aPanel.id);
             },
-            aspectRatio: false,
+            aspectRatio: true,
             maxHeight: maxHeight,
             maxWidth: maxWidth,
             minHeight: minHeight,
             minWidth: minWidth
         });
+
+    /* Scrollable svg
+    $("#" + newID)
+        .find(".panel-body")
+        .wrap('<div/>')
+        .css({'overflow':'scroll'})
+        .parent()
+        .css({'display':'inline-block',
+            'overflow':'hidden',
+            'height':function(){return $('.panel-body',this).height();},
+            'width':  function(){return $('.panel-body',this).width();},
+            'paddingBottom':'12px',
+            'paddingRight':'12px'
+
+        }).resizable({
+        resize: function(){
+            var aPanel = $(this).parents(".panel")[0];
+            centerLine(aPanel.id);
+        },
+        aspectRatio: true,
+        maxHeight: maxHeight,
+        maxWidth: maxWidth,
+        minHeight: minHeight,
+        minWidth: minWidth
+    })
+        .find('.panel-body')
+        .css({overflow:'auto',
+            width:'100%',
+            height:'100%'});*/
 }
 
 /**
@@ -1065,6 +1094,7 @@ function checkPeriodTimeLineCrop(event, deputy) {
 
     if (event.which === 3)
     {
+        debugger;
         var period = $("#" + panelID).data().typePeriod;
         if (period !== undefined) {
             var periodType = period.split("-")[0];

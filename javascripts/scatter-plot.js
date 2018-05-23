@@ -28,7 +28,7 @@ function scatterPlotChart()
         width = outerWidth - margin.left - margin.right,
         height = outerHeight - margin.top - margin.bottom;
 
-    var nodeRadius = 4;
+    var nodeRadius = 10;
 
     var x = d3.scale.linear()
         .range([width,0]).nice();
@@ -74,7 +74,7 @@ function scatterPlotChart()
                 .scaleExtent([0, 500])
                 .on("zoom", zoom);
 
-            var panelID = (d3.select(this.parentNode).attr('id'));
+            var panelID = ($(this).parents('.panel')).attr('id');
 
             brush = d3.svg.brush()
                 .x(x)
@@ -214,13 +214,13 @@ function scatterPlotChart()
                     .attr("transform", function(d, i) { if (i % 2 === 0) return "translate(0," + i * 20 + ")"; else return "translate(80," + (i-1) * 20 + ")" ; });
 
                 enterLegend.append("circle")
-                    .attr("r", 8)
+                    .attr("r", 12)
                     .attr("cx", width + 20)
                     .attr("fill", function (d) {return selColor(d);});
 
                 enterLegend.append("text")
-                    .attr("x", width + 30)
-                    .attr("dy", ".35em")
+                    .attr("x", width + 40)
+                    .attr("dy", ".45em")
                     .text(function(d) { return d });
 
             }
