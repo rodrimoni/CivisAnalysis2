@@ -5,8 +5,10 @@ function rollCallsHeatmap(){
         outerHeight = MAX_HEIGHT;
     margin = {top: 60, right: 0, bottom: 20, left: 20};
 
+    var legendHeight = 60;
+
     var width = 750 - margin.right - margin.left,
-        height = 750 - margin.top - margin.bottom,
+        height = 750 - margin.top - margin.bottom - legendHeight,
         buckets = 11,
         colors = ['#a50026','#d73027','#f46d43','#fdae61','#fee090','#ffffbf','#e0f3f8','#abd9e9','#74add1','#4575b4','#313695']; // RdYlBu colorbrewer scale
 
@@ -43,7 +45,7 @@ function rollCallsHeatmap(){
 
             var yScale = d3.scale.ordinal()
                 .domain(y_elements)
-                .rangeBands([0, itemHeight * y_elements.length]);
+                .rangeBands([0, itemHeight * (y_elements.length + 2)]); // Eliminate the unused space in chart bottom
 
             var yAxis = d3.svg.axis()
                 .scale(yScale)
@@ -55,7 +57,7 @@ function rollCallsHeatmap(){
                 .append("svg")
                 .attr("width", "100%")
                 .attr("height", "100%")
-                .attr("viewBox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom))
+                .attr("viewBox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom + legendHeight))
                 .classed("rollcalls-heatmap", true)
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -136,20 +138,41 @@ function rollCallsHeatmap(){
                 .style("text-anchor", "middle")
                 .text("Number of Roll Calls");
 
-            /*var legend = svg.selectAll(".legend")
-                .data([0].concat(colorScale.quantiles()), function(d) { return d; });
+            var legend = svg.selectAll(".legend")
+                .data(colors, function(d) { return d; });
 
             legend.enter().append("g")
                 .attr("class", "legend");
 
+            var totalElementsWidth = x_elements.length * itemWidth;
+            var totalLegendWidth = colors.length * (itemWidth*2);
+            var centralizeOffset = (totalElementsWidth/2) - (totalLegendWidth/2);
+
             legend.append("rect")
-                .attr("x", function(d, i) { return legendElementWidth * i; })
-                .attr("y", MAX_HEIGHT)
-                .attr("width", legendElementWidth)
-                .attr("height", gridSize / 2)
+                .attr("x", function(d, i) { return (itemWidth*2) * i + centralizeOffset; })
+                .attr("y", height + (legendHeight/2))
+                .attr("width", itemWidth * 2)
+                .attr("height", itemHeight/2)
                 .style("fill", function(d, i) { return colors[i]; });
 
-            legend.append("text")
+            svg.append('text').text('Approves')
+                .attr({
+                    dx: totalLegendWidth + centralizeOffset,
+                    dy: height + (legendHeight/2) + itemHeight*2,
+                    //'font-size': 'small',
+                    fill:'black',
+                })
+                .style("text-anchor", "end");
+
+            svg.append('text').text('Disapproves')
+                .attr({
+                    dx: centralizeOffset,
+                    dy: height + (legendHeight/2) + itemHeight*2,
+                    //'font-size': 'small',
+                    fill:'black',
+                })
+
+            /*legend.append("text")
                 .attr("class", "mono")
                 .text(function(d) { return "≥ " + Math.round(d); })
                 .attr("x", function(d, i) { return legendElementWidth * i; })

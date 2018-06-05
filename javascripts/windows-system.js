@@ -1094,7 +1094,6 @@ function checkPeriodTimeLineCrop(event, deputy) {
 
     if (event.which === 3)
     {
-        debugger;
         var period = $("#" + panelID).data().typePeriod;
         if (period !== undefined) {
             var periodType = period.split("-")[0];
