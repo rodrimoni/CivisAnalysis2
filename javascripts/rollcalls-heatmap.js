@@ -16,6 +16,10 @@ function rollCallsHeatmap(){
         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     ];
 
+    var yearsColors = ["#f0f0f0","#d9d9d9"];
+
+    var itemMaxSize = 16;
+
     function chart(selection) {
         selection.each(function (data) {
             //var maxRollCallsPeriod = d3.max(data, function (d) { return d.index; });
@@ -32,9 +36,10 @@ function rollCallsHeatmap(){
             var itemWidth = Math.floor(width / x_elements.length);
             var itemHeight = Math.floor(height / y_elements.length);
 
+
             var xScale = d3.scale.ordinal()
                 .domain(x_elements)
-                .rangeBands([0, itemWidth * x_elements.length]);
+                .rangeBands([0, width]);
 
             var xAxis = d3.svg.axis()
                 .scale(xScale)
@@ -45,7 +50,7 @@ function rollCallsHeatmap(){
 
             var yScale = d3.scale.ordinal()
                 .domain(y_elements)
-                .rangeBands([0, itemHeight * (y_elements.length + 2)]); // Eliminate the unused space in chart bottom
+                .rangeBands([0, height]); // Eliminate the unused space in chart bottom
 
             var yAxis = d3.svg.axis()
                 .scale(yScale)
@@ -88,6 +93,27 @@ function rollCallsHeatmap(){
             var colorScale = d3.scale.quantile()
                 .domain([0, buckets - 1, d3.max(data, function (d) { return d.value; })])
                 .range(colors);*/
+
+            var yearsBg = svg.selectAll(".yearsBg")
+                .data(y_elements);
+
+            var initialYear = y_elements[0].split("/")[1]; // Get Year, formatt is mm/yy
+
+            yearsBg.enter().append("rect")
+                .attr("x", 0)
+                .attr("y", function(d) { return yScale(d); })
+                .attr("rx", 2)
+                .attr("ry", 2)
+                .attr("class", "yearBg")
+                .attr("width", width)
+                .attr("height", itemHeight)
+                .style("fill", function (d) {
+                    var year = d.split("/")[1];
+                    var index = (year - initialYear)  % yearsColors.length;
+                    return yearsColors[index];
+                });
+
+            yearsBg.exit().remove();
 
             svg.append("g")
                 .attr("class", "y axis")
@@ -144,30 +170,33 @@ function rollCallsHeatmap(){
             legend.enter().append("g")
                 .attr("class", "legend");
 
-            var totalElementsWidth = x_elements.length * itemWidth;
-            var totalLegendWidth = colors.length * (itemWidth*2);
-            var centralizeOffset = (totalElementsWidth/2) - (totalLegendWidth/2);
+            var totalLegendWidth = 528;
+            var centralizeOffset = 96;
+            var legendItemWidth = 24;
+            var legendItemHeight = 12;
+
+            debugger;
 
             legend.append("rect")
-                .attr("x", function(d, i) { return (itemWidth*2) * i + centralizeOffset; })
+                .attr("x", function(d, i) { return (legendItemWidth*2) * i + centralizeOffset; })
                 .attr("y", height + (legendHeight/2))
-                .attr("width", itemWidth * 2)
-                .attr("height", itemHeight/2)
+                .attr("width", legendItemWidth * 2)
+                .attr("height", legendItemHeight)
                 .style("fill", function(d, i) { return colors[i]; });
 
-            svg.append('text').text('Approves')
+            svg.append('text').text('Yes (approved)')
                 .attr({
                     dx: totalLegendWidth + centralizeOffset,
-                    dy: height + (legendHeight/2) + itemHeight*2,
+                    dy: height + (legendHeight/2) + legendItemHeight*2.5,
                     //'font-size': 'small',
                     fill:'black',
                 })
                 .style("text-anchor", "end");
 
-            svg.append('text').text('Disapproves')
+            svg.append('text').text('No (not approved)')
                 .attr({
                     dx: centralizeOffset,
-                    dy: height + (legendHeight/2) + itemHeight*2,
+                    dy: height + (legendHeight/2) + legendItemHeight*2.5,
                     //'font-size': 'small',
                     fill:'black',
                 })
