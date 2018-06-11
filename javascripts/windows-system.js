@@ -781,10 +781,10 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
 
     var panelID = invokedOn.parents('.panel').attr("id");
 
-    if (selectedMenu.context.id ==='time-line-crop-behavior-selection') {
-        /* Get period of the Scatter Plot Chart */
-        var period = invokedOn.parents('.panel').data().typePeriod;
+    /* Get period of the Scatter Plot Chart */
+    var period = invokedOn.parents('.panel').data().typePeriod;
 
+    if (selectedMenu.context.id ==='time-line-crop-behavior-selection') {
         /* Get the Time Line Crop Chart with the same period of Scatter Plot Chart */
         var query = "[data-type-period='" + period + "'] .timeline-crop";
         var timelineCropPanel = $(query).parents('.panel');
@@ -834,7 +834,22 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
     }
     else
         if (selectedMenu.context.id ==='rollcalls-heatmap'){
-            title = "RollCalls Heatmap";
+
+            var periodID = period.split("-");
+            var id, periodData, subtitle, panelClass, firstYear, lastYear;
+            if (periodID.length <= 2) {
+                type = periodID[0];
+                id = periodID[1];
+                periodData = CONGRESS_DEFINE[type + "s"][id];
+                title = "Roll Calls Heatmap of "+ periodData.name;
+                subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " to " + periodData.period[1].toLocaleDateString() + "</span>";
+                title += subtitle;
+            }
+            else {
+                firstYear = periodID[1];
+                lastYear = periodID[2];
+                title = "Roll Calls Heatmap of " + firstYear + " to " + lastYear;
+            }
 
             // Get the corresponding rollcalls to this deputyNodes set
             var rcs =  splitRollCallsByMonth(rollCallsRates[panelID]);
@@ -863,9 +878,9 @@ function splitRollCallsByMonth(rcs) {
         var currentYear = rc.datetime.getFullYear();
         var period = currentMonth + "/" + currentYear;
         var obj = {};
+        obj = rc;
         obj.period = period;
         obj.index = countRollCalls;
-        obj.value = rc.rate;
         data.push(obj);
         countRollCalls++;
     });

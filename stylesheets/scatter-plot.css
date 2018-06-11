@@ -41,3 +41,7 @@
 .node.hovered {
     opacity: 0.4;
 }
+
+.legend text {
+    font-size: 30px;
+}

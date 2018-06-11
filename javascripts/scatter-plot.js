@@ -22,7 +22,7 @@ function selColor(c){ return partiesArbitraryColor[c]; }
 
 function scatterPlotChart()
 {
-    var margin = { top: 30, right: 200, bottom: 30, left: 50 },
+    var margin = { top: 30, right: 350, bottom: 20, left: 50 },
         outerWidth = MAX_WIDTH,
         outerHeight = MAX_HEIGHT,
         width = outerWidth - margin.left - margin.right,
@@ -211,7 +211,7 @@ function scatterPlotChart()
                         .on('mouseout', mouseoutParty);
 
                 enterLegend
-                    .attr("transform", function(d, i) { if (i % 2 === 0) return "translate(0," + i * 20 + ")"; else return "translate(80," + (i-1) * 20 + ")" ; });
+                    .attr("transform", function(d, i) { if (i % 2 === 0) return "translate(0," + i * 30 + ")"; else return "translate(150," + (i-1) * 30 + ")" ; });
 
                 enterLegend.append("circle")
                     .attr("r", 12)

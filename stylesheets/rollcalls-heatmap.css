@@ -1,6 +1,7 @@
 .rollcalls-heatmap rect.bordered {
     stroke: #E6E6E6;
     stroke-width:2px;
+    cursor: pointer;
 }
 
 .rollcalls-heatmap text.mono {
@@ -21,5 +22,17 @@
 }
 
 .rollcalls-heatmap .tick text{
-    font-size: 12px;
+    font-size: 10px;
+}
+
+#tipDiv .arc text {
+    font: 11px sans-serif;
+    fill: white;
+    text-anchor: middle;
+    font-weight: bold;
+}
+
+#tipDiv .arc path {
+    stroke: #fff;
+    stroke-width: 2px;
 }

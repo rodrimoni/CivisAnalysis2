@@ -679,6 +679,10 @@ function calcRollCallRate(rollCalls,deputies){
             if(votes['Sim'] === undefined) votes['Sim']=0;
             if(votes['Não'] === undefined) votes['Não']=0;
             rollCalls[d].rate = (votes['Sim']-votes['Não'])/( votes['Sim']+votes['Não']);
+            rollCalls[d].countVotes = [
+                {'vote' : 'Sim', 'qtd': votes['Sim']},
+                {'vote' : 'Não', 'qtd': votes['Não']}
+            ]
         }
     })
 }

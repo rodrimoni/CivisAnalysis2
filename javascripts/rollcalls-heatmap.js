@@ -17,8 +17,10 @@ function rollCallsHeatmap(){
     ];
 
     var yearsColors = ["#f0f0f0","#d9d9d9"];
+    var singleVotes = {"Sim" : '#313695', "Não":'#a50026'};
 
     var itemMaxSize = 16;
+    var div = d3.select(".toolTip");
 
     function chart(selection) {
         selection.each(function (data) {
@@ -147,12 +149,26 @@ function rollCallsHeatmap(){
                 .attr("class", "rollCall bordered")
                 .attr("width", itemWidth)
                 .attr("height", itemHeight)
-                .style("fill", "grey");
+                .style("fill", "grey")
+                .on("mousemove",  function(d) {
+                    div.style("left", d3.event.pageX+10+"px");
+                    div.style("top", d3.event.pageY-25+"px");
+                    div.style("display", "inline-block");
+                    div.html(
+                        d.type+' '+d.number+'/'+d.year + "<br><br>"
+                            + "<div id='tipDiv'></div><br>"
+                    );
+
+                    drawPieChart(d.countVotes);
+                })
+                .on("mouseout", function(d){
+                    div.style("display", "none");
+                });
 
             cards.transition().duration(1000)
-                .style("fill", function(d) { return colorScale(d.value); });
+                .style("fill", function(d) { return colorScale(d.rate); });
 
-            cards.select("title").text(function(d) { return d.value; });
+            cards.select("title").text(function(d) { return d.rate; });
 
             cards.exit().remove();
 
@@ -174,8 +190,6 @@ function rollCallsHeatmap(){
             var centralizeOffset = 96;
             var legendItemWidth = 24;
             var legendItemHeight = 12;
-
-            debugger;
 
             legend.append("rect")
                 .attr("x", function(d, i) { return (legendItemWidth*2) * i + centralizeOffset; })
@@ -210,5 +224,123 @@ function rollCallsHeatmap(){
             legend.exit().remove();*/
         });
     }
+
+    function drawPieChart(votes){
+        var width = 170;
+        var height = 170;
+        var radius = Math.min(width, height) / 2;
+
+        if (votes !== undefined) {
+            var tots = d3.sum(votes, function(d) {
+                return d.qtd;
+            });
+
+            var arc = d3.svg.arc()
+                .outerRadius(radius - 10)
+                .innerRadius(0);
+
+            var pie = d3.layout.pie()
+                .sort(null)
+                .value(function(d) { return d.qtd; });
+
+            var svg = d3.select("#tipDiv").append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .append("g")
+                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+            var g = svg.selectAll(".arc")
+                .data(pie(votes))
+                .enter().append("g")
+                .attr("class", "arc");
+
+            g.append("path")
+                .attr("d", arc)
+                .style("fill", function(d) { return singleVotes[d.data.vote]});
+
+            function pointIsInArc(pt, ptData, d3Arc) {
+                // Center of the arc is assumed to be 0,0
+                // (pt.x, pt.y) are assumed to be relative to the center
+                var r1 = arc.innerRadius()(ptData),
+                    r2 = arc.outerRadius()(ptData),
+                    theta1 = arc.startAngle()(ptData),
+                    theta2 = arc.endAngle()(ptData);
+
+                var dist = pt.x * pt.x + pt.y * pt.y,
+                    angle = Math.atan2(pt.x, -pt.y);
+
+                angle = (angle < 0) ? (angle + Math.PI * 2) : angle;
+
+                return (r1 * r1 <= dist) && (dist <= r2 * r2) &&
+                    (theta1 <= angle) && (angle <= theta2);
+            }
+
+            g.append("text")
+                .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+                .attr("dy", ".35em")
+                .style("text-anchor", "middle")
+                .text(function(d) { return d.data.vote + " (" + d3.format("%") (d.data.qtd/tots) + ")"; })
+                .call(wrap, 40)
+                .each(function (d) {
+                    var bb = this.getBBox(),
+                        center = arc.centroid(d);
+
+                    var topLeft = {
+                        x : center[0] + bb.x,
+                        y : center[1] + bb.y
+                    };
+
+                    var topRight = {
+                        x : topLeft.x + bb.width,
+                        y : topLeft.y
+                    };
+
+                    var bottomLeft = {
+                        x : topLeft.x,
+                        y : topLeft.y + bb.height
+                    };
+
+                    var bottomRight = {
+                        x : topLeft.x + bb.width,
+                        y : topLeft.y + bb.height
+                    };
+
+                    d.visible = pointIsInArc(topLeft, d, arc) &&
+                        pointIsInArc(topRight, d, arc) &&
+                        pointIsInArc(bottomLeft, d, arc) &&
+                        pointIsInArc(bottomRight, d, arc);
+
+                })
+                .style('display', function (d) { return d.visible ? null : "none"; });
+        }
+        else {
+            $('<br><br><p> No votes</p>').appendTo('#tipDiv');
+        }
+    }
+
+    function wrap(text, width) {
+        text.each(function() {
+            var text = d3.select(this),
+                words = text.text().split(/\s+/).reverse(),
+                word,
+                line = [],
+                lineNumber = 0,
+                lineHeight = 1.1, // ems
+                y = text.attr("y"),
+                dy = parseFloat(text.attr("dy")),
+                tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+            while (word = words.pop()) {
+                line.push(word);
+                tspan.text(line.join(" "));
+                if (tspan.node().getComputedTextLength() > width) {
+                    line.pop();
+                    tspan.text(line.join(" "));
+                    line = [word];
+                    tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+                }
+            }
+        });
+    }
+
     return chart;
 }
