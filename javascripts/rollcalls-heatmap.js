@@ -18,7 +18,7 @@ function rollCallsHeatmap(){
 
     var yearsColors = ["#f0f0f0","#d9d9d9"];
     var singleVotes = {"Sim" : '#313695', "Não":'#a50026'};
-    var englishVotes =  {"Sim":"Yes","Não":"No","Abstenção":"Abstention","Obstruction":"green","Art. 17":"yellow","null":'grey'};
+    var englishVotes =  {"Sim":"Yes","Não":"No","Abstenção":"Abstention","Obstrução":"Obstruction","Art. 17":"Art.17"};
 
     var colorScale = d3.scale.quantize()
         .domain([-1.0, 1.0])
@@ -28,6 +28,7 @@ function rollCallsHeatmap(){
     var dispatch = d3.dispatch('update');
     var div = d3.select(".toolTip");
     var svg;
+    var parentID;
 
     var itemWidth, itemHeight;
 
@@ -68,6 +69,10 @@ function rollCallsHeatmap(){
                 .tickValues(y_elements)
                 .tickFormat(function(d) { var period = d.split("/"); return monthNames[period[0]] + "/" + period[1];})
                 .orient("left");
+
+            var panelID = ($(this).parents('.panel')).attr('id');
+            var node = tree.getNode(panelID, tree.traverseBF);
+            parentID = node.parent.data;
 
             svg =  d3.select(this)
                 .append("svg")
@@ -356,12 +361,13 @@ function rollCallsHeatmap(){
 
     function mouseClickRollCall(d)
     {
+        console.log(rollCallsRates[parentID]);
 
-        var rcs = svg.selectAll(".rollCall").data();
-        console.log(rcs);
-
-        rcs.forEach(function (rc) {
-            rc.selected = rc.rollCallID === d.rollCallID;
+        rollCallsRates[parentID].forEach(function (rc) {
+           if (rc.rollCallID === d.rollCallID)
+               rc.selected = true;
+           else
+               rc.selected = false;
         });
 
         dispatch.update()

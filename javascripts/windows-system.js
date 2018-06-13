@@ -1172,6 +1172,7 @@ function updateRollCalls(panelID) {
     }
 
     else {
+        console.log(selectedRollCalls.length);
         // ONLY ONE ROLL CALL SELECTED || HOVER
         if ((hoveredRollCalls.length === 1) || (selectedRollCalls.length === 1)) {
             deputyNodes[parentID].forEach(function (deputy) {
