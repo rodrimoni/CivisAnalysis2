@@ -93,7 +93,9 @@ function initializeChart(newID, chartObj) {
             initializeSlider(newID, chart);
             $('#' +newID).attr('data-type-period', chartObj.panelClass);
 
-            chart.on('update', updateVisualizations);
+            chart.on('update', function () {
+                updateDeputies(newID)
+            });
             break;
 
         case BAR_CHART:
@@ -119,10 +121,18 @@ function initializeChart(newID, chartObj) {
             addSearchDeputyMenu(newID, chartObj.data.deputies);
 
             $('#' +newID).attr('data-type-period', chartObj.panelClass);
-            chart.on('update', updateVisualizations);
+
+            chart.on('update', function () {
+                updateDeputies(newID)
+            });
             break;
         case ROLLCALLS_HEATMAP:
             chart = rollCallsHeatmap();
+
+            chart.on('update', function () {
+                updateRollCalls(newID);
+            });
+
             break;
         default:
             break;
@@ -840,10 +850,15 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
             if (periodID.length <= 2) {
                 type = periodID[0];
                 id = periodID[1];
-                periodData = CONGRESS_DEFINE[type + "s"][id];
-                title = "Roll Calls Heatmap of "+ periodData.name;
-                subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " to " + periodData.period[1].toLocaleDateString() + "</span>";
-                title += subtitle;
+                if (type !== 'year'){
+                    periodData = CONGRESS_DEFINE[type + "s"][id];
+                    title = "Roll Calls Heatmap of "+ periodData.name;
+                    subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " to " + periodData.period[1].toLocaleDateString() + "</span>";
+                    title += subtitle;
+                }
+                else {
+                    title = "Roll Calls Heatmap of year "+ id;
+                }
             }
             else {
                 firstYear = periodID[1];
@@ -852,14 +867,14 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
             }
 
             // Get the corresponding rollcalls to this deputyNodes set
-            var rcs =  splitRollCallsByMonth(rollCallsRates[panelID]);
+            var rcs =  groupRollCallsByMonth(rollCallsRates[panelID]);
             console.log(rcs);
             chartObj = {'chartID' : ROLLCALLS_HEATMAP, 'data': rcs, 'title':title};
             createNewChild(panelID, chartObj);
         }
 }
 
-function splitRollCallsByMonth(rcs) {
+function groupRollCallsByMonth(rcs) {
     var data = [];
     var lastMonth;
     var countRollCalls = 0;
@@ -881,8 +896,12 @@ function splitRollCallsByMonth(rcs) {
         obj = rc;
         obj.period = period;
         obj.index = countRollCalls;
-        data.push(obj);
-        countRollCalls++;
+        obj.selected = true;
+        obj.hovered = false;
+        if (obj.rate !== 'noVotes') {
+            data.push(obj);
+            countRollCalls++;
+        }
     });
     return data;
 }
@@ -1136,9 +1155,87 @@ function checkPeriodTimeLineCrop(event, deputy) {
     }
 }
 
+function updateRollCalls(panelID) {
+    var node = tree.getNode(panelID, tree.traverseBF);
+    var parentID = node.parent.data;
+
+    var selectedRollCalls = [];
+    var hoveredRollCalls = [];
+    rollCallsRates[parentID].forEach(function (rollCall) {
+        if(rollCall.selected) selectedRollCalls.push(rollCall);
+        if(rollCall.hovered) hoveredRollCalls.push(rollCall);
+    });
+
+    if( (selectedRollCalls.length === rollCallsRates[parentID].length) && (hoveredRollCalls.length === 0) ){
+        // reset deputies
+        deputyNodes[parentID].forEach(function (deputy) { deputy.rate = null; deputy.vote = null; })
+    }
+
+    else {
+        // ONLY ONE ROLL CALL SELECTED || HOVER
+        if ((hoveredRollCalls.length === 1) || (selectedRollCalls.length === 1)) {
+            deputyNodes[parentID].forEach(function (deputy) {
+                deputy.vote = 'null';
+            });
+
+            var rollCall = (hoveredRollCalls.length === 1) ? hoveredRollCalls[0] : selectedRollCalls[0];
+            // set the deputy votes
+            rollCall.votes.forEach(function (deputyVote) {
+                // TODO: Check this code. Is it necessary this test?
+                if (deputyNodes[parentID][deputyVote.deputyID] !== undefined)
+                    deputyNodes[parentID][deputyVote.deputyID].vote = deputyVote.vote;
+            })
+        }
+    }
+
+    updateVisualizations();
+}
+
+function updateDeputies(panelID) {
+    var node = tree.getNode(panelID, tree.traverseBF);
+
+    node.children.forEach(function (value) {
+        if (value.typeChart === ROLLCALLS_HEATMAP) {
+
+            var selectedDeputies    = [];
+            var hoveredDeputies     = [];
+
+            deputyNodes[panelID].forEach(function (deputy) {
+                if(deputy.selected) selectedDeputies.push(deputy);
+                if(deputy.hovered) hoveredDeputies.push(deputy);
+            });
+
+            // Update Roll Calls Votes accordingly deputies individual votes
+            rollCallsRates[panelID].forEach(function (rollCall) {
+                rollCall.vote = null;
+                rollCall.rate = null;
+            });
+
+            // show the votes of one deputy
+            if( (hoveredDeputies.length === 1) || (selectedDeputies.length===1) ){
+                // get the deputy id
+                var deputy = (hoveredDeputies.length === 1)? hoveredDeputies[0] : selectedDeputies[0];
+                // set the deputy vote for each rollCall
+                rollCallsRates[panelID].forEach( function(rollCall){
+                    rollCall.vote = 'null';
+                    rollCall.votes.forEach( function(vote){
+                        if(vote.deputyID === deputy.deputyID){
+                            rollCall.vote = vote.vote;
+                        }
+                    })
+                });
+            } else {
+                calcRollCallRate(rollCallsRates[panelID],selectedDeputies);
+            }
+        }
+    });
+
+    updateVisualizations();
+}
+
 function updateVisualizations() {
     tree.traverseBF(function (n) {
-        if (n.typeChart === SCATTER_PLOT || n.typeChart === CHAMBER_INFOGRAPHIC)
+        if (n.typeChart === SCATTER_PLOT || n.typeChart === CHAMBER_INFOGRAPHIC || n.typeChart === ROLLCALLS_HEATMAP)
             n.chart.update();
     })
 }
@@ -1163,9 +1260,9 @@ function disableBrushForAllScatterPlots(){
     }
 }
 
-function getUniqueValues(arr, attr){
+/*function getUniqueValues(arr, attr){
     return [...new Set(arr.map(item => item[attr]))];
-}
+}*/
 
 function array_flip( trans )
 {

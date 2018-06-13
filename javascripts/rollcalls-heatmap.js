@@ -18,9 +18,18 @@ function rollCallsHeatmap(){
 
     var yearsColors = ["#f0f0f0","#d9d9d9"];
     var singleVotes = {"Sim" : '#313695', "Não":'#a50026'};
+    var englishVotes =  {"Sim":"Yes","Não":"No","Abstenção":"Abstention","Obstruction":"green","Art. 17":"yellow","null":'grey'};
+
+    var colorScale = d3.scale.quantize()
+        .domain([-1.0, 1.0])
+        .range(d3.range(buckets).map(function(d) {  return colors[d] }));
 
     var itemMaxSize = 16;
+    var dispatch = d3.dispatch('update');
     var div = d3.select(".toolTip");
+    var svg;
+
+    var itemWidth, itemHeight;
 
     function chart(selection) {
         selection.each(function (data) {
@@ -35,8 +44,8 @@ function rollCallsHeatmap(){
             var x_elements = d3.set(data.map(function( rc ) { return rc.index; } )).values(),
                 y_elements = d3.set(data.map(function( rc ) { return rc.period; } )).values();
 
-            var itemWidth = Math.floor(width / x_elements.length);
-            var itemHeight = Math.floor(height / y_elements.length);
+            itemWidth = Math.floor(width / x_elements.length);
+            itemHeight = Math.floor(height / y_elements.length);
 
 
             var xScale = d3.scale.ordinal()
@@ -60,7 +69,7 @@ function rollCallsHeatmap(){
                 .tickFormat(function(d) { var period = d.split("/"); return monthNames[period[0]] + "/" + period[1];})
                 .orient("left");
 
-            var svg =  d3.select(this)
+            svg =  d3.select(this)
                 .append("svg")
                 .attr("width", "100%")
                 .attr("height", "100%")
@@ -68,33 +77,6 @@ function rollCallsHeatmap(){
                 .classed("rollcalls-heatmap", true)
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-            /*var periodLabels = svg.selectAll(".periodLabel")
-                .data(periods)
-                .enter().append("text")
-                .text(function (d) { return d; })
-                .attr("x", 0)
-                .attr("y", function (d, i) { return i * gridSize; })
-                .style("text-anchor", "end")
-                .attr("transform", "translate(-6," + gridSize / 1.5 + ")")
-                .attr("class", "periodLabel mono axis");
-
-            var rollCallLabels = svg.selectAll(".rollcallLabel")
-                .data(function () {
-                    // Returns an array with its indexes as values.
-                    return Array.apply(null, {length: maxRollCallsPeriod+1 }).map(Number.call, Number)
-                })
-                .enter().append("text")
-                .text(function(d) { return d; })
-                .attr("x", function(d, i) { return i * gridSize; })
-                .attr("y", 0)
-                .style("text-anchor", "middle")
-                .attr("transform", "translate(" + gridSize / 2 + ", -6)")
-                .attr("class", "rollcallLabel mono axis axis");
-
-            var colorScale = d3.scale.quantile()
-                .domain([0, buckets - 1, d3.max(data, function (d) { return d.value; })])
-                .range(colors);*/
 
             var yearsBg = svg.selectAll(".yearsBg")
                 .data(y_elements);
@@ -132,10 +114,6 @@ function rollCallsHeatmap(){
                 .attr("dx", "-.4em")
                 .attr("dy", ".5em");
 
-            var colorScale = d3.scale.quantize()
-                .domain([-1.0, 1.0])
-                .range(d3.range(buckets).map(function(d) {  return colors[d] }));
-
             var cards = svg.selectAll(".rollCall")
                 .data(data);
 
@@ -146,29 +124,50 @@ function rollCallsHeatmap(){
                 .attr("y", function(d) { return yScale(d.period); })
                 .attr("rx", 4)
                 .attr("ry", 4)
-                .attr("class", "rollCall bordered")
+                .attr("class", function (d) {return (d.selected)? "rollCall bordered selected": ( (d.hovered)? "rollCall bordered hovered" : "rollCall bordered"); })
                 .attr("width", itemWidth)
                 .attr("height", itemHeight)
+                .style("stroke-width", function (d) {
+                    return (d.hovered) ? "6px" : "2px";
+                })
                 .style("fill", "grey")
+                .on('click', function(d) {
+                    mouseClickRollCall(d);
+                })
                 .on("mousemove",  function(d) {
-                    div.style("left", d3.event.pageX+10+"px");
+                    div.style("left", d3.event.pageX+15+"px");
                     div.style("top", d3.event.pageY-25+"px");
                     div.style("display", "inline-block");
-                    div.html(
-                        d.type+' '+d.number+'/'+d.year + "<br><br>"
-                            + "<div id='tipDiv'></div><br>"
+                    div.html(function() {
+                            var htmlContent = d.type + ' ' + d.number + '/' + d.year + "<br><br>";
+                            if (d.rate !== null) {
+                                htmlContent += "<div id='tipDiv'></div><br>";
+                            }
+                            else
+                                if (d.vote !== 'null')
+                                    htmlContent += '<p>' + englishVotes[d.vote] + '</p>';
+                                else
+                                    htmlContent += '<p>' + 'No Votes' + '</p>';
+
+                                return htmlContent;
+                        }
                     );
 
-                    drawPieChart(d.countVotes);
+                    if (d.rate !== null) {
+                        drawPieChart(d.countVotes);
+                    }
+
                 })
+                .on("mouseover", mouseoverRollCall)
                 .on("mouseout", function(d){
+                    mouseoutRollCall(d);
                     div.style("display", "none");
                 });
 
             cards.transition().duration(1000)
-                .style("fill", function(d) { return colorScale(d.rate); });
+                .style("fill", function(d) { return setRollCallFill(d); });
 
-            cards.select("title").text(function(d) { return d.rate; });
+            //cards.select("title").text(function(d) { return d.rate; });
 
             cards.exit().remove();
 
@@ -203,7 +202,7 @@ function rollCallsHeatmap(){
                     dx: totalLegendWidth + centralizeOffset,
                     dy: height + (legendHeight/2) + legendItemHeight*2.5,
                     //'font-size': 'small',
-                    fill:'black',
+                    fill:'black'
                 })
                 .style("text-anchor", "end");
 
@@ -212,7 +211,7 @@ function rollCallsHeatmap(){
                     dx: centralizeOffset,
                     dy: height + (legendHeight/2) + legendItemHeight*2.5,
                     //'font-size': 'small',
-                    fill:'black',
+                    fill:'black'
                 })
 
             /*legend.append("text")
@@ -279,7 +278,7 @@ function rollCallsHeatmap(){
                 .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
                 .attr("dy", ".35em")
                 .style("text-anchor", "middle")
-                .text(function(d) { return d.data.vote + " (" + d3.format("%") (d.data.qtd/tots) + ")"; })
+                .text(function(d) { return englishVotes[d.data.vote] + " (" + d3.format("%") (d.data.qtd/tots) + ")"; })
                 .call(wrap, 40)
                 .each(function (d) {
                     var bb = this.getBBox(),
@@ -342,5 +341,49 @@ function rollCallsHeatmap(){
         });
     }
 
-    return chart;
+    function setRollCallFill (d){
+        if(d.vote != null){
+            return CONGRESS_DEFINE.votoStringToColor[d.vote];
+        }
+        if(d.rate != null){
+            if (d.rate === "noVotes")
+                return 'grey';
+            else return colorScale(d.rate)
+        } else{
+            return 'grey';
+        }
+    }
+
+    function mouseClickRollCall(d)
+    {
+
+        var rcs = svg.selectAll(".rollCall").data();
+        console.log(rcs);
+
+        rcs.forEach(function (rc) {
+            rc.selected = rc.rollCallID === d.rollCallID;
+        });
+
+        dispatch.update()
+    }
+
+    function mouseoverRollCall(d) {
+        d.hovered = true;
+        dispatch.update();
+    }
+
+    function mouseoutRollCall(d) {
+        d.hovered = false;
+        dispatch.update();
+    }
+
+    chart.update = function () {
+        svg.selectAll(".rollCall")
+            .transition(750)
+            .style("fill", function(d) { return setRollCallFill(d); })
+            .style("stroke-width", function (d) { return (d.hovered) ? "6px" : "2px"; })
+            .attr("class", function (d) {return (d.selected)? "rollCall bordered selected": ( (d.hovered)? "rollCall bordered hovered" : "rollCall bordered"); });
+    };
+
+    return d3.rebind(chart, dispatch, 'on');
 }

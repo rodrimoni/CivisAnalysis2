@@ -1,6 +1,6 @@
 .rollcalls-heatmap rect.bordered {
     stroke: #E6E6E6;
-    stroke-width:2px;
+    /*stroke-width:2px;*/
     cursor: pointer;
 }
 
@@ -35,4 +35,16 @@
 #tipDiv .arc path {
     stroke: #fff;
     stroke-width: 2px;
+}
+
+.rollCall {
+    opacity: 0.15;
+}
+
+.rollCall.selected {
+    opacity: 1 !important;
+}
+
+.rollCall.hovered {
+    opacity: 0.4;
 }

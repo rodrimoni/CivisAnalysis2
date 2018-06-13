@@ -101,9 +101,7 @@ function chamberInfographic() {
 
         circles
             .attr({r: 4})
-            .style('fill',function(d){
-                    return CONGRESS_DEFINE.getPartyColor(d.party)
-            });
+            .style("fill", function(d) { return setDeputyFill(d); });
 
         circles.order(); // sort elements in the svg
 
@@ -311,6 +309,8 @@ function chamberInfographic() {
 
     chart.update = function () {
         svg.selectAll(".node")
+            .transition()
+            .style("fill", function(d) { return setDeputyFill(d); })
             .attr("class", function (d) {return (d.selected)? "node selected": ( (d.hovered)? "node hovered" : "node"); })
             .attr("r", function(d){ return (d.hovered)? nodeRadius*2 : nodeRadius;});
 
@@ -352,6 +352,20 @@ function chamberInfographic() {
 
         dispatch.update();
     };
+
+    function setDeputyFill( d ){
+        if(d.vote != null){
+            return CONGRESS_DEFINE.votoStringToColor[d.vote];
+        }
+        if(d.rate != null){
+            if (d.rate == "noVotes")
+                return 'grey'
+            else return CONGRESS_DEFINE.votingColor(d.rate)
+        } else{
+            return CONGRESS_DEFINE.getPartyColor(d.party)
+        }
+    }
+
 
     return d3.rebind(chart, dispatch, 'on');
 }

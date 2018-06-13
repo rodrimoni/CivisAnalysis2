@@ -50,6 +50,9 @@ function loadNodes(type, selectedTime, callback)
             depObj.scatterplot  = precalcDeputy.scatterplot;
 
             depObj.selected = true;
+            depObj.hovered = false;
+            depObj.rate = null;
+            depObj.vote = null;
 
             currentDeputies[depObj.deputyID] = depObj;
         });

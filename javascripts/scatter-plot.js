@@ -138,7 +138,7 @@ function scatterPlotChart()
                 .attr("r", function(d){ return (d.hovered)? nodeRadius*2 : nodeRadius;})
                 .attr("id", function(d) { return panelID + "_deputy-id-" + d.deputyID; })
                 .attr("transform", function(d) {return "translate(" + x(d.scatterplot[1]) + "," + y(d.scatterplot[0]) + ")";})
-                .style("fill", function(d) { return selColor(d.party); })
+                .style("fill", function(d) { return setDeputyFill(d); })
                 .on("mousemove", function(d){
                     div.style("left", d3.event.pageX+10+"px");
                     div.style("top", d3.event.pageY-25+"px");
@@ -304,6 +304,7 @@ function scatterPlotChart()
     chart.update = function () {
         svg.selectAll(".deputiesNodesDots .node")
             .transition()
+            .style("fill", function(d) { return setDeputyFill(d); })
             .attr("class", function (d) {return (d.selected)? "node selected": ( (d.hovered)? "node hovered" : "node"); })
             .attr("r", function(d){ return (d.hovered)? nodeRadius*2 : nodeRadius;});
     };
@@ -491,6 +492,19 @@ function scatterPlotChart()
         }
 
         dispatch.update();
+    }
+
+    function setDeputyFill( d ){
+        if(d.vote != null){
+            return CONGRESS_DEFINE.votoStringToColor[d.vote];
+        }
+        if(d.rate != null){
+            if (d.rate == "noVotes")
+                return 'grey'
+            else return CONGRESS_DEFINE.votingColor(d.rate)
+        } else{
+            return CONGRESS_DEFINE.getPartyColor(d.party)
+        }
     }
 
     chart.selectDeputiesBySearch = function (deputies) {

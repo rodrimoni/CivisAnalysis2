@@ -231,7 +231,7 @@ var CONGRESS_DEFINE = {
     // COLORS!
     // ===============================================================================================================
     // colors representing the single vote value
-    votoStringToColor : {"Sim":"blue","Não":"red","Abstenção":"purple","Obstrução":"green","Art. 17":"yellow","null":'grey'},
+    votoStringToColor : {"Sim":"#313695","Não":"a50026","Abstenção":"purple","Obstrução":"green","Art. 17":"yellow","null":'grey'},
 
     // ===============================================================================================================
     votingColorGradient : ["rgb(165,0,38)","rgb(215,48,39)","rgb(244,109,67)","rgb(253,174,97)",
