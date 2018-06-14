@@ -7,7 +7,7 @@ function rollCallsHeatmap(){
 
     var legendHeight = 60;
 
-    var width = 750 - margin.right - margin.left,
+    var width = 750 - margin.right - margin.left - 15,
         height = 750 - margin.top - margin.bottom - legendHeight,
         buckets = 11,
         colors = ['#a50026','#d73027','#f46d43','#fdae61','#fee090','#ffffbf','#e0f3f8','#abd9e9','#74add1','#4575b4','#313695']; // RdYlBu colorbrewer scale
@@ -78,15 +78,44 @@ function rollCallsHeatmap(){
                 .append("svg")
                 .attr("width", "100%")
                 .attr("height", "100%")
-                .attr("viewBox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom + legendHeight))
+                .attr("viewBox", "0 0 " + (width + 15 + margin.left + margin.right) + " " + (height + margin.top + margin.bottom + legendHeight))
                 .classed("rollcalls-heatmap", true)
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+            var hashYears = {};
+            y_elements.forEach(function (d) {
+                var year = d.split("/")[1];
+                if (hashYears[year] !== undefined)
+                    hashYears[year] += 1;
+                else
+                    hashYears[year] = hashYears[year-1] === undefined ? 1 : hashYears[year-1] + 1;
+            });
+
+            console.log(hashYears);
+
+            var yearsLabels = svg.selectAll('.yearLabel')
+                .data(d3.keys(hashYears));
+
+            var yearLabelOffset = width+20;
+
+            yearsLabels.enter().append('text')
+                .attr('class', 'yearLabel')
+                .attr("transform", function (d) {
+                    var labelHeight = hashYears[d-1] === undefined ? (itemHeight * hashYears[d])/2 : (hashYears[d-1] + (hashYears[d] - hashYears[d-1])/2) * itemHeight;
+                    return "translate(" + yearLabelOffset + " ," +
+                        labelHeight + ")";
+                })
+                .style("text-anchor", "middle")
+                .style('font-size', 'small')
+                .text(function (d) {
+                    return d;
+                });
+
             var yearsBg = svg.selectAll(".yearsBg")
                 .data(y_elements);
 
-            var initialYear = y_elements[0].split("/")[1]; // Get Year, formatt is mm/yy
+            var initialYear = y_elements[0].split("/")[1]; // Get Year, format is mm/yy
 
             yearsBg.enter().append("rect")
                 .attr("x", 0)
@@ -361,8 +390,6 @@ function rollCallsHeatmap(){
 
     function mouseClickRollCall(d)
     {
-        console.log(rollCallsRates[parentID]);
-
         rollCallsRates[parentID].forEach(function (rc) {
            if (rc.rollCallID === d.rollCallID)
                rc.selected = true;

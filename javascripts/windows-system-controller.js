@@ -155,7 +155,7 @@ function calcExtentValuesByYear() {
 }
 
 function createDeputyNodes(data_deputies, selecteddeputies){
-    var deputies = {};
+    var deputies = [];
 
     for (var i = 0; i < selecteddeputies.length; i++) {
         var deputy = selecteddeputies[i]; depObj = {};
@@ -614,6 +614,13 @@ function resetSelection(){
     for (var key in deputyNodes){
         for (var index in deputyNodes[key])
             deputyNodes[key][index].selected = true;
+        updateDeputies(key);
+    }
+
+    for (var key in rollCallsRates){
+        for (var index in rollCallsRates[key])
+            rollCallsRates[key][index].selected = true;
+        updateRollCalls(key);
     }
 
     /* Reset the deputies selection by search */
