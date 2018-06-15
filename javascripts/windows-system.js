@@ -883,7 +883,6 @@ function groupRollCallsByMonth(rcs) {
 
     rcs.forEach(function (rc) {
         var currentMonth = rc.datetime.getMonth();
-
         if (lastMonth === undefined)
             lastMonth = currentMonth;
         else

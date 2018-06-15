@@ -3,7 +3,7 @@ function rollCallsHeatmap(){
 
     var outerWidth = MAX_WIDTH,
         outerHeight = MAX_HEIGHT;
-    margin = {top: 60, right: 0, bottom: 20, left: 20};
+    margin = {top: 60, right: 0, bottom: 20, left: 10};
 
     var legendHeight = 60;
 
@@ -67,7 +67,7 @@ function rollCallsHeatmap(){
             var yAxis = d3.svg.axis()
                 .scale(yScale)
                 .tickValues(y_elements)
-                .tickFormat(function(d) { var period = d.split("/"); return monthNames[period[0]] + "/" + period[1];})
+                .tickFormat(function(d) { var period = d.split("/"); return monthNames[period[0]];})
                 .orient("left");
 
             var panelID = ($(this).parents('.panel')).attr('id');
@@ -83,13 +83,17 @@ function rollCallsHeatmap(){
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+            var initialYear = y_elements[0].split("/")[1]; // Get Year, format is mm/yy
+
             var hashYears = {};
             y_elements.forEach(function (d) {
-                var year = d.split("/")[1];
-                if (hashYears[year] !== undefined)
-                    hashYears[year] += 1;
+                var currentYear = d.split("/")[1];
+                if (hashYears[currentYear] === undefined)
+                {
+                    hashYears[currentYear] = [d];
+                }
                 else
-                    hashYears[year] = hashYears[year-1] === undefined ? 1 : hashYears[year-1] + 1;
+                    hashYears[currentYear].push(d);
             });
 
             console.log(hashYears);
@@ -102,9 +106,22 @@ function rollCallsHeatmap(){
             yearsLabels.enter().append('text')
                 .attr('class', 'yearLabel')
                 .attr("transform", function (d) {
-                    var labelHeight = hashYears[d-1] === undefined ? (itemHeight * hashYears[d])/2 : (hashYears[d-1] + (hashYears[d] - hashYears[d-1])/2) * itemHeight;
+                    var arraySize =  hashYears[d].length;
+                    var rotate = true;
+                    var yValue;
+                    if (arraySize === 1){
+                        yValue = yScale(hashYears[d][0]) + 10;
+                        rotate = false;
+                    }
+                    else
+                        if ( arraySize  % 2 === 0)
+                            yValue = yScale(hashYears[d][arraySize/2]);
+                        else
+                            yValue = yScale(hashYears[d][(arraySize+1)/2]);
+
+                    var rotateValue = rotate ? 270 : 0;
                     return "translate(" + yearLabelOffset + " ," +
-                        labelHeight + ")";
+                       yValue + ") rotate(" + rotateValue  + ")";
                 })
                 .style("text-anchor", "middle")
                 .style('font-size', 'small')
@@ -114,8 +131,6 @@ function rollCallsHeatmap(){
 
             var yearsBg = svg.selectAll(".yearsBg")
                 .data(y_elements);
-
-            var initialYear = y_elements[0].split("/")[1]; // Get Year, format is mm/yy
 
             yearsBg.enter().append("rect")
                 .attr("x", 0)
