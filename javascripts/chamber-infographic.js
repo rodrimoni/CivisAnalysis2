@@ -160,7 +160,13 @@ function chamberInfographic() {
             .attr("d", arc);
 
         paths.style("fill", function(d) {
-                return CONGRESS_DEFINE.getPartyColor(d.data.key);
+            if(d.data.value.rate != null){
+                if (d.data.value.rate === "noVotes")
+                    return 'grey';
+                else return CONGRESS_DEFINE.votingColor(d.data.value.rate)
+            } else{
+                return CONGRESS_DEFINE.getPartyColor(d.data.key)
+            }
         });
 
 
@@ -338,6 +344,43 @@ function chamberInfographic() {
             .attr("opacity", 0.8)
             .attr('visibility', function (d) {	return ( (d.data.value.selected/d.data.value.size)!==1 )? 'visible' : 'hidden';  })
             .style("fill", 'white');
+
+        var paths = svg.selectAll('path.main');
+
+        paths.style("fill", function(d) {
+            if(d.data.value.rate != null){
+                if (d.data.value.rate === "noVotes")
+                    return 'grey';
+                else return CONGRESS_DEFINE.votingColor(d.data.value.rate)
+            } else{
+                return CONGRESS_DEFINE.getPartyColor(d.data.key)
+            }
+        });
+    };
+
+    chart.updateParties = function(rollCall)
+    {
+        for( var party in partiesMap){
+            partiesMap[party].votes = {"Sim":0,"Não":0,"Abstenção":0,"Obstrução":0,"Art. 17":0,"null":0}
+        }
+
+        rollCall.votes.forEach( function (vote){
+            if(partiesMap[vote.party] !== undefined){
+                partiesMap[vote.party].votes[vote.vote]++
+            }
+        });
+
+        for( var party in partiesMap ){
+            if( (partiesMap[party].votes['Sim'] === 0) && (partiesMap[party].votes['Não'] === 0) ) {partiesMap[party].rate = 'noVotes'}
+            else{
+                var total = partiesMap[party].votes['Não'] + partiesMap[party].votes['Sim'];
+                partiesMap[party].rate = (partiesMap[party].votes['Sim']-partiesMap[party].votes['Não'])/total;
+            }
+        }
+    };
+
+    chart.resetParties = function() {
+        for ( var party in partiesMap) partiesMap[party].rate = null;
     };
 
     chart.selectDeputiesBySearch = function (deputies) {
@@ -358,8 +401,8 @@ function chamberInfographic() {
             return CONGRESS_DEFINE.votoStringToColor[d.vote];
         }
         if(d.rate != null){
-            if (d.rate == "noVotes")
-                return 'grey'
+            if (d.rate === "noVotes")
+                return 'grey';
             else return CONGRESS_DEFINE.votingColor(d.rate)
         } else{
             return CONGRESS_DEFINE.getPartyColor(d.party)

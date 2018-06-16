@@ -1159,6 +1159,8 @@ function checkPeriodTimeLineCrop(event, deputy) {
 function updateRollCalls(parentID) {
     var selectedRollCalls = [];
     var hoveredRollCalls = [];
+    var node = tree.getNode(parentID, tree.traverseBF);
+
     rollCallsRates[parentID].forEach(function (rollCall) {
         if(rollCall.selected) selectedRollCalls.push(rollCall);
         if(rollCall.hovered) hoveredRollCalls.push(rollCall);
@@ -1166,7 +1168,11 @@ function updateRollCalls(parentID) {
 
     if( (selectedRollCalls.length === rollCallsRates[parentID].length) && (hoveredRollCalls.length === 0) ){
         // reset deputies
-        deputyNodes[parentID].forEach(function (deputy) { deputy.rate = null; deputy.vote = null; })
+        deputyNodes[parentID].forEach(function (deputy) { deputy.rate = null; deputy.vote = null; });
+
+        if (node.typeChart === CHAMBER_INFOGRAPHIC)        {
+            node.chart.resetParties();
+        }
     }
 
     else {
@@ -1183,7 +1189,12 @@ function updateRollCalls(parentID) {
                 // TODO: Check this code. Is it necessary this test?
                 if (deputyNodes[parentID][deputyVote.deputyID] !== undefined)
                     deputyNodes[parentID][deputyVote.deputyID].vote = deputyVote.vote;
-            })
+            });
+
+            if (node.typeChart === CHAMBER_INFOGRAPHIC)
+            {
+                node.chart.updateParties(rollCall);
+            }
         }
     }
 
