@@ -97,21 +97,21 @@ function scatterPlotChart()
                 .attr("width", width)
                 .attr("height", height);
 
-            svg.append("g")
+            /*svg.append("g")
                 .classed("x axis", true)
                 .attr("transform", "translate(0," + height + ")")
                 .call(xAxis);
 
             svg.append("g")
                 .classed("y axis", true)
-                .call(yAxis);
+                .call(yAxis);*/
 
             var objects = svg.append("svg")
                 .classed("objects", true)
                 .attr("width", width)
                 .attr("height", height);
 
-            objects.append("svg:line")
+            /*objects.append("svg:line")
                 .classed("axisLine hAxisLine", true)
                 .attr("x1", 0)
                 .attr("y1", 0)
@@ -124,7 +124,7 @@ function scatterPlotChart()
                 .attr("x1", 0)
                 .attr("y1", 0)
                 .attr("x2", 0)
-                .attr("y2", height);
+                .attr("y2", height);*/
 
             objects.append("g").attr("class", "deputiesClusters");
 
