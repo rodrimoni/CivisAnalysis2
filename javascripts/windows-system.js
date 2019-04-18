@@ -701,12 +701,13 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
             function calcCallback(twoDimData) {
                 // Deputies array
                 title = filteredData[0].getFullYear() + " to " + filteredData[1].getFullYear();
-                title += " (" + dimensionalReductionTechnique + ")";
 
                 if (isInfographic)
                     createChart = createChamberInfographic;
-                else
+                else {
+                    title += " (" + dimensionalReductionTechnique + ")";
                     createChart = createScatterPlot;
+                }
 
                 panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear();
 
@@ -747,12 +748,13 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
             panelClass = dataRange.type + '-' + dataRange.id;
 
             var createChart;
-            title += " ("+ dimensionalReductionTechnique + ")";
 
             if (isInfographic)
                 createChart = createChamberInfographic;
-            else
+            else {
+                title += " ("+ dimensionalReductionTechnique + ")";
                 createChart = createScatterPlot;
+            }
 
             var subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString() + "</span>";
             title += subtitle;

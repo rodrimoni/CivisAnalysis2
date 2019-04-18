@@ -4,7 +4,7 @@ var CONGRESS_DEFINE = {
     //var integerToVote = {'0':"Sim",'1':"Não",'2':"Abstenção",'3':"Obstrução",'4':"Art. 17",'5':"Branco"};
 
     startingYear : 1991,
-    endingYear : 2016,
+    endingYear : 2018,
 
     // renamed parties
     // PFL ==> DEM
@@ -17,19 +17,19 @@ var CONGRESS_DEFINE = {
         {name:'52th Legislature', regimeParty:'PT',   period:[new Date(2003,1,1) ,new Date(2007,0,31)]},
         {name:'53th Legislature', regimeParty:'PT',   period:[new Date(2007,1,1) ,new Date(2011,0,31)]},
         {name:'54th Legislature', regimeParty:'PT',   period:[new Date(2011,1,1) ,new Date(2015,0,31)]},
-        {name:'55th Legislature', regimeParty:'PMDB',   period:[new Date(2015,1,1) ,new Date(2017,0,31)]}
+        {name:'55th Legislature', regimeParty:'PMDB',   period:[new Date(2015,1,1) ,new Date(2019,0,31)]}
     ],
 
     presidents : [
         {name: 'Collor (PRN)'     , party:'PRN', period:[new Date(1991,0,1),  new Date(1992,11,29)]},
         {name: 'Itamar (PMDB)'    , party:'PMDB', period:[new Date(1992,11,29),new Date(1995,0,1)]},
-        {name: 'FHC (PSDB) 1st Man.', party:'PSDB', period:[new Date(1995,0,1),  new Date(1999,0,1)]},
-        {name: 'FHC (PSDB) 2nd Man.', party:'PSDB', period:[new Date(1999,0,1),  new Date(2003,0,1)]},
-        {name: 'Lula (PT) 1st Man.' , party:'PT', period:[new Date(2003,0,1),  new Date(2007,0,1)]},
-        {name: 'Lula (PT) 2nd Man.' , party:'PT', period:[new Date(2007,0,1),  new Date(2011,0,1)]},
-        {name: 'Dilma (PT) 1st Man.', party:'PT', period:[new Date(2011,0,1),  new Date(2015,0,1)]},
+        {name: 'FHC (PSDB) 1st Term', party:'PSDB', period:[new Date(1995,0,1),  new Date(1999,0,1)]},
+        {name: 'FHC (PSDB) 2nd Term', party:'PSDB', period:[new Date(1999,0,1),  new Date(2003,0,1)]},
+        {name: 'Lula (PT) 1st Term' , party:'PT', period:[new Date(2003,0,1),  new Date(2007,0,1)]},
+        {name: 'Lula (PT) 2nd Term' , party:'PT', period:[new Date(2007,0,1),  new Date(2011,0,1)]},
+        {name: 'Dilma (PT) 1st Term', party:'PT', period:[new Date(2011,0,1),  new Date(2015,0,1)]},
         {name: 'Dilma', party:'PT', period:[new Date(2015,0,1),  new Date(2016,4,12)]},
-        {name: 'Temer', party:'PMDB', period:[new Date(2016,4,13),  new Date(2017,0,31)]}
+        {name: 'Temer', party:'PMDB', period:[new Date(2016,4,13),  new Date(2019,0,31)]}
     ],
 
     //- organization:

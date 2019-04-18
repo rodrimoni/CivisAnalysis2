@@ -188,7 +188,7 @@ d3.chart.timeline = function() {
         round = d3.time.year.round;
 
         chart.x(d3.time.scale()
-            .domain([new Date(1991, 0, 1), new Date(2017, 0, 1)])
+            .domain([new Date(1991, 0, 1), new Date(2019, 0, 1)])
             .rangeRound([margin.left, width -margin.right]));
         //.timelineFilter([new Date(2012, 0, 1), new Date()]);
 
@@ -749,7 +749,7 @@ d3.chart.timeline = function() {
 
 
         function electionPopover( d ){
-            var html =  '<h4>'+'Brazilian Presidential Election of '+d.name+'</h4><em>Click get more info</em>';
+            var html =  '<h4>'+'Brazilian Presidential Election of '+d.name+'</h4>';
             return html;
         }
         // // POPOVER!

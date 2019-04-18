@@ -173,7 +173,7 @@ function createDeputyNodes(data_deputies, selecteddeputies){
 
 
 function getMotion (type,number,year,callback){
-    d3.json('data/motions.min/'+type+''+number+''+year, function(motion) {
+    d3.json('data/motions.min/'+type+''+number+''+year+'.json', function(motion) {
         if(motion === null) console.log('Could not load DB getMotion/'+type+'/'+number+'/'+year);
         callback(motion);
     })
