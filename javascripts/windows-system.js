@@ -21,7 +21,7 @@ var BAR_CHART           = 2;
 var FORCE_LAYOUT        = 3;
 var TIME_LINE_CROP      = 4;
 var CHAMBER_INFOGRAPHIC = 5;
-var ROLLCALLS_HEATMAP    = 6;
+var ROLLCALLS_HEATMAP   = 6;
 
 /* Constant to keep the value of ShiftKey */
 var SHIFTKEY = false;
@@ -128,7 +128,8 @@ function initializeChart(newID, chartObj) {
             break;
         case ROLLCALLS_HEATMAP:
             chart = rollCallsHeatmap();
-
+            addConfigMenu(newID);
+            addFilterRollCallsMenu(newID, chartObj.data);
             chart.on('update', function () {
                 var node = tree.getNode(newID, tree.traverseBF);
                 var parentID = node.parent.data;
@@ -157,6 +158,51 @@ function addClusteringMenu(newID) {
     $("#" + newID + " .panel-settings")
         .append('<li role="presentation" class="dropdown-header">Clustering with K-Means</li>')
         .append('<li> Select the value of K: <br> <input id= "slider-'+ newID +'" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="10"/></li>')
+
+}
+
+function addFilterRollCallsMenu(newID, rollCalls) {
+    $("#" + newID + " .panel-settings")
+        .append('<li role="presentation" class="dropdown-header">Select motion types </li>')
+        .append('<li><input type="text" ' +
+            'class="form-control typeahead filterMotions" ' +
+            'placeholder="Type motion type to filter..."/> </li>');
+
+    // Get motions unique type array
+    var rollCallsTypes = d3.map(rollCalls, function(d){return d.type;}).keys();
+    rollCallsTypes.sort();
+
+    // Convert to {key : index, value: typeMotion}
+    rollCallsTypes = d3.entries(rollCallsTypes);
+
+    var rollCallsTypes = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        local: rollCallsTypes
+    });
+
+    rollCallsTypes.initialize();
+
+    var elt = $('#' + newID + ' .filterMotions');
+    elt.tagsinput({
+        itemValue: 'key',
+        itemText: 'value',
+        typeaheadjs: [{
+                hint: true,
+                highlight: true,
+                minLength: 1
+            },
+            {
+                name: 'rollCallsTypes',
+                displayKey: 'value',
+                source: rollCallsTypes.ttAdapter()
+            }]
+    });
+
+    /* Prevents click to close the settings menu */
+    $("#" + newID + " .bootstrap-tagsinput").click( function(e){
+        e.stopPropagation();
+    });
 
 }
 
@@ -501,6 +547,13 @@ function createNewChild(currentId, chartObj) {
         setUpPanel(newID);
 
         if (chart !== null) {
+            if (chartObj.chartID === ROLLCALLS_HEATMAP)
+            {
+                //FIXME: gambiarra feita para gerar um novo heatmap fora da classe
+                var teste = d3.select('#' +newID + " .panel-body");
+                console.log(teste[0]);
+                chart.drawRollCallsHeatMap(chartObj.data, teste[0][0]);
+            }
             d3.select("#" + newID + " .panel-body")
                 .datum(chartObj.data)
                 .call(chart);
@@ -895,7 +948,7 @@ function groupRollCallsByMonth(rcs) {
 
         var currentYear = rc.datetime.getFullYear();
         var period = currentMonth + "/" + currentYear;
-        var obj = {};
+        var obj;
         obj = rc;
         obj.period = period;
         obj.index = countRollCalls;

@@ -34,242 +34,7 @@ function rollCallsHeatmap(){
 
     function chart(selection) {
         selection.each(function (data) {
-            //var maxRollCallsPeriod = d3.max(data, function (d) { return d.index; });
-            //var itemSize = 15;
-              //  legendElementWidth = gridSize*2;
-
-            //var periods = getUniqueValues(data, "period");
-
-            //var periodsAsKeys = array_flip(periods);
-
-            var x_elements = d3.set(data.map(function( rc ) { return rc.index; } )).values(),
-                y_elements = d3.set(data.map(function( rc ) { return rc.period; } )).values();
-
-            itemWidth = Math.floor(width / x_elements.length);
-            itemHeight = Math.floor(height / y_elements.length);
-
-
-            var xScale = d3.scale.ordinal()
-                .domain(x_elements)
-                .rangeBands([0, width]);
-
-            var xAxis = d3.svg.axis()
-                .scale(xScale)
-                .orient("top")
-                .innerTickSize(-height)
-                .outerTickSize(0)
-                .tickPadding(10);
-
-            var yScale = d3.scale.ordinal()
-                .domain(y_elements)
-                .rangeBands([0, height]); // Eliminate the unused space in chart bottom
-
-            var yAxis = d3.svg.axis()
-                .scale(yScale)
-                .tickValues(y_elements)
-                .tickFormat(function(d) { var period = d.split("/"); return monthNames[period[0]];})
-                .orient("left");
-
-            var panelID = ($(this).parents('.panel')).attr('id');
-            var node = tree.getNode(panelID, tree.traverseBF);
-            parentID = node.parent.data;
-
-            svg =  d3.select(this)
-                .append("svg")
-                .attr("width", "100%")
-                .attr("height", "100%")
-                .attr("viewBox", "0 0 " + (width + 15 + margin.left + margin.right) + " " + (height + margin.top + margin.bottom + legendHeight))
-                .classed("rollcalls-heatmap", true)
-                .append("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-            var initialYear = y_elements[0].split("/")[1]; // Get Year, format is mm/yy
-
-            var hashYears = {};
-            y_elements.forEach(function (d) {
-                var currentYear = d.split("/")[1];
-                if (hashYears[currentYear] === undefined)
-                {
-                    hashYears[currentYear] = [d];
-                }
-                else
-                    hashYears[currentYear].push(d);
-            });
-
-            console.log(hashYears);
-
-            var yearsLabels = svg.selectAll('.yearLabel')
-                .data(d3.keys(hashYears));
-
-            var yearLabelOffset = width+20;
-
-            yearsLabels.enter().append('text')
-                .attr('class', 'yearLabel')
-                .attr("transform", function (d) {
-                    var arraySize =  hashYears[d].length;
-                    var rotate = true;
-                    var yValue;
-                    if (arraySize === 1){
-                        yValue = yScale(hashYears[d][0]) + 10;
-                        rotate = false;
-                    }
-                    else
-                        if ( arraySize  % 2 === 0)
-                            yValue = yScale(hashYears[d][arraySize/2]);
-                        else
-                            yValue = yScale(hashYears[d][(arraySize+1)/2]);
-
-                    var rotateValue = rotate ? 270 : 0;
-                    return "translate(" + yearLabelOffset + " ," +
-                       yValue + ") rotate(" + rotateValue  + ")";
-                })
-                .style("text-anchor", "middle")
-                .style('font-size', 'small')
-                .text(function (d) {
-                    return d;
-                });
-
-            var yearsBg = svg.selectAll(".yearsBg")
-                .data(y_elements);
-
-            yearsBg.enter().append("rect")
-                .attr("x", 0)
-                .attr("y", function(d) { return yScale(d); })
-                .attr("rx", 2)
-                .attr("ry", 2)
-                .attr("class", "yearBg")
-                .attr("width", width)
-                .attr("height", itemHeight)
-                .style("fill", function (d) {
-                    var year = d.split("/")[1];
-                    var index = (year - initialYear)  % yearsColors.length;
-                    return yearsColors[index];
-                });
-
-            yearsBg.exit().remove();
-
-            svg.append("g")
-                .attr("class", "y axis")
-                .call(yAxis)
-                .selectAll('text')
-                .attr('font-weight', 'normal');
-
-            svg.append("g")
-                .attr("class", "x axis")
-                .call(xAxis)
-                .selectAll('text')
-                .attr('font-weight', 'normal')
-                .style("text-anchor", "start")
-                .attr("dx", "-.4em")
-                .attr("dy", ".5em");
-
-            var cards = svg.selectAll(".rollCall")
-                .data(data);
-
-            cards.append("title");
-
-            cards.enter().append("rect")
-                .attr("x", function(d) { return xScale(d.index); })
-                .attr("y", function(d) { return yScale(d.period); })
-                .attr("rx", 4)
-                .attr("ry", 4)
-                .attr("class", function (d) {return (d.selected)? "rollCall bordered selected": ( (d.hovered)? "rollCall bordered hovered" : "rollCall bordered"); })
-                .attr("width", itemWidth)
-                .attr("height", itemHeight)
-                .style("stroke-width", function (d) {
-                    return (d.hovered) ? "6px" : "2px";
-                })
-                .style("fill", "grey")
-                .on('click', function(d) {
-                    mouseClickRollCall(d);
-                })
-                .on("mousemove",  function(d) {
-                    div.style("left", d3.event.pageX+15+"px");
-                    div.style("top", d3.event.pageY-25+"px");
-                    div.style("display", "inline-block");
-                    div.html(function() {
-                            var htmlContent = d.type + ' ' + d.number + '/' + d.year + "<br><br>";
-                            if (d.rate !== null) {
-                                htmlContent += "<div id='tipDiv'></div><br>";
-                            }
-                            else
-                                if (d.vote !== 'null')
-                                    htmlContent += '<p>' + englishVotes[d.vote] + '</p>';
-                                else
-                                    htmlContent += '<p>' + 'No Votes' + '</p>';
-
-                                return htmlContent;
-                        }
-                    );
-
-                    if (d.rate !== null) {
-                        drawPieChart(d.countVotes);
-                    }
-
-                })
-                .on("mouseover", mouseoverRollCall)
-                .on("mouseout", function(d){
-                    mouseoutRollCall(d);
-                    div.style("display", "none");
-                });
-
-            cards.transition().duration(1000)
-                .style("fill", function(d) { return setRollCallFill(d); });
-
-            //cards.select("title").text(function(d) { return d.rate; });
-
-            cards.exit().remove();
-
-            // text label for the x axis
-            svg.append("text")
-                .attr("transform",
-                    "translate(" + (width/2) + " ," +
-                    (0 - margin.top/2) + ")")
-                .style("text-anchor", "middle")
-                .text("Number of Roll Calls");
-
-            var legend = svg.selectAll(".legend")
-                .data(colors, function(d) { return d; });
-
-            legend.enter().append("g")
-                .attr("class", "legend");
-
-            var totalLegendWidth = 528;
-            var centralizeOffset = 96;
-            var legendItemWidth = 24;
-            var legendItemHeight = 12;
-
-            legend.append("rect")
-                .attr("x", function(d, i) { return (legendItemWidth*2) * i + centralizeOffset; })
-                .attr("y", height + (legendHeight/2))
-                .attr("width", legendItemWidth * 2)
-                .attr("height", legendItemHeight)
-                .style("fill", function(d, i) { return colors[i]; });
-
-            svg.append('text').text('Yes (approved)')
-                .attr({
-                    dx: totalLegendWidth + centralizeOffset,
-                    dy: height + (legendHeight/2) + legendItemHeight*2.5,
-                    //'font-size': 'small',
-                    fill:'black'
-                })
-                .style("text-anchor", "end");
-
-            svg.append('text').text('No (not approved)')
-                .attr({
-                    dx: centralizeOffset,
-                    dy: height + (legendHeight/2) + legendItemHeight*2.5,
-                    //'font-size': 'small',
-                    fill:'black'
-                })
-
-            /*legend.append("text")
-                .attr("class", "mono")
-                .text(function(d) { return "≥ " + Math.round(d); })
-                .attr("x", function(d, i) { return legendElementWidth * i; })
-                .attr("y", height + gridSize);
-
-            legend.exit().remove();*/
+            //chart.drawRollCallsHeatMap(data, this);
         });
     }
 
@@ -390,6 +155,256 @@ function rollCallsHeatmap(){
         });
     }
 
+    // @param currentEnv = Current panel-body
+    chart.drawRollCallsHeatMap = function(data, currentEnv)
+    {
+        //var maxRollCallsPeriod = d3.max(data, function (d) { return d.index; });
+        //var itemSize = 15;
+        //  legendElementWidth = gridSize*2;
+
+        //var periods = getUniqueValues(data, "period");
+
+        //var periodsAsKeys = array_flip(periods);
+
+        var x_elements = d3.set(data.map(function( rc ) { return rc.index; } )).values(),
+            y_elements = d3.set(data.map(function( rc ) { return rc.period; } )).values();
+
+
+        itemWidth = Math.floor(width / x_elements.length);
+        itemHeight = Math.floor(height / y_elements.length);
+
+
+        var xScale = d3.scale.ordinal()
+            .domain(x_elements)
+            .rangeBands([0, width]);
+
+        var xAxis = d3.svg.axis()
+            .scale(xScale)
+            .orient("top")
+            .innerTickSize(-height)
+            .outerTickSize(0)
+            .tickPadding(10);
+
+        var yScale = d3.scale.ordinal()
+            .domain(y_elements)
+            .rangeBands([0, height]); // Eliminate the unused space in chart bottom
+
+        var yAxis = d3.svg.axis()
+            .scale(yScale)
+            .tickValues(y_elements)
+            .tickFormat(function(d) { var period = d.split("/"); return monthNames[period[0]];})
+            .orient("left");
+
+        var panelID = ($(currentEnv).parents('.panel')).attr('id');
+        var node = tree.getNode(panelID, tree.traverseBF);
+        parentID = node.parent.data;
+
+        svg =  d3.select(currentEnv)
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("viewBox", "0 0 " + (width + 15 + margin.left + margin.right) + " " + (height + margin.top + margin.bottom + legendHeight))
+            .classed("rollcalls-heatmap", true)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        var initialYear = y_elements[0].split("/")[1]; // Get Year, format is mm/yy
+
+        var hashYears = {};
+        y_elements.forEach(function (d) {
+            var currentYear = d.split("/")[1];
+            if (hashYears[currentYear] === undefined)
+            {
+                hashYears[currentYear] = [d];
+            }
+            else
+                hashYears[currentYear].push(d);
+        });
+
+        console.log(hashYears);
+
+        var yearsLabels = svg.selectAll('.yearLabel')
+            .data(d3.keys(hashYears));
+
+        var yearLabelOffset = width+20;
+
+        yearsLabels.enter().append('text')
+            .attr('class', 'yearLabel')
+            .attr("transform", function (d) {
+                var arraySize =  hashYears[d].length;
+                var rotate = true;
+                var yValue;
+                if (arraySize === 1){
+                    yValue = yScale(hashYears[d][0]) + 10;
+                    rotate = false;
+                }
+                else
+                if ( arraySize  % 2 === 0)
+                    yValue = yScale(hashYears[d][arraySize/2]);
+                else
+                    yValue = yScale(hashYears[d][(arraySize+1)/2]);
+
+                var rotateValue = rotate ? 270 : 0;
+                return "translate(" + yearLabelOffset + " ," +
+                    yValue + ") rotate(" + rotateValue  + ")";
+            })
+            .style("text-anchor", "middle")
+            .style('font-size', 'small')
+            .text(function (d) {
+                return d;
+            });
+
+        var yearsBg = svg.selectAll(".yearsBg")
+            .data(y_elements);
+
+        yearsBg.enter().append("rect")
+            .attr("x", 0)
+            .attr("y", function(d) { return yScale(d); })
+            .attr("rx", 2)
+            .attr("ry", 2)
+            .attr("class", "yearBg")
+            .attr("width", width)
+            .attr("height", itemHeight)
+            .style("fill", function (d) {
+                var year = d.split("/")[1];
+                var index = (year - initialYear)  % yearsColors.length;
+                return yearsColors[index];
+            });
+
+        yearsBg.exit().remove();
+
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+            .selectAll('text')
+            .attr('font-weight', 'normal');
+
+        svg.append("g")
+            .attr("class", "x axis")
+            .call(xAxis)
+            .selectAll('text')
+            .attr('font-weight', 'normal')
+            .style("text-anchor", "start")
+            .attr("dx", "-.4em")
+            .attr("dy", ".5em");
+
+        var cards = svg.selectAll(".rollCall")
+            .data(data);
+
+        cards.append("title");
+
+        cards.enter().append("rect")
+            .attr("x", function(d) { return xScale(d.index); })
+            .attr("y", function(d) { return yScale(d.period); })
+            .attr("rx", 4)
+            .attr("ry", 4)
+            .attr("class", function (d) {return (d.selected)? "rollCall bordered selected": ( (d.hovered)? "rollCall bordered hovered" : "rollCall bordered"); })
+            .attr("width", itemWidth)
+            .attr("height", itemHeight)
+            .style("stroke-width", function (d) {
+                return (d.hovered) ? "6px" : "2px";
+            })
+            .style("fill", "grey")
+            .on('click', function(d) {
+                mouseClickRollCall(d);
+            })
+            .on("mousemove",  function(d) {
+                div.style("left", d3.event.pageX+15+"px");
+                div.style("top", d3.event.pageY-25+"px");
+                div.style("display", "inline-block");
+                div.html(function() {
+                        var htmlContent = d.type + ' ' + d.number + '/' + d.year + "<br><br>";
+                        if (d.rate !== null) {
+                            htmlContent += "<div id='tipDiv'></div><br>";
+                        }
+                        else
+                        if (d.vote !== 'null')
+                            htmlContent += '<p>' + englishVotes[d.vote] + '</p>';
+                        else
+                            htmlContent += '<p>' + 'No Votes' + '</p>';
+
+                        return htmlContent;
+                    }
+                );
+
+                if (d.rate !== null) {
+                    drawPieChart(d.countVotes);
+                }
+
+            })
+            .on("mouseover", mouseoverRollCall)
+            .on("mouseout", function(d){
+                mouseoutRollCall(d);
+                div.style("display", "none");
+            });
+
+        cards.transition().duration(1000)
+            .style("fill", function(d) { return setRollCallFill(d); });
+
+        //cards.select("title").text(function(d) { return d.rate; });
+
+        cards.exit().remove();
+
+        // text label for the x axis
+        svg.append("text")
+            .attr("transform",
+                "translate(" + (width/2) + " ," +
+                (0 - margin.top/2) + ")")
+            .style("text-anchor", "middle")
+            .text("Number of Roll Calls");
+
+        var legend = svg.selectAll(".legend")
+            .data(colors, function(d) { return d; });
+
+        legend.enter().append("g")
+            .attr("class", "legend");
+
+        var totalLegendWidth = 528;
+        var centralizeOffset = 96;
+        var legendItemWidth = 24;
+        var legendItemHeight = 12;
+
+        legend.append("rect")
+            .attr("x", function(d, i) { return (legendItemWidth*2) * i + centralizeOffset; })
+            .attr("y", height + (legendHeight/2))
+            .attr("width", legendItemWidth * 2)
+            .attr("height", legendItemHeight)
+            .style("fill", function(d, i) { return colors[i]; });
+
+        svg.append('text').text('Yes (approved)')
+            .attr({
+                dx: totalLegendWidth + centralizeOffset,
+                dy: height + (legendHeight/2) + legendItemHeight*2.5,
+                //'font-size': 'small',
+                fill:'black'
+            })
+            .style("text-anchor", "end");
+
+        svg.append('text').text('No (not approved)')
+            .attr({
+                dx: centralizeOffset,
+                dy: height + (legendHeight/2) + legendItemHeight*2.5,
+                //'font-size': 'small',
+                fill:'black'
+            })
+
+        /*legend.append("text")
+            .attr("class", "mono")
+            .text(function(d) { return "≥ " + Math.round(d); })
+            .attr("x", function(d, i) { return legendElementWidth * i; })
+            .attr("y", height + gridSize);
+
+        legend.exit().remove();*/
+    };
+
+    chart.update = function () {
+        svg.selectAll(".rollCall")
+            .transition(750)
+            .style("fill", function(d) { return setRollCallFill(d); })
+            .style("stroke-width", function (d) { return (d.hovered) ? "6px" : "2px"; })
+            .attr("class", function (d) {return (d.selected)? "rollCall bordered selected": ( (d.hovered)? "rollCall bordered hovered" : "rollCall bordered"); });
+    };
+
     function setRollCallFill (d){
         if(d.vote != null){
             return CONGRESS_DEFINE.votoStringToColor[d.vote];
@@ -424,14 +439,6 @@ function rollCallsHeatmap(){
         d.hovered = false;
         dispatch.update();
     }
-
-    chart.update = function () {
-        svg.selectAll(".rollCall")
-            .transition(750)
-            .style("fill", function(d) { return setRollCallFill(d); })
-            .style("stroke-width", function (d) { return (d.hovered) ? "6px" : "2px"; })
-            .attr("class", function (d) {return (d.selected)? "rollCall bordered selected": ( (d.hovered)? "rollCall bordered hovered" : "rollCall bordered"); });
-    };
 
     return d3.rebind(chart, dispatch, 'on');
 }
