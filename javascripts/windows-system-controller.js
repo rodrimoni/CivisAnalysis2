@@ -89,7 +89,7 @@ function checkSelectedValue(id) {
 
 function loadScatterPlotDataByYear() {
     var startYear = 1991;
-    var endYear = 2016;
+    var endYear = 2018;
 
     var deputiesNodesYearsArray = [];
 
@@ -133,7 +133,7 @@ function loadScatterPlotDataByYear() {
 
 function calcExtentValuesByYear() {
     var startYear = 1991;
-    var endYear = 2016;
+    var endYear = 2018;
 
     var extentValuesArray = {};
 
@@ -220,7 +220,7 @@ function refreshDeputies(defer){
         else
             rollCall.votes.forEach( function(vote){
                 deputiesInTheDateRange[vote.deputyID] = deputiesArray[vote.deputyID];
-                deputiesInTheDateRange[vote.deputyID].party 		= vote.party; // refresh party
+                deputiesInTheDateRange[vote.deputyID].party = vote.party; // refresh party
             })
     });
 
@@ -370,7 +370,6 @@ function calcNumVotes(deputiesInTheDateRange){
 }
 
 function filterDeputies () {
-
     // calc the number of votes for each congressman
     calcNumVotes(deputiesInTheDateRange);
 
@@ -489,19 +488,24 @@ function getPartyCount(cluster) {
 }
 
 function calcThePartyTracesByYear( periodOfYears ){
-    var startYear = 1991, endYear = 2016;
+    var startYear = 1991, endYear = 2018;
 
     function calcOneYearRecursive(year) {
         console.log('calcThePartyTracesByYear ' + year);
         if(year > endYear){  partyTrace['DEM'] = mergeObjects(partyTrace['PFL'],partyTrace['DEM']);
             partyTrace['PR'] = mergeObjects(partyTrace['PL'],partyTrace['PR']);
             partyTrace['PP'] = mergeObjects(partyTrace['PPB'],partyTrace['PP']);
+            partyTrace['Podemos'] = mergeObjects(partyTrace['PTN'],partyTrace['Podemos']);
+            partyTrace['MDB'] = mergeObjects(partyTrace['PMDB'],partyTrace['MDB']);
 
             delete partyTrace['PFL'];
             delete partyTrace['PL'];
             delete partyTrace['PPB'];
+            delete partyTrace['PTN'];
+            delete partyTrace['PMDB'];
             //delete partyTrace['PPR']; // ??
             //delete partyTrace['PDS']; // ??
+            //delete PTN -> PODEMOS?
 
             var saveTrace = {
                 "extents": yearPartyExtent,
@@ -517,18 +521,17 @@ function calcThePartyTracesByYear( periodOfYears ){
 
         updateDataforDateRange( period , function(){
             var filteredDeputies = filterDeputies();
-            var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall();
-            console.log(matrixDeputiesPerRollCall);
+            var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
 
             // var SVDdata = calcSVD(filteredDeputies,rollCallInTheDateRange);
             calcSVD(matrixDeputiesPerRollCall, function(SVDdata) {
                 // Deputies array
                 deputyNodes = createDeputyNodes(SVDdata.deputies,filteredDeputies);
 
-                scaleAdjustment().setGovernmentTo3rdQuadrant(deputyNodes,period[1]);
+                scaleAdjustment().setGovernmentTo3rdQuadrant(d3.values(deputyNodes),period[1]);
 
                 // store parties trace
-                var parties = calcPartiesSizeAndCenter(deputyNodes);
+                var parties = calcPartiesSizeAndCenter(d3.values(deputyNodes));
                 // $.each(parties, function(party){
                 // 	if(filter[party] === undefined) { delete parties[party] }
                 // });
@@ -544,7 +547,7 @@ function calcThePartyTracesByYear( periodOfYears ){
                 });
                 yearPartyExtent[year] = d3.extent( d3.entries(parties), function(d){ return d.value.center[1] });
 
-                //calcOneYearRecursive(year+periodOfYears);
+                calcOneYearRecursive(year+periodOfYears);
             })
         })
 
@@ -696,3 +699,113 @@ function calcRollCallRate(rollCalls,deputies){
         }
     })
 }
+
+/// =======================================================================================
+/// =======================================================================================
+//
+//	 FUNCTIONS TO CALC DEPUTIES history , pre-calc
+//
+// it should have deputies with the constant deputyID  == arrayDeputies
+// it should have rollCalls with the constant RollCallID  == arrayRollCalls
+
+function calcPreSetsHistory(type) {
+    function calcRecursive(i) {
+        console.log(i + " gerado precalc ")
+
+        if (type == 'year') {
+            if (i == CONGRESS_DEFINE.endingYear + 1) return;
+        }
+        else if (type == 'legislature') {
+            if (CONGRESS_DEFINE.legislatures.length == i) {
+                return;
+            }
+        }
+        else if (type == 'president') {
+            if (CONGRESS_DEFINE.presidents.length == i) {
+                return;
+            }
+        }
+
+        var start, end;
+        if (type == 'year') {
+            start = new Date(i, 0);
+            end = new Date(i + 1, 0);
+        }
+        else if (type == 'legislature') {
+            start = CONGRESS_DEFINE.legislatures[i].period[0];
+            end = CONGRESS_DEFINE.legislatures[i].period[1];
+        }
+        else if (type == 'president') {
+            start = CONGRESS_DEFINE.presidents[i].period[0];
+            end = CONGRESS_DEFINE.presidents[i].period[1];
+        }
+
+
+        updateDataforDateRange([start, end], function () {
+            var filteredDeputies = filterDeputies();
+            var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
+
+            calcSVD(matrixDeputiesPerRollCall, function (SVDdata) {
+                // Deputies array
+                deputyNodes = createDeputyNodes(SVDdata.deputies, filteredDeputies);
+                // RollCalls array
+                // Adjust the SVD result to the political spectrum
+                scaleAdjustment().setGovernmentTo3rdQuadrant(d3.values(deputyNodes), end);
+
+                calcRollCallRate(currentRollCalls, currentDeputies);
+
+                // STORE OBJECT - TO SAVE
+                var storeCalcObject = {deputyNodes: []};
+
+                // store deputy trace
+                deputyNodes.forEach(function (deputy) {
+                    deputy.scatterplot[0] = Number(deputy.scatterplot[0].toPrecision(4));
+                    deputy.scatterplot[1] = Number(deputy.scatterplot[1].toPrecision(4));
+
+                    var storeDeputyTrace = {
+                        deputyID: deputy.deputyID,
+                        scatterplot: deputy.scatterplot,
+                        party: deputy.party
+                    };
+
+                    storeCalcObject.deputyNodes.push(storeDeputyTrace)
+                });
+
+                // SAVE!!
+                if (type) console.save(storeCalcObject, type + '.' + i + '.json');
+                //====================================
+                calcRecursive(i+1);
+            });
+        })
+
+    }
+    if(type == 'year') calcRecursive(CONGRESS_DEFINE.startingYear);
+    else calcRecursive(0);
+}
+
+(function(console){
+
+    console.save = function(data, filename){
+
+        if(!data) {
+            console.error('Console.save: No data')
+            return;
+        }
+
+        if(!filename) filename = 'console.json'
+
+        if(typeof data === "object"){
+            data = JSON.stringify(data, undefined, 4)
+        }
+
+        var blob = new Blob([data], {type: 'text/json'}),
+            e    = document.createEvent('MouseEvents'),
+            a    = document.createElement('a')
+
+        a.download = filename
+        a.href = window.URL.createObjectURL(blob)
+        a.dataset.downloadurl =  ['text/json', a.download, a.href].join(':')
+        e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
+        a.dispatchEvent(e)
+    }
+})(console)

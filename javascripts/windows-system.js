@@ -63,7 +63,14 @@ function initSystem() {
     loadDeputiesNodesByYear(deputiesNodesByYear);
     loadRollCalls(arrayRollCalls, function () {
         createNewChild(TIME_LINE, {});
+
+        //TODO: create a separate application to load these files
         //createTraces1by1();
+        //calcPreSetsHistory("year");
+        //calcPreSetsHistory("legislature");
+        //calcPreSetsHistory("president");
+        //calcExtentValuesByYear();
+        //loadScatterPlotDataByYear();
     });
 }
 
