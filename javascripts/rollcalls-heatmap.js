@@ -34,7 +34,9 @@ function rollCallsHeatmap(){
 
     function chart(selection) {
         selection.each(function (data) {
-            //chart.drawRollCallsHeatMap(data, this);
+            // filter empty, all rollCalls
+            var rcs = groupRollCallsByMonth(data, []);
+            chart.drawRollCallsHeatMap(rcs, this);
         });
     }
 
@@ -155,8 +157,27 @@ function rollCallsHeatmap(){
         });
     }
 
-    // @param currentEnv = Current panel-body
-    chart.drawRollCallsHeatMap = function(data, currentEnv)
+    chart.selectRollCallsByType = function(motionTypes, panelID)
+    {
+        var htmlContent = $('#' +panelID + " .panel-body");
+
+        var filter = [];
+        motionTypes.forEach(function (e) {
+            filter.push(e.value);
+        });
+
+        // Remove old svg
+        d3.select('#' +panelID + " .rollcalls-heatmap").remove();
+
+        // Load data with all rollCalls
+        var data = d3.select('#' +panelID + " .panel-body").data()[0];
+        // Group by Month with filter
+        var rcs = groupRollCallsByMonth(data, filter);
+        chart.drawRollCallsHeatMap(rcs, htmlContent[0]);
+    };
+
+    // @param htmlBody = Current panel-body
+    chart.drawRollCallsHeatMap = function(data, htmlBody)
     {
         //var maxRollCallsPeriod = d3.max(data, function (d) { return d.index; });
         //var itemSize = 15;
@@ -195,11 +216,11 @@ function rollCallsHeatmap(){
             .tickFormat(function(d) { var period = d.split("/"); return monthNames[period[0]];})
             .orient("left");
 
-        var panelID = ($(currentEnv).parents('.panel')).attr('id');
+        var panelID = ($(htmlBody).parents('.panel')).attr('id');
         var node = tree.getNode(panelID, tree.traverseBF);
         parentID = node.parent.data;
 
-        svg =  d3.select(currentEnv)
+        svg =  d3.select(htmlBody)
             .append("svg")
             .attr("width", "100%")
             .attr("height", "100%")
@@ -404,6 +425,53 @@ function rollCallsHeatmap(){
             .style("stroke-width", function (d) { return (d.hovered) ? "6px" : "2px"; })
             .attr("class", function (d) {return (d.selected)? "rollCall bordered selected": ( (d.hovered)? "rollCall bordered hovered" : "rollCall bordered"); });
     };
+
+    function filterMotions(arr, filter) {
+            return arr.filter(function (e) {
+                var result = false;
+                for (var i = 0; i<filter.length; i++) {
+                    result = result || e.type === filter[i];
+                }
+                return result;
+            });
+    }
+
+    function groupRollCallsByMonth(rcs, filter) {
+        var data = [];
+        var lastMonth;
+        var countRollCalls = 0;
+
+        // filter.length == 0, all rollcals must be selected
+        if(filter.length > 0){
+            rcs = filterMotions(rcs, filter);
+        }
+
+        rcs.forEach(function (rc) {
+            var currentMonth = rc.datetime.getMonth();
+            if (lastMonth === undefined)
+                lastMonth = currentMonth;
+            else
+            if (lastMonth !== currentMonth){
+                countRollCalls = 0;
+                lastMonth = currentMonth;
+            }
+
+            var currentYear = rc.datetime.getFullYear();
+            var period = currentMonth + "/" + currentYear;
+            var obj = rc;
+            // new copy without reference
+            //obj = Object.assign({}, rc);
+            obj.period = period;
+            obj.index = countRollCalls;
+            obj.selected = true;
+            obj.hovered = false;
+            if (obj.rate !== 'noVotes') {
+                data.push(obj);
+                countRollCalls++;
+            }
+        });
+        return data;
+    }
 
     function setRollCallFill (d){
         if(d.vote != null){

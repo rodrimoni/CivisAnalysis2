@@ -88,7 +88,7 @@ function initializeChart(newID, chartObj) {
 
             console.log(rollCallsRates);
 
-            addConfigMenu(newID);
+            addConfigMenu(newID, 'scatterplot');
             addClusteringMenu(newID);
 
             var deputies = [];
@@ -124,7 +124,7 @@ function initializeChart(newID, chartObj) {
             deputyNodes[newID] = currentDeputies;
             rollCallsRates[newID] = currentRollCalls;
 
-            addConfigMenu(newID);
+            addConfigMenu(newID, 'chamberInfographic');
             addSearchDeputyMenu(newID, chartObj.data.deputies);
 
             $('#' +newID).attr('data-type-period', chartObj.panelClass);
@@ -135,7 +135,7 @@ function initializeChart(newID, chartObj) {
             break;
         case ROLLCALLS_HEATMAP:
             chart = rollCallsHeatmap();
-            addConfigMenu(newID);
+            addConfigMenu(newID, 'rollCallsHeatmap');
             addFilterRollCallsMenu(newID, chartObj.data);
             chart.on('update', function () {
                 var node = tree.getNode(newID, tree.traverseBF);
@@ -155,9 +155,9 @@ function initializeChart(newID, chartObj) {
     return chart;
 }
 
-function addConfigMenu(newID) {
+function addConfigMenu(newID, panelClass) {
     $('#' +newID + ' .panel-heading .btn-group')
-        .append('<button class="btn btn-default btn-settings-scatterplot toggle-dropdown" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i></button> ')
+        .append('<button class="btn btn-default btn-settings-' + panelClass + ' toggle-dropdown" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i></button> ')
         .append('<ul class="dropdown-menu panel-settings"></ul>');
 }
 
@@ -177,7 +177,7 @@ function addFilterRollCallsMenu(newID, rollCalls) {
 
     // Get motions unique type array
     var rollCallsTypes = d3.map(rollCalls, function(d){return d.type;}).keys();
-    rollCallsTypes.sort();
+    var defaultOptions = rollCallsTypes.sort();
 
     // Convert to {key : index, value: typeMotion}
     rollCallsTypes = d3.entries(rollCallsTypes);
@@ -185,10 +185,21 @@ function addFilterRollCallsMenu(newID, rollCalls) {
     var rollCallsTypes = new Bloodhound({
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
-        local: rollCallsTypes
+        local: rollCallsTypes,
+        identify: function(obj) { return obj.value; }
     });
 
     rollCallsTypes.initialize();
+
+    // Generate all values to give hints to user
+    function values(q, sync) {
+        if (q === '') {
+            sync(rollCallsTypes.get(defaultOptions));
+        }
+        else {
+            rollCallsTypes.search(q, sync);
+        }
+    }
 
     var elt = $('#' + newID + ' .filterMotions');
     elt.tagsinput({
@@ -197,13 +208,29 @@ function addFilterRollCallsMenu(newID, rollCalls) {
         typeaheadjs: [{
                 hint: true,
                 highlight: true,
-                minLength: 1
+                minLength: 0
             },
             {
                 name: 'rollCallsTypes',
                 displayKey: 'value',
-                source: rollCallsTypes.ttAdapter()
+                limit: 10,
+                source: values
             }]
+    });
+
+    var chart;
+    elt.on('itemAdded', function(event) {
+        /* Select the deputies in input */
+        var motionTypes = $(this).tagsinput('items');
+        chart = tree.getNode(newID, tree.traverseBF).chart;
+        chart.selectRollCallsByType(motionTypes, newID);
+    });
+
+    elt.on('itemRemoved', function(event) {
+        /* Select the deputies in input */
+        var motionTypes = $(this).tagsinput('items');
+        chart = tree.getNode(newID, tree.traverseBF).chart;
+        chart.selectRollCallsByType(motionTypes, newID);
     });
 
     /* Prevents click to close the settings menu */
@@ -280,7 +307,6 @@ function addSearchDeputyMenu(newID, deputies) {
             chart = tree.getNode(newID, tree.traverseBF).chart;
             chart.selectDeputiesBySearch(deputies);
         }
-
     });
 
 
@@ -554,13 +580,6 @@ function createNewChild(currentId, chartObj) {
         setUpPanel(newID);
 
         if (chart !== null) {
-            if (chartObj.chartID === ROLLCALLS_HEATMAP)
-            {
-                //FIXME: gambiarra feita para gerar um novo heatmap fora da classe
-                var teste = d3.select('#' +newID + " .panel-body");
-                console.log(teste[0]);
-                chart.drawRollCallsHeatMap(chartObj.data, teste[0][0]);
-            }
             d3.select("#" + newID + " .panel-body")
                 .datum(chartObj.data)
                 .call(chart);
@@ -931,42 +950,11 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
             }
 
             // Get the corresponding rollcalls to this deputyNodes set
-            var rcs =  groupRollCallsByMonth(rollCallsRates[panelID]);
+            var rcs =  rollCallsRates[panelID];
             console.log(rcs);
             chartObj = {'chartID' : ROLLCALLS_HEATMAP, 'data': rcs, 'title':title};
             createNewChild(panelID, chartObj);
         }
-}
-
-function groupRollCallsByMonth(rcs) {
-    var data = [];
-    var lastMonth;
-    var countRollCalls = 0;
-
-    rcs.forEach(function (rc) {
-        var currentMonth = rc.datetime.getMonth();
-        if (lastMonth === undefined)
-            lastMonth = currentMonth;
-        else
-            if (lastMonth !== currentMonth){
-                countRollCalls = 0;
-                lastMonth = currentMonth;
-            }
-
-        var currentYear = rc.datetime.getFullYear();
-        var period = currentMonth + "/" + currentYear;
-        var obj;
-        obj = rc;
-        obj.period = period;
-        obj.index = countRollCalls;
-        obj.selected = true;
-        obj.hovered = false;
-        if (obj.rate !== 'noVotes') {
-            data.push(obj);
-            countRollCalls++;
-        }
-    });
-    return data;
 }
 
 /**
@@ -1232,9 +1220,8 @@ function updateRollCalls(parentID) {
         // reset deputies
         deputyNodes[parentID].forEach(function (deputy) { deputy.rate = null; deputy.vote = null; });
 
-        if (node.typeChart === CHAMBER_INFOGRAPHIC)        {
+        if (node.typeChart === CHAMBER_INFOGRAPHIC)
             node.chart.resetParties();
-        }
     }
 
     else {

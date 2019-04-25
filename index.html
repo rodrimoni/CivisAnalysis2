@@ -245,6 +245,12 @@
             event.stopPropagation();
         });
 
+        /* Focus input roll calls filter */
+        /*windowSystem.on('shown.bs.dropdown', '.btn-group', function(){
+            if ($(this).parent().siblings('.panel-body').find('.rollcalls-heatmap').length > 0)
+                $(this).find('input').focus();
+        });*/
+
         windowSystem.on('mousedown', '.panel .node', function(event){
             checkPeriodTimeLineCrop(event, this);
         });
