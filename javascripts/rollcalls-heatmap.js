@@ -29,6 +29,7 @@ function rollCallsHeatmap(){
     var div = d3.select(".toolTip");
     var svg;
     var parentID;
+    var panelID;
 
     var itemWidth, itemHeight;
 
@@ -216,7 +217,7 @@ function rollCallsHeatmap(){
             .tickFormat(function(d) { var period = d.split("/"); return monthNames[period[0]];})
             .orient("left");
 
-        var panelID = ($(htmlBody).parents('.panel')).attr('id');
+        panelID = ($(htmlBody).parents('.panel')).attr('id');
         var node = tree.getNode(panelID, tree.traverseBF);
         parentID = node.parent.data;
 
@@ -511,6 +512,9 @@ function rollCallsHeatmap(){
 
     function mouseClickRollCall(d)
     {
+        var eltInput = $('#' + panelID + ' .searchRollCall.tt-input');
+        // Reset the selected RollCall in filter
+        eltInput.val('');
         rollCallsRates[parentID].forEach(function (rc) {
            if (rc.rollCallID === d.rollCallID)
                rc.selected = true;

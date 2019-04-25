@@ -626,6 +626,10 @@ function resetSelection(){
         updateRollCalls(key);
     }
 
+    /* Reset the roll calls selection by search */
+    $('.searchRollCall.tt-input').each(function () {
+       $(this).val('');
+    });
     /* Reset the deputies selection by search */
     $('.searchDeputies').tagsinput('removeAll');
 
