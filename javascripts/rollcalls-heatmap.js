@@ -426,6 +426,18 @@ function rollCallsHeatmap(){
             .attr("class", function (d) {return (d.selected)? "rollCall bordered selected": ( (d.hovered)? "rollCall bordered hovered" : "rollCall bordered"); });
     };
 
+    chart.selectRollCallBySearch = function (id)
+    {
+        rollCallsRates[parentID].forEach(function (rc) {
+            if (rc.rollCallID === id)
+                rc.selected = true;
+            else
+                rc.selected = false;
+        });
+
+        dispatch.update()
+    }
+
     function filterMotions(arr, filter) {
             return arr.filter(function (e) {
                 var result = false;

@@ -135,8 +135,11 @@ function initializeChart(newID, chartObj) {
             break;
         case ROLLCALLS_HEATMAP:
             chart = rollCallsHeatmap();
+
             addConfigMenu(newID, 'rollCallsHeatmap');
+            addSearchRollCallMenu(newID, chartObj.data);
             addFilterRollCallsMenu(newID, chartObj.data);
+
             chart.on('update', function () {
                 var node = tree.getNode(newID, tree.traverseBF);
                 var parentID = node.parent.data;
@@ -166,6 +169,49 @@ function addClusteringMenu(newID) {
         .append('<li role="presentation" class="dropdown-header">Clustering with K-Means</li>')
         .append('<li> Select the value of K: <br> <input id= "slider-'+ newID +'" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="10"/></li>')
 
+}
+
+function addSearchRollCallMenu(newID, rollCalls) {
+    $("#" + newID + " .panel-settings")
+        .append('<li role="presentation" class="dropdown-header">Select one Roll Call </li>')
+        .append('<li><input type="text" ' +
+            'class="form-control typeahead searchRollCall" ' +
+            'placeholder="Type a Roll Call name..."/> </li>');
+
+    rollCalls = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('rollCallName'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        local: rollCalls
+    });
+
+    console.log(rollCalls);
+
+    var elt = $('#' + newID + ' .searchRollCall');
+
+    elt.typeahead({
+            hint: true,
+            highlight: true,
+            minLength: 1
+        },
+        {
+            name: 'rollCalls',
+            source: rollCalls.ttAdapter(),
+            displayKey: 'rollCallName',
+            templates: {
+                suggestion:
+                    function (data) {
+                        return '<div><strong>' + data.rollCallName +'</strong> – Voted in: ' + data.datetime.toLocaleString() +'</div>';
+                    }
+            }
+        });
+
+    var chart;
+
+    elt.bind('typeahead:select', function(ev, suggestion) {
+        console.log('Selection: ' + suggestion.rollCallID);
+        chart = tree.getNode(newID, tree.traverseBF).chart;
+        chart.selectRollCallBySearch(suggestion.rollCallID);
+    });
 }
 
 function addFilterRollCallsMenu(newID, rollCalls) {
@@ -205,6 +251,7 @@ function addFilterRollCallsMenu(newID, rollCalls) {
     elt.tagsinput({
         itemValue: 'key',
         itemText: 'value',
+        maxTags: 1,
         typeaheadjs: [{
                 hint: true,
                 highlight: true,
@@ -951,7 +998,9 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
 
             // Get the corresponding rollcalls to this deputyNodes set
             var rcs =  rollCallsRates[panelID];
-            console.log(rcs);
+            rcs.map(function (e) {
+               e.rollCallName = e.type + " " + e.number + "/"+ e.year;
+            });
             chartObj = {'chartID' : ROLLCALLS_HEATMAP, 'data': rcs, 'title':title};
             createNewChild(panelID, chartObj);
         }
