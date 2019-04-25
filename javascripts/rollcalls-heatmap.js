@@ -436,7 +436,7 @@ function rollCallsHeatmap(){
         });
 
         dispatch.update()
-    }
+    };
 
     function filterMotions(arr, filter) {
             return arr.filter(function (e) {
@@ -475,8 +475,10 @@ function rollCallsHeatmap(){
             //obj = Object.assign({}, rc);
             obj.period = period;
             obj.index = countRollCalls;
-            obj.selected = true;
-            obj.hovered = false;
+            if (obj.selected === undefined)
+                obj.selected = true;
+            if (obj.hovered === undefined)
+                obj.hovered = false;
             if (obj.rate !== 'noVotes') {
                 data.push(obj);
                 countRollCalls++;

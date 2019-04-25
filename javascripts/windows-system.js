@@ -251,7 +251,6 @@ function addFilterRollCallsMenu(newID, rollCalls) {
     elt.tagsinput({
         itemValue: 'key',
         itemText: 'value',
-        maxTags: 1,
         typeaheadjs: [{
                 hint: true,
                 highlight: true,
