@@ -160,7 +160,7 @@ function initializeChart(newID, chartObj) {
 
 function addConfigMenu(newID, panelClass) {
     $('#' +newID + ' .panel-heading .btn-group')
-        .append('<button class="btn btn-default btn-settings-' + panelClass + ' toggle-dropdown" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i></button> ')
+        .append('<button class="btn btn-default btn-settings-' + panelClass + ' toggle-dropdown" data-toggle="dropdown"><i class="glyphicon glyphicon-menu-hamburger"></i></button> ')
         .append('<ul class="dropdown-menu panel-settings"></ul>');
 }
 
@@ -176,7 +176,7 @@ function addSearchRollCallMenu(newID, rollCalls) {
         .append('<li role="presentation" class="dropdown-header">Select one Roll Call </li>')
         .append('<li><input type="text" ' +
             'class="form-control typeahead searchRollCall" ' +
-            'placeholder="Type a Roll Call name..."/> </li>');
+            'placeholder="Type a Roll Call Identifier (e.g. PL 1234/2001)"/> </li>');
 
     rollCalls = new Bloodhound({
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('rollCallName'),
@@ -212,6 +212,16 @@ function addSearchRollCallMenu(newID, rollCalls) {
         chart = tree.getNode(newID, tree.traverseBF).chart;
         chart.selectRollCallBySearch(suggestion.rollCallID);
     });
+
+    // Get only input, ignore hint
+    var eltInput = $('#' + newID + ' .searchRollCall.tt-input');
+    eltInput.on('keyup', function(){
+        if ($(this).val() === "")
+        {
+            chart = tree.getNode(newID, tree.traverseBF).chart;
+            chart.selectAllRollCalls();
+        }
+    })
 }
 
 function addFilterRollCallsMenu(newID, rollCalls) {
@@ -219,7 +229,7 @@ function addFilterRollCallsMenu(newID, rollCalls) {
         .append('<li role="presentation" class="dropdown-header">Select motion types </li>')
         .append('<li><input type="text" ' +
             'class="form-control typeahead filterMotions" ' +
-            'placeholder="Type motion type to filter..."/> </li>');
+            'placeholder="Type motion type to filter (e.g. PL, PEC, etc.)"/> </li>');
 
     // Get motions unique type array
     var rollCallsTypes = d3.map(rollCalls, function(d){return d.type;}).keys();

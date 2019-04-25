@@ -438,6 +438,15 @@ function rollCallsHeatmap(){
         dispatch.update()
     };
 
+    chart.selectAllRollCalls = function (id)
+    {
+        rollCallsRates[parentID].forEach(function (rc) {
+                rc.selected = true;
+        });
+
+        dispatch.update()
+    };
+
     function filterMotions(arr, filter) {
             return arr.filter(function (e) {
                 var result = false;
