@@ -158,21 +158,6 @@ function rollCallsHeatmap(){
         });
     }
 
-    chart.selectRollCallsByFilter = function(panelID)
-    {
-        var htmlContent = $('#' +panelID + " .panel-body");
-        var filter = getFilters(panelID);
-
-        // Remove old svg
-        d3.select('#' +panelID + " .rollcalls-heatmap").remove();
-
-        // Load data with all rollCalls
-        var data = d3.select('#' +panelID + " .panel-body").data()[0];
-        // Group by Month with filter
-        var rcs = groupRollCallsByMonth(data, filter);
-        chart.drawRollCallsHeatMap(rcs, htmlContent[0]);
-    };
-
     // @param htmlBody = Current panel-body
     chart.drawRollCallsHeatMap = function(data, htmlBody)
     {
@@ -447,6 +432,21 @@ function rollCallsHeatmap(){
         dispatch.update()
     };
 
+    chart.selectRollCallsByFilter = function(panelID)
+    {
+        var htmlContent = $('#' +panelID + " .panel-body");
+        var filter = getFilters(panelID);
+
+        // Remove old svg
+        d3.select('#' +panelID + " .rollcalls-heatmap").remove();
+
+        // Load data with all rollCalls
+        var data = d3.select('#' +panelID + " .panel-body").data()[0];
+        // Group by Month with filter
+        var rcs = groupRollCallsByMonth(data, filter);
+        chart.drawRollCallsHeatMap(rcs, htmlContent[0]);
+    };
+
     function filterMotions(arr, filter) {
             return arr.filter(function (e) {
                 var resultType = false;
@@ -463,7 +463,7 @@ function rollCallsHeatmap(){
 
                 // Verify if are inside the datarange
                 if (filter.dateFilter[0] !== undefined && filter.dateFilter[1] !== undefined)
-                    resultDate = e.datetime > filter.dateFilter[0] && e.datetime < filter.dateFilter[1];
+                    resultDate = e.datetime >= filter.dateFilter[0] && e.datetime <= filter.dateFilter[1];
                 else // The date filter its not setted, so all in period must be selected
                     resultDate = true;
 
@@ -475,12 +475,6 @@ function rollCallsHeatmap(){
         var data = [];
         var lastMonth;
         var countRollCalls = 0;
-        var areTheSameDate = false;
-        console.log(filter);
-
-        if (filter.dateFilter[0] !== undefined && filter.dateFilter[1] !== undefined)
-            if (filter.dateFilter[0].getTime() === filter.dateFilter[1].getTime())
-                areTheSameDate = true;
 
         // motionTypeFilter.length == 0, all rollcalls must be selected
         if(filter.motionTypeFilter.length > 0 || (filter.dateFilter[0] !== undefined && filter.dateFilter[1] !== undefined)){

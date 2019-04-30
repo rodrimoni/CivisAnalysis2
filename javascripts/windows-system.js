@@ -15,13 +15,14 @@ var HEIGHT_ICON = 28;
 var WIDTH_ICON  = 28;
 
 /* Constant to define the charts */
-var TIME_LINE           = 0;
-var SCATTER_PLOT        = 1;
-var BAR_CHART           = 2;
-var FORCE_LAYOUT        = 3;
-var TIME_LINE_CROP      = 4;
-var CHAMBER_INFOGRAPHIC = 5;
-var ROLLCALLS_HEATMAP   = 6;
+var TIME_LINE                   = 0;
+var SCATTER_PLOT                = 1;
+var BAR_CHART                   = 2;
+var FORCE_LAYOUT                = 3;
+var TIME_LINE_CROP              = 4;
+var CHAMBER_INFOGRAPHIC         = 5;
+var ROLLCALLS_HEATMAP           = 6;
+var DEPUTIES_SIMILARITY_FORCE   = 7;
 
 /* Constant to keep the value of ShiftKey */
 var SHIFTKEY = false;
@@ -147,6 +148,10 @@ function initializeChart(newID, chartObj) {
                 updateRollCalls(parentID);
             });
 
+            break;
+        case DEPUTIES_SIMILARITY_FORCE:
+            console.log(chartObj.data);
+            chart = similarityForce();
             break;
         default:
             break;
@@ -304,7 +309,7 @@ function addFilterDateRollCallMenu(newID, rollCalls) {
             '<input type="text" class="input-sm form-control" placeholder="mm/dd/yyyy" name="end" />' +
             '</div> </li>');
 
-    var dateExtents = d3.extent(rollCalls, function(d){ return d.datetime})
+    var dateExtents = d3.extent(rollCalls, function(d){ return d.datetime});
     var startDate = dateExtents[0];
     var endDate = dateExtents[1];
 
@@ -324,8 +329,9 @@ function addFilterDateRollCallMenu(newID, rollCalls) {
         endDate: endDate
     });
 
-    endDate.setHours(0,0,0,0)
-    console.log(endDate);
+    // For some reason endDate of datapicker options resets to time 00:00, so we have to set our endDate to
+    // time 00:00 for then the date be accepted in input.
+    endDate.setHours(0,0,0,0);
 
     // Set initial date
     $( elt+ ' input[name="start"]').datepicker('setDate', startDate);
@@ -342,16 +348,16 @@ function addFilterDateRollCallMenu(newID, rollCalls) {
 
 function getFilters(panelID) {
     var filter = {};
-    var dateElt = $('#' + panelID + ' .input-daterange input');
+    var dateElt = '#' + panelID + ' .input-daterange';
     var motionTypeElt = $('#' + panelID + ' .filterMotions');
 
     var dateFilter = [];
-    dateElt.each(function () {
-        var date = $(this).datepicker('getDate');
-        if (date === null)
-            date = undefined;
-        dateFilter.push(date)
-    });
+    var initialDate = $( dateElt+ ' input[name="start"]').datepicker('getDate');
+    var endDate = $( dateElt+ ' input[name="end"]').datepicker('getDate');
+
+    dateFilter.push(initialDate);
+    dateFilter.push(endDate);
+
     var motionTypeFilter = motionTypeElt.tagsinput('items');
     // Serialize the result of .tagsipunt, get only values of motions. Ex: PEC, PL, MPV, etc.
     motionTypeFilter = motionTypeFilter.map(function (e){
@@ -858,7 +864,7 @@ function handleContextMenuScatterPlot(invokedOn, selectedMenu)
             }
 }
 
-function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechnique, isInfographic)
+function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechnique, type)
 {
     var panelClass, title;
 
@@ -867,7 +873,9 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
 
     var dataRange = setNewDateRange(filteredData);
 
-    if (isInfographic) {
+    var matrixDistanceDeputies;
+
+    if (type === CHAMBER_INFOGRAPHIC) {
         var createChamberInfographic = function(){
 
             currentRollCalls = rollCallInTheDateRange;
@@ -881,13 +889,32 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
         };
     }
     else {
-        var createScatterPlot = function(){
-            currentRollCalls = rollCallInTheDateRange;
-            calcRollCallRate(currentRollCalls, currentDeputies);
 
-            var chartObj = {'chartID': SCATTER_PLOT, 'data': currentDeputies, 'title': title, 'panelClass' : panelClass};
-            createNewChild('panel-1-1', chartObj);
-        };
+        if (type === DEPUTIES_SIMILARITY_FORCE) {
+            var createDeputiesSimilarityForce = function () {
+                var chartObj = {
+                    'chartID': DEPUTIES_SIMILARITY_FORCE,
+                    'data': matrixDistanceDeputies,
+                    'title': title,
+                    'panelClass': panelClass
+                };
+                createNewChild('panel-1-1', chartObj);
+            };
+        }
+        else {
+            var createScatterPlot = function () {
+                currentRollCalls = rollCallInTheDateRange;
+                calcRollCallRate(currentRollCalls, currentDeputies);
+
+                var chartObj = {
+                    'chartID': SCATTER_PLOT,
+                    'data': currentDeputies,
+                    'title': title,
+                    'panelClass': panelClass
+                };
+                createNewChild('panel-1-1', chartObj);
+            };
+        }
     }
 
     $('#loading').css('visibility','visible');
@@ -899,13 +926,13 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
             var filteredDeputies = filterDeputies();
             var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
             if (dimensionalReductionTechnique === "MDS")
-                var matrixDistanceDeputies = createMatrixDistanceDeputies(matrixDeputiesPerRollCall);
+                matrixDistanceDeputies = createMatrixDistanceDeputies(matrixDeputiesPerRollCall);
 
             function calcCallback(twoDimData) {
                 // Deputies array
                 title = filteredData[0].getFullYear() + " to " + filteredData[1].getFullYear();
 
-                if (isInfographic)
+                if (type === CHAMBER_INFOGRAPHIC)
                     createChart = createChamberInfographic;
                 else {
                     title += " (" + dimensionalReductionTechnique + ")";
@@ -932,10 +959,19 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
                 }, 10);
             }
             else if (dimensionalReductionTechnique === "MDS") {
-                $('#loading #msg').text('Generating Political Spectra by MDS');
-                setTimeout(function () {
-                    calcMDS(matrixDistanceDeputies, calcCallback)
-                }, 10);
+                // Does not need to calc the mds, we only want the similarity matrix.
+                if (type === DEPUTIES_SIMILARITY_FORCE)
+                {
+                    title = filteredData[0].getFullYear() + " to " + filteredData[1].getFullYear();
+                    panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear();
+                    createDeputiesSimilarityForce();
+                }
+                else { // The call to calc of MDS here
+                    $('#loading #msg').text('Generating Political Spectra by MDS');
+                    setTimeout(function () {
+                        calcMDS(matrixDistanceDeputies, calcCallback)
+                    }, 10);
+                }
             }
             else if (dimensionalReductionTechnique === "TSNE") {
                 $('#loading #msg').text('Generating Political Spectra by T-SNE');
@@ -952,7 +988,7 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
 
             var createChart;
 
-            if (isInfographic)
+            if (type === CHAMBER_INFOGRAPHIC)
                 createChart = createChamberInfographic;
             else {
                 title += " ("+ dimensionalReductionTechnique + ")";
@@ -978,17 +1014,20 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
     var panelID = invokedOn.parents(".panel").attr('id');
 
     if (selectedMenu.context.id === "scatter-plot-pca") {
-        setUpScatterPlotData(filteredData, panelID, "PCA", false);
+        setUpScatterPlotData(filteredData, panelID, "PCA", SCATTER_PLOT);
     }
     else
         if (selectedMenu.context.id === "chamber-infographic")
-            setUpScatterPlotData(filteredData, panelID, "PCA", true);
+            setUpScatterPlotData(filteredData, panelID, "PCA", CHAMBER_INFOGRAPHIC);
         else
             if (selectedMenu.context.id === "scatter-plot-mds")
-                setUpScatterPlotData(filteredData, panelID, "MDS", false);
+                setUpScatterPlotData(filteredData, panelID, "MDS", SCATTER_PLOT);
             else
                 if (selectedMenu.context.id ==='scatter-plot-tsne')
-                    setUpScatterPlotData(filteredData, panelID, "TSNE", false);
+                    setUpScatterPlotData(filteredData, panelID, "TSNE", SCATTER_PLOT);
+                else
+                    if (selectedMenu.context.id === 'deputies-similarity-force')
+                        setUpScatterPlotData(filteredData, panelID, "MDS", DEPUTIES_SIMILARITY_FORCE);
 }
 
 function handleContextMenuDeputy(invokedOn, selectedMenu)
