@@ -138,7 +138,8 @@ function initializeChart(newID, chartObj) {
 
             addConfigMenu(newID, 'rollCallsHeatmap');
             addSearchRollCallMenu(newID, chartObj.data);
-            addFilterRollCallsMenu(newID, chartObj.data);
+            addFilterMotionTypeMenu(newID, chartObj.data);
+            addFilterDateRollCallMenu(newID, chartObj.data);
 
             chart.on('update', function () {
                 var node = tree.getNode(newID, tree.traverseBF);
@@ -224,7 +225,7 @@ function addSearchRollCallMenu(newID, rollCalls) {
     })
 }
 
-function addFilterRollCallsMenu(newID, rollCalls) {
+function addFilterMotionTypeMenu(newID, rollCalls) {
     $("#" + newID + " .panel-settings")
         .append('<li role="presentation" class="dropdown-header">Select motion types </li>')
         .append('<li><input type="text" ' +
@@ -277,16 +278,14 @@ function addFilterRollCallsMenu(newID, rollCalls) {
     var chart;
     elt.on('itemAdded', function(event) {
         /* Select the deputies in input */
-        var motionTypes = $(this).tagsinput('items');
         chart = tree.getNode(newID, tree.traverseBF).chart;
-        chart.selectRollCallsByType(motionTypes, newID);
+        chart.selectRollCallsByFilter(newID);
     });
 
     elt.on('itemRemoved', function(event) {
         /* Select the deputies in input */
-        var motionTypes = $(this).tagsinput('items');
         chart = tree.getNode(newID, tree.traverseBF).chart;
-        chart.selectRollCallsByType(motionTypes, newID);
+        chart.selectRollCallsByFilter(newID);
     });
 
     /* Prevents click to close the settings menu */
@@ -294,6 +293,75 @@ function addFilterRollCallsMenu(newID, rollCalls) {
         e.stopPropagation();
     });
 
+}
+
+function addFilterDateRollCallMenu(newID, rollCalls) {
+    $("#" + newID + " .panel-settings")
+        .append('<li role="presentation" class="dropdown-header">Select the initial and final date </li>')
+        .append('<li> <div class="input-daterange input-group" id="datepicker">' +
+            '<input type="text" class="input-sm form-control" placeholder="mm/dd/yyyy" name="start" />' +
+            '<span class="input-group-addon">to</span>' +
+            '<input type="text" class="input-sm form-control" placeholder="mm/dd/yyyy" name="end" />' +
+            '</div> </li>');
+
+    var dateExtents = d3.extent(rollCalls, function(d){ return d.datetime})
+    var startDate = dateExtents[0];
+    var endDate = dateExtents[1];
+
+    var elt = '#' + newID + ' .input-daterange';
+    var chart;
+
+    $(elt + ' input').keydown(function(event) {
+        return false;
+    });
+
+    $(elt).datepicker({
+        autoclose: true,
+        keyboardNavigation: false,
+        keepEmptyValues: true,
+        orientation: "bottom",
+        startDate:startDate,
+        endDate: endDate
+    });
+
+    endDate.setHours(0,0,0,0)
+    console.log(endDate);
+
+    // Set initial date
+    $( elt+ ' input[name="start"]').datepicker('setDate', startDate);
+    // Set end date
+    $( elt+ ' input[name="end"]').datepicker('setDate',endDate);
+
+    $(elt).on('changeDate', function(e)
+    {
+        chart = tree.getNode(newID, tree.traverseBF).chart;
+        chart.selectRollCallsByFilter(newID);
+    });
+
+}
+
+function getFilters(panelID) {
+    var filter = {};
+    var dateElt = $('#' + panelID + ' .input-daterange input');
+    var motionTypeElt = $('#' + panelID + ' .filterMotions');
+
+    var dateFilter = [];
+    dateElt.each(function () {
+        var date = $(this).datepicker('getDate');
+        if (date === null)
+            date = undefined;
+        dateFilter.push(date)
+    });
+    var motionTypeFilter = motionTypeElt.tagsinput('items');
+    // Serialize the result of .tagsipunt, get only values of motions. Ex: PEC, PL, MPV, etc.
+    motionTypeFilter = motionTypeFilter.map(function (e){
+       return e.value;
+    });
+
+    filter.dateFilter = dateFilter;
+    filter.motionTypeFilter = motionTypeFilter;
+
+    return filter;
 }
 
 function addSearchDeputyMenu(newID, deputies) {

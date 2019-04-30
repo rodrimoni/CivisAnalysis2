@@ -36,7 +36,7 @@ function rollCallsHeatmap(){
     function chart(selection) {
         selection.each(function (data) {
             // filter empty, all rollCalls
-            var rcs = groupRollCallsByMonth(data, []);
+            var rcs = groupRollCallsByMonth(data, {motionTypeFilter:[], dateFilter:[undefined, undefined]});
             chart.drawRollCallsHeatMap(rcs, this);
         });
     }
@@ -158,14 +158,10 @@ function rollCallsHeatmap(){
         });
     }
 
-    chart.selectRollCallsByType = function(motionTypes, panelID)
+    chart.selectRollCallsByFilter = function(panelID)
     {
         var htmlContent = $('#' +panelID + " .panel-body");
-
-        var filter = [];
-        motionTypes.forEach(function (e) {
-            filter.push(e.value);
-        });
+        var filter = getFilters(panelID);
 
         // Remove old svg
         d3.select('#' +panelID + " .rollcalls-heatmap").remove();
@@ -187,6 +183,9 @@ function rollCallsHeatmap(){
         //var periods = getUniqueValues(data, "period");
 
         //var periodsAsKeys = array_flip(periods);
+
+        if (data.length === 0)
+            return;
 
         var x_elements = d3.set(data.map(function( rc ) { return rc.index; } )).values(),
             y_elements = d3.set(data.map(function( rc ) { return rc.period; } )).values();
@@ -450,11 +449,25 @@ function rollCallsHeatmap(){
 
     function filterMotions(arr, filter) {
             return arr.filter(function (e) {
-                var result = false;
-                for (var i = 0; i<filter.length; i++) {
-                    result = result || e.type === filter[i];
+                var resultType = false;
+                var resultDate = false;
+
+                // Verify if satisfies the motion type
+                if (filter.motionTypeFilter.length > 0)
+                {
+                    if (filter.motionTypeFilter.indexOf(e.type) > -1)
+                        resultType = true;
                 }
-                return result;
+                else // The type filter its not setted, so all types must be selected
+                    resultType = true;
+
+                // Verify if are inside the datarange
+                if (filter.dateFilter[0] !== undefined && filter.dateFilter[1] !== undefined)
+                    resultDate = e.datetime > filter.dateFilter[0] && e.datetime < filter.dateFilter[1];
+                else // The date filter its not setted, so all in period must be selected
+                    resultDate = true;
+
+                return resultType && resultDate;
             });
     }
 
@@ -462,10 +475,16 @@ function rollCallsHeatmap(){
         var data = [];
         var lastMonth;
         var countRollCalls = 0;
+        var areTheSameDate = false;
+        console.log(filter);
 
-        // filter.length == 0, all rollcals must be selected
-        if(filter.length > 0){
-            rcs = filterMotions(rcs, filter);
+        if (filter.dateFilter[0] !== undefined && filter.dateFilter[1] !== undefined)
+            if (filter.dateFilter[0].getTime() === filter.dateFilter[1].getTime())
+                areTheSameDate = true;
+
+        // motionTypeFilter.length == 0, all rollcalls must be selected
+        if(filter.motionTypeFilter.length > 0 || (filter.dateFilter[0] !== undefined && filter.dateFilter[1] !== undefined)){
+                rcs = filterMotions(rcs, filter);
         }
 
         rcs.forEach(function (rc) {
