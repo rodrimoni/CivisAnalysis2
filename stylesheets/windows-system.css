@@ -45,9 +45,10 @@ h2 {
     height: 100%;
 }
 
-#windows-system .slider.slider-horizontal{
+#windows-system .slider.slider-horizontal.slider-k-means{
     width:100%;
 }
+
 
 .container {
     display: inline-block;
@@ -61,7 +62,7 @@ h2 {
 
 .container .svg-content-responsive {
     position: absolute;
-    top: 10px;
+    top: 30px;
     left: 0;
 }
 
@@ -238,4 +239,19 @@ a{
     line-height: 22px;
     cursor: text;
     margin-bottom: 10px;
+}
+
+.svg-container {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%; /* aspect ratio */
+    vertical-align: top;
+    overflow: hidden;
+}
+.svg-content-responsive {
+    display: inline-block;
+    position: absolute;
+    top: 10px;
+    left: 0;
 }

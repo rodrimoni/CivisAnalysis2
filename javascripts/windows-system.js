@@ -710,7 +710,7 @@ function createNewChild(currentId, chartObj) {
         setUpPanel(newID);
 
         if (chart !== null) {
-            d3.select("#" + newID + " .panel-body")
+            d3v4.select("#" + newID + " .panel-body")
                 .datum(chartObj.data)
                 .call(chart);
         }
@@ -874,6 +874,7 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
     var dataRange = setNewDateRange(filteredData);
 
     var matrixDistanceDeputies;
+    var similarityGraph;
 
     if (type === CHAMBER_INFOGRAPHIC) {
         var createChamberInfographic = function(){
@@ -894,7 +895,7 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
             var createDeputiesSimilarityForce = function () {
                 var chartObj = {
                     'chartID': DEPUTIES_SIMILARITY_FORCE,
-                    'data': matrixDistanceDeputies,
+                    'data': similarityGraph,
                     'title': title,
                     'panelClass': panelClass
                 };
@@ -962,8 +963,10 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
                 // Does not need to calc the mds, we only want the similarity matrix.
                 if (type === DEPUTIES_SIMILARITY_FORCE)
                 {
+                    similarityGraph = createDeputySimilarityGraph(matrixDistanceDeputies, filteredDeputies);
                     title = filteredData[0].getFullYear() + " to " + filteredData[1].getFullYear();
                     panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear();
+                    $('#loading').css('visibility', 'hidden');
                     createDeputiesSimilarityForce();
                 }
                 else { // The call to calc of MDS here
@@ -1291,6 +1294,9 @@ function  initializeSlider(id, chart) {
 
     /* Setting initial margin */
     $("#" + id + " .tooltip-main").css({'margin-left': '-45px'});
+
+    /* Setting initial margin */
+    $("#" + id + " .slider").addClass('slider-k-means');
 
     /* Binding the call of K-Means in slide event */
     $(slider).on("slideStop", function(slideEvt) {

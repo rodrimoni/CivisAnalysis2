@@ -172,6 +172,31 @@ function createDeputyNodes(data_deputies, selecteddeputies){
 }
 
 
+function createDeputySimilarityGraph(data_deputies, selectedDeputies) {
+    var numDeputies = selectedDeputies.length;
+    var graph = {nodes:[], links: []};
+
+    for (var i = 0; i< numDeputies; i++){
+        var deputy = selectedDeputies[i]; node = {};
+        node.id = deputy.deputyID;
+        node.party = deputy.party;
+        node.name = deputy.name;
+        graph.nodes.push(node);
+        for (var j = 0; j <numDeputies; j++)
+        {
+            var source = selectedDeputies[i];
+            var target = selectedDeputies[j];
+            var link = {};
+            link.source = source.deputyID;
+            link.target = target.deputyID;
+            link.value = data_deputies[i][j];
+            graph.links.push(link);
+        }
+    }
+
+    return graph;
+}
+
 function getMotion (type,number,year,callback){
     d3.json('data/motions.min/'+type+''+number+''+year+'.json', function(motion) {
         if(motion === null) console.log('Could not load DB getMotion/'+type+'/'+number+'/'+year);

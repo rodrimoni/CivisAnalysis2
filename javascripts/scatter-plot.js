@@ -1,24 +1,4 @@
-var partiesArbitraryColor = {"DEM":"LightCoral", "PFL":"LightCoral", // PFL ==> DEM
-    "PSDB":"#1f77b4",
-    "PP":"#008000", "PPB": "#008000", // PPB ==> PP
-    "PL":"#ffbb78", "PR":"#ffbb78",   // PL + PRONA ==> PR
-    "PMDB":"#393b79",
-    "PT":"#d62728",
-    "PDT":"LimeGreen", "PSB":"LightGreen",
-    "PTB":"#9467bd",
-    "PSD":"#660000",
-    "PSOL":"#FFCC00",
-    "PV":"#e377c2",
-    "PPS":"#666",
-    "PCdoB":"Brown",
-    "SDD":"DarkOrange",
-    "Solidaried":"DarkOrange ",
-    "PROS":"Orange",
-    "PRONA": "DarkOrange",
-    "PRN": "#8c564b","PSC":"#8c564b"
-};
-
-function selColor(c){ return partiesArbitraryColor[c]; }
+function selColor(c){ return CONGRESS_DEFINE.partiesArbitraryColor[c]; }
 
 function scatterPlotChart()
 {
