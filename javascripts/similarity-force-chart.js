@@ -114,14 +114,14 @@ function similarityForce()
             var panel = this;
 
             $("#"+ panelID + " .panel-body")
-                .append('Select the value of %: <input id= "slider-similarity-' + panelID+  '" type="text" data-slider-min="70" data-slider-max="100" data-slider-step="1" data-slider-value="85"/>');
+                .append('Select the value of %: <input id= "slider-similarity-' + panelID+  '" type="text" data-slider-min="1" data-slider-max="10" data-slider-step="1" data-slider-value="5"/>');
 
             var mySlider = $("#slider-similarity-" + panelID).bootstrapSlider({
                     tooltip_position: 'bottom'
                 });
 
             mySlider.on("slideStop", function(slideEvt) {
-                var similarity = slideEvt.value;
+                var similarity = 80 + slideEvt.value;
                 $(panel).find('svg').remove();
                 var newData = filterEdges(data, similarity);
                 update(newData, panel);
