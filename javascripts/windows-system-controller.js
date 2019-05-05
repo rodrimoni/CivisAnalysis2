@@ -182,7 +182,7 @@ function createDeputySimilarityGraph(data_deputies, selectedDeputies) {
         node.party = deputy.party;
         node.name = deputy.name;
         graph.nodes.push(node);
-        for (var j = 0; j <numDeputies; j++)
+        for (var j = 0; j < i; j++)
         {
             var source = selectedDeputies[i];
             var target = selectedDeputies[j];
