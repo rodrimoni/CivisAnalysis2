@@ -10,6 +10,7 @@ function similarityForce()
     var panelID;
     var dispatch = d3.dispatch('update');
     var div = d3.select(".toolTip");
+    var simulation;
 
     function drag(simulation)
     {
@@ -52,7 +53,7 @@ function similarityForce()
         const links = data.links.map(function (d){ return Object.create(d)});
         const nodes = data.nodes.map(function(d){return Object.create(d)});
 
-        const simulation = d3v4.forceSimulation(nodes)
+        simulation = d3v4.forceSimulation(nodes)
             .force("link", d3v4.forceLink(links).id(function(d) {return d.id;}))
             .force("charge", d3v4.forceManyBody())
             .force("x", d3v4.forceX())
@@ -78,8 +79,8 @@ function similarityForce()
             .attr("r", 5)
             .attr("fill", function (d) {
                 return CONGRESS_DEFINE.partiesArbitraryColor[d.party];
-            })
-            .call(drag(simulation));
+            });
+            //.call(drag(simulation));
 
         node.append("title")
             .text(function (d) { return d.name + " - " + d.party;});
@@ -122,12 +123,14 @@ function similarityForce()
 
             mySlider.on("slideStop", function(slideEvt) {
                 var similarity = 80 + slideEvt.value;
+                simulation.stop();
                 $(panel).find('svg').remove();
                 var newData = filterEdges(data, similarity);
                 update(newData, panel);
             });
 
             var newData =  filterEdges(data, 85);
+            console.log(newData);
             update(newData, this);
         })
     }
