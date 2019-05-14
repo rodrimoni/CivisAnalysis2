@@ -24,6 +24,15 @@ var CHAMBER_INFOGRAPHIC         = 5;
 var ROLLCALLS_HEATMAP           = 6;
 var DEPUTIES_SIMILARITY_FORCE   = 7;
 
+/* Variables to check if the chart was instantiate before */
+var firstScatterPlot        = true;
+var firstBarChart           = true;
+var firstForceLayout        = true;
+var firstTimelineCrop       = true;
+var firstChamberInfographic = true;
+var firstRollCallHeatMap    = true;
+var firstDeputiesSimilarity = true;
+
 /* Constant to keep the value of ShiftKey */
 var SHIFTKEY = false;
 
@@ -64,7 +73,7 @@ function initSystem() {
     loadDeputiesNodesByYear(deputiesNodesByYear);
     loadRollCalls(arrayRollCalls, function () {
         createNewChild(TIME_LINE, {});
-
+        startIntro();
         //TODO: create a separate application to load these files
         //createTraces1by1();
         //calcPreSetsHistory("year");
@@ -87,9 +96,11 @@ function initializeChart(newID, chartObj) {
             deputyNodes[newID] = currentDeputies;
             rollCallsRates[newID] = currentRollCalls;
 
+            console.log(currentDeputies);
             console.log(rollCallsRates);
 
             addConfigMenu(newID, 'scatterplot');
+            //addTutorialButton(newID, 'scatterplot', chartObj.chartID);
             addClusteringMenu(newID);
 
             var deputies = [];
@@ -138,9 +149,9 @@ function initializeChart(newID, chartObj) {
             chart = rollCallsHeatmap();
 
             addConfigMenu(newID, 'rollCallsHeatmap');
-            addSearchRollCallMenu(newID, chartObj.data);
-            addFilterMotionTypeMenu(newID, chartObj.data);
-            addFilterDateRollCallMenu(newID, chartObj.data);
+            var rollCallsTypeAhead = addSearchRollCallMenu(newID, chartObj.data);
+            addFilterMotionTypeMenu(newID, chartObj.data, rollCallsTypeAhead);
+            addFilterDateRollCallMenu(newID, chartObj.data, rollCallsTypeAhead);
 
             chart.on('update', function () {
                 var node = tree.getNode(newID, tree.traverseBF);
@@ -150,8 +161,21 @@ function initializeChart(newID, chartObj) {
 
             break;
         case DEPUTIES_SIMILARITY_FORCE:
-            console.log(chartObj.data);
             chart = similarityForce();
+
+            deputyNodes[newID] = currentDeputies;
+            rollCallsRates[newID] = currentRollCalls;
+
+            addConfigMenu(newID, 'similarity-force');
+
+            addSearchDeputyMenu(newID, d3.values(chartObj.data.nodes));
+
+            $('#' +newID).attr('data-type-period', chartObj.panelClass);
+
+            chart.on('update', function () {
+                updateDeputies(newID)
+            });
+
             break;
         default:
             break;
@@ -170,6 +194,14 @@ function addConfigMenu(newID, panelClass) {
         .append('<ul class="dropdown-menu panel-settings"></ul>');
 }
 
+function addTutorialButton(newID, panelClass, typeChart) {
+    $('#' +newID + ' .panel-heading .btn-group')
+        .append('<button class="btn btn-primary btn-tutorial"><i class="glyphicon glyphicon-info-sign"></i></button> ')
+        .on('click', function () {
+            console.log(panelClass);
+        });
+}
+
 function addClusteringMenu(newID) {
     $("#" + newID + " .panel-settings")
         .append('<li role="presentation" class="dropdown-header">Clustering with K-Means</li>')
@@ -183,6 +215,13 @@ function addSearchRollCallMenu(newID, rollCalls) {
         .append('<li><input type="text" ' +
             'class="form-control typeahead searchRollCall" ' +
             'placeholder="Type a Roll Call Identifier (e.g. PL 1234/2001)"/> </li>');
+
+    /*var filter = getFilters(newID);
+
+    // motionTypeFilter.length == 0, all rollcalls must be selected
+    if(filter.motionTypeFilter.length > 0 || (filter.dateFilter[0] !== undefined && filter.dateFilter[1] !== undefined)){
+        rollCalls = filterMotions(rollCalls, filter);
+    }*/
 
     rollCalls = new Bloodhound({
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('rollCallName'),
@@ -227,10 +266,12 @@ function addSearchRollCallMenu(newID, rollCalls) {
             chart = tree.getNode(newID, tree.traverseBF).chart;
             chart.selectAllRollCalls();
         }
-    })
+    });
+
+    return rollCalls;
 }
 
-function addFilterMotionTypeMenu(newID, rollCalls) {
+function addFilterMotionTypeMenu(newID, rollCalls, rollCallsTypeAhead) {
     $("#" + newID + " .panel-settings")
         .append('<li role="presentation" class="dropdown-header">Select motion types </li>')
         .append('<li><input type="text" ' +
@@ -281,16 +322,36 @@ function addFilterMotionTypeMenu(newID, rollCalls) {
     });
 
     var chart;
+    var filter;
+    var filteredRollCalls = rollCalls;
     elt.on('itemAdded', function(event) {
-        /* Select the deputies in input */
+        /* Select the rollcalls in input */
         chart = tree.getNode(newID, tree.traverseBF).chart;
         chart.selectRollCallsByFilter(newID);
+
+        /* Update the motions in single search */
+        filter = getFilters(newID);
+        if(filter.motionTypeFilter.length > 0 || (filter.dateFilter[0] !== undefined && filter.dateFilter[1] !== undefined)){
+            filteredRollCalls = filterMotions(rollCalls, filter);
+            rollCallsTypeAhead.clear();
+            rollCallsTypeAhead.local = filteredRollCalls;
+            rollCallsTypeAhead.initialize(true);
+        }
     });
 
     elt.on('itemRemoved', function(event) {
         /* Select the deputies in input */
         chart = tree.getNode(newID, tree.traverseBF).chart;
         chart.selectRollCallsByFilter(newID);
+
+        /* Update the motions in single search */
+        filter = getFilters(newID);
+        if(filter.motionTypeFilter.length > 0 || (filter.dateFilter[0] !== undefined && filter.dateFilter[1] !== undefined)){
+            filteredRollCalls = filterMotions(rollCalls, filter);
+            rollCallsTypeAhead.clear();
+            rollCallsTypeAhead.local = filteredRollCalls;
+            rollCallsTypeAhead.initialize(true);
+        }
     });
 
     /* Prevents click to close the settings menu */
@@ -300,7 +361,7 @@ function addFilterMotionTypeMenu(newID, rollCalls) {
 
 }
 
-function addFilterDateRollCallMenu(newID, rollCalls) {
+function addFilterDateRollCallMenu(newID, rollCalls, rollCallsTypeAhead) {
     $("#" + newID + " .panel-settings")
         .append('<li role="presentation" class="dropdown-header">Select the initial and final date </li>')
         .append('<li> <div class="input-daterange input-group" id="datepicker">' +
@@ -342,6 +403,15 @@ function addFilterDateRollCallMenu(newID, rollCalls) {
     {
         chart = tree.getNode(newID, tree.traverseBF).chart;
         chart.selectRollCallsByFilter(newID);
+        var filteredRollCalls = rollCalls;
+        /* Update the motions in single search */
+        var filter = getFilters(newID);
+        if(filter.motionTypeFilter.length > 0 || (filter.dateFilter[0] !== undefined && filter.dateFilter[1] !== undefined)){
+            filteredRollCalls = filterMotions(rollCalls, filter);
+            rollCallsTypeAhead.clear();
+            rollCallsTypeAhead.local = filteredRollCalls;
+            rollCallsTypeAhead.initialize(true);
+        }
     });
 
 }
@@ -620,7 +690,7 @@ function createNewChild(currentId, chartObj) {
         $(".container").append(newElem);
 
         var timelineWidth = $(window).width() - 40;
-        var timelineHeight = $(window).height()*0.6;
+        var timelineHeight = $(window).height()*0.5;
 
         /* Sets up the panel settings as drag, resize, etc */
         setUpPanel(newID);
@@ -715,6 +785,27 @@ function createNewChild(currentId, chartObj) {
                 .call(chart);
         }
 
+        /* Consist only one call for tutorials for each visualization */
+        if (node.typeChart === SCATTER_PLOT && firstScatterPlot)
+        {
+            startIntroScatterplot(newID);
+            firstScatterPlot = false;
+        } else if (node.typeChart === CHAMBER_INFOGRAPHIC && firstChamberInfographic)
+        {
+            startIntroChamberInfographic(newID);
+            firstChamberInfographic = false;
+        } else if (node.typeChart === DEPUTIES_SIMILARITY_FORCE && firstDeputiesSimilarity)
+        {
+            startIntroDeputiesSimilarity(newID);
+            firstDeputiesSimilarity = false;
+        } else if (node.typeChart === ROLLCALLS_HEATMAP && firstRollCallHeatMap) {
+            startIntroRollCallsHeatMap(newID);
+            firstRollCallHeatMap = false;
+        } else if (node.typeChart === TIME_LINE_CROP && firstTimelineCrop){
+            startIntroTimelineCrop(newID);
+            firstTimelineCrop = false;
+        }
+
         /* Draws the lines between the two panels */
         drawLine(currentId, newID);
     }
@@ -743,7 +834,7 @@ function setUpPanel(newID) {
 
     if (isTimeline) {
         initialWidth = $(window).width() - 40;
-        initialHeight = $(window).height()*0.6;
+        initialHeight = $(window).height()*0.5;
 
         minWidth = initialWidth/2;
         minHeight = initialHeight/2;
@@ -890,7 +981,6 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
         };
     }
     else {
-
         if (type === DEPUTIES_SIMILARITY_FORCE) {
             var createDeputiesSimilarityForce = function () {
                 var chartObj = {
@@ -944,7 +1034,7 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
 
 
                 currentDeputies = createDeputyNodes(twoDimData.deputies, filteredDeputies);
-                scaleAdjustment().setGovernmentTo3rdQuadrant(d3.values(currentDeputies), filteredData[1]);
+                //scaleAdjustment().setGovernmentTo3rdQuadrant(d3.values(currentDeputies), filteredData[1]);
 
                 currentRollCalls = rollCallInTheDateRange;
                 calcRollCallRate(currentRollCalls, currentDeputies);
@@ -964,6 +1054,11 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
                 if (type === DEPUTIES_SIMILARITY_FORCE)
                 {
                     similarityGraph = createDeputySimilarityGraph(matrixDistanceDeputies, filteredDeputies);
+                    currentDeputies = similarityGraph.nodes;
+
+                    currentRollCalls = rollCallInTheDateRange;
+                    calcRollCallRate(currentRollCalls, currentDeputies);
+
                     title = filteredData[0].getFullYear() + " to " + filteredData[1].getFullYear();
                     panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear();
                     $('#loading').css('visibility', 'hidden');
@@ -1083,10 +1178,10 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
         var timeLineCropChart = tree.getNode(timelineCropPanelID, tree.traverseBF).chart;
         var deputies = [];
 
-        d3.selectAll("#" + panelID + " .node.selected")
-            .data()
-            .forEach(function(d) {
-                deputies.push(deputiesNodesByYear[d.deputyID]);
+        $("#" + panelID + " .node.selected").each(function()
+            {
+                var deputyID = this.id.split('-')[4];
+                deputies.push(deputiesNodesByYear[deputyID]);
             });
 
         timeLineCropChart.drawDeputy(deputies);
@@ -1118,7 +1213,7 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
             // Get the corresponding rollcalls to this deputyNodes set
             var rcs =  rollCallsRates[panelID];
             rcs.map(function (e) {
-               e.rollCallName = e.type + " " + e.number + "/"+ e.year;
+               e.rollCallName = e.type + " " + e.number + " " + e.year;
             });
             chartObj = {'chartID' : ROLLCALLS_HEATMAP, 'data': rcs, 'title':title};
             createNewChild(panelID, chartObj);
@@ -1392,7 +1487,10 @@ function updateRollCalls(parentID) {
         deputyNodes[parentID].forEach(function (deputy) { deputy.rate = null; deputy.vote = null; });
 
         if (node.typeChart === CHAMBER_INFOGRAPHIC)
+        {
             node.chart.resetParties();
+        }
+
     }
 
     else {
@@ -1465,7 +1563,7 @@ function updateDeputies(panelID) {
 
 function updateVisualizations() {
     tree.traverseBF(function (n) {
-        if (n.typeChart === SCATTER_PLOT || n.typeChart === CHAMBER_INFOGRAPHIC || n.typeChart === ROLLCALLS_HEATMAP)
+        if (n.typeChart === SCATTER_PLOT || n.typeChart === CHAMBER_INFOGRAPHIC || n.typeChart === ROLLCALLS_HEATMAP || n.typeChart === DEPUTIES_SIMILARITY_FORCE)
             n.chart.update();
     })
 }

@@ -231,7 +231,7 @@ function scatterPlotChart()
                 }
             }
 
-            //TODO: https://gist.github.com/peterk87/8441728 Zoom and Panning
+            //https://gist.github.com/peterk87/8441728 Zoom and Panning
 
             // If the brush is empty, select all circles.
             function brushend() {
@@ -342,7 +342,7 @@ function scatterPlotChart()
             .style("stroke", "#000000")
             .style("stroke-width",8)
             .style("stroke-linejoin", "round")
-            .style("opacity", .2);
+            .style("opacity", .4);
 
 
         var enterObjects = objects

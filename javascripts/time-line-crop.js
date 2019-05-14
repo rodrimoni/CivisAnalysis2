@@ -352,6 +352,8 @@ function timeLineCrop(){
                         break;
                     case 'PFL': associatedParty = "DEM";
                         break;
+                    case 'PMDB': associatedParty = "MDB";
+                        break;
                     case 'PL': associatedParty = "PR";
                         break;
                     case 'PRONA': associatedParty = "PR";
@@ -442,6 +444,8 @@ function timeLineCrop(){
                         break;
                     case 'PFL': associatedParty = "DEM";
                         break;
+                    case 'PMDB': associatedParty = "MDB";
+                        break;
                     case 'PL': associatedParty = "PR";
                         break;
                     case 'PRONA': associatedParty = "PR";
@@ -476,6 +480,8 @@ function timeLineCrop(){
                 case 'PPB': party = "PP";
                     break;
                 case 'PFL': party = "DEM";
+                    break;
+                case 'PMDB': party = "MDB";
                     break;
                 case 'PL': party = "PR";
                     break;
@@ -582,6 +588,8 @@ function timeLineCrop(){
                         break;
                     case 'PFL': associatedParty = "DEM";
                         break;
+                    case 'PMDB': associatedParty = "MDB";
+                        break;
                     case 'PL': associatedParty = "PR";
                         break;
                     case 'PRONA': associatedParty = "PR";
@@ -634,6 +642,8 @@ function timeLineCrop(){
                             break;
                         case 'PFL': party = "DEM";
                             break;
+                        case 'PMDB': party = "MDB";
+                            break;
                         case 'PL': party = "PR";
                             break;
                         case 'PRONA': party = "PR";
@@ -652,6 +662,8 @@ function timeLineCrop(){
                         case 'PPB': party = "PP";
                             break;
                         case 'PFL': party = "DEM";
+                            break;
+                        case 'PMDB': party = "MDB";
                             break;
                         case 'PL': party = "PR";
                             break;
@@ -677,6 +689,8 @@ function timeLineCrop(){
                     case 'PPB': party = "PP";
                         break;
                     case 'PFL': party = "DEM";
+                        break;
+                    case 'PMDB': party = "MDB";
                         break;
                     case 'PL': party = "PR";
                         break;

@@ -314,13 +314,13 @@ function chamberInfographic() {
     }
 
     chart.update = function () {
+        var selectedDeputies = [];
+
         svg.selectAll(".node")
             .transition()
             .style("fill", function(d) { return setDeputyFill(d); })
-            .attr("class", function (d) {return (d.selected)? "node selected": ( (d.hovered)? "node hovered" : "node"); })
+            .attr("class", function (d) {if (d.selected) selectedDeputies.push(d); return (d.selected)? "node selected": ( (d.hovered)? "node hovered" : "node"); })
             .attr("r", function(d){ return (d.hovered)? nodeRadius*2 : nodeRadius;});
-
-        var selectedDeputies = svg.selectAll(".node.selected").data();
 
         for( var party in partiesMap) partiesMap[party].selected = 0;
 
@@ -342,7 +342,7 @@ function chamberInfographic() {
                 return innerArc(newD);
             })
             .attr("opacity", 0.8)
-            .attr('visibility', function (d) {	return ( (d.data.value.selected/d.data.value.size)!==1 )? 'visible' : 'hidden';  })
+            .attr('visibility', function (d) { return ( (d.data.value.selected/d.data.value.size)!==1 )? 'visible' : 'hidden';  })
             .style("fill", 'white');
 
         var paths = svg.selectAll('path.main');
@@ -380,7 +380,9 @@ function chamberInfographic() {
     };
 
     chart.resetParties = function() {
-        for ( var party in partiesMap) partiesMap[party].rate = null;
+        for ( var party in partiesMap) {
+            partiesMap[party].rate = null;
+        }
     };
 
     chart.selectDeputiesBySearch = function (deputies) {

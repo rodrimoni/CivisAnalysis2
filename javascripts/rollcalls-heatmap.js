@@ -447,30 +447,6 @@ function rollCallsHeatmap(){
         chart.drawRollCallsHeatMap(rcs, htmlContent[0]);
     };
 
-    function filterMotions(arr, filter) {
-            return arr.filter(function (e) {
-                var resultType = false;
-                var resultDate = false;
-
-                // Verify if satisfies the motion type
-                if (filter.motionTypeFilter.length > 0)
-                {
-                    if (filter.motionTypeFilter.indexOf(e.type) > -1)
-                        resultType = true;
-                }
-                else // The type filter its not setted, so all types must be selected
-                    resultType = true;
-
-                // Verify if are inside the datarange
-                if (filter.dateFilter[0] !== undefined && filter.dateFilter[1] !== undefined)
-                    resultDate = e.datetime >= filter.dateFilter[0] && e.datetime <= filter.dateFilter[1];
-                else // The date filter its not setted, so all in period must be selected
-                    resultDate = true;
-
-                return resultType && resultDate;
-            });
-    }
-
     function groupRollCallsByMonth(rcs, filter) {
         var data = [];
         var lastMonth;
