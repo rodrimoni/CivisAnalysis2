@@ -6,13 +6,13 @@ function startIntro(){
                 intro: "Hi <br> Welcome to CivisAnalysis2! <br> Let's take a tour :)"
             },
             {
-                intro: "CivisAnalysis 2.0 is a web-based application where the user can instantiate multiple, coordinated panels for exploring data " +
+                intro: "CivisAnalysis 2.0 is a web-based application where you can open multiple and coordinated panels for exploring data " +
                 "concerning the votes of representatives in Brazil's lower legislative house (the Chamber of Deputies)." +
                 "<img src='images/tutorial/civis2.gif' width='700' height='360'>"
             },
             {
                 element: "#panel-1-1",
-                intro: "Each panel shows a <strong>different visualization</strong> and you can <strong>interact</strong> with them in several ways. <br> You can minimize, dismiss, drag and resize a panel. <br> To restore a minimized window you just need to <strong>double click</strong> on it."
+                intro: "Each panel shows a <strong>different visualization</strong> and you can <strong>interact</strong> with it in several ways. <br> You can minimize, dismiss, drag and resize a panel. <br> To restore a minimized window, you just need to <strong>double click</strong> on it."
             },
             {
                 intro: "<strong>Panel behavior:</strong> <img src='images/tutorial/panel-behavior.gif' width='700' height='360'>"
