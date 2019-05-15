@@ -19,7 +19,8 @@ function startIntro(){
             },
             {
                 element: ".timeline",
-                intro: "<strong>Timeline</strong>: the main visualization of CivisAnalysis 2.0, showing an overview of the voting behavior of parties across the spectrum. You can <strong>hover</strong> the traces to get more information.",
+                intro: "<strong>Timeline</strong>: the main visualization of CivisAnalysis 2.0, showing an overview of the voting behavior of parties across the spectrum. " +
+                "Each tick represents a party with a different color and its height represents its size. You can <strong>hover</strong> over the ticks to get more information.",
             },
             {
                 intro: 'You can select any period of history by clicking or brushing periods or years and then <strong>right</strong> click on it to open a context menu and finally you can generate a new visualization.'
