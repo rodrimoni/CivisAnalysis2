@@ -41,6 +41,10 @@ var PCA = 1;
 var MDS = 2;
 var TSNE = 3;
 
+/* Constant to define languages allowed */
+const ENGLISH = 0;
+const PORTUGUESE = 1;
+
 /* Global variable to handle deputies selections */
 var selectionOn = false;
 
@@ -67,6 +71,9 @@ var currentRollCalls = [];
 
 /* Creating the tree with the first node */
 var tree = new Tree('panel-1-1');
+
+/* Language of system */
+var language = ENGLISH;
 
 function initSystem() {
     loadDeputies(deputiesArray);

@@ -837,6 +837,21 @@ function calcPreSetsHistory(type) {
     if(type == 'year') calcRecursive(CONGRESS_DEFINE.startingYear);
     else calcRecursive(0);
 }
+var translator;
+function initDict()
+{
+    var dict = {
+        "Reset all selections": {
+          br: "Resetar todas seleções"
+        },
+        "Hi":{
+            br:"Olá!"
+        }
+      }
+
+      translator = $('body').translate({lang: "en", t: dict}); //use English
+      translator.lang("br"); //change to Portuguese
+}
 
 (function(console){
 

@@ -168,6 +168,27 @@ a{
     border-radius: 2px;
 }
 
+.toolTipHeatMap {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    position: absolute;
+    display: none;
+    width: auto;
+    max-width: 350px;
+    height: auto;
+    background: none repeat scroll 0 0 white;
+    border: 0 none;
+    box-shadow: -3px 3px 15px #888888;
+    text-align: justify;
+    z-index: 99;
+    line-height: 1;
+    font-weight: normal;
+    font-size: 11px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border-radius: 2px;
+}
+
 .toolTipCluster{
     z-index: 98;
 }
@@ -177,7 +198,7 @@ a{
    with position:fixed. Width, height, top and left speak
    speak for themselves. Background we set to 80% white with
    our animation centered, and no-repeating */
-.modal {
+.panel .modal {
     display:    none;
     position:   relative;
     z-index:    1000;
@@ -255,3 +276,42 @@ a{
     top: 10px;
     left: 0;
 }
+
+.btn-primary-outline {
+    background-color: transparent;
+    border-color: #ccc;
+  }
+
+.btn-xlarge {
+padding: 18px 28px;
+font-size: 22px;
+line-height: normal;
+-webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+        border-radius: 8px;
+}
+
+.modal-body {
+    padding-left: 30%;
+    padding-right: 30%;
+}
+
+/* Two image containers (use 25% for four, and 50% for two, etc) */
+.column {
+    float: left;
+    width: 50%;
+    padding: 5px;
+  }
+  
+  /* Clear floats after image containers */
+  .row::after {
+    content: "";
+    clear: both;
+    display: table;
+  }
+
+  .flag {
+      cursor:pointer;
+  }
+
+  

@@ -3,7 +3,7 @@ function startIntro(){
     intro.setOptions({
         steps: [
             {
-                intro: "Hi <br> Welcome to CivisAnalysis2! <br> Let's take a tour :)"
+                intro: "<span class ='trn'>Hi</span> <br> Welcome to CivisAnalysis2! <br> Let's take a tour :)"
             },
             {
                 intro: "CivisAnalysis 2.0 is a web-based application where you can open multiple and coordinated panels for exploring data " +
@@ -32,6 +32,7 @@ function startIntro(){
         disableInteraction: true
         //width: 600
     });
+    translator.lang("br");
     intro.start();
 }
 
@@ -176,8 +177,8 @@ function startIntroRollCallsHeatMap(panelID)
                 intro: "The <strong>X-axis</strong> represents the number of roll calls and the <strong>Y-axis</strong> the months."
             },
             {
-                intro: "Roll calls are selected by clicking and hovering displays a tooltip containing a pie chart of the proportion of <strong>YES</strong> and <strong>NO</strong> votes" +
-                "<img src='images/tutorial/roll-calls-heatmap-general.gif' width='1100' height='560'>"
+                intro: "Roll calls are selected by clicking and hovering displays a tooltip containing more info and a pie chart of the proportion of <strong>YES</strong> and <strong>NO</strong> votes" +
+                "<img src='images/tutorial/roll-calls-heatmap-general.gif' width='1000' height='560'>"
             },
             {
                 element: "#"+ panelID + ' .btn-settings-rollCallsHeatmap',

@@ -26,7 +26,7 @@ function rollCallsHeatmap(){
 
     var itemMaxSize = 16;
     var dispatch = d3.dispatch('update');
-    var div = d3.select(".toolTip");
+    var div = d3.select(".toolTipHeatMap");
     var svg;
     var parentID;
     var panelID;
@@ -319,15 +319,18 @@ function rollCallsHeatmap(){
                 div.style("top", d3.event.pageY-25+"px");
                 div.style("display", "inline-block");
                 div.html(function() {
-                        var htmlContent = d.type + ' ' + d.number + '/' + d.year + "<br><br>";
+                        var htmlContent = "<div class ='text-center'><strong>" + d.type + ' ' + d.number + '/' + d.year + "</strong></div><br>";
+                        htmlContent += "<strong>Amendment: </strong>" + motions[d.type+d.number+d.year].amendment.trim() + "<br><br>";
+                        if (d.summary !== "")
+                            htmlContent += "<strong>Status: </strong>" + d.summary.trim() + "<br>";
                         if (d.rate !== null) {
-                            htmlContent += "<div id='tipDiv'></div><br>";
+                            htmlContent += "<div id='tipDiv' class = 'text-center'></div><br>";
                         }
                         else
                         if (d.vote !== 'null')
-                            htmlContent += '<p>' + englishVotes[d.vote] + '</p>';
+                            htmlContent += '<br><div class="text-center"><strong> VOTE: ' + englishVotes[d.vote].toUpperCase() + '<strong></div>';
                         else
-                            htmlContent += '<p>' + 'No Votes' + '</p>';
+                            htmlContent += '<br><div class="text-center"><strong> No Votes <strong></p>';
 
                         return htmlContent;
                     }

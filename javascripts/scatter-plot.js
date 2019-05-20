@@ -339,7 +339,7 @@ function scatterPlotChart()
         objects
             .attr("d", groupPath)
             .style("fill", "#ffffff")
-            .style("stroke", "#000000")
+            .style("stroke", "#c4c7c8")
             .style("stroke-width",8)
             .style("stroke-linejoin", "round")
             .style("opacity", .4);
