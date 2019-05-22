@@ -29,6 +29,9 @@
     <!-- Bootstrap Datepicker -->
     <script src="javascripts/external/bootstrap-datepicker.min.js"></script>
 
+    <!-- Bootstrap Datepicker pt-br locale -->
+    <script src="javascripts/external/bootstrap-datepicker.pt-BR.js"></script>
+
     <!-- Spin.js - Loading Spinner Effect -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
 
@@ -198,7 +201,7 @@
 <div id = "navbar">
     <h2>CivisAnalysis 2.0</h2>
     <label id="selectLabel" for="selStates"></label>
-    <select class="selectpicker" title="Choose one of the following..." multiple id="selStates">
+    <select class="selectpicker" title= "Choose one of the following...>" multiple id="selStates">
         <option value="AC">Acre</option>
         <option value="AL">Alagoas</option>
         <option value="AP">Amapá</option>
@@ -227,10 +230,12 @@
         <option value="SE">Sergipe</option>
         <option value="TO">Tocantins</option>
     </select>
-    <button id = "statesBtn" type="button" class="btn btn-default">Apply filter</button>
-    <button id = "resetBtn" type="button" class="btn btn-default"><span class ="trn">Reset all selections</span></button>
+    <button id = "statesBtn" type="button" class="btn btn-default trn">Apply filter</button>
+    <button id = "resetBtn" type="button" class="btn btn-default trn">Reset all selections</button>
     <label style = "display:none"> <input id="match" type="checkbox"> Match Deputies </label>
-    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#languageModal" data-backdrop="static" data-keyboard="false">Open Modal</button>
+    <!--
+       <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#languageModal" data-backdrop="static" data-keyboard="false">Open Modal</button> 
+    -->
 </div>
 
 
@@ -269,8 +274,6 @@
     /* Initialization of System */
     $(document).ready(function(){
         $("#navbar").hide();
-        /* Initialize all translations of system */
-        initDict();
 
         /* Open language modal */
         $('#languageModal').modal({backdrop: 'static', keyboard: false}); 
@@ -319,6 +322,8 @@
             $('#languageModal').modal('hide');
             $("#navbar").show();
             initSystem();
+            /* Initialize all translations of system */
+            initDict();
         });
 
         windowSystem.on('click', '#en-us', function() {
@@ -326,6 +331,8 @@
             $('#languageModal').modal('hide');
             $("#navbar").show();
             initSystem();
+            /* Initialize all translations of system */
+            initDict();
         });
 
         var activeBrush = true;

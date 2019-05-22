@@ -283,7 +283,7 @@ function rollCallsHeatmap(){
             .attr("class", "y axis")
             .call(yAxis)
             .selectAll('text')
-            .attr('font-weight', 'normal');
+            .attr({'font-weight': 'normal', 'class':'trn'});
 
         svg.append("g")
             .attr("class", "x axis")
@@ -320,7 +320,7 @@ function rollCallsHeatmap(){
                 div.style("display", "inline-block");
                 div.html(function() {
                         var htmlContent = "<div class ='text-center'><strong>" + d.type + ' ' + d.number + '/' + d.year + "</strong></div><br>";
-                        htmlContent += "<strong>Amendment: </strong>" + motions[d.type+d.number+d.year].amendment.trim() + "<br><br>";
+                        htmlContent += "<strong><span class='trn'>Amendment</span></strong>:  " + motions[d.type+d.number+d.year].amendment.trim() + "<br><br>";
                         if (d.summary !== "")
                             htmlContent += "<strong>Status: </strong>" + d.summary.trim() + "<br>";
                         if (d.rate !== null) {
@@ -339,7 +339,7 @@ function rollCallsHeatmap(){
                 if (d.rate !== null) {
                     drawPieChart(d.countVotes);
                 }
-
+                translator.lang('br');
             })
             .on("mouseover", mouseoverRollCall)
             .on("mouseout", function(d){
@@ -360,7 +360,8 @@ function rollCallsHeatmap(){
                 "translate(" + (width/2) + " ," +
                 (0 - margin.top/2) + ")")
             .style("text-anchor", "middle")
-            .text("Number of Roll Calls");
+            .text("Number of Roll Calls")
+            .attr({'class':'trn'});
 
         var legend = svg.selectAll(".legend")
             .data(colors, function(d) { return d; });
@@ -382,6 +383,7 @@ function rollCallsHeatmap(){
 
         svg.append('text').text('Yes (approved)')
             .attr({
+                class: 'trn',
                 dx: totalLegendWidth + centralizeOffset,
                 dy: height + (legendHeight/2) + legendItemHeight*2.5,
                 //'font-size': 'small',
@@ -391,6 +393,7 @@ function rollCallsHeatmap(){
 
         svg.append('text').text('No (not approved)')
             .attr({
+                class: 'trn',
                 dx: centralizeOffset,
                 dy: height + (legendHeight/2) + legendItemHeight*2.5,
                 //'font-size': 'small',

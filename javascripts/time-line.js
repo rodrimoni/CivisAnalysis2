@@ -207,7 +207,8 @@ d3.chart.timeline = function() {
             y: y(group.top(1)[0].value) + 11,
             'fill':'grey',
             'font-size': 11
-        }).text('max RollCalls/week:'+group.top(1)[0].value);
+        }).text('max RollCalls/week:'+group.top(1)[0].value)
+        .attr({'id': 'maxRollCallsWeek'});
         // MAX RollCalls/week LINE ===========================================
 
 
@@ -274,7 +275,7 @@ d3.chart.timeline = function() {
         gg.append('text')
             .text('YEARLY POLITICAL SPECTRA')
             .attr({
-                'class':"partiesLabel",
+                'class':"partiesLabel trn",
                 x:scaleX_middleOfBiennial(1990) +scaleX_middleOfBiennial(CONGRESS_DEFINE.startingYear)/2 -30,
                 y: timelineDim.height/2 +5
             });
@@ -622,6 +623,7 @@ d3.chart.timeline = function() {
         gRects.append('text')
             .text( function(d){return d.name} )
             .attr({
+                class: "trn",
                 y:17,
                 x:  function(d){return  x(d.period[0])+ (x(d.period[1]) - x(d.period[0]))/2   },
                 fill:"#fff",
@@ -740,7 +742,7 @@ d3.chart.timeline = function() {
             .text(function (d) { return d.name });
         allianceIcons.append('text')
             .attr({
-                class:"elec",
+                class:"elec trn",
                 x:function (d) { return Math.max(x(d.dates[0]),0) },
                 y:22,
                 'font-size': 'xx-small'
@@ -749,7 +751,8 @@ d3.chart.timeline = function() {
 
 
         function electionPopover( d ){
-            var html =  '<h4>'+'Brazilian Presidential Election of '+d.name+'</h4>';
+            var text = language === ENGLISH ? "Brazilian Presidential Election of " : "Eleições para presidente do Brasil "
+            var html =  '<h4>'+ text +d.name+'</h4>';
             return html;
         }
         // // POPOVER!

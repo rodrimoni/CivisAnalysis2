@@ -32,7 +32,7 @@ h2 {
 .panel-heading .btn-group .dropdown-menu {
     cursor: auto;
     float: right;
-    min-width: 380px;
+    min-width: 450px;
 }
 
 #windows-system .panel-body{
@@ -274,6 +274,7 @@ a{
     display: inline-block;
     position: absolute;
     top: 10px;
+    margin-top: 10px;
     left: 0;
 }
 

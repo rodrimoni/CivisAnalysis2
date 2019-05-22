@@ -190,6 +190,7 @@ function initializeChart(newID, chartObj) {
     }
 
     /* Set the new tittle */
+    console.log(chartObj.title);
     $('#' +newID + ' .panel-title').append(chartObj.title);
 
     return chart;
@@ -211,17 +212,18 @@ function addTutorialButton(newID, panelClass, typeChart) {
 
 function addClusteringMenu(newID) {
     $("#" + newID + " .panel-settings")
-        .append('<li role="presentation" class="dropdown-header">Clustering with K-Means</li>')
-        .append('<li> Select the value of K: <br> <input id= "slider-'+ newID +'" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="10"/></li>')
+        .append('<li role="presentation" class="dropdown-header"><span class="trn">Clustering with K-Means</span></li>')
+        .append('<li> <span class = "trn">Select the value of</span> K:<br><input id= "slider-'+ newID +'" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="10"/></li>')
 
 }
 
 function addSearchRollCallMenu(newID, rollCalls) {
+    var placeholder = language === ENGLISH ? "Type a Roll Call Identifier" : "Digite o identificador de uma votação"
     $("#" + newID + " .panel-settings")
-        .append('<li role="presentation" class="dropdown-header">Select one Roll Call </li>')
+        .append('<li role="presentation" class="dropdown-header"><span class="trn">Select one Roll Call</span></li>')
         .append('<li><input type="text" ' +
             'class="form-control typeahead searchRollCall" ' +
-            'placeholder="Type a Roll Call Identifier (e.g. PL 1234/2001)"/> </li>');
+            'placeholder="'+ placeholder + ' (e.g. PL 1234/2001)"/> </li>');
 
     /*var filter = getFilters(newID);
 
@@ -279,11 +281,12 @@ function addSearchRollCallMenu(newID, rollCalls) {
 }
 
 function addFilterMotionTypeMenu(newID, rollCalls, rollCallsTypeAhead) {
+    var placeholder = language === ENGLISH ? "Type motion type to filter" : "Digite tipos de votações para filtrar"
     $("#" + newID + " .panel-settings")
-        .append('<li role="presentation" class="dropdown-header">Select motion types </li>')
+        .append('<li role="presentation" class="dropdown-header"><span class="trn">Select motion types</span></li>')
         .append('<li><input type="text" ' +
             'class="form-control typeahead filterMotions" ' +
-            'placeholder="Type motion type to filter (e.g. PL, PEC, etc.)"/> </li>');
+            'placeholder="'+ placeholder +' (e.g. PL, PEC, etc.)"/> </li>');
 
     // Get motions unique type array
     var rollCallsTypes = d3.map(rollCalls, function(d){return d.type;}).keys();
@@ -370,7 +373,7 @@ function addFilterMotionTypeMenu(newID, rollCalls, rollCallsTypeAhead) {
 
 function addFilterDateRollCallMenu(newID, rollCalls, rollCallsTypeAhead) {
     $("#" + newID + " .panel-settings")
-        .append('<li role="presentation" class="dropdown-header">Select the initial and final date </li>')
+        .append('<li role="presentation" class="dropdown-header"><span class="trn">Select the initial and final date</span></li>')
         .append('<li> <div class="input-daterange input-group" id="datepicker">' +
             '<input type="text" class="input-sm form-control" placeholder="mm/dd/yyyy" name="start" />' +
             '<span class="input-group-addon">to</span>' +
@@ -388,13 +391,16 @@ function addFilterDateRollCallMenu(newID, rollCalls, rollCallsTypeAhead) {
         return false;
     });
 
+    var datetimeLocal = language === ENGLISH ? 'en' : 'pt-BR'
+
     $(elt).datepicker({
         autoclose: true,
         keyboardNavigation: false,
         keepEmptyValues: true,
         orientation: "bottom",
         startDate:startDate,
-        endDate: endDate
+        endDate: endDate,
+        language: datetimeLocal
     });
 
     // For some reason endDate of datapicker options resets to time 00:00, so we have to set our endDate to
@@ -448,9 +454,10 @@ function getFilters(panelID) {
 }
 
 function addSearchDeputyMenu(newID, deputies) {
+    var placeholder = language === ENGLISH ? "Type a deputy name..." : "Digite o nome de um deputado..."
     $("#" + newID + " .panel-settings")
-        .append('<li role="presentation" class="dropdown-header">Select Deputies </li>')
-        .append('<li><input type="text" class="form-control typeahead searchDeputies" placeholder="Type a deputy name..."/> </li>');
+        .append('<li role="presentation" class="dropdown-header"><span class="trn">Select Deputies</span></li>')
+        .append('<li><input type="text" class="form-control typeahead searchDeputies" placeholder="'+ placeholder + '"/> </li>');
 
     deputies = new Bloodhound({
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
@@ -692,7 +699,7 @@ function createNewChild(currentId, chartObj) {
     if (currentId === TIME_LINE)
     {
         newID = "panel-1-1";
-        newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" style="padding-top: 7.5px;"> Timeline </h4> <button disabled class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button> </div><div class="panel-body center-panel"></div></div>').css({"position": "absolute"});
+        newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" style="padding-top: 7.5px;"> <span class ="trn">Timeline</span> </h4> <button disabled class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button> </div><div class="panel-body center-panel"></div></div>').css({"position": "absolute"});
 
         $(".container").append(newElem);
 
@@ -752,6 +759,13 @@ function createNewChild(currentId, chartObj) {
 
         tree._root.chart = timeline;
         tree._root.typeChart = TIME_LINE;
+
+        /* Translate content of new panel */
+        if (language === PORTUGUESE)
+        {
+            translator.lang("br");
+            $("#maxRollCallsWeek").text(translator.get("max RollCalls/week"));
+        }
     }
     else
     {
@@ -770,7 +784,6 @@ function createNewChild(currentId, chartObj) {
         newID = node.data;
 
         newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h6 class="panel-title pull-left" style="padding-top: 7.5px;"></h6> <div class="btn-group"> <button class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button></div></div><div class="panel-body center-panel"><div class = "modal"></div></div></div>').css({"position": "absolute", "top": newLocation["top"], "left": newLocation["left"], "z-index":"90"});
-
 
         /* Inserts the panel after the last one in DOM */
         $('.panel').last().after(newElem);
@@ -815,6 +828,12 @@ function createNewChild(currentId, chartObj) {
 
         /* Draws the lines between the two panels */
         drawLine(currentId, newID);
+
+        /* Translate content of new panel */
+        if(language === PORTUGUESE)
+        {
+            translator.lang("br");
+        }
     }
 }
 
@@ -1028,7 +1047,7 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
 
             function calcCallback(twoDimData) {
                 // Deputies array
-                title = filteredData[0].getFullYear() + " to " + filteredData[1].getFullYear();
+                title = filteredData[0].getFullYear() + " <span class='trn'>to</span> " + filteredData[1].getFullYear();
 
                 if (type === CHAMBER_INFOGRAPHIC)
                     createChart = createChamberInfographic;
@@ -1051,7 +1070,8 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
             }
 
             if (dimensionalReductionTechnique === "PCA") {
-                $('#loading #msg').text('Generating Political Spectra by PCA');
+                var text = language === ENGLISH ? "Generating Political Spectra by PCA" : "Gerando Espectro Político por PCA";
+                $('#loading #msg').text(text);
                 setTimeout(function () {
                     calcSVD(matrixDeputiesPerRollCall, calcCallback)
                 }, 10);
@@ -1072,23 +1092,24 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
                     createDeputiesSimilarityForce();
                 }
                 else { // The call to calc of MDS here
-                    $('#loading #msg').text('Generating Political Spectra by MDS');
+                    var text = language === ENGLISH ? "Generating Political Spectra by MDS" : "Gerando Espectro Político por MDS";
+                    $('#loading #msg').text(text);
                     setTimeout(function () {
                         calcMDS(matrixDistanceDeputies, calcCallback)
                     }, 10);
                 }
             }
-            else if (dimensionalReductionTechnique === "TSNE") {
-                $('#loading #msg').text('Generating Political Spectra by T-SNE');
+            else if (dimensionalReductionTechnique === "T-SNE") {
+                var text = language === ENGLISH ? "Generating Political Spectra by T-SNE" : "Gerando Espectro Político por T-SNE";
+                $('#loading #msg').text(text);
                 calcTSNE(matrixDeputiesPerRollCall, calcCallback);
             }
         }
         else {
-            $('#loading #msg').text('Loading Data');
             if (dataRange.type !== "year")
-                title = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
+                title = "<span class ='trn'>"+CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name + "</span>";
             else
-                title = "Year: " + dataRange.id;
+                title = "<span class ='trn'>Year</span>: " + dataRange.id;
             panelClass = dataRange.type + '-' + dataRange.id;
 
             var createChart;
@@ -1100,7 +1121,7 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
                 createChart = createScatterPlot;
             }
 
-            var subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString() + "</span>";
+            var subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
             title += subtitle;
 
             if (dimensionalReductionTechnique === "PCA") {
@@ -1129,7 +1150,7 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
                 setUpScatterPlotData(filteredData, panelID, "MDS", SCATTER_PLOT);
             else
                 if (selectedMenu.context.id ==='scatter-plot-tsne')
-                    setUpScatterPlotData(filteredData, panelID, "TSNE", SCATTER_PLOT);
+                    setUpScatterPlotData(filteredData, panelID, "T-SNE", SCATTER_PLOT);
                 else
                     if (selectedMenu.context.id === 'deputies-similarity-force')
                         setUpScatterPlotData(filteredData, panelID, "MDS", DEPUTIES_SIMILARITY_FORCE);
@@ -1159,7 +1180,7 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
                 id = periodID[1];
                 periodData = CONGRESS_DEFINE[type + "s"][id];
                 title = periodData.name;
-                subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " to " + periodData.period[1].toLocaleDateString() + "</span>";
+                subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " <span class='trn'>to</span> " + periodData.period[1].toLocaleDateString() + "</span>";
                 title += subtitle;
                 panelClass = type + '-' + id;
                 data = [periodData.period[0], periodData.period[1]];
@@ -1203,18 +1224,18 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
                 id = periodID[1];
                 if (type !== 'year'){
                     periodData = CONGRESS_DEFINE[type + "s"][id];
-                    title = "Roll Calls Heatmap of "+ periodData.name;
-                    subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " to " + periodData.period[1].toLocaleDateString() + "</span>";
+                    title = "<span class='trn'>Roll Calls Heatmap of</span> <span class='trn'>"+ periodData.name+"</span>";
+                    subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " <span class='trn'>to</span> " + periodData.period[1].toLocaleDateString() + "</span>";
                     title += subtitle;
                 }
                 else {
-                    title = "Roll Calls Heatmap of year "+ id;
+                    title = "<span class='trn'>Roll Calls Heatmap of year</span> "+ id;
                 }
             }
             else {
                 firstYear = periodID[1];
                 lastYear = periodID[2];
-                title = "Roll Calls Heatmap of " + firstYear + " to " + lastYear;
+                title = "<span class='trn'>Roll Calls Heatmap of</span> " + firstYear + " <span class='trn'>to</span> " + lastYear;
             }
 
             // Get the corresponding rollcalls to this deputyNodes set
@@ -1390,7 +1411,7 @@ function  initializeSlider(id, chart) {
     /* Formatting the slider */
     $(slider).bootstrapSlider({
         formatter: function(value) {
-            return 'Value of K: ' + value;
+            return 'K = ' + value;
         }
     });
 

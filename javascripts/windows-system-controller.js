@@ -279,7 +279,8 @@ function refreshDeputies(defer){
 }
 
 function updateDataforDateRange(period,callback){
-    $('#loading #msg').text('Loading Data');
+    var text = language === ENGLISH ? "Loading Data" : "Carregando dados";
+    $('#loading #msg').text(text);
     // get the data (from db or already loaded in the dataWrapper)
     setDateRange(period[0],period[1], function(arollCallInTheDateRange,adeputiesInTheDateRange){
 
@@ -840,17 +841,179 @@ function calcPreSetsHistory(type) {
 var translator;
 function initDict()
 {
-    var dict = {
+    var dict = 
+    {
         "Reset all selections": {
-          br: "Resetar todas seleções"
+          br: "Desfazer todas as seleções"
         },
-        "Hi":{
-            br:"Olá!"
+        "Choose one of the following...": {
+         br: "Escolha os estados...",
+         en: "Choose one of the following..."  
+        },
+        "Apply filter":{
+            br:" Aplicar filtro"
+        },
+        "Create a bar chart":{
+            br:"Criar um gráfico de barras"
+        },
+        "Create a scatter plot - PCA" :{
+            br:"Criar um gráfico de dispersão - PCA"
+        },
+        "Create a scatter plot - MDS":{
+            br:"Criar um gráfico de dispersão - MDS"
+        },
+        "Create a scatter plot - T-SNE": {
+            br:"Criar um gráfico de dispersão - T-SNE"
+        },
+        "Create a chamber infographic":{
+            br:"Criar um infográfico da Câmara"
+        },
+        "Create deputies similarity force layout":{
+            br:"Mostrar a similaridade entre os deputados conforme seus votos"
+        },
+        "Create a heat map for roll calls":{
+            br:"Criar um mapa de calor para as votações"
+        },
+        "Create a timeline crop behavior for selected deputies":{
+            br:"Criar uma linha do tempo detalhada do comportamento dos deputados selecionados"
+        },
+        "Timeline":{
+            br: "Linha do tempo"
+        },
+        "YEARLY POLITICAL SPECTRA":{
+            br: "ESPECTRO POLÍTICO ANUAL"
+        },
+        "max RollCalls/week": {
+            br: "máx. Votações/Semana"
+        },
+        "49th Legislature":{
+            br: "49ª Legislatura"
+        },
+        "50th Legislature":{
+            br: "50ª Legislatura"
+        },
+        "51th Legislature":{
+            br: "51ª Legislatura"
+        },
+        "52th Legislature":{
+            br: "52ª Legislatura"
+        },
+        "53th Legislature":{
+            br: "53ª Legislatura"
+        },
+        "54th Legislature":{
+            br: "54ª Legislatura"
+        },
+        "55th Legislature":{
+            br: "55ª Legislatura"
+        },
+        "FHC (PSDB) 1st Term":{
+            br: "FHC (PSDB) 1º Man"
+        },
+        "FHC (PSDB) 2nd Term":{
+            br: "FHC (PSDB) 2º Man"
+        },
+        "Lula (PT) 1st Term":{
+            br: "Lula (PT) 1º Man"
+        },
+        "Lula (PT) 2nd Term":{
+            br: "Lula (PT) 2º Man"
+        },
+        "Dilma (PT) 1st Term":{
+            br: "Dilma (PT) 1º Man"
+        },
+        "Dilma (PT) 2nd Term":{
+            br: "Dilma (PT) 2º Man"
+        },
+        "elections":{
+            br: "eleições"
+        },
+        "Clustering with K-Means":{
+            br: "Clusterização com K-Médias"
+        },
+        "Select the value of": {
+            br: "Selecione um valor para"
+        },
+        "Value of": {
+            br: "Valor para"
+        },
+        "Select Deputies":{
+            br: "Selecione os Deputados"
+        },
+        "Select the grade of similarity":{
+            br:"Selecione o grau de similaridade"
+        },
+        "Select one Roll Call":{
+            br:"Selecione uma votação"
+        },
+        "Select motion types":{
+            br: "Selecione tipos de votação"
+        },
+        "Select the initial and final date":{
+            br:"Selecione a data inicial e final"
+        },
+        "Number of Roll Calls":{
+            br: "Número de votações"
+        },
+        "Yes (approved)":{
+            br:"Sim (aprovado)"
+        },
+        "No (not approved)":{
+            br: "Não (não aprovado)" 
+        },
+        "Roll Calls Heatmap of":{
+            br: "Mapa de calor de votações de"
+        },
+        "Roll Calls Heatmap of year":{
+            br: "Mapa de calor de votações do ano"
+        },
+        "to":{
+            br: "até"
+        },
+        "Year":{
+            br: "Ano"
+        },
+        "Feb":{
+            br: "Fev"
+        },
+        "Apr":{
+            br: "Abr"
+        },
+        "May":{
+            br: "Maio"
+        },
+        "Aug":{
+            br: "Ago"
+        },
+        "Sep":{
+            br: "Set"
+        },
+        "Oct": {
+            br: "Out"
+        },
+        "Dec":{
+            br: "Dez"
+        },
+        "Amendment": {
+            br: "Emenda"
         }
       }
+      
+      console.log(language);
 
-      translator = $('body').translate({lang: "en", t: dict}); //use English
-      translator.lang("br"); //change to Portuguese
+      if (language === PORTUGUESE)
+      {
+        translator = $('body').translate({lang: "br", t: dict}); //use BR
+        $("button .filter-option").text(translator.get("Choose one of the following..."));
+        $("#bar-chart").text(translator.get("Create a bar chart"));
+        $("#scatter-plot-pca").text(translator.get("Create a scatter plot - PCA"));
+        $("#scatter-plot-mds").text(translator.get("Create a scatter plot - MDS"));
+        $("#scatter-plot-tsne").text(translator.get("Create a scatter plot - T-SNE"));
+        $("#chamber-infographic").text(translator.get("Create a chamber infographic"));
+        $("#deputies-similarity-force").text(translator.get("Create deputies similarity force layout"));
+        $("#rollcalls-heatmap").text(translator.get("Create a heat map for roll calls"));
+        $("#time-line-crop-behavior-selection").text(translator.get("Create a timeline crop behavior for selected deputies"));
+      }
 }
 
 (function(console){

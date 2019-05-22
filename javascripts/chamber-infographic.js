@@ -95,7 +95,8 @@ function chamberInfographic() {
             .attr( popoverAttr(renderDeputyTooltip,'top'));
 
         function renderDeputyTooltip (d){
-            return d.name +' ('+d.party+'-'+d.district+")<br /><em>Click to select</em>"; ;
+            var tip = language === ENGLISH  ? "Click to select" : "Clique para selecionar"
+            return d.name +' ('+d.party+'-'+d.district+")<br /><em>"+ tip + "</em>"; ;
         }
         $('.chamber-infographic .infographic-deputies .node').popover({ trigger: "hover" });
 
@@ -201,14 +202,16 @@ function chamberInfographic() {
     }
 
     function renderPartyTooltip (party){
+        var tip = language === ENGLISH  ? "Click to select" : "Clique para selecionar"
+        var selected = language === ENGLISH  ? "selected" : "selecionado"
         party = party.data;
         var selectedRate =
             (party.value.selected === party.value.size)?
                 party.value.size+' Deputies'
                 :
-                (((party.value.selected/party.value.size)*100).toFixed(1) +"% selected ("+ party.value.selected +'/'+party.value.size)+')';
+                (((party.value.selected/party.value.size)*100).toFixed(1) +"% " + selected + " ("+ party.value.selected +'/'+party.value.size)+')';
 
-        return party.key+"<br/><em>"+ selectedRate +"</em><br/><em>Click to select</em>"
+        return party.key+"<br/><em>"+ selectedRate +"</em><br/><em>"+tip+"</em>"
     }
 
     // mouse OVER circle deputy

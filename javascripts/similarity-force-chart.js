@@ -143,21 +143,24 @@ function similarityForce()
             var panel = this;
 
             $("#"+ panelID + " .panel-body")
-                .append('Select the grade of similarity: <input id= "slider-similarity-' + panelID+  '" type="text" data-slider-min="1" data-slider-max="10" data-slider-step="1" data-slider-value="5"/>');
+                .append('<div style="padding:10px;"><span class ="trn">Select the grade of similarity</span>: <b>50%</b> <input id= "slider-similarity-' + panelID+  '" type="text" data-slider-min="50" data-slider-max="100" data-slider-step="1" data-slider-value="80"/> <b>100%</b></div>');
 
             var mySlider = $("#slider-similarity-" + panelID).bootstrapSlider({
-                    tooltip_position: 'bottom'
+                    tooltip_position: 'bottom',
+                    formatter: function (value){
+                        return value + "%";
+                    }
                 });
 
             mySlider.on("slideStop", function(slideEvt) {
-                var similarity = 80 + slideEvt.value;
+                var similarity = slideEvt.value;
                 simulation.stop();
                 $(panel).find('svg').remove();
                 var newData = filterEdges(data, similarity);
                 update(newData, panel);
             });
 
-            var newData =  filterEdges(data, 85);
+            var newData =  filterEdges(data, 80);
             console.log(newData);
             update(newData, this);
         })
