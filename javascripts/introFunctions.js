@@ -32,7 +32,7 @@ function startIntro(){
             intro: "<span class ='trn'>Olá! <br> Seja bem-vindo ao CivisAnalysis 2.0! <br> Vamos fazer um tour pela aplicação :)</span>"
         },
         {
-            intro: "CivisAnalysis 2.0 é uma aplicação desenvolvida para web onde você pode abrir múltiplos painéis coordenados, que permitem " +
+            intro: "CivisAnalysis 2.0 é uma aplicação desenvolvida para web onde você pode criar múltiplos painéis coordenados, que permitem " +
             "a exploração dos dados relativos aos votos dos deputados na Câmara dos Deputados do Brasil." +
             "<img src='images/tutorial/civis2.gif' width='700' height='360'>"
         },
@@ -126,7 +126,7 @@ function startIntroScatterplot(panelID){
         },
         {
             element: "#"+ panelID + " .scatter-plot .legend",
-            intro: "A cor de cada deputado representa um <strong>partido</strong>, a legenda nos ajuda a identicá-lo."
+            intro: "A cor de cada deputado representa um <strong>partido</strong>, a legenda nos ajuda a identificá-lo."
         },
         {
             intro: "Você pode selecionar um deputado ou deixar o mouse sobre ele para obter mais informações. Você pode segurar a tecla <strong>CTRL</strong> para " + 
@@ -345,7 +345,7 @@ function startIntroRollCallsHeatMap(panelID)
         {
             element: "#"+ panelID + " .rollcalls-heatmap",
             intro: "Aqui você pode inspecionar as <strong>votações</strong> e ter uma noção de quantos" +
-            " projetos foram votados durante um período de tempo. Os dados são mostrados como um <strong>histograma horizontal</strong>:uma pilha " +
+            " projetos foram votados durante um certo período de tempo. Os dados são mostrados como um <strong>histograma horizontal</strong>:uma pilha " +
             "de <strong>células</strong> retangulares (cada uma representando uma <strong>votação</strong>). Essa visualização pode ser " +
             "gerada a partir do <strong>Espectro de Deputados, Infográfico da Câmara e Grafo de similaridade dos deputados.</strong>"
         },
@@ -354,7 +354,7 @@ function startIntroRollCallsHeatMap(panelID)
             intro: "O <strong>eixo X</strong> representa o número de votações e o <strong>eixo Y</strong> os meses."
         },
         {
-            intro: "As votações são selecionadadas pelo clique do mouse e ao deixar o mouse sobre elas é mostrada uma <em>tooltip</em> que contém "+ 
+            intro: "As votações são selecionadas pelo clique do mouse e ao deixar o mouse sobre elas é mostrada uma <em>tooltip</em> que contém "+ 
             "mais informações e um gráfico de pizza que mostra a proporção dos votos <strong>SIM</strong> e <strong>NÃO</strong>" +
             "<img src='images/tutorial/roll-calls-heatmap-general.gif' width='1000' height='560'>"
         },
@@ -409,7 +409,7 @@ function startIntroTimelineCrop(panelID)
             element: "#"+ panelID + " .timeline-crop",
             intro: "Esta visualização apresenta um <strong>pedaço específico</strong> da linha do tempo principal." +
             "Ela mostra os partidos no espectro e é dividida em intervalos de um ano. O "  +
-            "<strong>novo aspecto</strong> desta visualição é a possibilidade de adicionar " +
+            "<strong>novo aspecto</strong> desta visualização é a possibilidade de adicionar " +
             "deputados diretamente na linha do tempo. O comportamento dos deputados (<strong>os caminhos na linha do tempo</strong>) são " +
             "representados por <strong>simples linhas</strong> ao invés de elementos de área."
         },
