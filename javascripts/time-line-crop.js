@@ -473,7 +473,7 @@ function timeLineCrop(){
 
 
 
-        d3.selectAll('.deputy-trace').data().forEach(function (t) {
+        svg.selectAll('.deputy-trace').data().forEach(function (t) {
             var party;
             //TODO: Transform this in a function
             switch(t.first.party){
@@ -602,7 +602,7 @@ function timeLineCrop(){
                     else return -1;
                 } else return -1;
             })
-                .transition().attr('opacity',function (party) {
+                .transition().attr('opacity',function (party) { 
                     return (p[party.key]!== undefined)? 1 : 0.2;
             });
 

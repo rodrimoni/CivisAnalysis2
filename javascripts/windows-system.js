@@ -1046,21 +1046,31 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
                 matrixDistanceDeputies = createMatrixDistanceDeputies(matrixDeputiesPerRollCall);
 
             function calcCallback(twoDimData) {
-                // Deputies array
-                title = filteredData[0].getFullYear() + " <span class='trn'>to</span> " + filteredData[1].getFullYear();
+                if (dataRange.found)
+                {
+                    if (dataRange.type !== "year")
+                        title = "<span class ='trn'>"+CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name + "</span>";
+                    else
+                        title = "<span class ='trn'>Year</span>: " + dataRange.id;
+                    if (type !== CHAMBER_INFOGRAPHIC)
+                        title += " (" + dimensionalReductionTechnique + ")";
 
+                    var subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
+                    title += subtitle;
+                    panelClass = dataRange.type + '-' + dataRange.id;
+                }
+                else {
+                    title = filteredData[0].getFullYear() + " <span class='trn'>to</span> " + filteredData[1].getFullYear();
+                    panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear();
+                }
+                    
                 if (type === CHAMBER_INFOGRAPHIC)
                     createChart = createChamberInfographic;
-                else {
-                    title += " (" + dimensionalReductionTechnique + ")";
+                else 
                     createChart = createScatterPlot;
-                }
-
-                panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear();
-
 
                 currentDeputies = createDeputyNodes(twoDimData.deputies, filteredDeputies);
-                //scaleAdjustment().setGovernmentTo3rdQuadrant(d3.values(currentDeputies), filteredData[1]);
+                scaleAdjustment().setGovernmentTo3rdQuadrant(d3.values(currentDeputies), filteredData[1]);
 
                 currentRollCalls = rollCallInTheDateRange;
                 calcRollCallRate(currentRollCalls, currentDeputies);
@@ -1086,8 +1096,22 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
                     currentRollCalls = rollCallInTheDateRange;
                     calcRollCallRate(currentRollCalls, currentDeputies);
 
-                    title = filteredData[0].getFullYear() + " to " + filteredData[1].getFullYear();
-                    panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear();
+                    if (dataRange.found)
+                    {
+                        if (dataRange.type !== "year")
+                            title = "<span class ='trn'>"+CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name + "</span>";
+                        else
+                            title = "<span class ='trn'>Year</span>: " + dataRange.id;
+
+                        var subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
+                        title += subtitle;
+                        panelClass = dataRange.type + '-' + dataRange.id;
+                    }
+                    else 
+                    {
+                        title = filteredData[0].getFullYear() + " <span class='trn'>to</span> " + filteredData[1].getFullYear();
+                        panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear();
+                    }
                     $('#loading').css('visibility', 'hidden');
                     createDeputiesSimilarityForce();
                 }
@@ -1179,7 +1203,7 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
                 type = periodID[0];
                 id = periodID[1];
                 periodData = CONGRESS_DEFINE[type + "s"][id];
-                title = periodData.name;
+                title = "<span class ='trn'>" + periodData.name + "</span>";
                 subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " <span class='trn'>to</span> " + periodData.period[1].toLocaleDateString() + "</span>";
                 title += subtitle;
                 panelClass = type + '-' + id;
@@ -1189,7 +1213,7 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
                 type = periodID[0];
                 firstYear = periodID[1];
                 lastYear = periodID[2];
-                title = firstYear + " to " + lastYear;
+                title = firstYear + " <span class='trn'>to</span> " + lastYear;
                 panelClass = type + "-" + firstYear + "-" + lastYear;
                 data = [new Date(firstYear,0,1),new Date(lastYear,0,1)];
             }
