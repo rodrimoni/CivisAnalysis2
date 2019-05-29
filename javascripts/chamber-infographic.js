@@ -95,8 +95,12 @@ function chamberInfographic() {
             .attr( popoverAttr(renderDeputyTooltip,'top'));
 
         function renderDeputyTooltip (d){
-            var tip = language === ENGLISH  ? "Click to select" : "Clique para selecionar"
-            return d.name +' ('+d.party+'-'+d.district+")<br /><em>"+ tip + "</em>"; ;
+            var deputyTooltipEnglish = '<strong>' + d.name +' ('+d.party+'-'+d.district+")</strong><br><em>Left-Click to select</em><br><em>Right-Click to create new visualizations</em>";
+            var deputyTooltipPortuguese = '<strong>' + d.name +' ('+d.party+'-'+d.district+")</strong><br><em>Botão esquerdo para selecionar</em><br><em>Botão direito para criar novas vis.</em>";
+            if (language === PORTUGUESE)
+                return deputyTooltipPortuguese;
+            else
+                return deputyTooltipEnglish;
         }
         $('.chamber-infographic .infographic-deputies .node').popover({ trigger: "hover" });
 

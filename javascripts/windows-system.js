@@ -1123,8 +1123,8 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
                     }, 10);
                 }
             }
-            else if (dimensionalReductionTechnique === "T-SNE") {
-                var text = language === ENGLISH ? "Generating Political Spectra by T-SNE" : "Gerando Espectro Político por T-SNE";
+            else if (dimensionalReductionTechnique === "t-SNE") {
+                var text = language === ENGLISH ? "Generating Political Spectra by t-SNE" : "Gerando Espectro Político por t-SNE";
                 $('#loading #msg').text(text);
                 calcTSNE(matrixDeputiesPerRollCall, calcCallback);
             }
@@ -1174,7 +1174,7 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
                 setUpScatterPlotData(filteredData, panelID, "MDS", SCATTER_PLOT);
             else
                 if (selectedMenu.context.id ==='scatter-plot-tsne')
-                    setUpScatterPlotData(filteredData, panelID, "T-SNE", SCATTER_PLOT);
+                    setUpScatterPlotData(filteredData, panelID, "t-SNE", SCATTER_PLOT);
                 else
                     if (selectedMenu.context.id === 'deputies-similarity-force')
                         setUpScatterPlotData(filteredData, panelID, "MDS", DEPUTIES_SIMILARITY_FORCE);
@@ -1248,18 +1248,18 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
                 id = periodID[1];
                 if (type !== 'year'){
                     periodData = CONGRESS_DEFINE[type + "s"][id];
-                    title = "<span class='trn'>Roll Calls Heatmap of</span> <span class='trn'>"+ periodData.name+"</span>";
+                    title = "<span class='trn'>Map of Roll Calls</span>: <span class='trn'>"+ periodData.name+"</span>";
                     subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " <span class='trn'>to</span> " + periodData.period[1].toLocaleDateString() + "</span>";
                     title += subtitle;
                 }
                 else {
-                    title = "<span class='trn'>Roll Calls Heatmap of year</span> "+ id;
+                    title = "<span class='trn'>Map of Roll Calls</span>: " + "<span class='trn'>Year</span> "+ id;
                 }
             }
             else {
                 firstYear = periodID[1];
                 lastYear = periodID[2];
-                title = "<span class='trn'>Roll Calls Heatmap of</span> " + firstYear + " <span class='trn'>to</span> " + lastYear;
+                title = "<span class='trn'>Map of Roll Calls</span>: " + firstYear + " <span class='trn'>to</span> " + lastYear;
             }
 
             // Get the corresponding rollcalls to this deputyNodes set

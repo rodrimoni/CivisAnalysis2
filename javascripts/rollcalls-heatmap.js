@@ -95,7 +95,10 @@ function rollCallsHeatmap(){
                 .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
                 .attr("dy", ".35em")
                 .style("text-anchor", "middle")
-                .text(function(d) { return englishVotes[d.data.vote] + " (" + d3.format("%") (d.data.qtd/tots) + ")"; })
+                .text(function(d) { 
+                    var vote = language === PORTUGUESE ? d.data.vote : englishVotes[d.data.vote]; 
+                    return vote  + " (" + d3.format("%") (d.data.qtd/tots) + ")"; 
+                })
                 .call(wrap, 40)
                 .each(function (d) {
                     var bb = this.getBBox(),
@@ -328,9 +331,9 @@ function rollCallsHeatmap(){
                         }
                         else
                         if (d.vote !== 'null')
-                            htmlContent += '<br><div class="text-center"><strong> VOTE: ' + englishVotes[d.vote].toUpperCase() + '<strong></div>';
+                            htmlContent += '<br><div class="text-center"><strong><span class="trn">VOTE</span>: <span class="trn">' + englishVotes[d.vote].toUpperCase() + '</span><strong></div>';
                         else
-                            htmlContent += '<br><div class="text-center"><strong> No Votes <strong></p>';
+                            htmlContent += '<br><div class="text-center"><strong><span class="trn">No Votes</span><strong></p>';
 
                         return htmlContent;
                     }
@@ -339,7 +342,8 @@ function rollCallsHeatmap(){
                 if (d.rate !== null) {
                     drawPieChart(d.countVotes);
                 }
-                translator.lang('br');
+                if (language === PORTUGUESE)
+                    translator.lang('br');
             })
             .on("mouseover", mouseoverRollCall)
             .on("mouseout", function(d){
@@ -360,7 +364,7 @@ function rollCallsHeatmap(){
                 "translate(" + (width/2) + " ," +
                 (0 - margin.top/2) + ")")
             .style("text-anchor", "middle")
-            .text("Number of Roll Calls")
+            .text("Roll Calls")
             .attr({'class':'trn'});
 
         var legend = svg.selectAll(".legend")
@@ -456,7 +460,7 @@ function rollCallsHeatmap(){
     function groupRollCallsByMonth(rcs, filter) {
         var data = [];
         var lastMonth;
-        var countRollCalls = 0;
+        var countRollCalls = 1;
 
         // motionTypeFilter.length == 0, all rollcalls must be selected
         if(filter.motionTypeFilter.length > 0 || (filter.dateFilter[0] !== undefined && filter.dateFilter[1] !== undefined)){
@@ -469,7 +473,7 @@ function rollCallsHeatmap(){
                 lastMonth = currentMonth;
             else
             if (lastMonth !== currentMonth){
-                countRollCalls = 0;
+                countRollCalls = 1;
                 lastMonth = currentMonth;
             }
 

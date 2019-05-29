@@ -856,26 +856,29 @@ function initDict()
         "Create a bar chart":{
             br:"Criar um gráfico de barras"
         },
-        "Create a scatter plot - PCA" :{
-            br:"Criar um gráfico de dispersão - PCA"
+        "Show parties clusters":{
+            br:"Mostrar os grupos por partidos"
         },
-        "Create a scatter plot - MDS":{
-            br:"Criar um gráfico de dispersão - MDS"
+        "Create a Spectrum of Deputies - Technique: PCA" :{
+            br:"Criar um Espectro de Deputados - Técnica: PCA"
         },
-        "Create a scatter plot - T-SNE": {
-            br:"Criar um gráfico de dispersão - T-SNE"
+        "Create a Spectrum of Deputies - Technique: MDS":{
+            br:"Criar um Espectro de Deputados - Técnica: MDS"
         },
-        "Create a chamber infographic":{
-            br:"Criar um infográfico da Câmara"
+        "Create a Spectrum of Deputies - Technique: t-SNE": {
+            br:"Criar um Espectro de Deputados - Técnica: t-SNE"
         },
-        "Create deputies similarity force layout":{
-            br:"Mostrar a similaridade entre os deputados conforme seus votos"
+        "Create a Chamber Infographic":{
+            br:"Criar um Infográfico da Câmara"
         },
-        "Create a heat map for roll calls":{
-            br:"Criar um mapa de calor para as votações"
+        "Create a Deputies Similarity Graph":{
+            br:"Criar um Grafo de Similaridade dos Deputados"
         },
-        "Create a timeline crop behavior for selected deputies":{
-            br:"Criar uma linha do tempo detalhada do comportamento dos deputados selecionados"
+        "Create a Map of Roll Calls":{
+            br:"Criar um Mapa de Votações"
+        },
+        "Create a timeline with selected deputies":{
+            br:"Criar uma linha do tempo com os deputados selecionados"
         },
         "Timeline":{
             br: "Linha do tempo"
@@ -952,20 +955,35 @@ function initDict()
         "Select the initial and final date":{
             br:"Selecione a data inicial e final"
         },
-        "Number of Roll Calls":{
-            br: "Número de votações"
+        "Roll Calls":{
+            br: "Votações"
         },
         "Yes (approved)":{
             br:"Sim (aprovado)"
         },
         "No (not approved)":{
-            br: "Não (não aprovado)" 
+            br:"Não (não aprovado)"
         },
-        "Roll Calls Heatmap of":{
-            br: "Mapa de calor de votações de"
+        "YES":{
+            br:"SIM"
         },
-        "Roll Calls Heatmap of year":{
-            br: "Mapa de calor de votações do ano"
+        "NO":{
+            br: "NÃO" 
+        },
+        "ABSTENTION":{
+            br: "ABSTENÇÃO" 
+        },
+        "OBSTRUCTION":{
+            br: "OBSTRUÇÃO" 
+        },
+        "No Votes":{
+            br: "Sem Votos" 
+        },
+        "VOTE":{
+            br: "VOTO" 
+        },
+        "Map of Roll Calls":{
+            br: "Mapa de Votações"
         },
         "to":{
             br: "até"
@@ -998,21 +1016,20 @@ function initDict()
             br: "Emenda"
         }
       }
-      
-      console.log(language);
 
       if (language === PORTUGUESE)
       {
         translator = $('body').translate({lang: "br", t: dict}); //use BR
         $("button .filter-option").text(translator.get("Choose one of the following..."));
         $("#bar-chart").text(translator.get("Create a bar chart"));
-        $("#scatter-plot-pca").text(translator.get("Create a scatter plot - PCA"));
-        $("#scatter-plot-mds").text(translator.get("Create a scatter plot - MDS"));
-        $("#scatter-plot-tsne").text(translator.get("Create a scatter plot - T-SNE"));
-        $("#chamber-infographic").text(translator.get("Create a chamber infographic"));
-        $("#deputies-similarity-force").text(translator.get("Create deputies similarity force layout"));
-        $("#rollcalls-heatmap").text(translator.get("Create a heat map for roll calls"));
-        $("#time-line-crop-behavior-selection").text(translator.get("Create a timeline crop behavior for selected deputies"));
+        $("#force-layout").text(translator.get("Show parties clusters"));
+        $("#scatter-plot-pca").text(translator.get("Create a Spectrum of Deputies - Technique: PCA"));
+        $("#scatter-plot-mds").text(translator.get("Create a Spectrum of Deputies - Technique: MDS"));
+        $("#scatter-plot-tsne").text(translator.get("Create a Spectrum of Deputies - Technique: t-SNE"));
+        $("#chamber-infographic").text(translator.get("Create a Chamber Infographic"));
+        $("#deputies-similarity-force").text(translator.get("Create a Deputies Similarity Graph"));
+        $("#rollcalls-heatmap").text(translator.get("Create a Map of Roll Calls"));
+        $("#time-line-crop-behavior-selection").text(translator.get("Create a timeline with selected deputies"));
       }
 }
 

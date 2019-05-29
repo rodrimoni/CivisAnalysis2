@@ -81,12 +81,12 @@ function similarityForce()
             .attr("r", function(d){ return (d.hovered)? nodeRadius*2 : nodeRadius;})
             .attr("id", function(d) { return panelID + "_deputy-id-" + d.deputyID; })
             .attr("fill", setDeputyFill)
-            .on("mousemove", function(d){
+            /*.on("mousemove", function(d){
                 div.style("left", d3v4.event.pageX+10+"px");
                 div.style("top", d3v4.event.pageY-25+"px");0
                 div.style("display", "inline-block");
                 div.html(d.name + " (" + d.party + "-" + d.district + ") ");
-            })
+            })*/
             .on('mousedown', function(d) {
                 mouseClickDeputy(d);
             })
@@ -100,11 +100,22 @@ function similarityForce()
                 div.style("display", "none");
                 mouseoutDeputy(d);
             });
-            //.call(drag(simulation));
+            
+            d3.select(hmtlContent)
+                .selectAll('circle.node')
+                .attr( popoverAttr(deputyPopOver,'top'))
 
-        //node.append("title")
-          //  .text(function (d) { return d.name + " - " + d.party;});
+            function deputyPopOver(d){
+                var deputyTooltipEnglish = '<strong>' + d.name +' ('+d.party+'-'+d.district+")</strong><br><em>Left-Click to select</em><br><em>Right-Click to create new visualizations</em>";
+                var deputyTooltipPortuguese = '<strong>' + d.name +' ('+d.party+'-'+d.district+")</strong><br><em>Botão esquerdo para selecionar</em><br><em>Botão direito para criar novas vis.</em>";
+                if (language === PORTUGUESE)
+                    return deputyTooltipPortuguese;
+                else
+                    return deputyTooltipEnglish;
+            }
 
+            $('.similarity-force circle.node').popover({ trigger: "hover" });
+           
         simulation.on("tick", function() {
             link.attr("x1", function(d) {return d.source.x; })
                 .attr("y1", function (d) {return  d.source.y})

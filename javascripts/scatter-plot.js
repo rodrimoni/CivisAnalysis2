@@ -114,17 +114,18 @@ function scatterPlotChart()
                 .data(nodes)
                 .enter()
                 .append("circle")
+                .attr( popoverAttr(deputyPopOver,'top'))
                 .attr("class", function (d) {return (d.selected)? "node selected": ( (d.hovered)? "node hovered" : "node"); })
                 .attr("r", function(d){ return (d.hovered)? nodeRadius*2 : nodeRadius;})
                 .attr("id", function(d) { return panelID + "_deputy-id-" + d.deputyID; })
                 .attr("transform", function(d) {return "translate(" + x(d.scatterplot[1]) + "," + y(d.scatterplot[0]) + ")";})
                 .style("fill", function(d) { return setDeputyFill(d); })
-                .on("mousemove", function(d){
+                /*.on("mousemove", function(d){
                     div.style("left", d3.event.pageX+10+"px");
                     div.style("top", d3.event.pageY-25+"px");
                     div.style("display", "inline-block");
                     div.html(d.name + " (" + d.party + "-" + d.district + ") ");
-                })
+                })*/
                 .on('mousedown', function(d) {
                     mouseClickDeputy(d);
                 })
@@ -140,6 +141,16 @@ function scatterPlotChart()
                     mouseoutDeputy(d);
                 });
 
+                function deputyPopOver(d){
+                    var deputyTooltipEnglish = '<strong>' + d.name +' ('+d.party+'-'+d.district+")</strong><br><em>Left-Click to select</em><br><em>Right-Click to create new visualizations</em>";
+                    var deputyTooltipPortuguese = '<strong>' + d.name +' ('+d.party+'-'+d.district+")</strong><br><em>Botão esquerdo para selecionar</em><br><em>Botão direito para criar novas vis.</em>";
+                    if (language === PORTUGUESE)
+                        return deputyTooltipPortuguese;
+                    else
+                        return deputyTooltipEnglish;
+                }
+
+                $('.scatter-plot circle.node').popover({ trigger: "hover" });
 
             $("#" + panelID + " .node")
                 .contextMenu({
