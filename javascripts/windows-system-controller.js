@@ -859,14 +859,14 @@ function initDict()
         "Show parties clusters":{
             br:"Mostrar os grupos por partidos"
         },
-        "Create a Spectrum of Deputies - Technique: PCA" :{
-            br:"Criar um Espectro de Deputados - Técnica: PCA"
+        "Create a Political Spectrum of Deputies - Technique: PCA" :{
+            br:"Criar um Espectro Político de Deputados - Técnica: PCA"
         },
-        "Create a Spectrum of Deputies - Technique: MDS":{
-            br:"Criar um Espectro de Deputados - Técnica: MDS"
+        "Create a Political Spectrum of Deputies - Technique: MDS":{
+            br:"Criar um Espectro Político de Deputados - Técnica: MDS"
         },
-        "Create a Spectrum of Deputies - Technique: t-SNE": {
-            br:"Criar um Espectro de Deputados - Técnica: t-SNE"
+        "Create a Political Spectrum of Deputies - Technique: t-SNE": {
+            br:"Criar um Espectro Político de Deputados - Técnica: t-SNE"
         },
         "Create a Chamber Infographic":{
             br:"Criar um Infográfico da Câmara"
@@ -1023,9 +1023,9 @@ function initDict()
         $("button .filter-option").text(translator.get("Choose one of the following..."));
         $("#bar-chart").text(translator.get("Create a bar chart"));
         $("#force-layout").text(translator.get("Show parties clusters"));
-        $("#scatter-plot-pca").text(translator.get("Create a Spectrum of Deputies - Technique: PCA"));
-        $("#scatter-plot-mds").text(translator.get("Create a Spectrum of Deputies - Technique: MDS"));
-        $("#scatter-plot-tsne").text(translator.get("Create a Spectrum of Deputies - Technique: t-SNE"));
+        $("#scatter-plot-pca").text(translator.get("Create a Political Spectrum of Deputies - Technique: PCA"));
+        $("#scatter-plot-mds").text(translator.get("Create a Political Spectrum of Deputies - Technique: MDS"));
+        $("#scatter-plot-tsne").text(translator.get("Create a Political Spectrum of Deputies - Technique: t-SNE"));
         $("#chamber-infographic").text(translator.get("Create a Chamber Infographic"));
         $("#deputies-similarity-force").text(translator.get("Create a Deputies Similarity Graph"));
         $("#rollcalls-heatmap").text(translator.get("Create a Map of Roll Calls"));

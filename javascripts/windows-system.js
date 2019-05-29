@@ -872,8 +872,8 @@ function setUpPanel(newID) {
         initialWidth = INITIAL_WIDTH;
         initialHeight = INITIAL_HEIGHT;
 
-        minWidth = INITIAL_WIDTH - 100;
-        minHeight = INITIAL_HEIGHT - 100;
+        minWidth = INITIAL_WIDTH - 30;
+        minHeight = INITIAL_HEIGHT - 30;
 
         maxWidth  = MAX_WIDTH;
         maxHeight = MAX_HEIGHT;
