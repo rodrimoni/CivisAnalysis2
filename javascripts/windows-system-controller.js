@@ -931,11 +931,11 @@ function initDict()
         "elections":{
             br: "eleições"
         },
-        "Clustering with K-Means":{
-            br: "Clusterização com K-Médias"
+        "Grouping deputies":{
+            br: "Agrupar deputados"
         },
-        "Select the value of": {
-            br: "Selecione um valor para"
+        "Number of groups": {
+            br: "Número de grupos"
         },
         "Value of": {
             br: "Valor para"

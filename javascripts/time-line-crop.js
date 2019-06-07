@@ -34,9 +34,9 @@ function timeLineCrop(){
                 .attr("viewBox", "0 0 " + outerWidth + " " + outerHeight)
                 .classed("timeline-crop", true);
 
-            appendGreyRangeButtons(data,0);
+            appendGreyRangeButtons(data.period,0);
             setPartiesTraces(10+rangeButtonsHeight+10);
-
+            drawDeputy(data.deputies);
         })
     }
 
@@ -726,7 +726,7 @@ function timeLineCrop(){
             svg.selectAll('.party').transition().attr('opacity',1);
     }
 
-    chart.drawDeputy = function(deputies){
+    function drawDeputy(deputies){
 
         var firstYear = ranges[0].getFullYear();
         var lastYear = ranges[1].getFullYear();

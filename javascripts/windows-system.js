@@ -212,8 +212,8 @@ function addTutorialButton(newID, panelClass, typeChart) {
 
 function addClusteringMenu(newID) {
     $("#" + newID + " .panel-settings")
-        .append('<li role="presentation" class="dropdown-header"><span class="trn">Clustering with K-Means</span></li>')
-        .append('<li> <span class = "trn">Select the value of</span> K:<br><input id= "slider-'+ newID +'" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="10"/></li>')
+        .append('<li role="presentation" class="dropdown-header"><span class="trn">Grouping deputies</span></li>')
+        .append('<li> <span class = "trn">Number of groups</span>:<br><input id= "slider-'+ newID +'" type="text" data-slider-min="0" data-slider-max="20" data-slider-step="1" data-slider-value="10"/></li>')
 
 }
 
@@ -1182,7 +1182,7 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
 
 function handleContextMenuDeputy(invokedOn, selectedMenu)
 {
-    var title, data;
+    var title, data = {};
     var chartObj = {};
 
     var panelID = invokedOn.parents('.panel').attr("id");
@@ -1191,52 +1191,39 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
     var period = invokedOn.parents('.panel').data().typePeriod;
 
     if (selectedMenu.context.id ==='time-line-crop-behavior-selection') {
-        /* Get the Time Line Crop Chart with the same period of Scatter Plot Chart */
-        var query = "[data-type-period='" + period + "'] .timeline-crop";
-        var timelineCropPanel = $(query).parents('.panel');
-        var timelineCropPanelID = timelineCropPanel.attr("id");
-
-        if (timelineCropPanel.length === 0) {
-            var periodID = period.split("-");
-            var type, id, periodData, subtitle, panelClass, firstYear, lastYear;
-            if (periodID.length <= 2) {
-                type = periodID[0];
-                id = periodID[1];
-                periodData = CONGRESS_DEFINE[type + "s"][id];
-                title = "<span class ='trn'>" + periodData.name + "</span>";
-                subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " <span class='trn'>to</span> " + periodData.period[1].toLocaleDateString() + "</span>";
-                title += subtitle;
-                panelClass = type + '-' + id;
-                data = [periodData.period[0], periodData.period[1]];
-            }
-            else {
-                type = periodID[0];
-                firstYear = periodID[1];
-                lastYear = periodID[2];
-                title = firstYear + " <span class='trn'>to</span> " + lastYear;
-                panelClass = type + "-" + firstYear + "-" + lastYear;
-                data = [new Date(firstYear,0,1),new Date(lastYear,0,1)];
-            }
-
-            chartObj = {'chartID': TIME_LINE_CROP, 'data': data, 'title': title, 'panelClass': panelClass};
-
-            createNewChild(panelID, chartObj);
-
-            /* Update after inserted new Chart */
-            timelineCropPanel = $(query).parents('.panel');
-            timelineCropPanelID = timelineCropPanel.attr("id");
+       
+        var periodID = period.split("-");
+        var type, id, periodData, subtitle, panelClass, firstYear, lastYear;
+        if (periodID.length <= 2) {
+            type = periodID[0];
+            id = periodID[1];
+            periodData = CONGRESS_DEFINE[type + "s"][id];
+            title = "<span class ='trn'>" + periodData.name + "</span>";
+            subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " <span class='trn'>to</span> " + periodData.period[1].toLocaleDateString() + "</span>";
+            title += subtitle;
+            panelClass = type + '-' + id;
+            data.period = [periodData.period[0], periodData.period[1]];
+        }
+        else {
+            type = periodID[0];
+            firstYear = periodID[1];
+            lastYear = periodID[2];
+            title = firstYear + " <span class='trn'>to</span> " + lastYear;
+            panelClass = type + "-" + firstYear + "-" + lastYear;
+            data.period = [new Date(firstYear,0,1),new Date(lastYear,0,1)];
         }
 
-        var timeLineCropChart = tree.getNode(timelineCropPanelID, tree.traverseBF).chart;
         var deputies = [];
-
         $("#" + panelID + " .node.selected").each(function()
             {
                 var deputyID = this.id.split('-')[4];
                 deputies.push(deputiesNodesByYear[deputyID]);
             });
 
-        timeLineCropChart.drawDeputy(deputies);
+        data.deputies = deputies;
+        chartObj = {'chartID': TIME_LINE_CROP, 'data': data, 'title': title, 'panelClass': panelClass};
+
+        createNewChild(panelID, chartObj);
     }
     else
         if (selectedMenu.context.id ==='rollcalls-heatmap'){
@@ -1433,11 +1420,7 @@ function  initializeSlider(id, chart) {
     var slider = '#slider-' + id;
 
     /* Formatting the slider */
-    $(slider).bootstrapSlider({
-        formatter: function(value) {
-            return 'K = ' + value;
-        }
-    });
+    $(slider).bootstrapSlider();
 
     /* Setting initial margin */
     $("#" + id + " .tooltip-main").css({'margin-left': '-45px'});
