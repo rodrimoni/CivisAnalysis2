@@ -886,6 +886,12 @@ function initDict()
         "YEARLY POLITICAL SPECTRA":{
             br: "ESPECTRO POLÍTICO ANUAL"
         },
+        "GOVERNMENT": {
+            br: "GOVERNO"
+        },
+        "OPPOSITION": {
+            br: "OPOSIÇÃO"
+        },
         "max RollCalls/week": {
             br: "máx. Votações/Semana"
         },

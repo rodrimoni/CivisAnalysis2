@@ -119,9 +119,27 @@ function timeLineCrop(){
         gg.append('text')
             .text('YEARLY POLITICAL SPECTRA')
             .attr({
-                'class':"partiesLabel",
-                x:scaleX_middleOfBiennial(firstYear-1) +scaleX_middleOfBiennial(firstYear)/2 -20,
+                'class':"partiesLabel trn",
+                x:scaleX_middleOfBiennial(firstYear-1) +scaleX_middleOfBiennial(firstYear)/2 - 100,
                 y: timelineDim.height/2 +5
+            });
+        
+        gg.append('text')
+        .text('GOVERNMENT')
+        .attr({
+            x:scaleX_middleOfBiennial(firstYear-1) +scaleX_middleOfBiennial(firstYear)/2,
+            y: 10,
+            'text-anchor':'start',
+            'class':"partiesLabel trn"
+        });
+
+        gg.append('text')
+            .text('OPPOSITION')
+            .attr({
+                'class':"partiesLabel trn",
+                'text-anchor':'end',
+                x:scaleX_middleOfBiennial(firstYear-1) +scaleX_middleOfBiennial(firstYear)/2,
+                y: timelineDim.height -5
             });
 
         partyTraces.append('g').attr('class','parties').attr({transform:'translate(0,'+traceMargin+')'});
