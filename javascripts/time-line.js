@@ -19,7 +19,7 @@ d3.chart.timeline = function() {
         dimension,
         group;
 
-    var rangeButtonsHeight = 15;
+    var rangeButtonsHeight = 18;
     var timelineDim = {};
     var partyStepWidth = 15,
         drawingType = 'uncluttered'; // or cluttered || uncluttered
@@ -373,6 +373,7 @@ d3.chart.timeline = function() {
                 sumDistances+=distances[i];
                 sumDeputies+=partiesInPeriod[i].size;
             }
+            console.log(partiesInPeriod);
             sumDeputies+=partiesInPeriod[partiesInPeriod.length-1].size;
             // save half of the spectrum to show the parties
             var partiesPixels = (sumDeputies/513) * (pixelPercentageToParties * (height));
@@ -476,7 +477,7 @@ d3.chart.timeline = function() {
             .append('rect').attr('class','step')
             .attr( popoverAttr(partyPopOver,'top') );
 
-        function partyPopOver( d ){
+        function partyPopOver( d ){ console.log(d.value.party);
             return '<h4>'+d.value.party+'</h4><em>'+((d.value.party)? CONGRESS_DEFINE.parties[d.value.party].name:'')+'</em>';
         }
         $('.timeline .parties .party .steps .step').popover({ trigger: "hover" });

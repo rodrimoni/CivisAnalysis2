@@ -158,7 +158,7 @@ function timeLineCrop(){
         parties.forEach( function(party){
             var partyAtYear = party.value;
             party.traces = [];
-            d3.range(1991,2019,1).forEach(function(year) {
+            d3.range(1991,2020,1).forEach(function(year) {
                 if( (partyAtYear[year] !== undefined) && (partyAtYear[year+1] !== undefined) ){
                     party.traces.push({first:partyAtYear[year],second:partyAtYear[year+1],firstDate:year,secondDate:year+1});
                 }
@@ -186,7 +186,7 @@ function timeLineCrop(){
         periods = {};
 
         // for each year starting from first year
-        for (var i = 1991; i < 2019; i++ ) {
+        for (var i = 1991; i < 2020; i++ ) {
             // for each period create an array of parties
             periods[i] = { parties:[] };
             for( party in CONGRESS_DEFINE.partiesTraces1by1.traces){
@@ -251,7 +251,7 @@ function timeLineCrop(){
         periods = {};
 
         // for each year starting from first year
-        for (var i = 1991; i < 2019; i++ ) {
+        for (var i = 1991; i < 2020; i++ ) {
             // for each period create an array of parties
             periods[i] = { parties:[] };
             for( party in CONGRESS_DEFINE.partiesTraces1by1.traces){
@@ -311,7 +311,7 @@ function timeLineCrop(){
     }
 
     function forceAlgorithmToAproximateTheUnclutteredPositionsToClutteredWithoutOcclusion(timelineHeight) {
-        d3.range(1991,2019,1).forEach(function(year) {
+        d3.range(1991,2020,1).forEach(function(year) {
             var partiesInPeriod = [];
             for(var party in CONGRESS_DEFINE.partiesTraces1by1.traces){
                 if(CONGRESS_DEFINE.partiesTraces1by1.traces[party][year])

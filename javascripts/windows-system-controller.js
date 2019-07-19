@@ -89,7 +89,7 @@ function checkSelectedValue(id) {
 
 function loadScatterPlotDataByYear() {
     var startYear = 1991;
-    var endYear = 2018;
+    var endYear = 2019;
 
     var deputiesNodesYearsArray = [];
 
@@ -133,7 +133,7 @@ function loadScatterPlotDataByYear() {
 
 function calcExtentValuesByYear() {
     var startYear = 1991;
-    var endYear = 2018;
+    var endYear = 2019;
 
     var extentValuesArray = {};
 
@@ -540,21 +540,24 @@ function getPartyCount(cluster) {
 }
 
 function calcThePartyTracesByYear( periodOfYears ){
-    var startYear = 1991, endYear = 2018;
+    var startYear = 1991, endYear = 2019;
 
     function calcOneYearRecursive(year) {
         console.log('calcThePartyTracesByYear ' + year);
-        if(year > endYear){  partyTrace['DEM'] = mergeObjects(partyTrace['PFL'],partyTrace['DEM']);
+        if(year > endYear){  
+            partyTrace['DEM'] = mergeObjects(partyTrace['PFL'],partyTrace['DEM']);
             partyTrace['PR'] = mergeObjects(partyTrace['PL'],partyTrace['PR']);
             partyTrace['PP'] = mergeObjects(partyTrace['PPB'],partyTrace['PP']);
             partyTrace['Podemos'] = mergeObjects(partyTrace['PTN'],partyTrace['Podemos']);
             partyTrace['MDB'] = mergeObjects(partyTrace['PMDB'],partyTrace['MDB']);
+            partyTrace['CIDADANIA'] = mergeObjects(partyTrace['PPS'],partyTrace['CIDADANIA']);
 
             delete partyTrace['PFL'];
             delete partyTrace['PL'];
             delete partyTrace['PPB'];
             delete partyTrace['PTN'];
             delete partyTrace['PMDB'];
+            delete partyTrace['PPS'];
             //delete partyTrace['PPR']; // ??
             //delete partyTrace['PDS']; // ??
             //delete PTN -> PODEMOS?
@@ -564,7 +567,10 @@ function calcThePartyTracesByYear( periodOfYears ){
                 "traces": partyTrace
             };
 
-            console.log(JSON.stringify(saveTrace)); return; }
+            console.log(JSON.stringify(saveTrace)); 
+            return; 
+        }
+        
         var period = [];
         period[0] = new Date(year,0,1);
         period[1] = new Date(year+periodOfYears,0,1);
@@ -915,6 +921,9 @@ function initDict()
         },
         "55th Legislature":{
             br: "55ª Legislatura"
+        },
+        "56th Legislature":{
+            br: "56ª Legislatura"
         },
         "FHC (PSDB) 1st Term":{
             br: "FHC (PSDB) 1º Man"
