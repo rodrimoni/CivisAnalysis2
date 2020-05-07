@@ -185,7 +185,7 @@ d3.chart.timeline = function() {
         var dateCF = crossfilter(datetimeList);
         dimension = dateCF.dimension( function(d){ return d });
         group = dimension.group(d3.time.week);
-        round = d3.time.year.round;
+        round = d3.time.week.round;
 
         chart.x(d3.time.scale()
             .domain([new Date(CONGRESS_DEFINE.startingYear, 0, 1), new Date(CONGRESS_DEFINE.endingYear+1, 0, 1)])
@@ -477,8 +477,8 @@ d3.chart.timeline = function() {
             .append('rect').attr('class','step')
             .attr( popoverAttr(partyPopOver,'top') );
 
-        function partyPopOver( d ){ console.log(d.value.party);
-            return '<h4>'+d.value.party+'</h4><em>'+((d.value.party)? CONGRESS_DEFINE.parties[d.value.party].name:'')+'</em>';
+        function partyPopOver( d ){
+            return '<h4>'+d.value.party+'</h4><em>'+((d.value.party) ? CONGRESS_DEFINE.parties[d.value.party].name:'')+'</em>';
         }
         $('.timeline .parties .party .steps .step').popover({ trigger: "hover" });
 

@@ -89,7 +89,7 @@ function checkSelectedValue(id) {
 
 function loadScatterPlotDataByYear() {
     var startYear = 1991;
-    var endYear = 2019;
+    var endYear = 2020;
 
     var deputiesNodesYearsArray = [];
 
@@ -133,7 +133,7 @@ function loadScatterPlotDataByYear() {
 
 function calcExtentValuesByYear() {
     var startYear = 1991;
-    var endYear = 2019;
+    var endYear = 2020;
 
     var extentValuesArray = {};
 
@@ -385,7 +385,7 @@ function createMatrixDeputiesPerRollCall (deputies){
     console.log("create matrix deputy X rollCall!!");
     var rollCalls = rollCallInTheDateRange;
 
-    var tableDepXRollCall = numeric.rep([ Object.keys(deputies).length, Object.keys(rollCalls).length],0);
+    var tableDepXRollCall = numeric.rep([Object.keys(deputies).length, Object.keys(rollCalls).length],0);
 
     // How the votes will be represented in the matrix for the calc of SVD
     var votoStringToInteger = {"Sim":1,"Não":-1,"Abstenção":0,"Obstrução":0,"Art. 17":0,"Branco":0};
@@ -540,7 +540,7 @@ function getPartyCount(cluster) {
 }
 
 function calcThePartyTracesByYear( periodOfYears ){
-    var startYear = 1991, endYear = 2019;
+    var startYear = 1991, endYear = 2020;
 
     function calcOneYearRecursive(year) {
         console.log('calcThePartyTracesByYear ' + year);
@@ -801,7 +801,6 @@ function calcPreSetsHistory(type) {
             start = CONGRESS_DEFINE.presidents[i].period[0];
             end = CONGRESS_DEFINE.presidents[i].period[1];
         }
-
 
         updateDataforDateRange([start, end], function () {
             var filteredDeputies = filterDeputies();

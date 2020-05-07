@@ -9,12 +9,20 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 7,
+            "deputyID": 5,
             "scatterplot": [
                 -0.5782,
                 -0.03268
             ],
             "party": "PSDB"
+        },
+        {
+            "deputyID": 7,
+            "scatterplot": [
+                -0.7847,
+                -0.1113
+            ],
+            "party": "PFL"
         },
         {
             "deputyID": 12,
@@ -25,7 +33,7 @@
             "party": "PDT"
         },
         {
-            "deputyID": 16,
+            "deputyID": 17,
             "scatterplot": [
                 -0.5002,
                 -0.1419
@@ -41,7 +49,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 20,
+            "deputyID": 19,
             "scatterplot": [
                 0.244,
                 -0.8239
@@ -49,7 +57,15 @@
             "party": "PT"
         },
         {
-            "deputyID": 25,
+            "deputyID": 20,
+            "scatterplot": [
+                -0.6176,
+                -0.02561
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 24,
             "scatterplot": [
                 -0.7586,
                 -0.03582
@@ -67,13 +83,29 @@
         {
             "deputyID": 35,
             "scatterplot": [
+                -0.6852,
+                0.03194
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 36,
+            "scatterplot": [
                 -0.6648,
                 0.05148
             ],
             "party": "PFL"
         },
         {
-            "deputyID": 49,
+            "deputyID": 41,
+            "scatterplot": [
+                -0.6243,
+                0.02185
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 46,
             "scatterplot": [
                 -0.6466,
                 0.002224
@@ -81,7 +113,15 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 56,
+            "deputyID": 48,
+            "scatterplot": [
+                -0.7571,
+                -0.07235
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 55,
             "scatterplot": [
                 -0.6078,
                 0.05663
@@ -89,34 +129,26 @@
             "party": "PFL"
         },
         {
-            "deputyID": 57,
+            "deputyID": 58,
             "scatterplot": [
-                -0.7301,
-                -0.01759
+                -0.6733,
+                -0.09904
             ],
-            "party": "PSDB"
+            "party": "PMDB"
         },
         {
-            "deputyID": 59,
+            "deputyID": 63,
             "scatterplot": [
-                -0.7472,
-                -0.04878
+                -0.3444,
+                0.06707
             ],
-            "party": "PSDB"
+            "party": "PMDB"
         },
         {
-            "deputyID": 64,
+            "deputyID": 67,
             "scatterplot": [
                 -0.5212,
                 -0.03058
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 65,
-            "scatterplot": [
-                -0.7086,
-                -0.006325
             ],
             "party": "PFL"
         },
@@ -131,21 +163,13 @@
         {
             "deputyID": 74,
             "scatterplot": [
-                -0.6101,
-                -0.07262
+                -0.5596,
+                0.0412
             ],
             "party": "PFL"
         },
         {
-            "deputyID": 77,
-            "scatterplot": [
-                -0.8255,
-                -0.06597
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 78,
+            "deputyID": 75,
             "scatterplot": [
                 -0.6651,
                 0.01072
@@ -153,607 +177,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 85,
-            "scatterplot": [
-                -0.233,
-                -0.2783
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 89,
-            "scatterplot": [
-                -0.6049,
-                -0.194
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 90,
-            "scatterplot": [
-                -0.6764,
-                -0.04642
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 91,
-            "scatterplot": [
-                -0.3713,
-                -0.1827
-            ],
-            "party": "PST"
-        },
-        {
-            "deputyID": 92,
-            "scatterplot": [
-                -0.5655,
-                -0.06692
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 97,
-            "scatterplot": [
-                -0.7406,
-                -0.07693
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 100,
-            "scatterplot": [
-                -0.7501,
-                -0.05309
-            ],
-            "party": "PTB"
-        },
-        {
-            "deputyID": 101,
-            "scatterplot": [
-                -0.3863,
-                0.05316
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 103,
-            "scatterplot": [
-                0.2383,
-                -0.7715
-            ],
-            "party": "PCdoB"
-        },
-        {
-            "deputyID": 105,
-            "scatterplot": [
-                -0.5991,
-                0.04805
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 106,
-            "scatterplot": [
-                -0.78,
-                -0.06377
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 108,
-            "scatterplot": [
-                -0.7577,
-                -0.1144
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 109,
-            "scatterplot": [
-                -0.6989,
-                -0.04517
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 111,
-            "scatterplot": [
-                -0.4583,
-                -0.07786
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 116,
-            "scatterplot": [
-                -0.7988,
-                -0.1301
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 118,
-            "scatterplot": [
-                -0.7713,
-                -0.05841
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 122,
-            "scatterplot": [
-                -0.5497,
-                0.09473
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 128,
-            "scatterplot": [
-                -0.651,
-                -0.04952
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 132,
-            "scatterplot": [
-                -0.4923,
-                -0.05547
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 135,
-            "scatterplot": [
-                0.252,
-                -0.7058
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 140,
-            "scatterplot": [
-                -0.7714,
-                0.01242
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 143,
-            "scatterplot": [
-                0.1506,
-                -0.8453
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 146,
-            "scatterplot": [
-                -0.8393,
-                -0.1463
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 147,
-            "scatterplot": [
-                -0.7086,
-                -0.05838
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 149,
-            "scatterplot": [
-                0.1626,
-                -0.509
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 154,
-            "scatterplot": [
-                -0.582,
-                -0.09098
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 159,
-            "scatterplot": [
-                -0.5493,
-                -0.126
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 161,
-            "scatterplot": [
-                -0.2604,
-                -0.4934
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 163,
-            "scatterplot": [
-                -0.6948,
-                -0.1464
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 166,
-            "scatterplot": [
-                -0.6895,
-                0.01215
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 173,
-            "scatterplot": [
-                -0.0967,
-                -0.4963
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 175,
-            "scatterplot": [
-                0.2445,
-                -0.8293
-            ],
-            "party": "PCdoB"
-        },
-        {
-            "deputyID": 176,
-            "scatterplot": [
-                -0.5424,
-                -0.07592
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 177,
-            "scatterplot": [
-                -0.2987,
-                -0.1
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 189,
-            "scatterplot": [
-                -0.6329,
-                -0.01583
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 193,
-            "scatterplot": [
-                -0.7627,
-                -0.158
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 194,
-            "scatterplot": [
-                0.2117,
-                -0.6783
-            ],
-            "party": "PDT"
-        },
-        {
-            "deputyID": 196,
-            "scatterplot": [
-                0.2141,
-                -0.7243
-            ],
-            "party": "PDT"
-        },
-        {
-            "deputyID": 197,
-            "scatterplot": [
-                -0.6774,
-                0.0335
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 198,
-            "scatterplot": [
-                0.2514,
-                -0.897
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 199,
-            "scatterplot": [
-                -0.7314,
-                -0.02063
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 201,
-            "scatterplot": [
-                -0.6228,
-                -0.1644
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 203,
-            "scatterplot": [
-                0.4815,
-                -0.1943
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 204,
-            "scatterplot": [
-                -0.5608,
-                0.03255
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 206,
-            "scatterplot": [
-                0.1926,
-                -0.9209
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 218,
-            "scatterplot": [
-                -0.5079,
-                -0.3145
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 219,
-            "scatterplot": [
-                0.1795,
-                -0.8242
-            ],
-            "party": "PCdoB"
-        },
-        {
-            "deputyID": 221,
-            "scatterplot": [
-                0.2422,
-                -0.8256
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 222,
-            "scatterplot": [
-                0.2258,
-                -0.9745
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 233,
-            "scatterplot": [
-                -0.4339,
-                -0.2897
-            ],
-            "party": "PTB"
-        },
-        {
-            "deputyID": 236,
-            "scatterplot": [
-                -0.6815,
-                -0.07112
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 238,
-            "scatterplot": [
-                -0.5294,
-                0.1164
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 245,
-            "scatterplot": [
-                -0.2825,
-                -0.06823
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 257,
-            "scatterplot": [
-                -0.4541,
-                -0.1178
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 260,
-            "scatterplot": [
-                -0.4149,
-                -0.1658
-            ],
-            "party": "PTB"
-        },
-        {
-            "deputyID": 269,
-            "scatterplot": [
-                -0.6446,
-                -0.114
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 270,
-            "scatterplot": [
-                -0.7556,
-                -0.1448
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 271,
-            "scatterplot": [
-                -0.6529,
-                0.01248
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 277,
-            "scatterplot": [
-                0.1101,
-                -0.7561
-            ],
-            "party": "PPS"
-        },
-        {
-            "deputyID": 282,
-            "scatterplot": [
-                -0.5912,
-                -0.06485
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 284,
-            "scatterplot": [
-                0.1761,
-                -0.6928
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 289,
-            "scatterplot": [
-                -0.6547,
-                -0.06217
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 291,
-            "scatterplot": [
-                0.2744,
-                -0.8648
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 313,
-            "scatterplot": [
-                0.2263,
-                -0.934
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 314,
-            "scatterplot": [
-                -0.6745,
-                -0.1003
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 324,
-            "scatterplot": [
-                -0.7801,
-                -0.01362
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 336,
-            "scatterplot": [
-                -0.6852,
-                0.03194
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 337,
-            "scatterplot": [
-                -0.5907,
-                0.03665
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 341,
-            "scatterplot": [
-                -0.3597,
-                -0.02623
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 347,
-            "scatterplot": [
-                -0.7947,
-                -0.1426
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 350,
-            "scatterplot": [
-                -0.5906,
-                -0.05613
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 353,
-            "scatterplot": [
-                -0.6243,
-                0.02185
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 357,
-            "scatterplot": [
-                -0.7571,
-                -0.07235
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 360,
-            "scatterplot": [
-                -0.5735,
-                -0.0612
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 361,
-            "scatterplot": [
-                -0.6733,
-                -0.09904
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 366,
+            "deputyID": 81,
             "scatterplot": [
                 -0.5084,
                 -0.01257
@@ -761,7 +185,31 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 368,
+            "deputyID": 83,
+            "scatterplot": [
+                -0.6764,
+                -0.04642
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 84,
+            "scatterplot": [
+                -0.3713,
+                -0.1827
+            ],
+            "party": "PST"
+        },
+        {
+            "deputyID": 85,
+            "scatterplot": [
+                -0.5655,
+                -0.06692
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 90,
             "scatterplot": [
                 -0.5314,
                 -0.1827
@@ -769,175 +217,55 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 371,
+            "deputyID": 92,
             "scatterplot": [
-                0.1989,
-                -0.9176
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 372,
-            "scatterplot": [
-                0.2604,
-                -0.6228
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 375,
-            "scatterplot": [
-                -0.7548,
-                0.02325
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 376,
-            "scatterplot": [
-                -0.4614,
-                -0.01163
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 380,
-            "scatterplot": [
-                0.1787,
-                -0.7741
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 385,
-            "scatterplot": [
-                0.1315,
-                -0.7873
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 389,
-            "scatterplot": [
-                0.233,
-                -0.7244
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 397,
-            "scatterplot": [
-                0.03162,
-                -0.7085
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 407,
-            "scatterplot": [
-                -0.5173,
-                -0.02252
+                -0.7406,
+                -0.07693
             ],
             "party": "PFL"
         },
         {
-            "deputyID": 415,
+            "deputyID": 96,
             "scatterplot": [
-                -0.5956,
-                0.02483
+                -0.7501,
+                -0.05309
             ],
-            "party": "PSDB"
+            "party": "PTB"
         },
         {
-            "deputyID": 418,
+            "deputyID": 97,
             "scatterplot": [
-                -0.5675,
-                0.04203
+                -0.3863,
+                0.05316
             ],
-            "party": "PSDB"
+            "party": "PMDB"
         },
         {
-            "deputyID": 420,
+            "deputyID": 99,
             "scatterplot": [
-                -0.6808,
-                -0.03548
+                0.2383,
+                -0.7715
+            ],
+            "party": "PCdoB"
+        },
+        {
+            "deputyID": 101,
+            "scatterplot": [
+                -0.7577,
+                -0.1144
             ],
             "party": "PFL"
         },
         {
-            "deputyID": 424,
+            "deputyID": 102,
             "scatterplot": [
-                -0.5452,
-                0.04031
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 434,
-            "scatterplot": [
-                -0.6166,
-                -0.06982
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 435,
-            "scatterplot": [
-                -0.6545,
-                -0.1477
+                -0.6989,
+                -0.04517
             ],
             "party": "PFL"
         },
         {
-            "deputyID": 437,
-            "scatterplot": [
-                -0.2815,
-                -0.1073
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 447,
-            "scatterplot": [
-                -0.6223,
-                -0.1385
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 451,
-            "scatterplot": [
-                -0.5217,
-                0.04011
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 454,
-            "scatterplot": [
-                -0.3444,
-                0.06707
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 457,
-            "scatterplot": [
-                -0.5805,
-                -0.03125
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 460,
-            "scatterplot": [
-                0.1668,
-                -0.6706
-            ],
-            "party": "PSB"
-        },
-        {
-            "deputyID": 463,
+            "deputyID": 104,
             "scatterplot": [
                 -0.6833,
                 0.02108
@@ -945,103 +273,223 @@
             "party": "PFL"
         },
         {
-            "deputyID": 466,
+            "deputyID": 106,
             "scatterplot": [
-                -0.4695,
-                -0.1148
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 467,
-            "scatterplot": [
-                -0.5684,
-                -0.09482
+                -0.7988,
+                -0.1301
             ],
             "party": "PFL"
         },
         {
-            "deputyID": 468,
+            "deputyID": 108,
             "scatterplot": [
-                -0.4435,
-                -0.1482
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 475,
-            "scatterplot": [
-                -0.6579,
-                -0.008418
+                -0.7548,
+                0.02325
             ],
             "party": "PMDB"
         },
         {
-            "deputyID": 481,
+            "deputyID": 114,
             "scatterplot": [
-                -0.612,
-                -0.04612
+                -0.651,
+                -0.04952
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 116,
+            "scatterplot": [
+                -0.4614,
+                -0.01163
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 119,
+            "scatterplot": [
+                -0.4923,
+                -0.05547
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 123,
+            "scatterplot": [
+                -0.7714,
+                0.01242
             ],
             "party": "PFL"
         },
         {
-            "deputyID": 482,
+            "deputyID": 125,
             "scatterplot": [
-                -0.7847,
-                -0.1113
+                0.1506,
+                -0.8453
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 126,
+            "scatterplot": [
+                -0.8393,
+                -0.1463
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 127,
+            "scatterplot": [
+                -0.7086,
+                -0.05838
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 134,
+            "scatterplot": [
+                -0.582,
+                -0.09098
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 137,
+            "scatterplot": [
+                0.1315,
+                -0.7873
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 141,
+            "scatterplot": [
+                -0.2604,
+                -0.4934
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 143,
+            "scatterplot": [
+                -0.6948,
+                -0.1464
             ],
             "party": "PFL"
         },
         {
-            "deputyID": 487,
+            "deputyID": 144,
             "scatterplot": [
-                -0.5596,
-                0.0412
+                -0.6895,
+                0.01215
             ],
             "party": "PFL"
         },
         {
-            "deputyID": 488,
+            "deputyID": 147,
             "scatterplot": [
-                -0.5834,
-                0.02297
+                -0.0967,
+                -0.4963
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 148,
+            "scatterplot": [
+                0.2445,
+                -0.8293
+            ],
+            "party": "PCdoB"
+        },
+        {
+            "deputyID": 149,
+            "scatterplot": [
+                -0.5424,
+                -0.07592
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 155,
+            "scatterplot": [
+                -0.6329,
+                -0.01583
             ],
             "party": "PFL"
         },
         {
-            "deputyID": 495,
+            "deputyID": 157,
             "scatterplot": [
-                -0.4702,
-                -0.2614
+                -0.7627,
+                -0.158
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 159,
+            "scatterplot": [
+                0.2141,
+                -0.7243
+            ],
+            "party": "PDT"
+        },
+        {
+            "deputyID": 161,
+            "scatterplot": [
+                0.2514,
+                -0.897
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 162,
+            "scatterplot": [
+                -0.5608,
+                0.03255
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 164,
+            "scatterplot": [
+                0.1926,
+                -0.9209
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 175,
+            "scatterplot": [
+                -0.5079,
+                -0.3145
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 177,
+            "scatterplot": [
+                0.2258,
+                -0.9745
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 183,
+            "scatterplot": [
+                -0.4339,
+                -0.2897
             ],
             "party": "PTB"
         },
         {
-            "deputyID": 497,
+            "deputyID": 186,
             "scatterplot": [
-                -0.4677,
-                0.005398
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 498,
-            "scatterplot": [
-                -0.3675,
-                0.1258
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 503,
-            "scatterplot": [
-                -0.6776,
-                -0.0432
+                -0.5294,
+                0.1164
             ],
             "party": "PFL"
         },
         {
-            "deputyID": 504,
+            "deputyID": 187,
             "scatterplot": [
                 -0.03203,
                 -0.4729
@@ -1049,63 +497,127 @@
             "party": "PL"
         },
         {
-            "deputyID": 506,
+            "deputyID": 193,
             "scatterplot": [
-                -0.4855,
-                -0.1371
+                -0.2825,
+                -0.06823
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 200,
+            "scatterplot": [
+                -0.5173,
+                -0.02252
             ],
             "party": "PFL"
         },
         {
-            "deputyID": 513,
+            "deputyID": 202,
             "scatterplot": [
-                -0.5333,
-                -0.06316
+                -0.4677,
+                0.005398
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 211,
+            "scatterplot": [
+                -0.5956,
+                0.02483
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 214,
+            "scatterplot": [
+                -0.6446,
+                -0.114
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 216,
+            "scatterplot": [
+                -0.7556,
+                -0.1448
             ],
             "party": "PFL"
         },
         {
-            "deputyID": 514,
+            "deputyID": 218,
             "scatterplot": [
-                -0.5055,
-                -0.03737
+                -0.6529,
+                0.01248
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 222,
+            "scatterplot": [
+                -0.6808,
+                -0.03548
             ],
             "party": "PFL"
         },
         {
-            "deputyID": 525,
+            "deputyID": 226,
             "scatterplot": [
-                -0.5287,
-                0.05504
+                -0.5912,
+                -0.06485
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 228,
+            "scatterplot": [
+                0.1761,
+                -0.6928
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 232,
+            "scatterplot": [
+                0.2744,
+                -0.8648
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 239,
+            "scatterplot": [
+                -0.5452,
+                0.04031
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 244,
+            "scatterplot": [
+                -0.6579,
+                -0.008418
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 247,
+            "scatterplot": [
+                0.2263,
+                -0.934
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 255,
+            "scatterplot": [
+                -0.7801,
+                -0.01362
             ],
             "party": "PFL"
         },
         {
-            "deputyID": 530,
-            "scatterplot": [
-                0.1958,
-                -0.5818
-            ],
-            "party": "PDT"
-        },
-        {
-            "deputyID": 537,
-            "scatterplot": [
-                0.2681,
-                -0.8879
-            ],
-            "party": "PCdoB"
-        },
-        {
-            "deputyID": 542,
-            "scatterplot": [
-                -0.6176,
-                -0.02561
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 546,
+            "deputyID": 267,
             "scatterplot": [
                 -0.299,
                 -0.3546
@@ -1113,7 +625,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 547,
+            "deputyID": 268,
             "scatterplot": [
                 -0.7899,
                 -0.0674
@@ -1121,7 +633,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 548,
+            "deputyID": 274,
             "scatterplot": [
                 -0.675,
                 -0.1065
@@ -1129,7 +641,15 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 552,
+            "deputyID": 282,
+            "scatterplot": [
+                0.2681,
+                -0.8879
+            ],
+            "party": "PCdoB"
+        },
+        {
+            "deputyID": 286,
             "scatterplot": [
                 0.2903,
                 -0.7157
@@ -1137,7 +657,7 @@
             "party": "PDT"
         },
         {
-            "deputyID": 554,
+            "deputyID": 290,
             "scatterplot": [
                 -0.4033,
                 -0.02636
@@ -1145,839 +665,15 @@
             "party": "PFL"
         },
         {
-            "deputyID": 556,
+            "deputyID": 291,
             "scatterplot": [
-                0.1505,
-                -0.419
-            ],
-            "party": "PSB"
-        },
-        {
-            "deputyID": 558,
-            "scatterplot": [
-                -0.6643,
-                -0.08746
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 561,
-            "scatterplot": [
-                -0.3505,
-                0.01952
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 568,
-            "scatterplot": [
-                -0.7787,
-                -0.09587
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 570,
-            "scatterplot": [
-                -0.7203,
-                -0.09613
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 573,
-            "scatterplot": [
-                -0.7502,
-                -0.0902
+                -0.6101,
+                -0.07262
             ],
             "party": "PFL"
         },
         {
-            "deputyID": 575,
-            "scatterplot": [
-                -0.6928,
-                -0.113
-            ],
-            "party": "PL"
-        },
-        {
-            "deputyID": 579,
-            "scatterplot": [
-                -0.3158,
-                -0.2331
-            ],
-            "party": "PSC"
-        },
-        {
-            "deputyID": 581,
-            "scatterplot": [
-                0.2814,
-                -0.9194
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 583,
-            "scatterplot": [
-                0.2709,
-                -1.049
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 585,
-            "scatterplot": [
-                -0.7742,
-                -0.1094
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 586,
-            "scatterplot": [
-                -0.6862,
-                -0.07575
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 588,
-            "scatterplot": [
-                -0.6613,
-                -0.1264
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 590,
-            "scatterplot": [
-                -0.6074,
-                -0.01716
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 593,
-            "scatterplot": [
-                -0.8027,
-                -0.06156
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 595,
-            "scatterplot": [
-                -0.1881,
-                -0.547
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 596,
-            "scatterplot": [
-                -0.6569,
-                -0.04189
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 597,
-            "scatterplot": [
-                -0.6968,
-                -0.02287
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 599,
-            "scatterplot": [
-                -0.7127,
-                -0.06933
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 600,
-            "scatterplot": [
-                -0.8418,
-                -0.1132
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 601,
-            "scatterplot": [
-                -0.6873,
-                -0.07743
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 603,
-            "scatterplot": [
-                -0.737,
-                -0.06364
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 609,
-            "scatterplot": [
-                -0.7843,
-                -0.1437
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 610,
-            "scatterplot": [
-                -0.6978,
-                0.07489
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 613,
-            "scatterplot": [
-                -0.7859,
-                -0.1268
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 614,
-            "scatterplot": [
-                -0.7693,
-                -0.08605
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 615,
-            "scatterplot": [
-                0.2782,
-                -0.9442
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 617,
-            "scatterplot": [
-                -0.5661,
-                0.02883
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 618,
-            "scatterplot": [
-                0.2505,
-                -0.8759
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 624,
-            "scatterplot": [
-                -0.6289,
-                -0.04483
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 626,
-            "scatterplot": [
-                -0.4629,
-                0.002027
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 630,
-            "scatterplot": [
-                -0.6009,
-                0.02427
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 634,
-            "scatterplot": [
-                -0.3314,
-                0.08439
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 635,
-            "scatterplot": [
-                -0.5892,
-                -0.002744
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 636,
-            "scatterplot": [
-                -0.6199,
-                0.08113
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 637,
-            "scatterplot": [
-                0.308,
-                -0.9447
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 639,
-            "scatterplot": [
-                -0.6398,
-                -0.02981
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 640,
-            "scatterplot": [
-                0.0785,
-                -0.8373
-            ],
-            "party": "PV"
-        },
-        {
-            "deputyID": 641,
-            "scatterplot": [
-                -0.552,
-                -0.2572
-            ],
-            "party": "PTB"
-        },
-        {
-            "deputyID": 644,
-            "scatterplot": [
-                -0.5263,
-                -0.3114
-            ],
-            "party": "PPS"
-        },
-        {
-            "deputyID": 645,
-            "scatterplot": [
-                0.2383,
-                -0.7497
-            ],
-            "party": "PDT"
-        },
-        {
-            "deputyID": 648,
-            "scatterplot": [
-                0.2747,
-                -0.9406
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 658,
-            "scatterplot": [
-                0,
-                0
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 659,
-            "scatterplot": [
-                -0.2588,
-                -0.5506
-            ],
-            "party": "PST"
-        },
-        {
-            "deputyID": 661,
-            "scatterplot": [
-                -0.7699,
-                -0.09891
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 662,
-            "scatterplot": [
-                -0.3776,
-                -0.1185
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 663,
-            "scatterplot": [
-                0.1526,
-                -0.6838
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 665,
-            "scatterplot": [
-                -0.6673,
-                0.1153
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 666,
-            "scatterplot": [
-                -0.7272,
-                -0.05798
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 668,
-            "scatterplot": [
-                0.2268,
-                -0.8407
-            ],
-            "party": "PCdoB"
-        },
-        {
-            "deputyID": 671,
-            "scatterplot": [
-                0.293,
-                -0.9208
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 675,
-            "scatterplot": [
-                -0.4119,
-                -0.1324
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 680,
-            "scatterplot": [
-                -0.657,
-                -0.008239
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 681,
-            "scatterplot": [
-                -0.8108,
-                -0.05072
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 685,
-            "scatterplot": [
-                -0.5166,
-                -0.0616
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 686,
-            "scatterplot": [
-                0.2987,
-                -0.995
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 690,
-            "scatterplot": [
-                -0.7402,
-                -0.05593
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 691,
-            "scatterplot": [
-                0.2494,
-                -0.8665
-            ],
-            "party": "PDT"
-        },
-        {
-            "deputyID": 692,
-            "scatterplot": [
-                -0.5518,
-                -0.0499
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 694,
-            "scatterplot": [
-                -0.7153,
-                -0.1381
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 695,
-            "scatterplot": [
-                -0.6602,
-                -0.08761
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 696,
-            "scatterplot": [
-                -0.278,
-                -0.2811
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 698,
-            "scatterplot": [
-                -0.5206,
-                -0.003971
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 700,
-            "scatterplot": [
-                -0.8241,
-                -0.1539
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 704,
-            "scatterplot": [
-                -0.6025,
-                -0.06278
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 705,
-            "scatterplot": [
-                -0.5812,
-                -0.03254
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 713,
-            "scatterplot": [
-                0.1648,
-                -0.7846
-            ],
-            "party": "PDT"
-        },
-        {
-            "deputyID": 717,
-            "scatterplot": [
-                0.2002,
-                -0.5355
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 719,
-            "scatterplot": [
-                -0.8087,
-                -0.1228
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 721,
-            "scatterplot": [
-                -0.2861,
-                -0.5073
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 722,
-            "scatterplot": [
-                -0.7755,
-                -0.02298
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 723,
-            "scatterplot": [
-                0.2751,
-                -0.7283
-            ],
-            "party": "PDT"
-        },
-        {
-            "deputyID": 724,
-            "scatterplot": [
-                0.2438,
-                -0.7835
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 727,
-            "scatterplot": [
-                -0.7321,
-                -0.09861
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 731,
-            "scatterplot": [
-                -0.7074,
-                -0.2606
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 732,
-            "scatterplot": [
-                -0.6181,
-                -0.01867
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 735,
-            "scatterplot": [
-                -0.6411,
-                -0.1375
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 736,
-            "scatterplot": [
-                -0.6714,
-                -0.03794
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 745,
-            "scatterplot": [
-                -0.7072,
-                -0.1243
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 747,
-            "scatterplot": [
-                -0.5345,
-                -0.05834
-            ],
-            "party": "PST"
-        },
-        {
-            "deputyID": 748,
-            "scatterplot": [
-                -0.4454,
-                0.08703
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 749,
-            "scatterplot": [
-                -0.5861,
-                0.03421
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 751,
-            "scatterplot": [
-                -0.516,
-                -0.07438
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 754,
-            "scatterplot": [
-                0.237,
-                -0.7079
-            ],
-            "party": "PCdoB"
-        },
-        {
-            "deputyID": 755,
-            "scatterplot": [
-                0.2383,
-                -1.008
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 757,
-            "scatterplot": [
-                -0.653,
-                -0.05948
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 761,
-            "scatterplot": [
-                -0.7568,
-                -0.06519
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 767,
-            "scatterplot": [
-                -0.579,
-                -0.06576
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 769,
-            "scatterplot": [
-                -0.4278,
-                -0.007093
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 771,
-            "scatterplot": [
-                -0.73,
-                -0.02597
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 773,
-            "scatterplot": [
-                -0.7665,
-                -0.08892
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 774,
-            "scatterplot": [
-                -0.7379,
-                -0.0418
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 775,
-            "scatterplot": [
-                0.1923,
-                -0.8291
-            ],
-            "party": "PDT"
-        },
-        {
-            "deputyID": 777,
-            "scatterplot": [
-                -0.55,
-                0.04355
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 778,
-            "scatterplot": [
-                -0.5623,
-                -0.1235
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 779,
-            "scatterplot": [
-                -0.5343,
-                0.1073
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 780,
-            "scatterplot": [
-                -0.6914,
-                0.0073
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 781,
-            "scatterplot": [
-                -0.5763,
-                0.002766
-            ],
-            "party": "PL"
-        },
-        {
-            "deputyID": 783,
-            "scatterplot": [
-                -0.6669,
-                0.04749
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 787,
-            "scatterplot": [
-                -0.7252,
-                0.003812
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 790,
-            "scatterplot": [
-                -0.2697,
-                -0.2991
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 791,
-            "scatterplot": [
-                -0.6392,
-                -0.1075
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 801,
-            "scatterplot": [
-                -0.3881,
-                0.09044
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 803,
-            "scatterplot": [
-                -0.7111,
-                0.004285
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 837,
+            "deputyID": 292,
             "scatterplot": [
                 0.2988,
                 -0.7493
@@ -1985,7 +681,15 @@
             "party": "PT"
         },
         {
-            "deputyID": 838,
+            "deputyID": 293,
+            "scatterplot": [
+                -0.8255,
+                -0.06597
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 294,
             "scatterplot": [
                 -0.5449,
                 -0.05403
@@ -1993,7 +697,63 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 839,
+            "deputyID": 295,
+            "scatterplot": [
+                -0.6643,
+                -0.08746
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 297,
+            "scatterplot": [
+                -0.5805,
+                -0.03125
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 299,
+            "scatterplot": [
+                -0.233,
+                -0.2783
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 300,
+            "scatterplot": [
+                -0.3505,
+                0.01952
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 303,
+            "scatterplot": [
+                -0.7086,
+                -0.006325
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 305,
+            "scatterplot": [
+                -0.7787,
+                -0.09587
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 309,
+            "scatterplot": [
+                -0.7502,
+                -0.0902
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 310,
             "scatterplot": [
                 -0.1364,
                 -0.6075
@@ -2001,7 +761,127 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 841,
+            "deputyID": 312,
+            "scatterplot": [
+                -0.6928,
+                -0.113
+            ],
+            "party": "PL"
+        },
+        {
+            "deputyID": 314,
+            "scatterplot": [
+                -0.5834,
+                0.02297
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 316,
+            "scatterplot": [
+                -0.3158,
+                -0.2331
+            ],
+            "party": "PSC"
+        },
+        {
+            "deputyID": 317,
+            "scatterplot": [
+                0.2814,
+                -0.9194
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 318,
+            "scatterplot": [
+                0.2709,
+                -1.049
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 320,
+            "scatterplot": [
+                0.2604,
+                -0.6228
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 321,
+            "scatterplot": [
+                -0.78,
+                -0.06377
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 322,
+            "scatterplot": [
+                -0.7742,
+                -0.1094
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 324,
+            "scatterplot": [
+                -0.6862,
+                -0.07575
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 326,
+            "scatterplot": [
+                -0.7713,
+                -0.05841
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 327,
+            "scatterplot": [
+                -0.6613,
+                -0.1264
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 330,
+            "scatterplot": [
+                -0.6074,
+                -0.01716
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 334,
+            "scatterplot": [
+                -0.8027,
+                -0.06156
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 335,
+            "scatterplot": [
+                -0.5991,
+                0.04805
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 337,
+            "scatterplot": [
+                -0.5497,
+                0.09473
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 338,
             "scatterplot": [
                 -0.6094,
                 -0.07425
@@ -2009,7 +889,15 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 842,
+            "deputyID": 339,
+            "scatterplot": [
+                -0.6968,
+                -0.02287
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 340,
             "scatterplot": [
                 -0.7358,
                 -0.06483
@@ -2017,7 +905,23 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 843,
+            "deputyID": 342,
+            "scatterplot": [
+                -0.7127,
+                -0.06933
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 343,
+            "scatterplot": [
+                -0.6873,
+                -0.07743
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 344,
             "scatterplot": [
                 -0.535,
                 -0.07406
@@ -2025,7 +929,183 @@
             "party": "PPB"
         },
         {
-            "deputyID": 845,
+            "deputyID": 345,
+            "scatterplot": [
+                -0.737,
+                -0.06364
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 348,
+            "scatterplot": [
+                0.233,
+                -0.7244
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 352,
+            "scatterplot": [
+                -0.7843,
+                -0.1437
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 353,
+            "scatterplot": [
+                -0.6978,
+                0.07489
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 357,
+            "scatterplot": [
+                0.1787,
+                -0.7741
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 358,
+            "scatterplot": [
+                0.1626,
+                -0.509
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 359,
+            "scatterplot": [
+                -0.7859,
+                -0.1268
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 360,
+            "scatterplot": [
+                -0.7693,
+                -0.08605
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 361,
+            "scatterplot": [
+                0.2782,
+                -0.9442
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 363,
+            "scatterplot": [
+                -0.5661,
+                0.02883
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 364,
+            "scatterplot": [
+                0.2505,
+                -0.8759
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 366,
+            "scatterplot": [
+                -0.6289,
+                -0.04483
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 367,
+            "scatterplot": [
+                -0.2987,
+                -0.1
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 370,
+            "scatterplot": [
+                -0.6009,
+                0.02427
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 374,
+            "scatterplot": [
+                0.1795,
+                -0.8242
+            ],
+            "party": "PCdoB"
+        },
+        {
+            "deputyID": 376,
+            "scatterplot": [
+                -0.3314,
+                0.08439
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 377,
+            "scatterplot": [
+                0.308,
+                -0.9447
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 378,
+            "scatterplot": [
+                0.4815,
+                -0.1943
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 380,
+            "scatterplot": [
+                -0.6398,
+                -0.02981
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 381,
+            "scatterplot": [
+                0.0785,
+                -0.8373
+            ],
+            "party": "PV"
+        },
+        {
+            "deputyID": 382,
+            "scatterplot": [
+                -0.552,
+                -0.2572
+            ],
+            "party": "PTB"
+        },
+        {
+            "deputyID": 385,
+            "scatterplot": [
+                -0.6228,
+                -0.1644
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 386,
             "scatterplot": [
                 -0.6442,
                 0.005372
@@ -2033,7 +1113,63 @@
             "party": "PTB"
         },
         {
-            "deputyID": 849,
+            "deputyID": 387,
+            "scatterplot": [
+                -0.5263,
+                -0.3114
+            ],
+            "party": "PPS"
+        },
+        {
+            "deputyID": 393,
+            "scatterplot": [
+                -0.4702,
+                -0.2614
+            ],
+            "party": "PTB"
+        },
+        {
+            "deputyID": 394,
+            "scatterplot": [
+                -0.3597,
+                -0.02623
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 397,
+            "scatterplot": [
+                -0.2588,
+                -0.5506
+            ],
+            "party": "PST"
+        },
+        {
+            "deputyID": 398,
+            "scatterplot": [
+                -0.6815,
+                -0.07112
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 399,
+            "scatterplot": [
+                -0.7699,
+                -0.09891
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 400,
+            "scatterplot": [
+                -0.3776,
+                -0.1185
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 402,
             "scatterplot": [
                 -0.5977,
                 -0.05927
@@ -2041,7 +1177,47 @@
             "party": "PTN"
         },
         {
-            "deputyID": 852,
+            "deputyID": 403,
+            "scatterplot": [
+                -0.7272,
+                -0.05798
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 406,
+            "scatterplot": [
+                0.2268,
+                -0.8407
+            ],
+            "party": "PCdoB"
+        },
+        {
+            "deputyID": 410,
+            "scatterplot": [
+                0.293,
+                -0.9208
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 413,
+            "scatterplot": [
+                -0.4119,
+                -0.1324
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 416,
+            "scatterplot": [
+                -0.6545,
+                -0.1477
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 417,
             "scatterplot": [
                 -0.4896,
                 -0.08612
@@ -2049,7 +1225,55 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 853,
+            "deputyID": 419,
+            "scatterplot": [
+                -0.657,
+                -0.008239
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 423,
+            "scatterplot": [
+                -0.5166,
+                -0.0616
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 424,
+            "scatterplot": [
+                0.2987,
+                -0.995
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 425,
+            "scatterplot": [
+                -0.4435,
+                -0.1482
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 429,
+            "scatterplot": [
+                -0.7402,
+                -0.05593
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 430,
+            "scatterplot": [
+                -0.5518,
+                -0.0499
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 432,
             "scatterplot": [
                 -0.7568,
                 -0.07615
@@ -2057,7 +1281,23 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 857,
+            "deputyID": 434,
+            "scatterplot": [
+                -0.7153,
+                -0.1381
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 436,
+            "scatterplot": [
+                -0.6602,
+                -0.08761
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 440,
             "scatterplot": [
                 -0.6962,
                 -0.153
@@ -2065,7 +1305,15 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 859,
+            "deputyID": 442,
+            "scatterplot": [
+                -0.8241,
+                -0.1539
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 443,
             "scatterplot": [
                 0.2542,
                 -0.8901
@@ -2073,7 +1321,15 @@
             "party": "PT"
         },
         {
-            "deputyID": 861,
+            "deputyID": 445,
+            "scatterplot": [
+                -0.6025,
+                -0.06278
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 447,
             "scatterplot": [
                 -0.4393,
                 0.07179
@@ -2081,7 +1337,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 863,
+            "deputyID": 449,
             "scatterplot": [
                 -0.6427,
                 0.03263
@@ -2089,7 +1345,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 864,
+            "deputyID": 450,
             "scatterplot": [
                 -0.6682,
                 -0.06102
@@ -2097,7 +1353,31 @@
             "party": "PFL"
         },
         {
-            "deputyID": 866,
+            "deputyID": 458,
+            "scatterplot": [
+                0.1648,
+                -0.7846
+            ],
+            "party": "PDT"
+        },
+        {
+            "deputyID": 461,
+            "scatterplot": [
+                0.2002,
+                -0.5355
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 464,
+            "scatterplot": [
+                -0.8087,
+                -0.1228
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 465,
             "scatterplot": [
                 -0.689,
                 -0.1181
@@ -2105,7 +1385,31 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 871,
+            "deputyID": 468,
+            "scatterplot": [
+                -0.7755,
+                -0.02298
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 469,
+            "scatterplot": [
+                0.2438,
+                -0.7835
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 477,
+            "scatterplot": [
+                -0.7321,
+                -0.09861
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 478,
             "scatterplot": [
                 -0.3138,
                 0.006007
@@ -2113,7 +1417,31 @@
             "party": "PPB"
         },
         {
-            "deputyID": 874,
+            "deputyID": 482,
+            "scatterplot": [
+                -0.7074,
+                -0.2606
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 483,
+            "scatterplot": [
+                -0.6181,
+                -0.01867
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 485,
+            "scatterplot": [
+                0.1668,
+                -0.6706
+            ],
+            "party": "PSB"
+        },
+        {
+            "deputyID": 487,
             "scatterplot": [
                 -0.3511,
                 -0.005643
@@ -2121,7 +1449,63 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 878,
+            "deputyID": 491,
+            "scatterplot": [
+                -0.7301,
+                -0.01759
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 492,
+            "scatterplot": [
+                -0.6714,
+                -0.03794
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 495,
+            "scatterplot": [
+                -0.5735,
+                -0.0612
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 501,
+            "scatterplot": [
+                -0.5861,
+                0.03421
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 503,
+            "scatterplot": [
+                0.237,
+                -0.7079
+            ],
+            "party": "PCdoB"
+        },
+        {
+            "deputyID": 504,
+            "scatterplot": [
+                0.2383,
+                -1.008
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 507,
+            "scatterplot": [
+                -0.7568,
+                -0.06519
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 508,
             "scatterplot": [
                 -0.792,
                 -0.08023
@@ -2129,47 +1513,463 @@
             "party": "PTB"
         },
         {
-            "deputyID": 880,
+            "deputyID": 511,
             "scatterplot": [
-                -0.4884,
-                -0.01174
+                -0.579,
+                -0.06576
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 515,
+            "scatterplot": [
+                -0.4278,
+                -0.007093
             ],
             "party": "PFL"
         },
         {
-            "deputyID": 881,
+            "deputyID": 516,
             "scatterplot": [
-                -0.278,
-                -0.08536
+                -0.73,
+                -0.02597
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 518,
+            "scatterplot": [
+                -0.7665,
+                -0.08892
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 520,
+            "scatterplot": [
+                -0.7379,
+                -0.0418
             ],
             "party": "PMDB"
         },
         {
-            "deputyID": 884,
+            "deputyID": 521,
             "scatterplot": [
-                -0.7594,
-                -0.08902
+                0.1923,
+                -0.8291
+            ],
+            "party": "PDT"
+        },
+        {
+            "deputyID": 522,
+            "scatterplot": [
+                -0.5623,
+                -0.1235
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 523,
+            "scatterplot": [
+                -0.5343,
+                0.1073
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 524,
+            "scatterplot": [
+                -0.5333,
+                -0.06316
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 525,
+            "scatterplot": [
+                -0.6914,
+                0.0073
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 526,
+            "scatterplot": [
+                -0.6669,
+                0.04749
             ],
             "party": "PSDB"
         },
         {
-            "deputyID": 888,
+            "deputyID": 529,
             "scatterplot": [
-                -0.622,
-                -0.02693
+                -0.7252,
+                0.003812
             ],
             "party": "PSDB"
         },
         {
-            "deputyID": 889,
+            "deputyID": 532,
             "scatterplot": [
-                -0.5367,
-                -0.2133
+                -0.2697,
+                -0.2991
             ],
-            "party": "PTB"
+            "party": "PMDB"
         },
         {
-            "deputyID": 899,
+            "deputyID": 533,
+            "scatterplot": [
+                -0.7472,
+                -0.04878
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 536,
+            "scatterplot": [
+                0.1505,
+                -0.419
+            ],
+            "party": "PSB"
+        },
+        {
+            "deputyID": 538,
+            "scatterplot": [
+                -0.6166,
+                -0.06982
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 541,
+            "scatterplot": [
+                -0.6049,
+                -0.194
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 544,
+            "scatterplot": [
+                -0.7203,
+                -0.09613
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 550,
+            "scatterplot": [
+                -0.1881,
+                -0.547
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 551,
+            "scatterplot": [
+                -0.6569,
+                -0.04189
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 552,
+            "scatterplot": [
+                -0.6776,
+                -0.0432
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 553,
+            "scatterplot": [
+                -0.8418,
+                -0.1132
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 559,
+            "scatterplot": [
+                -0.5493,
+                -0.126
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 563,
+            "scatterplot": [
+                -0.4629,
+                0.002027
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 565,
+            "scatterplot": [
+                -0.5892,
+                -0.002744
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 566,
+            "scatterplot": [
+                -0.6199,
+                0.08113
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 568,
+            "scatterplot": [
+                0.2383,
+                -0.7497
+            ],
+            "party": "PDT"
+        },
+        {
+            "deputyID": 570,
+            "scatterplot": [
+                0.2747,
+                -0.9406
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 572,
+            "scatterplot": [
+                0.252,
+                -0.7058
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 579,
+            "scatterplot": [
+                -0.5684,
+                -0.09482
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 581,
+            "scatterplot": [
+                0,
+                0
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 582,
+            "scatterplot": [
+                -0.2815,
+                -0.1073
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 584,
+            "scatterplot": [
+                0.1526,
+                -0.6838
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 586,
+            "scatterplot": [
+                -0.6673,
+                0.1153
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 588,
+            "scatterplot": [
+                -0.4695,
+                -0.1148
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 592,
+            "scatterplot": [
+                -0.8108,
+                -0.05072
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 593,
+            "scatterplot": [
+                -0.5055,
+                -0.03737
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 594,
+            "scatterplot": [
+                0.2494,
+                -0.8665
+            ],
+            "party": "PDT"
+        },
+        {
+            "deputyID": 595,
+            "scatterplot": [
+                -0.278,
+                -0.2811
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 596,
+            "scatterplot": [
+                -0.5206,
+                -0.003971
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 597,
+            "scatterplot": [
+                -0.4855,
+                -0.1371
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 601,
+            "scatterplot": [
+                -0.6745,
+                -0.1003
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 602,
+            "scatterplot": [
+                -0.5812,
+                -0.03254
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 605,
+            "scatterplot": [
+                -0.2861,
+                -0.5073
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 607,
+            "scatterplot": [
+                0.2751,
+                -0.7283
+            ],
+            "party": "PDT"
+        },
+        {
+            "deputyID": 610,
+            "scatterplot": [
+                -0.6411,
+                -0.1375
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 612,
+            "scatterplot": [
+                -0.5217,
+                0.04011
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 613,
+            "scatterplot": [
+                -0.5907,
+                0.03665
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 616,
+            "scatterplot": [
+                -0.7072,
+                -0.1243
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 618,
+            "scatterplot": [
+                -0.5345,
+                -0.05834
+            ],
+            "party": "PST"
+        },
+        {
+            "deputyID": 619,
+            "scatterplot": [
+                -0.4454,
+                0.08703
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 621,
+            "scatterplot": [
+                -0.516,
+                -0.07438
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 623,
+            "scatterplot": [
+                -0.653,
+                -0.05948
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 634,
+            "scatterplot": [
+                -0.55,
+                0.04355
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 635,
+            "scatterplot": [
+                -0.612,
+                -0.04612
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 636,
+            "scatterplot": [
+                -0.5763,
+                0.002766
+            ],
+            "party": "PL"
+        },
+        {
+            "deputyID": 640,
+            "scatterplot": [
+                -0.6392,
+                -0.1075
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 642,
             "scatterplot": [
                 -0.6249,
                 -0.008358
@@ -2177,7 +1977,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 900,
+            "deputyID": 643,
             "scatterplot": [
                 -0.7296,
                 -0.0735
@@ -2185,7 +1985,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 901,
+            "deputyID": 644,
             "scatterplot": [
                 -0.6196,
                 -0.1567
@@ -2193,7 +1993,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 902,
+            "deputyID": 645,
             "scatterplot": [
                 -0.7331,
                 -0.09605
@@ -2201,7 +2001,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 903,
+            "deputyID": 646,
             "scatterplot": [
                 -0.2628,
                 -0.4408
@@ -2209,7 +2009,15 @@
             "party": "PPS"
         },
         {
-            "deputyID": 904,
+            "deputyID": 647,
+            "scatterplot": [
+                -0.5287,
+                0.05504
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 648,
             "scatterplot": [
                 -0.7482,
                 -0.1147
@@ -2217,7 +2025,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 905,
+            "deputyID": 649,
             "scatterplot": [
                 -0.5441,
                 -0.04135
@@ -2225,7 +2033,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 906,
+            "deputyID": 650,
             "scatterplot": [
                 -0.6424,
                 -0.1009
@@ -2233,7 +2041,7 @@
             "party": "PPB"
         },
         {
-            "deputyID": 907,
+            "deputyID": 651,
             "scatterplot": [
                 -0.4407,
                 -0.4034
@@ -2241,7 +2049,7 @@
             "party": "PTB"
         },
         {
-            "deputyID": 908,
+            "deputyID": 652,
             "scatterplot": [
                 0.1993,
                 -0.8358
@@ -2249,7 +2057,7 @@
             "party": "PSB"
         },
         {
-            "deputyID": 909,
+            "deputyID": 653,
             "scatterplot": [
                 -0.6556,
                 -0.1229
@@ -2257,7 +2065,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 910,
+            "deputyID": 654,
             "scatterplot": [
                 -0.6517,
                 -0.1724
@@ -2265,7 +2073,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 911,
+            "deputyID": 655,
             "scatterplot": [
                 -0.6891,
                 -0.1118
@@ -2273,7 +2081,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 912,
+            "deputyID": 656,
             "scatterplot": [
                 -0.3437,
                 -0.3227
@@ -2281,7 +2089,7 @@
             "party": "PTB"
         },
         {
-            "deputyID": 913,
+            "deputyID": 657,
             "scatterplot": [
                 -0.7148,
                 -0.1199
@@ -2289,7 +2097,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 914,
+            "deputyID": 658,
             "scatterplot": [
                 -0.369,
                 -0.4349
@@ -2297,7 +2105,7 @@
             "party": "PTB"
         },
         {
-            "deputyID": 915,
+            "deputyID": 659,
             "scatterplot": [
                 -0.668,
                 -0.1258
@@ -2305,7 +2113,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 916,
+            "deputyID": 660,
             "scatterplot": [
                 -0.7125,
                 -0.1047
@@ -2313,7 +2121,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 917,
+            "deputyID": 661,
             "scatterplot": [
                 -0.5385,
                 -0.1978
@@ -2321,7 +2129,7 @@
             "party": "PTB"
         },
         {
-            "deputyID": 918,
+            "deputyID": 662,
             "scatterplot": [
                 0.1842,
                 -0.8432
@@ -2329,7 +2137,7 @@
             "party": "PCdoB"
         },
         {
-            "deputyID": 919,
+            "deputyID": 663,
             "scatterplot": [
                 0.1849,
                 -0.732
@@ -2337,7 +2145,7 @@
             "party": "PDT"
         },
         {
-            "deputyID": 920,
+            "deputyID": 664,
             "scatterplot": [
                 -0.4387,
                 -0.3825
@@ -2345,7 +2153,7 @@
             "party": "PTB"
         },
         {
-            "deputyID": 921,
+            "deputyID": 665,
             "scatterplot": [
                 -0.7375,
                 -0.09464
@@ -2353,7 +2161,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 922,
+            "deputyID": 666,
             "scatterplot": [
                 -0.4194,
                 0.03327
@@ -2361,7 +2169,7 @@
             "party": "NoParty"
         },
         {
-            "deputyID": 923,
+            "deputyID": 667,
             "scatterplot": [
                 -0.7891,
                 -0.1192
@@ -2369,7 +2177,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 924,
+            "deputyID": 668,
             "scatterplot": [
                 0.122,
                 -0.5645
@@ -2377,7 +2185,7 @@
             "party": "PPS"
         },
         {
-            "deputyID": 925,
+            "deputyID": 669,
             "scatterplot": [
                 0.2387,
                 -0.7635
@@ -2385,7 +2193,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 926,
+            "deputyID": 670,
             "scatterplot": [
                 0.238,
                 -0.7639
@@ -2393,7 +2201,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 927,
+            "deputyID": 671,
             "scatterplot": [
                 -0.1422,
                 -0.5815
@@ -2401,7 +2209,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 928,
+            "deputyID": 672,
             "scatterplot": [
                 -0.46,
                 -0.1867
@@ -2409,7 +2217,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 929,
+            "deputyID": 673,
             "scatterplot": [
                 -0.6261,
                 -0.08658
@@ -2417,7 +2225,7 @@
             "party": "PPB"
         },
         {
-            "deputyID": 930,
+            "deputyID": 674,
             "scatterplot": [
                 0.2268,
                 -0.7055
@@ -2425,7 +2233,7 @@
             "party": "PSB"
         },
         {
-            "deputyID": 931,
+            "deputyID": 675,
             "scatterplot": [
                 -0.5068,
                 -0.04145
@@ -2433,7 +2241,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 932,
+            "deputyID": 676,
             "scatterplot": [
                 0.06737,
                 -0.668
@@ -2441,7 +2249,7 @@
             "party": "PL"
         },
         {
-            "deputyID": 933,
+            "deputyID": 677,
             "scatterplot": [
                 -0.6944,
                 -0.1213
@@ -2449,7 +2257,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 934,
+            "deputyID": 678,
             "scatterplot": [
                 -0.5316,
                 0.01215
@@ -2457,7 +2265,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 935,
+            "deputyID": 679,
             "scatterplot": [
                 -0.6649,
                 -0.08721
@@ -2465,7 +2273,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 936,
+            "deputyID": 680,
             "scatterplot": [
                 -0.7221,
                 -0.1112
@@ -2473,7 +2281,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 937,
+            "deputyID": 681,
             "scatterplot": [
                 -0.7094,
                 -0.111
@@ -2481,7 +2289,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 938,
+            "deputyID": 682,
             "scatterplot": [
                 0.2774,
                 -0.6606
@@ -2489,7 +2297,15 @@
             "party": "PSB"
         },
         {
-            "deputyID": 939,
+            "deputyID": 683,
+            "scatterplot": [
+                -0.7111,
+                0.004285
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 684,
             "scatterplot": [
                 -0.3609,
                 -0.05027
@@ -2497,7 +2313,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 940,
+            "deputyID": 685,
             "scatterplot": [
                 -0.7023,
                 -0.139
@@ -2505,7 +2321,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 941,
+            "deputyID": 686,
             "scatterplot": [
                 0.217,
                 -0.8356
@@ -2513,7 +2329,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 942,
+            "deputyID": 687,
             "scatterplot": [
                 -0.7017,
                 -0.03659
@@ -2521,7 +2337,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 943,
+            "deputyID": 688,
             "scatterplot": [
                 -0.643,
                 -0.08181
@@ -2529,7 +2345,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 944,
+            "deputyID": 689,
             "scatterplot": [
                 -0.7427,
                 -0.1496
@@ -2537,7 +2353,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 945,
+            "deputyID": 690,
             "scatterplot": [
                 -0.6762,
                 -0.06012
@@ -2545,7 +2361,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 946,
+            "deputyID": 691,
             "scatterplot": [
                 -0.6729,
                 -0.06525
@@ -2553,7 +2369,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 947,
+            "deputyID": 692,
             "scatterplot": [
                 -0.6328,
                 -0.04134
@@ -2561,7 +2377,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 948,
+            "deputyID": 693,
             "scatterplot": [
                 -0.6808,
                 -0.03075
@@ -2569,7 +2385,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 949,
+            "deputyID": 694,
             "scatterplot": [
                 0.1443,
                 -0.6868
@@ -2577,7 +2393,7 @@
             "party": "PPS"
         },
         {
-            "deputyID": 950,
+            "deputyID": 695,
             "scatterplot": [
                 0.2245,
                 -0.7972
@@ -2585,7 +2401,7 @@
             "party": "PSB"
         },
         {
-            "deputyID": 951,
+            "deputyID": 696,
             "scatterplot": [
                 -0.5823,
                 -0.1214
@@ -2593,7 +2409,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 953,
+            "deputyID": 698,
             "scatterplot": [
                 -0.1405,
                 -0.5091
@@ -2601,7 +2417,7 @@
             "party": "PST"
         },
         {
-            "deputyID": 954,
+            "deputyID": 699,
             "scatterplot": [
                 0.1167,
                 -0.777
@@ -2609,7 +2425,7 @@
             "party": "PPS"
         },
         {
-            "deputyID": 955,
+            "deputyID": 700,
             "scatterplot": [
                 0.1837,
                 -0.6544
@@ -2617,7 +2433,7 @@
             "party": "PSB"
         },
         {
-            "deputyID": 956,
+            "deputyID": 701,
             "scatterplot": [
                 -0.3737,
                 -0.2615
@@ -2625,7 +2441,7 @@
             "party": "PL"
         },
         {
-            "deputyID": 957,
+            "deputyID": 702,
             "scatterplot": [
                 0.1601,
                 -0.7146
@@ -2633,7 +2449,7 @@
             "party": "PPS"
         },
         {
-            "deputyID": 958,
+            "deputyID": 703,
             "scatterplot": [
                 -0.6183,
                 -0.06325
@@ -2641,7 +2457,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 959,
+            "deputyID": 704,
             "scatterplot": [
                 0.1761,
                 -0.5276
@@ -2649,7 +2465,7 @@
             "party": "PPS"
         },
         {
-            "deputyID": 960,
+            "deputyID": 705,
             "scatterplot": [
                 -0.6542,
                 -0.09075
@@ -2657,7 +2473,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 961,
+            "deputyID": 706,
             "scatterplot": [
                 -0.7117,
                 -0.1189
@@ -2665,7 +2481,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 962,
+            "deputyID": 707,
             "scatterplot": [
                 0.2633,
                 -0.8435
@@ -2673,7 +2489,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 963,
+            "deputyID": 708,
             "scatterplot": [
                 -0.7145,
                 -0.08371
@@ -2681,7 +2497,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 964,
+            "deputyID": 709,
             "scatterplot": [
                 -0.7649,
                 -0.1012
@@ -2689,7 +2505,7 @@
             "party": "PPB"
         },
         {
-            "deputyID": 965,
+            "deputyID": 710,
             "scatterplot": [
                 -0.76,
                 -0.1345
@@ -2697,7 +2513,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 966,
+            "deputyID": 711,
             "scatterplot": [
                 -0.7237,
                 -0.0796
@@ -2705,7 +2521,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 967,
+            "deputyID": 712,
             "scatterplot": [
                 0.2622,
                 -0.7604
@@ -2713,7 +2529,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 968,
+            "deputyID": 713,
             "scatterplot": [
                 -0.6072,
                 -0.125
@@ -2721,7 +2537,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 969,
+            "deputyID": 714,
             "scatterplot": [
                 -0.7189,
                 -0.1403
@@ -2729,7 +2545,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 970,
+            "deputyID": 715,
             "scatterplot": [
                 -0.7489,
                 -0.09105
@@ -2737,7 +2553,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 971,
+            "deputyID": 716,
             "scatterplot": [
                 -0.6804,
                 -0.07886
@@ -2745,7 +2561,15 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 972,
+            "deputyID": 717,
+            "scatterplot": [
+                0.1989,
+                -0.9176
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 718,
             "scatterplot": [
                 0.05796,
                 -0.5098
@@ -2753,7 +2577,7 @@
             "party": "PL"
         },
         {
-            "deputyID": 973,
+            "deputyID": 719,
             "scatterplot": [
                 -0.7518,
                 -0.1054
@@ -2761,7 +2585,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 974,
+            "deputyID": 720,
             "scatterplot": [
                 0.2426,
                 -0.954
@@ -2769,7 +2593,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 975,
+            "deputyID": 721,
             "scatterplot": [
                 -0.5462,
                 0.005931
@@ -2777,7 +2601,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 976,
+            "deputyID": 722,
             "scatterplot": [
                 0.05919,
                 -0.563
@@ -2785,7 +2609,7 @@
             "party": "PST"
         },
         {
-            "deputyID": 977,
+            "deputyID": 723,
             "scatterplot": [
                 0.2077,
                 -0.8504
@@ -2793,7 +2617,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 979,
+            "deputyID": 725,
             "scatterplot": [
                 -0.7278,
                 -0.1175
@@ -2801,7 +2625,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 980,
+            "deputyID": 726,
             "scatterplot": [
                 -0.434,
                 -0.2499
@@ -2809,7 +2633,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 981,
+            "deputyID": 727,
             "scatterplot": [
                 -0.4028,
                 -0.3774
@@ -2817,7 +2641,7 @@
             "party": "PTB"
         },
         {
-            "deputyID": 982,
+            "deputyID": 728,
             "scatterplot": [
                 -0.4796,
                 -0.0836
@@ -2825,7 +2649,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 983,
+            "deputyID": 729,
             "scatterplot": [
                 -0.4866,
                 -0.3738
@@ -2833,7 +2657,7 @@
             "party": "PTB"
         },
         {
-            "deputyID": 984,
+            "deputyID": 730,
             "scatterplot": [
                 -0.2746,
                 -0.2259
@@ -2841,7 +2665,7 @@
             "party": "PTB"
         },
         {
-            "deputyID": 985,
+            "deputyID": 731,
             "scatterplot": [
                 -0.4957,
                 0.00166
@@ -2849,7 +2673,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 986,
+            "deputyID": 732,
             "scatterplot": [
                 -0.7215,
                 -0.03264
@@ -2857,7 +2681,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 987,
+            "deputyID": 733,
             "scatterplot": [
                 -0.2316,
                 -0.5814
@@ -2865,7 +2689,7 @@
             "party": "PL"
         },
         {
-            "deputyID": 988,
+            "deputyID": 734,
             "scatterplot": [
                 -0.7376,
                 -0.1133
@@ -2873,7 +2697,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 989,
+            "deputyID": 735,
             "scatterplot": [
                 -0.7397,
                 -0.1157
@@ -2881,7 +2705,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 990,
+            "deputyID": 736,
             "scatterplot": [
                 -0.6129,
                 -0.01331
@@ -2889,7 +2713,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 991,
+            "deputyID": 737,
             "scatterplot": [
                 0.2285,
                 -0.6239
@@ -2897,7 +2721,7 @@
             "party": "PDT"
         },
         {
-            "deputyID": 992,
+            "deputyID": 738,
             "scatterplot": [
                 -0.7035,
                 -0.1601
@@ -2905,7 +2729,7 @@
             "party": "PTB"
         },
         {
-            "deputyID": 993,
+            "deputyID": 739,
             "scatterplot": [
                 -0.5772,
                 -0.08066
@@ -2913,7 +2737,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 994,
+            "deputyID": 740,
             "scatterplot": [
                 -0.3088,
                 -0.3913
@@ -2921,7 +2745,7 @@
             "party": "PDT"
         },
         {
-            "deputyID": 995,
+            "deputyID": 741,
             "scatterplot": [
                 0.2671,
                 -0.9139
@@ -2929,7 +2753,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 996,
+            "deputyID": 742,
             "scatterplot": [
                 -0.2016,
                 -0.5317
@@ -2937,7 +2761,7 @@
             "party": "PST"
         },
         {
-            "deputyID": 997,
+            "deputyID": 743,
             "scatterplot": [
                 0.2157,
                 -0.7958
@@ -2945,7 +2769,7 @@
             "party": "PSB"
         },
         {
-            "deputyID": 998,
+            "deputyID": 744,
             "scatterplot": [
                 -0.6331,
                 -0.05869
@@ -2953,7 +2777,15 @@
             "party": "PTB"
         },
         {
-            "deputyID": 999,
+            "deputyID": 745,
+            "scatterplot": [
+                0.2117,
+                -0.6783
+            ],
+            "party": "PDT"
+        },
+        {
+            "deputyID": 746,
             "scatterplot": [
                 0.228,
                 -0.6771
@@ -2961,7 +2793,15 @@
             "party": "PDT"
         },
         {
-            "deputyID": 1000,
+            "deputyID": 747,
+            "scatterplot": [
+                -0.7314,
+                -0.02063
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 748,
             "scatterplot": [
                 0.2491,
                 -0.8957
@@ -2969,7 +2809,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 1001,
+            "deputyID": 749,
             "scatterplot": [
                 -0.2304,
                 -0.6227
@@ -2977,7 +2817,7 @@
             "party": "PTB"
         },
         {
-            "deputyID": 1002,
+            "deputyID": 750,
             "scatterplot": [
                 0.2524,
                 -0.8118
@@ -2985,7 +2825,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 1003,
+            "deputyID": 751,
             "scatterplot": [
                 -0.1806,
                 -0.6557
@@ -2993,7 +2833,7 @@
             "party": "PL"
         },
         {
-            "deputyID": 1004,
+            "deputyID": 752,
             "scatterplot": [
                 -0.4126,
                 -0.3925
@@ -3001,7 +2841,7 @@
             "party": "PTB"
         },
         {
-            "deputyID": 1005,
+            "deputyID": 753,
             "scatterplot": [
                 -0.5061,
                 -0.2085
@@ -3009,7 +2849,7 @@
             "party": "PPS"
         },
         {
-            "deputyID": 1006,
+            "deputyID": 754,
             "scatterplot": [
                 0.2096,
                 -0.8
@@ -3017,7 +2857,7 @@
             "party": "PSB"
         },
         {
-            "deputyID": 1007,
+            "deputyID": 755,
             "scatterplot": [
                 0.2293,
                 -0.7964
@@ -3025,7 +2865,7 @@
             "party": "PDT"
         },
         {
-            "deputyID": 1008,
+            "deputyID": 756,
             "scatterplot": [
                 0.225,
                 -0.8595
@@ -3033,7 +2873,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 1009,
+            "deputyID": 757,
             "scatterplot": [
                 0.1171,
                 -0.6056
@@ -3041,7 +2881,15 @@
             "party": "PPS"
         },
         {
-            "deputyID": 1010,
+            "deputyID": 758,
+            "scatterplot": [
+                0.2422,
+                -0.8256
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 759,
             "scatterplot": [
                 -0.6724,
                 -0.04559
@@ -3049,7 +2897,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 1011,
+            "deputyID": 760,
             "scatterplot": [
                 0.1925,
                 -0.7361
@@ -3057,7 +2905,7 @@
             "party": "PSB"
         },
         {
-            "deputyID": 1012,
+            "deputyID": 761,
             "scatterplot": [
                 -0.1482,
                 -0.3832
@@ -3065,7 +2913,7 @@
             "party": "PL"
         },
         {
-            "deputyID": 1013,
+            "deputyID": 762,
             "scatterplot": [
                 -0.6875,
                 -0.007129
@@ -3073,7 +2921,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 1014,
+            "deputyID": 763,
             "scatterplot": [
                 -0.4987,
                 -0.1397
@@ -3081,7 +2929,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 1015,
+            "deputyID": 764,
             "scatterplot": [
                 -0.1948,
                 -0.4164
@@ -3089,7 +2937,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 1016,
+            "deputyID": 765,
             "scatterplot": [
                 -0.7561,
                 -0.06926
@@ -3097,7 +2945,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 1017,
+            "deputyID": 766,
             "scatterplot": [
                 0.2295,
                 -0.9636
@@ -3105,7 +2953,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 1018,
+            "deputyID": 767,
             "scatterplot": [
                 0.2547,
                 -0.9193
@@ -3113,7 +2961,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 1019,
+            "deputyID": 768,
             "scatterplot": [
                 0.1809,
                 -0.7769
@@ -3121,7 +2969,7 @@
             "party": "PDT"
         },
         {
-            "deputyID": 1020,
+            "deputyID": 769,
             "scatterplot": [
                 -0.7107,
                 -0.0734
@@ -3129,7 +2977,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 1021,
+            "deputyID": 770,
             "scatterplot": [
                 -0.6404,
                 -0.1291
@@ -3137,7 +2985,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 1022,
+            "deputyID": 771,
             "scatterplot": [
                 -0.7287,
                 -0.04957
@@ -3145,7 +2993,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 1023,
+            "deputyID": 772,
             "scatterplot": [
                 -0.6283,
                 0.04242
@@ -3153,7 +3001,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 1024,
+            "deputyID": 773,
             "scatterplot": [
                 -0.4781,
                 -0.1223
@@ -3161,7 +3009,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 1025,
+            "deputyID": 774,
             "scatterplot": [
                 0.2515,
                 -0.8331
@@ -3169,7 +3017,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 1026,
+            "deputyID": 775,
             "scatterplot": [
                 -0.7331,
                 -0.1255
@@ -3177,7 +3025,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 1027,
+            "deputyID": 776,
             "scatterplot": [
                 0.2325,
                 -0.8285
@@ -3185,7 +3033,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 1028,
+            "deputyID": 777,
             "scatterplot": [
                 -0.7011,
                 -0.1829
@@ -3193,7 +3041,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 1029,
+            "deputyID": 778,
             "scatterplot": [
                 -0.5285,
                 0.02863
@@ -3201,7 +3049,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 1030,
+            "deputyID": 779,
             "scatterplot": [
                 0.2602,
                 -0.8564
@@ -3209,7 +3057,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 1031,
+            "deputyID": 780,
             "scatterplot": [
                 0.1937,
                 -0.8338
@@ -3217,7 +3065,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 1032,
+            "deputyID": 781,
             "scatterplot": [
                 -0.5499,
                 -0.1616
@@ -3225,7 +3073,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 1033,
+            "deputyID": 782,
             "scatterplot": [
                 -0.5444,
                 -0.08715
@@ -3233,7 +3081,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 1034,
+            "deputyID": 783,
             "scatterplot": [
                 -0.6089,
                 -0.1009
@@ -3241,7 +3089,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 1035,
+            "deputyID": 784,
             "scatterplot": [
                 0.2264,
                 -0.9446
@@ -3249,7 +3097,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 1036,
+            "deputyID": 785,
             "scatterplot": [
                 -0.4831,
                 -0.4173
@@ -3257,7 +3105,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 1037,
+            "deputyID": 786,
             "scatterplot": [
                 -0.4229,
                 -0.4678
@@ -3265,7 +3113,7 @@
             "party": "PTB"
         },
         {
-            "deputyID": 1038,
+            "deputyID": 787,
             "scatterplot": [
                 -0.4037,
                 -0.4177
@@ -3273,7 +3121,7 @@
             "party": "PTB"
         },
         {
-            "deputyID": 1039,
+            "deputyID": 788,
             "scatterplot": [
                 0.2297,
                 -0.9506
@@ -3281,7 +3129,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 1040,
+            "deputyID": 789,
             "scatterplot": [
                 -0.6916,
                 -0.1897
@@ -3289,7 +3137,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 1041,
+            "deputyID": 790,
             "scatterplot": [
                 -0.6708,
                 -0.157
@@ -3297,7 +3145,15 @@
             "party": "PPB"
         },
         {
-            "deputyID": 1042,
+            "deputyID": 791,
+            "scatterplot": [
+                0.1101,
+                -0.7561
+            ],
+            "party": "PPS"
+        },
+        {
+            "deputyID": 792,
             "scatterplot": [
                 -0.6339,
                 -0.1087
@@ -3305,7 +3161,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 1043,
+            "deputyID": 793,
             "scatterplot": [
                 -0.7377,
                 -0.07921
@@ -3313,7 +3169,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 1044,
+            "deputyID": 794,
             "scatterplot": [
                 0.2491,
                 -0.9666
@@ -3321,7 +3177,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 1045,
+            "deputyID": 795,
             "scatterplot": [
                 0.2065,
                 -0.8233
@@ -3329,7 +3185,7 @@
             "party": "PDT"
         },
         {
-            "deputyID": 1046,
+            "deputyID": 796,
             "scatterplot": [
                 -0.6019,
                 -0.02156
@@ -3337,7 +3193,15 @@
             "party": "PFL"
         },
         {
-            "deputyID": 1047,
+            "deputyID": 797,
+            "scatterplot": [
+                -0.6547,
+                -0.06217
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 798,
             "scatterplot": [
                 -0.6606,
                 -0.07738
@@ -3345,7 +3209,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 1048,
+            "deputyID": 799,
             "scatterplot": [
                 0.2452,
                 -0.5153
@@ -3353,7 +3217,7 @@
             "party": "PDT"
         },
         {
-            "deputyID": 1049,
+            "deputyID": 800,
             "scatterplot": [
                 -0.5895,
                 -0.009757
@@ -3361,7 +3225,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 1050,
+            "deputyID": 801,
             "scatterplot": [
                 0.1559,
                 -0.7379
@@ -3369,7 +3233,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 1051,
+            "deputyID": 802,
             "scatterplot": [
                 0.23,
                 -0.939
@@ -3377,7 +3241,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 1052,
+            "deputyID": 803,
             "scatterplot": [
                 -0.5925,
                 -0.1946
@@ -3385,7 +3249,7 @@
             "party": "PPB"
         },
         {
-            "deputyID": 1053,
+            "deputyID": 804,
             "scatterplot": [
                 0.2012,
                 -0.8246
@@ -3393,7 +3257,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 1054,
+            "deputyID": 805,
             "scatterplot": [
                 -0.1493,
                 -0.6065
@@ -3401,7 +3265,7 @@
             "party": "PL"
         },
         {
-            "deputyID": 1055,
+            "deputyID": 806,
             "scatterplot": [
                 0.2162,
                 -0.623
@@ -3409,7 +3273,7 @@
             "party": "PDT"
         },
         {
-            "deputyID": 1056,
+            "deputyID": 807,
             "scatterplot": [
                 -0.7127,
                 -0.1382
@@ -3417,7 +3281,7 @@
             "party": "PHS"
         },
         {
-            "deputyID": 1057,
+            "deputyID": 808,
             "scatterplot": [
                 -0.5516,
                 -0.1659
@@ -3425,7 +3289,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 1058,
+            "deputyID": 809,
             "scatterplot": [
                 -0.6225,
                 -0.1893
@@ -3433,7 +3297,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 1059,
+            "deputyID": 810,
             "scatterplot": [
                 -0.6718,
                 -0.101
@@ -3441,7 +3305,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 1060,
+            "deputyID": 811,
             "scatterplot": [
                 -0.587,
                 -0.04319
@@ -3449,7 +3313,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 1061,
+            "deputyID": 812,
             "scatterplot": [
                 0.2211,
                 -0.7562
@@ -3457,7 +3321,7 @@
             "party": "PSB"
         },
         {
-            "deputyID": 1062,
+            "deputyID": 813,
             "scatterplot": [
                 -0.7892,
                 -0.01426
@@ -3465,7 +3329,15 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 1063,
+            "deputyID": 814,
+            "scatterplot": [
+                -0.4884,
+                -0.01174
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 815,
             "scatterplot": [
                 -0.7245,
                 -0.1098
@@ -3473,7 +3345,15 @@
             "party": "PPB"
         },
         {
-            "deputyID": 1064,
+            "deputyID": 816,
+            "scatterplot": [
+                -0.7594,
+                -0.08902
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 817,
             "scatterplot": [
                 -0.565,
                 -0.1108
@@ -3481,7 +3361,23 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 1065,
+            "deputyID": 818,
+            "scatterplot": [
+                -0.4149,
+                -0.1658
+            ],
+            "party": "PTB"
+        },
+        {
+            "deputyID": 819,
+            "scatterplot": [
+                -0.5675,
+                0.04203
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 820,
             "scatterplot": [
                 -0.6823,
                 -0.09743
@@ -3489,7 +3385,7 @@
             "party": "PPB"
         },
         {
-            "deputyID": 1066,
+            "deputyID": 821,
             "scatterplot": [
                 -0.6224,
                 -0.0515
@@ -3497,7 +3393,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 1067,
+            "deputyID": 822,
             "scatterplot": [
                 -0.5302,
                 -0.1516
@@ -3505,7 +3401,7 @@
             "party": "PPB"
         },
         {
-            "deputyID": 1068,
+            "deputyID": 823,
             "scatterplot": [
                 -0.5854,
                 -0.06105
@@ -3513,7 +3409,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 1069,
+            "deputyID": 824,
             "scatterplot": [
                 -0.5134,
                 -0.1979
@@ -3521,7 +3417,23 @@
             "party": "PPS"
         },
         {
-            "deputyID": 1070,
+            "deputyID": 825,
+            "scatterplot": [
+                -0.7947,
+                -0.1426
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 826,
+            "scatterplot": [
+                -0.4583,
+                -0.07786
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 827,
             "scatterplot": [
                 -0.5261,
                 -0.2282
@@ -3529,7 +3441,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 1071,
+            "deputyID": 828,
             "scatterplot": [
                 -0.7643,
                 -0.1897
@@ -3537,7 +3449,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 1072,
+            "deputyID": 829,
             "scatterplot": [
                 -0.6619,
                 -0.1527
@@ -3545,7 +3457,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 1073,
+            "deputyID": 830,
             "scatterplot": [
                 -0.692,
                 -0.07014
@@ -3553,7 +3465,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 1074,
+            "deputyID": 831,
             "scatterplot": [
                 -0.4993,
                 -0.02589
@@ -3561,7 +3473,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 1075,
+            "deputyID": 832,
             "scatterplot": [
                 0.2958,
                 -0.8817
@@ -3569,7 +3481,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 1076,
+            "deputyID": 833,
             "scatterplot": [
                 0.2883,
                 -0.9524
@@ -3577,7 +3489,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 1077,
+            "deputyID": 834,
             "scatterplot": [
                 -0.69,
                 -0.05433
@@ -3585,7 +3497,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 1078,
+            "deputyID": 835,
             "scatterplot": [
                 0.1654,
                 -0.8866
@@ -3593,7 +3505,7 @@
             "party": "PDT"
         },
         {
-            "deputyID": 1079,
+            "deputyID": 836,
             "scatterplot": [
                 -0.6564,
                 -0.0242
@@ -3601,7 +3513,7 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 1080,
+            "deputyID": 837,
             "scatterplot": [
                 -0.6323,
                 -0.02966
@@ -3609,7 +3521,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 1081,
+            "deputyID": 838,
             "scatterplot": [
                 0.2757,
                 -0.8888
@@ -3617,7 +3529,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 1083,
+            "deputyID": 840,
             "scatterplot": [
                 -0.7123,
                 -0.1919
@@ -3625,7 +3537,7 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 1084,
+            "deputyID": 841,
             "scatterplot": [
                 0.1471,
                 -0.8959
@@ -3633,7 +3545,7 @@
             "party": "PT"
         },
         {
-            "deputyID": 1085,
+            "deputyID": 842,
             "scatterplot": [
                 -0.5064,
                 -0.01344
@@ -3641,7 +3553,7 @@
             "party": "PPB"
         },
         {
-            "deputyID": 1086,
+            "deputyID": 843,
             "scatterplot": [
                 -0.6006,
                 0.08391
@@ -3649,7 +3561,7 @@
             "party": "PFL"
         },
         {
-            "deputyID": 1087,
+            "deputyID": 844,
             "scatterplot": [
                 -0.505,
                 0.01702
@@ -3657,7 +3569,15 @@
             "party": "PFL"
         },
         {
-            "deputyID": 1088,
+            "deputyID": 845,
+            "scatterplot": [
+                0.1958,
+                -0.5818
+            ],
+            "party": "PDT"
+        },
+        {
+            "deputyID": 847,
             "scatterplot": [
                 0.1853,
                 -0.7562
@@ -3665,343 +3585,15 @@
             "party": "PSB"
         },
         {
-            "deputyID": 1090,
+            "deputyID": 848,
             "scatterplot": [
-                -0.5906,
-                0.06389
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 1091,
-            "scatterplot": [
-                -0.6915,
-                -0.03659
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 1093,
-            "scatterplot": [
-                -0.2931,
-                -0.3376
+                -0.6223,
+                -0.1385
             ],
             "party": "PMDB"
         },
         {
-            "deputyID": 1097,
-            "scatterplot": [
-                -0.4232,
-                -0.1061
-            ],
-            "party": "PTB"
-        },
-        {
-            "deputyID": 1098,
-            "scatterplot": [
-                -0.5241,
-                0.01169
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 1110,
-            "scatterplot": [
-                -0.3253,
-                -0.001443
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 1111,
-            "scatterplot": [
-                -0.6288,
-                -0.0839
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 1117,
-            "scatterplot": [
-                -0.5798,
-                -0.07151
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 1118,
-            "scatterplot": [
-                0.2129,
-                -0.7618
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 1119,
-            "scatterplot": [
-                -0.6567,
-                -0.0331
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 1120,
-            "scatterplot": [
-                -0.6435,
-                -0.09665
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 1121,
-            "scatterplot": [
-                0.2626,
-                -0.9551
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 1122,
-            "scatterplot": [
-                -0.7143,
-                -0.08735
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 1123,
-            "scatterplot": [
-                -0.5783,
-                -0.06692
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 1124,
-            "scatterplot": [
-                -0.5052,
-                -0.02101
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 1125,
-            "scatterplot": [
-                -0.5786,
-                -0.09374
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 1126,
-            "scatterplot": [
-                -0.4424,
-                -0.1685
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 1127,
-            "scatterplot": [
-                -0.6102,
-                -0.1119
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 1128,
-            "scatterplot": [
-                0.1963,
-                -0.7274
-            ],
-            "party": "PDT"
-        },
-        {
-            "deputyID": 1129,
-            "scatterplot": [
-                -0.642,
-                -0.07494
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 1130,
-            "scatterplot": [
-                0.2137,
-                -0.9024
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 1132,
-            "scatterplot": [
-                0.1314,
-                -0.7965
-            ],
-            "party": "PTB"
-        },
-        {
-            "deputyID": 1133,
-            "scatterplot": [
-                -0.6297,
-                -0.06018
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 1134,
-            "scatterplot": [
-                0.1818,
-                -0.3718
-            ],
-            "party": "PDT"
-        },
-        {
-            "deputyID": 1136,
-            "scatterplot": [
-                -0.3016,
-                -0.0199
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 1137,
-            "scatterplot": [
-                0.03255,
-                -0.4025
-            ],
-            "party": "PDT"
-        },
-        {
-            "deputyID": 1138,
-            "scatterplot": [
-                -0.6244,
-                -0.07867
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 1139,
-            "scatterplot": [
-                -0.4529,
-                -0.0927
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 1140,
-            "scatterplot": [
-                -0.5993,
-                -0.1063
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 1141,
-            "scatterplot": [
-                -0.3147,
-                -0.403
-            ],
-            "party": "PPS"
-        },
-        {
-            "deputyID": 1142,
-            "scatterplot": [
-                -0.3642,
-                -0.2739
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 1143,
-            "scatterplot": [
-                -0.5983,
-                -0.1769
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 1144,
-            "scatterplot": [
-                -0.4047,
-                -0.3055
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 1145,
-            "scatterplot": [
-                -0.6993,
-                -0.09205
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 1146,
-            "scatterplot": [
-                -0.687,
-                -0.1165
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 1149,
-            "scatterplot": [
-                -0.5954,
-                -0.06106
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 1150,
-            "scatterplot": [
-                -0.6091,
-                0.09266
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 1151,
-            "scatterplot": [
-                0.2655,
-                -0.722
-            ],
-            "party": "PT"
-        },
-        {
-            "deputyID": 1152,
-            "scatterplot": [
-                -0.4178,
-                -0.04751
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 1153,
-            "scatterplot": [
-                -0.5915,
-                -0.07435
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 1154,
-            "scatterplot": [
-                -0.5524,
-                0.04725
-            ],
-            "party": "PPB"
-        },
-        {
-            "deputyID": 1155,
-            "scatterplot": [
-                -0.6771,
-                -0.1469
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 1156,
+            "deputyID": 850,
             "scatterplot": [
                 -0.5344,
                 -0.1563
@@ -4009,63 +3601,15 @@
             "party": "PSDB"
         },
         {
-            "deputyID": 1157,
+            "deputyID": 854,
             "scatterplot": [
-                -0.3345,
-                -0.05407
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 1175,
-            "scatterplot": [
-                -0.6172,
-                -0.0532
-            ],
-            "party": "PFL"
-        },
-        {
-            "deputyID": 1176,
-            "scatterplot": [
-                -0.547,
-                -0.05295
+                -0.6771,
+                -0.1469
             ],
             "party": "PMDB"
         },
         {
-            "deputyID": 1177,
-            "scatterplot": [
-                -0.2331,
-                -0.5736
-            ],
-            "party": "PTB"
-        },
-        {
-            "deputyID": 1178,
-            "scatterplot": [
-                -0.5082,
-                0.02652
-            ],
-            "party": "PSDB"
-        },
-        {
-            "deputyID": 1179,
-            "scatterplot": [
-                -0.2936,
-                -0.1474
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 1180,
-            "scatterplot": [
-                -0.2134,
-                -0.2945
-            ],
-            "party": "PMDB"
-        },
-        {
-            "deputyID": 1182,
+            "deputyID": 856,
             "scatterplot": [
                 -0.16,
                 -0.6179
@@ -4073,7 +3617,31 @@
             "party": "PMDB"
         },
         {
-            "deputyID": 1183,
+            "deputyID": 857,
+            "scatterplot": [
+                -0.687,
+                -0.1165
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 858,
+            "scatterplot": [
+                -0.4541,
+                -0.1178
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 859,
+            "scatterplot": [
+                -0.6567,
+                -0.0331
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 860,
             "scatterplot": [
                 -0.5203,
                 -0.1962
@@ -4081,7 +3649,431 @@
             "party": "PFL"
         },
         {
-            "deputyID": 1607,
+            "deputyID": 862,
+            "scatterplot": [
+                -0.6288,
+                -0.0839
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 863,
+            "scatterplot": [
+                -0.2931,
+                -0.3376
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 864,
+            "scatterplot": [
+                -0.6102,
+                -0.1119
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 865,
+            "scatterplot": [
+                -0.2134,
+                -0.2945
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 867,
+            "scatterplot": [
+                -0.5915,
+                -0.07435
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 868,
+            "scatterplot": [
+                -0.642,
+                -0.07494
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 869,
+            "scatterplot": [
+                0.2137,
+                -0.9024
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 872,
+            "scatterplot": [
+                0.2129,
+                -0.7618
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 879,
+            "scatterplot": [
+                -0.6091,
+                0.09266
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 882,
+            "scatterplot": [
+                -0.6774,
+                0.0335
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 887,
+            "scatterplot": [
+                -0.4529,
+                -0.0927
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 889,
+            "scatterplot": [
+                -0.5906,
+                0.06389
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 1051,
+            "scatterplot": [
+                -0.6172,
+                -0.0532
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 1057,
+            "scatterplot": [
+                -0.5798,
+                -0.07151
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 1070,
+            "scatterplot": [
+                0.03162,
+                -0.7085
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 1074,
+            "scatterplot": [
+                -0.5082,
+                0.02652
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 1082,
+            "scatterplot": [
+                -0.622,
+                -0.02693
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 1083,
+            "scatterplot": [
+                -0.5524,
+                0.04725
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 1084,
+            "scatterplot": [
+                -0.6915,
+                -0.03659
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 1086,
+            "scatterplot": [
+                -0.5241,
+                0.01169
+            ],
+            "party": "PPB"
+        },
+        {
+            "deputyID": 1103,
+            "scatterplot": [
+                -0.5783,
+                -0.06692
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 1148,
+            "scatterplot": [
+                -0.3675,
+                0.1258
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 1208,
+            "scatterplot": [
+                -0.3253,
+                -0.001443
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 1210,
+            "scatterplot": [
+                -0.5052,
+                -0.02101
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 1213,
+            "scatterplot": [
+                -0.6244,
+                -0.07867
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 1270,
+            "scatterplot": [
+                -0.7143,
+                -0.08735
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 1527,
+            "scatterplot": [
+                -0.5954,
+                -0.06106
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 1610,
+            "scatterplot": [
+                -0.5786,
+                -0.09374
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 1669,
+            "scatterplot": [
+                -0.5906,
+                -0.05613
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 1670,
+            "scatterplot": [
+                -0.3881,
+                0.09044
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 1671,
+            "scatterplot": [
+                -0.6435,
+                -0.09665
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 1672,
+            "scatterplot": [
+                0.2626,
+                -0.9551
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 1673,
+            "scatterplot": [
+                0.1963,
+                -0.7274
+            ],
+            "party": "PDT"
+        },
+        {
+            "deputyID": 1674,
+            "scatterplot": [
+                0.1314,
+                -0.7965
+            ],
+            "party": "PTB"
+        },
+        {
+            "deputyID": 1675,
+            "scatterplot": [
+                -0.6297,
+                -0.06018
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 1676,
+            "scatterplot": [
+                0.03255,
+                -0.4025
+            ],
+            "party": "PDT"
+        },
+        {
+            "deputyID": 1677,
+            "scatterplot": [
+                -0.547,
+                -0.05295
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 1678,
+            "scatterplot": [
+                -0.5993,
+                -0.1063
+            ],
+            "party": "PFL"
+        },
+        {
+            "deputyID": 1679,
+            "scatterplot": [
+                -0.3147,
+                -0.403
+            ],
+            "party": "PPS"
+        },
+        {
+            "deputyID": 1680,
+            "scatterplot": [
+                -0.3642,
+                -0.2739
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 1681,
+            "scatterplot": [
+                -0.4047,
+                -0.3055
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 1682,
+            "scatterplot": [
+                -0.6993,
+                -0.09205
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 1683,
+            "scatterplot": [
+                -0.2331,
+                -0.5736
+            ],
+            "party": "PTB"
+        },
+        {
+            "deputyID": 1684,
+            "scatterplot": [
+                0.2655,
+                -0.722
+            ],
+            "party": "PT"
+        },
+        {
+            "deputyID": 1685,
+            "scatterplot": [
+                -0.4178,
+                -0.04751
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 1686,
+            "scatterplot": [
+                -0.5367,
+                -0.2133
+            ],
+            "party": "PTB"
+        },
+        {
+            "deputyID": 1687,
+            "scatterplot": [
+                -0.3345,
+                -0.05407
+            ],
+            "party": "PSDB"
+        },
+        {
+            "deputyID": 1688,
+            "scatterplot": [
+                -0.2936,
+                -0.1474
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 1690,
+            "scatterplot": [
+                -0.4424,
+                -0.1685
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 1692,
+            "scatterplot": [
+                0.1818,
+                -0.3718
+            ],
+            "party": "PDT"
+        },
+        {
+            "deputyID": 1693,
+            "scatterplot": [
+                -0.3016,
+                -0.0199
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 1694,
+            "scatterplot": [
+                -0.5983,
+                -0.1769
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 1696,
+            "scatterplot": [
+                -0.278,
+                -0.08536
+            ],
+            "party": "PMDB"
+        },
+        {
+            "deputyID": 1797,
             "scatterplot": [
                 -0.4676,
                 -0.04914
@@ -4089,20 +4081,28 @@
             "party": "PPB"
         },
         {
-            "deputyID": 2111,
+            "deputyID": 1855,
             "scatterplot": [
-                -0.6589,
-                -0.06833
+                -0.4232,
+                -0.1061
             ],
-            "party": "PMDB"
+            "party": "PTB"
         },
         {
-            "deputyID": 2112,
+            "deputyID": 1921,
             "scatterplot": [
                 -0.7233,
                 -0.08574
             ],
             "party": "PSDB"
+        },
+        {
+            "deputyID": 2011,
+            "scatterplot": [
+                -0.6589,
+                -0.06833
+            ],
+            "party": "PMDB"
         }
     ]
 }
