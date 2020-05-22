@@ -100,6 +100,8 @@ function timeLineCrop(){
         var yearlyColumms = partyTraces.append('g');
         var firstYear = ranges[0].getFullYear();
         var lastYear = ranges[1].getFullYear();
+        console.log(firstYear);
+        console.log(lastYear);
 
         d3.range(firstYear,lastYear).forEach(function(year){
                 yearlyColumms.append('path').attr({

@@ -1,5 +1,3 @@
-function selColor(c){ return CONGRESS_DEFINE.partiesArbitraryColor[c]; }
-
 function scatterPlotChart()
 {
     var margin = { top: 30, right: 350, bottom: 20, left: 50 },
@@ -7,6 +5,10 @@ function scatterPlotChart()
         outerHeight = MAX_HEIGHT,
         width = outerWidth - margin.left - margin.right,
         height = outerHeight - margin.top - margin.bottom;
+
+    var _hasThreshold = false;
+    var _threshold = 0;
+    var _deputiesByParties;
 
     var nodeRadius = 10;
 
@@ -26,6 +28,7 @@ function scatterPlotChart()
     function chart(selection){
         selection.each(function (data) {
             var nodes = d3.values(data);
+            _deputiesByParties = getPartyCountAllScatter(nodes);
             var xMax = d3.max(nodes, function(d) { return d.scatterplot[1]; })  * 1.05,
                 xMin = d3.min(nodes, function(d) { return d.scatterplot[1]; }),
                 xMin = xMin > 0 ? 0 : xMin* 1.05,
@@ -298,7 +301,20 @@ function scatterPlotChart()
             .style("fill", function(d) { return setDeputyFill(d); })
             .attr("class", function (d) {return (d.selected)? "node selected": ( (d.hovered)? "node hovered" : "node"); })
             .attr("r", function(d){ return (d.hovered)? nodeRadius*2 : nodeRadius;});
+
+        svg.selectAll('.legend circle')
+            .attr("fill", function (d) { return selColor(d); });
     };
+
+    chart.setThreshold = function (threshold)
+    {
+        _threshold = threshold;
+    }
+
+    chart.setHasTreshold = function(hasTreshold)
+    {
+        _hasThreshold = hasTreshold;
+    }
 
     chart.getClusters = function (k, data, id) {
         console.log(data);
@@ -489,13 +505,25 @@ function scatterPlotChart()
         if(d.vote != null){
             return CONGRESS_DEFINE.votoStringToColor[d.vote];
         }
-        if(d.rate != null){
+        if(d.rate != null)
+        {
             if (d.rate == "noVotes")
                 return 'grey'
             else return CONGRESS_DEFINE.votingColor(d.rate)
-        } else{
-            return CONGRESS_DEFINE.getPartyColor(d.party)
+        } else
+        {
+            if (_hasThreshold && _deputiesByParties[d.party] <= _threshold)
+                return 'grey';
+            else
+                return CONGRESS_DEFINE.getPartyColor(d.party)
         }
+    }
+
+    function selColor(c){
+        if (_hasThreshold && _deputiesByParties[c] <= _threshold)
+            return 'grey'; 
+        else
+            return CONGRESS_DEFINE.partiesArbitraryColor[c]; 
     }
 
     chart.selectDeputiesBySearch = function (deputies) {

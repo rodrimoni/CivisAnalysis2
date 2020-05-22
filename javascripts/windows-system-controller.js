@@ -519,21 +519,33 @@ function createArray(length) {
 function getPartyCount(cluster) {
 
     var currentPartyCount = [];
-
     cluster.points.forEach(function(deputy){
         var result = $.grep(currentPartyCount, function(e){ return e.party === deputy.party; });
         if (result.length === 0) {
             currentPartyCount.push({"party" : deputy.party, "number": 1});
         }
         else
-        if (result.length === 1) {
-            result[0].number += 1;
-        }
+            if (result.length === 1) {
+                result[0].number += 1;
+            }
     });
 
     /* Sort and count the number of deputies per party*/
     currentPartyCount.sort(function(x,y){
         return d3.descending(x.number, y.number);
+    });
+
+    return currentPartyCount;
+}
+
+function getPartyCountAllScatter(nodes)
+{
+    var currentPartyCount = {};
+    nodes.forEach(function(deputy){
+        if (currentPartyCount[deputy.party] === undefined)
+            currentPartyCount[deputy.party] = 1
+        else
+            currentPartyCount[deputy.party] += 1
     });
 
     return currentPartyCount;

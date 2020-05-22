@@ -115,6 +115,7 @@ function initializeChart(newID, chartObj) {
                 deputies.push(chartObj.data[key])
             }
             addSearchDeputyMenu(newID, deputies);
+            addPartySizeFilter(newID, chart);
 
             initializeSlider(newID, chart);
             $('#' +newID).attr('data-type-period', chartObj.panelClass);
@@ -451,6 +452,27 @@ function getFilters(panelID) {
     filter.motionTypeFilter = motionTypeFilter;
 
     return filter;
+}
+
+function addPartySizeFilter(newID, chart)
+{
+    var placeholder = language === ENGLISH ? "Type a threshold..." : "Digite um limite..."
+    $("#" + newID + " .panel-settings")
+        .append('<li role="presentation" class="dropdown-header"><span class="trn">Threshold</span></li>')
+        .append('<li><input type="text" class="form-control filterParties" placeholder="'+ placeholder + '"/> </li>');
+    
+    $("#" + newID + " .filterParties").on('keypress',function(e) {
+        if(e.which == 13) {
+            if (!$(this).val())
+                chart.setHasTreshold(false);
+            else 
+            {
+                chart.setHasTreshold(true);
+                chart.setThreshold($(this).val());
+            }
+            updateVisualizations();
+        }
+    });
 }
 
 function addSearchDeputyMenu(newID, deputies) {
@@ -1060,7 +1082,7 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
                     panelClass = dataRange.type + '-' + dataRange.id;
                 }
                 else {
-                    title = filteredData[0].getFullYear() + " <span class='trn'>to</span> " + filteredData[1].getFullYear();
+                    title =  filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
                     panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear();
                 }
                     
@@ -1109,8 +1131,8 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
                     }
                     else 
                     {
-                        title = filteredData[0].getFullYear() + " <span class='trn'>to</span> " + filteredData[1].getFullYear();
-                        panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear();
+                        title = filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
+                        panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear()
                     }
                     $('#loading').css('visibility', 'hidden');
                     createDeputiesSimilarityForce();
