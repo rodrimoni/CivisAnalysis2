@@ -1064,91 +1064,100 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
         if((!dataRange.found && dimensionalReductionTechnique === "PCA") || dimensionalReductionTechnique !== "PCA") {
             var filteredDeputies = filterDeputies();
             var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
-            if (dimensionalReductionTechnique === "MDS")
-                matrixDistanceDeputies = createMatrixDistanceDeputies(matrixDeputiesPerRollCall);
+            console.log(matrixDeputiesPerRollCall);
+            if (matrixDeputiesPerRollCall.length > 0 && matrixDeputiesPerRollCall[0].length > 0 )
+            {
+                if (dimensionalReductionTechnique === "MDS")
+                    matrixDistanceDeputies = createMatrixDistanceDeputies(matrixDeputiesPerRollCall);
 
-            function calcCallback(twoDimData) {
-                if (dataRange.found)
-                {
-                    if (dataRange.type !== "year")
-                        title = "<span class ='trn'>"+CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name + "</span>";
-                    else
-                        title = "<span class ='trn'>Year</span>: " + dataRange.id;
-                    if (type !== CHAMBER_INFOGRAPHIC)
-                        title += " (" + dimensionalReductionTechnique + ")";
-
-                    var subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
-                    title += subtitle;
-                    panelClass = dataRange.type + '-' + dataRange.id;
-                }
-                else {
-                    title =  filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
-                    panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear();
-                }
-                    
-                if (type === CHAMBER_INFOGRAPHIC)
-                    createChart = createChamberInfographic;
-                else 
-                    createChart = createScatterPlot;
-
-                currentDeputies = createDeputyNodes(twoDimData.deputies, filteredDeputies);
-                scaleAdjustment().setGovernmentTo3rdQuadrant(d3.values(currentDeputies), filteredData[1]);
-
-                currentRollCalls = rollCallInTheDateRange;
-                calcRollCallRate(currentRollCalls, currentDeputies);
-
-                $('#loading').css('visibility', 'hidden');
-                createChart();
-            }
-
-            if (dimensionalReductionTechnique === "PCA") {
-                var text = language === ENGLISH ? "Generating Political Spectra by PCA" : "Gerando Espectro Político por PCA";
-                $('#loading #msg').text(text);
-                setTimeout(function () {
-                    calcSVD(matrixDeputiesPerRollCall, calcCallback)
-                }, 10);
-            }
-            else if (dimensionalReductionTechnique === "MDS") {
-                // Does not need to calc the mds, we only want the similarity matrix.
-                if (type === DEPUTIES_SIMILARITY_FORCE)
-                {
-                    similarityGraph = createDeputySimilarityGraph(matrixDistanceDeputies, filteredDeputies);
-                    currentDeputies = similarityGraph.nodes;
-
-                    currentRollCalls = rollCallInTheDateRange;
-                    calcRollCallRate(currentRollCalls, currentDeputies);
-
+                function calcCallback(twoDimData) {
                     if (dataRange.found)
                     {
                         if (dataRange.type !== "year")
                             title = "<span class ='trn'>"+CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name + "</span>";
                         else
                             title = "<span class ='trn'>Year</span>: " + dataRange.id;
+                        if (type !== CHAMBER_INFOGRAPHIC)
+                            title += " (" + dimensionalReductionTechnique + ")";
 
                         var subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
                         title += subtitle;
                         panelClass = dataRange.type + '-' + dataRange.id;
                     }
-                    else 
-                    {
-                        title = filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
-                        panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear()
+                    else {
+                        title =  filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
+                        panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear();
                     }
+                        
+                    if (type === CHAMBER_INFOGRAPHIC)
+                        createChart = createChamberInfographic;
+                    else 
+                        createChart = createScatterPlot;
+
+                    currentDeputies = createDeputyNodes(twoDimData.deputies, filteredDeputies);
+                    scaleAdjustment().setGovernmentTo3rdQuadrant(d3.values(currentDeputies), filteredData[1]);
+
+                    currentRollCalls = rollCallInTheDateRange;
+                    calcRollCallRate(currentRollCalls, currentDeputies);
+
                     $('#loading').css('visibility', 'hidden');
-                    createDeputiesSimilarityForce();
+                    createChart();
                 }
-                else { // The call to calc of MDS here
-                    var text = language === ENGLISH ? "Generating Political Spectra by MDS" : "Gerando Espectro Político por MDS";
+
+                if (dimensionalReductionTechnique === "PCA") {
+                    var text = language === ENGLISH ? "Generating Political Spectra by PCA" : "Gerando Espectro Político por PCA";
                     $('#loading #msg').text(text);
                     setTimeout(function () {
-                        calcMDS(matrixDistanceDeputies, calcCallback)
+                        calcSVD(matrixDeputiesPerRollCall, calcCallback)
                     }, 10);
                 }
+                else if (dimensionalReductionTechnique === "MDS") {
+                    // Does not need to calc the mds, we only want the similarity matrix.
+                    if (type === DEPUTIES_SIMILARITY_FORCE)
+                    {
+                        similarityGraph = createDeputySimilarityGraph(matrixDistanceDeputies, filteredDeputies);
+                        currentDeputies = similarityGraph.nodes;
+
+                        currentRollCalls = rollCallInTheDateRange;
+                        calcRollCallRate(currentRollCalls, currentDeputies);
+
+                        if (dataRange.found)
+                        {
+                            if (dataRange.type !== "year")
+                                title = "<span class ='trn'>"+CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name + "</span>";
+                            else
+                                title = "<span class ='trn'>Year</span>: " + dataRange.id;
+
+                            var subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
+                            title += subtitle;
+                            panelClass = dataRange.type + '-' + dataRange.id;
+                        }
+                        else 
+                        {
+                            title = filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
+                            panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear()
+                        }
+                        $('#loading').css('visibility', 'hidden');
+                        createDeputiesSimilarityForce();
+                    }
+                    else { // The call to calc of MDS here
+                        var text = language === ENGLISH ? "Generating Political Spectra by MDS" : "Gerando Espectro Político por MDS";
+                        $('#loading #msg').text(text);
+                        setTimeout(function () {
+                            calcMDS(matrixDistanceDeputies, calcCallback)
+                        }, 10);
+                    }
+                }
+                else if (dimensionalReductionTechnique === "t-SNE") {
+                    var text = language === ENGLISH ? "Generating Political Spectra by t-SNE" : "Gerando Espectro Político por t-SNE";
+                    $('#loading #msg').text(text);
+                    calcTSNE(matrixDeputiesPerRollCall, calcCallback);
+                }
             }
-            else if (dimensionalReductionTechnique === "t-SNE") {
-                var text = language === ENGLISH ? "Generating Political Spectra by t-SNE" : "Gerando Espectro Político por t-SNE";
-                $('#loading #msg').text(text);
-                calcTSNE(matrixDeputiesPerRollCall, calcCallback);
+            else
+            {
+                alert("Roll calls not found for this period! Please try again with another start and end date.");
+                $('#loading').css('visibility', 'hidden');
             }
         }
         else {
