@@ -10,7 +10,7 @@ d3.chart.timeline = function() {
         svg,
         g,
         width,height,
-        margin = {top: 0, right: 15, bottom: 30, left: 15},
+        margin = {top: 20, right: 50, bottom: 30, left: 50},
         histogramHeight = 30,
         x,
         y = d3.scale.linear().range([histogramHeight, 0]),
@@ -63,17 +63,17 @@ d3.chart.timeline = function() {
         if(!group){
             updateRollCallHistogram();
 
-            appendGreyRangeButtons('years',histogramHeight);
-            appendGreyRangeButtons('legislatures',histogramHeight+15 );
-            appendGreyRangeButtons('presidents',histogramHeight+30 );
+            appendGreyRangeButtons('years', margin.top + histogramHeight);
+            appendGreyRangeButtons('legislatures', margin.top + histogramHeight+18 );
+            appendGreyRangeButtons('presidents',margin.top + histogramHeight+36 );
 
-            appendClipedRangeButtons('years',histogramHeight);
-            appendClipedRangeButtons('legislatures', histogramHeight+15 );
-            appendClipedRangeButtons('presidents', histogramHeight+30 );
+            appendClipedRangeButtons('years',margin.top + histogramHeight);
+            appendClipedRangeButtons('legislatures', margin.top + histogramHeight+18 );
+            appendClipedRangeButtons('presidents', margin.top + histogramHeight+36);
 
-            appendElections(histogramHeight+rangeButtonsHeight*3);
+            appendElections(margin.top + histogramHeight+rangeButtonsHeight*3);
 
-            setPartiesTraces(10+histogramHeight+rangeButtonsHeight*3+10)
+            setPartiesTraces(margin.top + 10 +histogramHeight + rangeButtonsHeight*3+10)
         }
     };
     chart.reColorPresidents = function(){
@@ -144,8 +144,8 @@ d3.chart.timeline = function() {
 
         labels.transition()
             .attr({
-                x: function(d,i){ return ((i)? +30 : -35) + x(d);},
-                y: function(d,i){ return (i)? histogramHeight : histogramHeight/2; }
+                x: function(d,i){ return ((i)? margin.left + 10 : margin.left - 80) + x(d);},
+                y: function(d,i){ return histogramHeight + 10; }
             })
             .text( function(d){return d.toLocaleDateString();})
     });
@@ -200,11 +200,11 @@ d3.chart.timeline = function() {
             .attr('stroke-dasharray','5,5,5')
             .attr('stroke','grey')
             .attr('stroke-width','1px')
-            .attr('d','M0 '+y(group.top(1)[0].value)+' l'+(width-margin.right)+' '+y(group.top(1)[0].value));
+            .attr('d','M' + margin.left +' '+y(group.top(1)[0].value)+' l'+(width-margin.right - margin.left)+' '+y(group.top(1)[0].value));
 
         g.append('text').attr({
-            x: 0,
-            y: y(group.top(1)[0].value) + 11,
+            x: margin.left,
+            y: y(group.top(1)[0].value) - 2,
             'fill':'grey',
             'font-size': 11
         }).text('max RollCalls/week:'+group.top(1)[0].value)
