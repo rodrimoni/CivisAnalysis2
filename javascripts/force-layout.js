@@ -12,7 +12,6 @@ function forceLayout(){
 
     function chart(selection) {
         selection.each(function (data) {
-            console.log(data);
             var hasLegend = data.legend;
 
             if (hasLegend)
