@@ -698,7 +698,7 @@ function maximizeWindow()
     d3.selectAll("line").filter(".class-" + panelID).style("stroke-dasharray", "");
 
     /* Keeps the icons with dotted line stylesheets */
-    var activeIcons = $(" .fa-window-maximize");
+    var activeIcons = $(" .minimized-icons");
     for (var i = 0; i < activeIcons.size(); i++)
     {
         var iconID = activeIcons[i].id.replace("icon-", "");
@@ -1328,17 +1328,18 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
 function createNewIcon(panelID)
 {
     var panelCenter = getCenter(panelID);
+    var typeChart = tree.getNode(panelID, tree.traverseBF).typeChart;
 
     /* Getting the workspace SVG */
     var workspace = $("#workspace");
 
     $(".container").append(
-        '<i id= "icon-' + panelID + '" class="fa fa-window-maximize fa-2x"></i>'
+        '<span id= "icon-' + panelID + '" class="'+ getChartIcon(typeChart) + ' minimized-icon"></span>'
     );
 
     $("#icon-"+panelID)
         .draggable({
-            stack: ".panel, .fa-window-maximize",
+            stack: ".panel, .custom-icon",
             containment: [10,10, workspace.width() - WIDTH_ICON - 10 , workspace.height() - HEIGHT_ICON - 10],
             drag: function(){
                 centerLine(panelID, true);
@@ -1394,11 +1395,11 @@ function getCenter(obj)
 {
     var $this = $("#" + obj);
     var offset = $this.offset();
-    var width = $this.width();
+    var width = $this.width()
     var height = $this.height();
     var getSvg = $('#workspace');
-    var centerX = offset.left + width / 2 -  getSvg.offset().left;
-    var centerY = offset.top + height / 2 - getSvg.offset().top;
+    var centerX = offset.left + width / 2 -  getSvg.offset().left + 15;
+    var centerY = offset.top + height / 2 - getSvg.offset().top + 15;
     var arr = [];
     arr["x"] = centerX;
     arr["y"] = centerY;
@@ -1465,7 +1466,9 @@ function getTree() {
 function getChartIcon(typeChart)
 {
     var icon = "custom-icon ";
-    if (typeChart === SCATTER_PLOT)
+    if (typeChart === TIME_LINE)
+        icon += "icon-time-line";
+    else if (typeChart === SCATTER_PLOT)
         icon += "icon-scatter-plot";
     else if (typeChart === CHAMBER_INFOGRAPHIC)
         icon += "icon-chamber-infographic";

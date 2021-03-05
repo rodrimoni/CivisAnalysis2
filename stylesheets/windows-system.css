@@ -76,19 +76,6 @@ h2 {
     font-size: 14px;
 }
 
-.fa-window-maximize{
-    background: white;
-    border-radius: 40%;
-    height: 0.9em;
-    position: absolute;
-    clip: rect(2px,30px,26px,0px);
-}
-
-.fa-window-maximize:hover
-{
-    cursor: move;
-}
-
 i{
     position: absolute;
 }
@@ -369,7 +356,20 @@ display: table;
     background-color: #444;
   }
 
-  .custom-icon {
+.fa-window-maximize{
+    background: white;
+    border-radius: 40%;
+    height: 0.9em;
+    position: absolute;
+    clip: rect(2px,30px,26px,0px);
+}
+
+.fa-window-maximize:hover
+{
+    cursor: move;
+}
+
+.custom-icon {
     position: relative;
     top: 5px;
     display: inline-block;
@@ -377,14 +377,24 @@ display: table;
     width: 24px;
     padding-left: 24px;
     -webkit-font-smoothing: antialiased;
-  }
+}
+
+.minimized-icon {
+    position: absolute;
+    padding: 12px;
+    border-style: solid;
+    border-width: 2px;
+    cursor:move;
+}
 
 .icon-scatter-plot {
     background: url("https://img.icons8.com/material-rounded/24/000000/scatter-plot.png");
+    background-color: white;
 }
 
 .icon-time-line {
     background: url("https://img.icons8.com/material-rounded/24/000000/web-analystics.png");
+    background-color: white;
 }
 
 .icon-chamber-infographic {
