@@ -51,6 +51,7 @@ function loadNodes(type, selectedTime, callback)
 
             depObj.selected = true;
             depObj.hovered = false;
+            depObj.overlapped = null;
             depObj.rate = null;
             depObj.vote = null;
 
@@ -165,9 +166,10 @@ function createDeputyNodes(data_deputies, selecteddeputies){
         depObj.party = deputy.party;
         depObj.scatterplot  = data_deputies[i];
         depObj.selected = true;
+        depObj.overlapped = null;
         deputies[depObj.deputyID] = depObj;
     }
-
+    
     return deputies;
 }
 
@@ -519,7 +521,7 @@ function createArray(length) {
 function getPartyCount(cluster) {
 
     var currentPartyCount = [];
-    cluster.points.forEach(function(deputy){
+    cluster.forEach(function(deputy){
         var result = $.grep(currentPartyCount, function(e){ return e.party === deputy.party; });
         if (result.length === 0) {
             currentPartyCount.push({"party" : deputy.party, "number": 1});

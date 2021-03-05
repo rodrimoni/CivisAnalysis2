@@ -125,6 +125,9 @@
     <!-- Scatter Plot CSS -->
     <link rel="stylesheet" href="stylesheets/scatter-plot.css">
 
+    <!-- Force Layout CSS -->
+    <link rel="stylesheet" href="stylesheets/force-layout.css">
+
     <!-- Bar Chart CSS -->
     <link rel="stylesheet" href="stylesheets/bar-chart.css">
 
@@ -152,6 +155,9 @@
     <!-- Latest compiled and minified JavaScript for Bootstrap Select  -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
 
+    <!-- Bootstrap Tree view  -->
+    <script src="javascripts/external/bootstrap-treeview-1.2.0/src/js/bootstrap-treeview.js"></script>
+
     <script src="javascripts/external/bootstrap-tagsinput.js"></script>
     <link rel ="stylesheet" href="stylesheets/bootstrap-tagsinput.css">
     <link rel ="stylesheet" href="stylesheets/typehead.css">
@@ -166,6 +172,12 @@
     <div id="greyScreen"></div>
     <img src="./images/ajax_loader.gif" width="100px" class="gif">
     <span id="msg" class="gif">Loading</span>
+</div>
+
+<div id="mySidebar" class="sidebar">
+    <h2>Treeview</h2>
+    <div id="tree"></div>
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
 </div>
 
 <!-- Modal -->
@@ -199,7 +211,7 @@
       </div>
 
 <div id = "navbar">
-    <h2>CivisAnalysis 2.0</h2>
+    <button class="openbtn" onclick="openNav()">☰</button><h2>CivisAnalysis 2.0</h2>
     <label id="selectLabel" for="selStates"></label>
     <select class="selectpicker" title= "Choose one of the following...>" multiple id="selStates">
         <option value="AC">Acre</option>
@@ -252,10 +264,11 @@
         <li><a tabindex="-1" id="scatter-plot-tsne">Create a Political Spectrum of Deputies - Technique: t-SNE</a></li>
         <li><a tabindex="-1" id="chamber-infographic">Create a Chamber Infographic</a></li>
         <li><a tabindex="-1" id="deputies-similarity-force">Create a Deputies Similarity Graph</a></li>
+        <li><a tabindex="-1" id="rollcalls-heatmap">Create a Map of Roll Calls</a></li>
     </ul>
     <ul id="contextMenuDeputy" class="dropdown-menu" role="menu" style="display:none" >
         <li><a tabindex="-1" id="rollcalls-heatmap">Create a Map of Roll Calls</a></li>
-        <li><a class="btn disabled" tabindex="-1" id="time-line-crop-behavior-selection">Create a timeline with selected deputies</a></li>
+        <li><a class="btn disabled" style="text-align:left;" tabindex="-1" id="time-line-crop-behavior-selection">Create a timeline with selected deputies</a></li>
     </ul>
 </div>
 
@@ -270,6 +283,16 @@
 
     /* Getting the document body */
     var windowSystem = $("#windows-system");
+
+    function openNav() {
+        document.getElementById("mySidebar").style.width = "250px";
+        document.getElementById("windows-system").style.marginLeft = "250px";
+    }
+
+    function closeNav() {
+        document.getElementById("mySidebar").style.width = "0";
+        document.getElementById("windows-system").style.marginLeft= "0";
+    }
 
     /* Initialization of System */
     $(document).ready(function(){

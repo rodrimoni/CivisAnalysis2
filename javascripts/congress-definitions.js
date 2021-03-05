@@ -233,7 +233,7 @@ var CONGRESS_DEFINE = {
     // COLORS!
     // ===============================================================================================================
     // colors representing the single vote value
-    votoStringToColor : {"Sim":"#313695","Não":"a50026","Abstenção":"purple","Obstrução":"green","Art. 17":"yellow","null":'grey'},
+    votoStringToColor : {"Sim":"#313695","Não":"#a50026","Abstenção":"purple","Obstrução":"green","Art. 17":"yellow","null":'grey'},
 
     // ===============================================================================================================
     votingColorGradient : ['#a50026','#d73027','#f46d43','#fdae61','#fee090','#ffffbf','#e0f3f8','#abd9e9','#74add1','#4575b4','#313695'],

@@ -28,10 +28,15 @@
 }
 
 .node {
-    stroke: #E0E0E0;
+    stroke: #e0e0e0;
     stroke-width: 1px;
     opacity: 0.15;
     cursor: pointer;
+}
+
+.node.overlapped.selected {
+    stroke: #00000033;
+    stroke-width: 4px;
 }
 
 .node.selected {
@@ -42,6 +47,17 @@
     opacity: 0.4;
 }
 
-.legend text {
+.scatter-plot .legend text {
     font-size: 30px;
 }
+
+#controls {
+    font-size: 14px;
+    position: absolute;
+    top: 15%;
+    left: 80%;
+  }
+  
+  #collisiondetection {
+    margin: 4px;
+  }

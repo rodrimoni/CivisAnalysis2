@@ -24,6 +24,9 @@ var CHAMBER_INFOGRAPHIC         = 5;
 var ROLLCALLS_HEATMAP           = 6;
 var DEPUTIES_SIMILARITY_FORCE   = 7;
 
+/* Transfer function of Plots */
+var typeChartToString = ["Timeline", "Spectrum of Deputies", "Bar Chart", "Force Layout", "Cropped Timeline", "Chamber Infographic", "Map of Roll Calls", "Similarity Force"];
+
 /* Variables to check if the chart was instantiate before */
 var firstScatterPlot        = true;
 var firstBarChart           = true;
@@ -103,9 +106,6 @@ function initializeChart(newID, chartObj) {
             deputyNodes[newID] = currentDeputies;
             rollCallsRates[newID] = currentRollCalls;
 
-            console.log(currentDeputies);
-            console.log(rollCallsRates);
-
             addConfigMenu(newID, 'scatterplot');
             //addTutorialButton(newID, 'scatterplot', chartObj.chartID);
             addClusteringMenu(newID);
@@ -131,6 +131,9 @@ function initializeChart(newID, chartObj) {
 
         case FORCE_LAYOUT:
             chart =  forceLayout();
+            chart.on('update', function () {
+                updateDeputies(newID)
+            });
             break;
 
         case TIME_LINE_CROP:
@@ -155,16 +158,15 @@ function initializeChart(newID, chartObj) {
             break;
         case ROLLCALLS_HEATMAP:
             chart = rollCallsHeatmap();
-
+            deputyNodes[newID] = currentDeputies;
+            rollCallsRates[newID] = currentRollCalls;
             addConfigMenu(newID, 'rollCallsHeatmap');
             var rollCallsTypeAhead = addSearchRollCallMenu(newID, chartObj.data);
             addFilterMotionTypeMenu(newID, chartObj.data, rollCallsTypeAhead);
             addFilterDateRollCallMenu(newID, chartObj.data, rollCallsTypeAhead);
 
             chart.on('update', function () {
-                var node = tree.getNode(newID, tree.traverseBF);
-                var parentID = node.parent.data;
-                updateRollCalls(parentID);
+                updateRollCalls(newID);
             });
 
             break;
@@ -191,7 +193,6 @@ function initializeChart(newID, chartObj) {
     }
 
     /* Set the new tittle */
-    console.log(chartObj.title);
     $('#' +newID + ' .panel-title').append(chartObj.title);
 
     return chart;
@@ -525,7 +526,7 @@ function addSearchDeputyMenu(newID, deputies) {
     elt.on('itemAdded', function(event) {
         /* Set the correspondent party color */
         var party = event.item.party;
-        $(".tag.label.label-info.label-"+ party).css({"background-color": selColor(party)});
+        $(".tag.label.label-info.label-"+ party).css({"background-color": CONGRESS_DEFINE.getPartyColor(party)});
 
         /* Select the deputies in input */
         var deputies = $(this).tagsinput('items');
@@ -590,6 +591,7 @@ function removeWindow(panelID, deleteThis) {
     else
         removeChildren(node);
 
+    updateSideBar();
 }
 
 function removeDeputiesAndRollCalls(panelID) {
@@ -782,6 +784,8 @@ function createNewChild(currentId, chartObj) {
         tree._root.chart = timeline;
         tree._root.typeChart = TIME_LINE;
 
+        updateSideBar();
+
         /* Translate content of new panel */
         if (language === PORTUGUESE)
         {
@@ -817,6 +821,8 @@ function createNewChild(currentId, chartObj) {
         /* Bind data chart to node in tree */
         node.chart      = chart;
         node.typeChart  = chartObj.chartID;
+
+        updateSideBar();    
 
         /* Sets up the panel settings as drag, resize, etc */
         setUpPanel(newID);
@@ -985,14 +991,14 @@ function handleContextMenuScatterPlot(invokedOn, selectedMenu)
 
     if(selectedMenu.context.id === "bar-chart") {
         title = 'Bar Chart: Cluster ' + clusterID;
-        var partyCountData = getPartyCount(chartData.clusters[clusterID]);
+        var partyCountData = getPartyCount(chartData.clusters[clusterID].points);
         chartObj = {'chartID' : BAR_CHART, 'data': partyCountData, 'title': title };
         createNewChild(panelID, chartObj );
     }
     else
         if(selectedMenu.context.id === "force-layout") {
             title = 'Force Layout: Cluster ' + clusterID;
-            chartObj = {'chartID' : FORCE_LAYOUT, 'data': chartData.clusters[clusterID], 'title': title};
+            chartObj = {'chartID' : FORCE_LAYOUT, 'data': {'nodes': chartData.clusters[clusterID].points}, 'legend': false, 'title': title};
             createNewChild(panelID, chartObj);
         }
         else
@@ -1041,17 +1047,36 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
             };
         }
         else {
-            var createScatterPlot = function () {
-                currentRollCalls = rollCallInTheDateRange;
-                calcRollCallRate(currentRollCalls, currentDeputies);
-
-                var chartObj = {
-                    'chartID': SCATTER_PLOT,
-                    'data': currentDeputies,
-                    'title': title,
-                    'panelClass': panelClass
+            if (type === SCATTER_PLOT)
+            {
+                var createScatterPlot = function () {
+                    currentRollCalls = rollCallInTheDateRange;
+                    calcRollCallRate(currentRollCalls, currentDeputies);
+                    var chartObj = {
+                        'chartID': SCATTER_PLOT,
+                        'data': currentDeputies,
+                        'title': title,
+                        'panelClass': panelClass
+                    };
+                    createNewChild('panel-1-1', chartObj);
                 };
-                createNewChild('panel-1-1', chartObj);
+            }
+            else {
+                var createRollCallsHeatMap = function () {
+                    currentRollCalls = rollCallInTheDateRange;
+                    calcRollCallRate(currentRollCalls, currentDeputies);
+                    console.log(currentRollCalls);
+                    currentRollCalls.map(function (e) {
+                        e.rollCallName = e.type + " " + e.number + " " + e.year;
+                    });
+                    var chartObj = {
+                        'chartID': ROLLCALLS_HEATMAP,
+                        'data': currentRollCalls,
+                        'title': title,
+                        'panelClass': panelClass
+                    }
+                    createNewChild('panel-1-1', chartObj);
+                }
             };
         }
     }
@@ -1064,7 +1089,6 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
         if((!dataRange.found && dimensionalReductionTechnique === "PCA") || dimensionalReductionTechnique !== "PCA") {
             var filteredDeputies = filterDeputies();
             var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
-            console.log(matrixDeputiesPerRollCall);
             if (matrixDeputiesPerRollCall.length > 0 && matrixDeputiesPerRollCall[0].length > 0 )
             {
                 if (dimensionalReductionTechnique === "MDS")
@@ -1091,8 +1115,10 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
                         
                     if (type === CHAMBER_INFOGRAPHIC)
                         createChart = createChamberInfographic;
-                    else 
+                    else if (type === SCATTER_PLOT)
                         createChart = createScatterPlot;
+                    else if (type === ROLLCALLS_HEATMAP)
+                        createChart = createRollCallsHeatMap;
 
                     currentDeputies = createDeputyNodes(twoDimData.deputies, filteredDeputies);
                     scaleAdjustment().setGovernmentTo3rdQuadrant(d3.values(currentDeputies), filteredData[1]);
@@ -1171,6 +1197,8 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
 
             if (type === CHAMBER_INFOGRAPHIC)
                 createChart = createChamberInfographic;
+            else if (type === ROLLCALLS_HEATMAP)
+                createChart = createRollCallsHeatMap;
             else {
                 title += " ("+ dimensionalReductionTechnique + ")";
                 createChart = createScatterPlot;
@@ -1209,6 +1237,9 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
                 else
                     if (selectedMenu.context.id === 'deputies-similarity-force')
                         setUpScatterPlotData(filteredData, panelID, "MDS", DEPUTIES_SIMILARITY_FORCE);
+                    else
+                        if (selectedMenu.context.id === 'rollcalls-heatmap')
+                        setUpScatterPlotData(filteredData, panelID, "PCA", ROLLCALLS_HEATMAP);
 }
 
 function handleContextMenuDeputy(invokedOn, selectedMenu)
@@ -1420,6 +1451,38 @@ function centerLine(panelID, icon) {
     }
 }
 
+function updateSideBar()
+{
+    $('#tree').treeview({data: getTree()});
+    $('#tree').treeview('expandAll', { levels: 2, silent: true });
+}
+
+function getTree() {
+    tree.createJsonTree();
+    return tree.getJsonTree();
+}   
+
+function getChartIcon(typeChart)
+{
+    var icon = "custom-icon ";
+    if (typeChart === SCATTER_PLOT)
+        icon += "icon-scatter-plot";
+    else if (typeChart === CHAMBER_INFOGRAPHIC)
+        icon += "icon-chamber-infographic";
+    else if (typeChart === DEPUTIES_SIMILARITY_FORCE)
+        icon += "icon-network-graph";
+    else if (typeChart === ROLLCALLS_HEATMAP)
+        icon += "icon-map-roll-calls";
+    else if (typeChart === TIME_LINE_CROP)
+        icon += "icon-cropped-time-line";
+    else if (typeChart === BAR_CHART)
+        icon += "icon-bar-chart";
+    else if (typeChart === FORCE_LAYOUT)
+        icon += "icon-force-layout"
+
+    return icon;
+}
+
 function hideToolTipCluster(){
     d3.select('.toolTipCluster').style("display", "none");
 }
@@ -1629,7 +1692,7 @@ function updateDeputies(panelID) {
 
 function updateVisualizations() {
     tree.traverseBF(function (n) {
-        if (n.typeChart === SCATTER_PLOT || n.typeChart === CHAMBER_INFOGRAPHIC || n.typeChart === ROLLCALLS_HEATMAP || n.typeChart === DEPUTIES_SIMILARITY_FORCE)
+        if (n.typeChart === SCATTER_PLOT || n.typeChart === CHAMBER_INFOGRAPHIC || n.typeChart === ROLLCALLS_HEATMAP || n.typeChart === DEPUTIES_SIMILARITY_FORCE || n.typeChart === FORCE_LAYOUT)
             n.chart.update();
     })
 }

@@ -172,7 +172,6 @@ function similarityForce()
             });
 
             var newData =  filterEdges(data, 80);
-            console.log(newData);
             update(newData, this);
         })
     }

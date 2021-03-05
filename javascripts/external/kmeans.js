@@ -10,7 +10,7 @@ var clusterMaker = {
         return centroids.map(function(centroid) {
             return {
                 centroid: centroid.location(),
-                points: points.filter(function(point) { return point.label() == centroid.label() }).map(function(point) { return {deputyID: point.deputyID(), party:point.party(), location: point.location()}; }),
+                points: points.filter(function(point) { return point.label() == centroid.label() }).map(function(point) { return {deputyID: point.deputyID(), name:point.name(), district: point.district(), party:point.party(), location: point.location()}; }),
             };
         });
     },
@@ -54,7 +54,9 @@ function Point(deputy) {
     var self = this;
     this.location = getterSetter(deputy.scatterplot);
     this.deputyID = getterSetter(deputy.deputyID);
+    this.name = getterSetter(deputy.name);
     this.party = getterSetter(deputy.party);
+    this.district = getterSetter(deputy.district);
     this.label = getterSetter();
     this.updateLabel = function(centroids) {
         var distancesSquared = centroids.map(function(centroid) {

@@ -8,7 +8,6 @@ function barChart() {
 
     function chart(selection){
         selection.each(function (data) {
-            console.log(data);
             var totalDeputies = d3.sum(data, function(d){
                 return d.number;
             });
@@ -34,7 +33,7 @@ function barChart() {
 
             bar.attr("class", "bar")
                 .attr("cx",0)
-                .attr("fill", function (d) {return selColor(d.party);})
+                .attr("fill", function (d) {return CONGRESS_DEFINE.getPartyColor(d.party);})
                 .attr("transform", function(d, i) {
                     return "translate(" + margin + "," + (i * (barHeight + barPadding) + barPadding) + ")";
                 });

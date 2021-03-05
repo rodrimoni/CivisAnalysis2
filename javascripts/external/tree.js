@@ -10,6 +10,7 @@ function Node(data) {
 
 function Tree(data) {
     this._root = new Node(data);
+    this._JsonTree = [];
 }
 
 Tree.prototype.traverseDF = function(callback) {
@@ -49,6 +50,40 @@ Tree.prototype.traverseBF = function(callback) {
         callback(currentTree);
         currentTree = queue.dequeue();
     }
+};
+
+Tree.prototype.createJsonTree = function (){
+    var queue = new Queue();
+    queue.enqueue(this._root);
+    var jsonTree = [{text: typeChartToString[this._root.typeChart], icon: "custom-icon icon-time-line"}];
+    var currentTree = queue.dequeue();
+    var count = -1;
+
+    while(currentTree){
+        if (currentTree.depth === 2)
+            count++;
+        for (var i = 0, length = currentTree.children.length; i < length; i++) {
+            queue.enqueue(currentTree.children[i]);
+            if (currentTree.depth === 1)
+            {
+                if (jsonTree[0].nodes === undefined)
+                    jsonTree[0].nodes = [];
+                jsonTree[0].nodes.push({text: typeChartToString[currentTree.children[i].typeChart], icon: getChartIcon(currentTree.children[i].typeChart)})
+            }
+            else if (currentTree.depth === 2)
+            {
+                if (jsonTree[0].nodes[count].nodes === undefined)
+                    jsonTree[0].nodes[count].nodes = [];
+                jsonTree[0].nodes[count].nodes.push({text: typeChartToString[currentTree.children[i].typeChart], icon: getChartIcon(currentTree.children[i].typeChart)})
+            }
+        }
+        currentTree = queue.dequeue();
+    }
+    this._JsonTree = jsonTree;
+}
+
+Tree.prototype.getJsonTree = function(){
+    return this._JsonTree;
 };
 
 Tree.prototype.contains = function(callback, traversal) {
