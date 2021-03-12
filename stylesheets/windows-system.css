@@ -379,6 +379,10 @@ display: table;
     -webkit-font-smoothing: antialiased;
 }
 
+.title-icon {
+    top: 10px;
+} 
+
 .minimized-icon {
     position: absolute;
     padding: 12px;
@@ -389,40 +393,64 @@ display: table;
 
 .icon-scatter-plot {
     background: url("https://img.icons8.com/material-rounded/24/000000/scatter-plot.png");
+}
+
+.icon-scatter-plot.minimized-icon {
     background-color: white;
 }
 
 .icon-time-line {
     background: url("https://img.icons8.com/material-rounded/24/000000/web-analystics.png");
+}
+
+.icon-time-line.minimized-icon {
     background-color: white;
 }
 
 .icon-chamber-infographic {
     background: url("../images/icons/chamber-infographic-icon.png");
+}
+
+.icon-chamber-infographic.minimized-icon {
     background-color: white;
 }
 
 .icon-network-graph {
     background: url("../images/icons/network-graph-chart-icon.png");
+}
+
+.icon-network-graph.minimized-icon {
     background-color: white;
 }
 
 .icon-map-roll-calls {
     background: url("../images/icons/map-roll-calls-icon.png");
+}
+
+.icon-map-roll-calls.minimized-icon {
     background-color: white;
 }
 
 .icon-cropped-time-line {
     background: url("../images/icons/cropped-time-line-icon.png");
+}
+
+.icon-cropped-time-line.minimized-icon {
     background-color: white;
 }
 
 .icon-bar-chart {
     background: url("../images/icons/bar-chart-icon.png");
+}
+
+.icon-bar-chart.minimized-icon {
     background-color: white;
 }
 
-.icon-force-layout{
+.icon-force-layout {
     background: url("../images/icons/force-layout-icon.png");
+}
+
+.icon-force-layout.minimized-icon {
     background-color: white;
 }
