@@ -111,7 +111,7 @@ function scatterPlotChart()
                 .attr("id", "forceLayoutApply")
                 .attr("type", "checkbox");
             controls.append("span")
-             .text("Show overlapped deputies ");
+             .text("Show overlapping deputies ");
 
             drawScatterPlot(nodes, this);
         })
