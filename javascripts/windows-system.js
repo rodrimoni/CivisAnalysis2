@@ -94,7 +94,6 @@ function initSystem() {
     });
 }
 
-
 function initializeChart(newID, chartObj) {
     var chart;
 
@@ -106,7 +105,7 @@ function initializeChart(newID, chartObj) {
             deputyNodes[newID] = currentDeputies;
             rollCallsRates[newID] = currentRollCalls;
 
-            addConfigMenu(newID, 'scatterplot');
+            addConfigMenu(newID, 'scatterplot', false);
             //addTutorialButton(newID, 'scatterplot', chartObj.chartID);
             addClusteringMenu(newID);
 
@@ -116,6 +115,7 @@ function initializeChart(newID, chartObj) {
             }
             addSearchDeputyMenu(newID, deputies);
             addPartySizeFilter(newID, chart);
+            addEditTitleInput(newID);
 
             initializeSlider(newID, chart);
             $('#' +newID).attr('data-type-period', chartObj.panelClass);
@@ -127,10 +127,14 @@ function initializeChart(newID, chartObj) {
 
         case BAR_CHART:
             chart =  barChart();
+            addConfigMenu(newID, 'barChart', false);
+            addEditTitleInput(newID);
             break;
 
         case FORCE_LAYOUT:
             chart =  forceLayout();
+            addConfigMenu(newID, 'forceLayout', false);
+            addEditTitleInput(newID);
             chart.on('update', function () {
                 updateDeputies(newID)
             });
@@ -138,6 +142,8 @@ function initializeChart(newID, chartObj) {
 
         case TIME_LINE_CROP:
             chart = timeLineCrop();
+            addConfigMenu(newID, 'timeLineCrop', false);
+            addEditTitleInput(newID);
             $('#' +newID).attr('data-type-period', chartObj.panelClass);
             break;
 
@@ -147,8 +153,9 @@ function initializeChart(newID, chartObj) {
             deputyNodes[newID] = currentDeputies;
             rollCallsRates[newID] = currentRollCalls;
 
-            addConfigMenu(newID, 'chamberInfographic');
+            addConfigMenu(newID, 'chamberInfographic', false);
             addSearchDeputyMenu(newID, chartObj.data.deputies);
+            addEditTitleInput(newID);
 
             $('#' +newID).attr('data-type-period', chartObj.panelClass);
 
@@ -160,10 +167,11 @@ function initializeChart(newID, chartObj) {
             chart = rollCallsHeatmap();
             deputyNodes[newID] = currentDeputies;
             rollCallsRates[newID] = currentRollCalls;
-            addConfigMenu(newID, 'rollCallsHeatmap');
+            addConfigMenu(newID, 'rollCallsHeatmap', false);
             var rollCallsTypeAhead = addSearchRollCallMenu(newID, chartObj.data);
             addFilterMotionTypeMenu(newID, chartObj.data, rollCallsTypeAhead);
             addFilterDateRollCallMenu(newID, chartObj.data, rollCallsTypeAhead);
+            addEditTitleInput(newID);
 
             chart.on('update', function () {
                 updateRollCalls(newID);
@@ -176,9 +184,9 @@ function initializeChart(newID, chartObj) {
             deputyNodes[newID] = currentDeputies;
             rollCallsRates[newID] = currentRollCalls;
 
-            addConfigMenu(newID, 'similarity-force');
-
+            addConfigMenu(newID, 'similarity-force', false);
             addSearchDeputyMenu(newID, d3.values(chartObj.data.nodes));
+            addEditTitleInput(newID);
 
             $('#' +newID).attr('data-type-period', chartObj.panelClass);
 
@@ -193,15 +201,17 @@ function initializeChart(newID, chartObj) {
     }
 
     /* Set the new tittle */
+    $('#' +newID + ' .panel-title').append(getChartIconTitle(chartObj.chartID));
     $('#' +newID + ' .panel-title').append(chartObj.title);
 
     return chart;
 }
 
-function addConfigMenu(newID, panelClass) {
+function addConfigMenu(newID, panelClass, isRightMenu) {
+    var rightMenu = isRightMenu ? "dropdown-menu-right " : "";
     $('#' +newID + ' .panel-heading .btn-group')
         .append('<button class="btn btn-default btn-settings-' + panelClass + ' toggle-dropdown" data-toggle="dropdown"><i class="glyphicon glyphicon-menu-hamburger"></i></button> ')
-        .append('<ul class="dropdown-menu panel-settings"></ul>');
+        .append('<ul class="dropdown-menu ' + rightMenu + 'panel-settings"></ul>');
 }
 
 function addTutorialButton(newID, panelClass, typeChart) {
@@ -476,6 +486,47 @@ function addPartySizeFilter(newID, chart)
     });
 }
 
+function addEditTitleInput(newID)
+{
+    var node = tree.getNode(newID, tree.traverseBF);
+    var originalTitle = node.title;
+    var newTitle = "";
+    $("#" + newID + " .panel-settings")
+        .append('<li role="presentation" class="dropdown-header"><span class="trn">Edit Panel Title</span></li>')
+        .append('<li><label class="radio-inline"><input type="radio" name="titleType" value = "default" checked>Default</label> <label class="radio-inline"><input type="radio" name="titleType" value = "custom">Custom</label></li>')
+        .append('<li><input type="text" class="form-control newTitle" value ="' + originalTitle + '" disabled></li>');
+    
+    $('input[type=radio][name=titleType]').change(function() {
+        if (this.value == 'default') {
+            if ( $("#" + newID + " .custom-title").length >= 1)
+                $("#" + newID + " .custom-title").remove();    
+            
+            $("#" + newID + " .panel-settings .newTitle").prop('disabled', true);
+            $("#" + newID + " .newTitle").val(originalTitle);
+            node.title = originalTitle;      
+            updateSideBar();
+        }
+        else if (this.value == 'custom') {
+            $("#" + newID + " .panel-settings .newTitle").prop('disabled', false);
+        }
+    }); 
+
+    $("#" + newID + " .newTitle").on('keypress',function(e) {
+        if(e.which == 13) {
+            if ($(this).val())
+            {
+                newTitle = $(this).val();
+                node.title = newTitle;
+                if ( $("#" + newID + " .custom-title").length >= 1)
+                    $("#" + newID + " .custom-title").html(newTitle + "<br>")
+                else
+                    $("<span class='custom-title'> " + newTitle + "<br></span>").insertAfter("#" + newID + " .panel-title span.icon");
+            }
+            updateSideBar();
+        }
+    });
+}
+
 function addSearchDeputyMenu(newID, deputies) {
     var placeholder = language === ENGLISH ? "Type a deputy name..." : "Digite o nome de um deputado..."
     $("#" + newID + " .panel-settings")
@@ -723,7 +774,7 @@ function createNewChild(currentId, chartObj) {
     if (currentId === TIME_LINE)
     {
         newID = "panel-1-1";
-        newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" style="padding-top: 7.5px;"> <span class ="trn">Timeline</span> </h4> <button disabled class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button> </div><div class="panel-body center-panel"></div></div>').css({"position": "absolute"});
+        newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" style="padding-top: 7.5px;"> <span class="icon node-icon custom-icon icon-time-line"></span> <span class ="trn">Timeline</span> </h4> <div class = "btn-group"> <button disabled class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button></div> </div><div class="panel-body center-panel"></div></div>').css({"position": "absolute"});
 
         $(".container").append(newElem);
 
@@ -783,6 +834,10 @@ function createNewChild(currentId, chartObj) {
 
         tree._root.chart = timeline;
         tree._root.typeChart = TIME_LINE;
+        tree._root.title = "Timeline";
+
+        addConfigMenu(newID, 'time-line', true);
+        addEditTitleInput(newID);
 
         updateSideBar();
 
@@ -814,13 +869,15 @@ function createNewChild(currentId, chartObj) {
         /* Inserts the panel after the last one in DOM */
         $('.panel').last().after(newElem);
 
+        node.typeChart  = chartObj.chartID;
+        node.title      = chartObj.prettyTitle;
+
         /* Initialize charts */
         if (chartObj !== null)
             chart = initializeChart(newID, chartObj);
 
         /* Bind data chart to node in tree */
         node.chart      = chart;
-        node.typeChart  = chartObj.chartID;
 
         updateSideBar();    
 
@@ -986,32 +1043,26 @@ function handleContextMenuScatterPlot(invokedOn, selectedMenu)
     if (clusterData !== null)
         chartData = clusterData.chart;
 
-    var title = "";
+    var title = "", prettyTitle = "";
     var chartObj = {};
 
     if(selectedMenu.context.id === "bar-chart") {
         title = 'Bar Chart: Cluster ' + clusterID;
         var partyCountData = getPartyCount(chartData.clusters[clusterID].points);
-        chartObj = {'chartID' : BAR_CHART, 'data': partyCountData, 'title': title };
+        chartObj = {'chartID' : BAR_CHART, 'data': partyCountData, 'title': title, "prettyTitle": title };
         createNewChild(panelID, chartObj );
     }
     else
         if(selectedMenu.context.id === "force-layout") {
             title = 'Force Layout: Cluster ' + clusterID;
-            chartObj = {'chartID' : FORCE_LAYOUT, 'data': {'nodes': chartData.clusters[clusterID].points}, 'legend': false, 'title': title};
+            chartObj = {'chartID' : FORCE_LAYOUT, 'data': {'nodes': chartData.clusters[clusterID].points}, 'legend': false, 'title': title, 'prettyTitle': title};
             createNewChild(panelID, chartObj);
         }
-        else
-            if(selectedMenu.context.id === "get-parent") {
-                var parent = tree.getParent(panelID, tree.traverseBF);
-                var msg = parent !== null ? parent.data : "Root doesn't have parent";
-                alert(msg);
-            }
 }
 
 function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechnique, type)
 {
-    var panelClass, title;
+    var panelClass, title, prettyTitle;
 
     currentDeputies = [];
     currentRollCalls = [];
@@ -1030,7 +1081,7 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
             var nodesValues = d3.values(currentDeputies);
             var parties = calcPartiesSizeAndCenter(nodesValues);
             var data = {'deputies': nodesValues, 'partiesMap' : parties };
-            var chartObj = {'chartID': CHAMBER_INFOGRAPHIC, 'data': data, 'title': title, 'panelClass' : panelClass};
+            var chartObj = {'chartID': CHAMBER_INFOGRAPHIC, 'data': data, 'title': title, 'prettyTitle': prettyTitle, 'panelClass' : panelClass};
             createNewChild('panel-1-1', chartObj);
         };
     }
@@ -1041,6 +1092,7 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
                     'chartID': DEPUTIES_SIMILARITY_FORCE,
                     'data': similarityGraph,
                     'title': title,
+                    'prettyTitle': prettyTitle,
                     'panelClass': panelClass
                 };
                 createNewChild('panel-1-1', chartObj);
@@ -1056,6 +1108,7 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
                         'chartID': SCATTER_PLOT,
                         'data': currentDeputies,
                         'title': title,
+                        'prettyTitle': prettyTitle,
                         'panelClass': panelClass
                     };
                     createNewChild('panel-1-1', chartObj);
@@ -1073,6 +1126,7 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
                         'chartID': ROLLCALLS_HEATMAP,
                         'data': currentRollCalls,
                         'title': title,
+                        'prettyTitle': prettyTitle,
                         'panelClass': panelClass
                     }
                     createNewChild('panel-1-1', chartObj);
@@ -1098,11 +1152,19 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
                     if (dataRange.found)
                     {
                         if (dataRange.type !== "year")
+                        {
                             title = "<span class ='trn'>"+CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name + "</span>";
+                            prettyTitle = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
+                        }
                         else
+                        {
                             title = "<span class ='trn'>Year</span>: " + dataRange.id;
-                        if (type !== CHAMBER_INFOGRAPHIC)
+                            prettyTitle = "Year: " + dataRange.id;
+                        }
+                        if (type !== CHAMBER_INFOGRAPHIC) {
                             title += " (" + dimensionalReductionTechnique + ")";
+                            prettyTitle += " (" + dimensionalReductionTechnique + ")";
+                        }
 
                         var subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
                         title += subtitle;
@@ -1110,6 +1172,7 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
                     }
                     else {
                         title =  filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
+                        prettyTitle = filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString();
                         panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear();
                     }
                         
@@ -1150,10 +1213,15 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
                         if (dataRange.found)
                         {
                             if (dataRange.type !== "year")
+                            {
                                 title = "<span class ='trn'>"+CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name + "</span>";
+                                prettyTitle = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
+                            }
                             else
+                            {
                                 title = "<span class ='trn'>Year</span>: " + dataRange.id;
-
+                                prettyTitle = "Year: " + dataRange.id;
+                            }
                             var subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
                             title += subtitle;
                             panelClass = dataRange.type + '-' + dataRange.id;
@@ -1161,6 +1229,7 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
                         else 
                         {
                             title = filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
+                            prettyTitle = filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString();
                             panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear()
                         }
                         $('#loading').css('visibility', 'hidden');
@@ -1188,9 +1257,15 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
         }
         else {
             if (dataRange.type !== "year")
+            {
                 title = "<span class ='trn'>"+CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name + "</span>";
+                prettyTitle = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
+            }
             else
+            {
                 title = "<span class ='trn'>Year</span>: " + dataRange.id;
+                prettyTitle = "Year: " + dataRange.id;
+            }
             panelClass = dataRange.type + '-' + dataRange.id;
 
             var createChart;
@@ -1201,6 +1276,7 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
                 createChart = createRollCallsHeatMap;
             else {
                 title += " ("+ dimensionalReductionTechnique + ")";
+                prettyTitle += " (" + dimensionalReductionTechnique + ")";
                 createChart = createScatterPlot;
             }
 
@@ -1244,7 +1320,7 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
 
 function handleContextMenuDeputy(invokedOn, selectedMenu)
 {
-    var title, data = {};
+    var title, prettyTitle, data = {};
     var chartObj = {};
 
     var panelID = invokedOn.parents('.panel').attr("id");
@@ -1261,6 +1337,7 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
             id = periodID[1];
             periodData = CONGRESS_DEFINE[type + "s"][id];
             title = "<span class ='trn'>" + periodData.name + "</span>";
+            prettyTitle = periodData.name;
             subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " <span class='trn'>to</span> " + periodData.period[1].toLocaleDateString() + "</span>";
             title += subtitle;
             panelClass = type + '-' + id;
@@ -1271,6 +1348,7 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
             firstYear = periodID[1];
             lastYear = periodID[2];
             title = firstYear + " <span class='trn'>to</span> " + lastYear;
+            prettyTitle = firstYear + " to " + lastYear
             panelClass = type + "-" + firstYear + "-" + lastYear;
             data.period = [new Date(firstYear,0,1),new Date(lastYear,0,1)];
         }
@@ -1283,7 +1361,7 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
             });
 
         data.deputies = deputies;
-        chartObj = {'chartID': TIME_LINE_CROP, 'data': data, 'title': title, 'panelClass': panelClass};
+        chartObj = {'chartID': TIME_LINE_CROP, 'data': data, 'title': title, 'prettyTitle': prettyTitle, 'panelClass': panelClass};
 
         createNewChild(panelID, chartObj);
     }
@@ -1298,17 +1376,20 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
                 if (type !== 'year'){
                     periodData = CONGRESS_DEFINE[type + "s"][id];
                     title = "<span class='trn'>Map of Roll Calls</span>: <span class='trn'>"+ periodData.name+"</span>";
+                    prettyTitle = "Map of Roll Calls: " + periodData.name;
                     subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " <span class='trn'>to</span> " + periodData.period[1].toLocaleDateString() + "</span>";
                     title += subtitle;
                 }
                 else {
                     title = "<span class='trn'>Map of Roll Calls</span>: " + "<span class='trn'>Year</span> "+ id;
+                    prettyTitle = "Map of Roll Calls: Year " + id;
                 }
             }
             else {
                 firstYear = periodID[1];
                 lastYear = periodID[2];
                 title = "<span class='trn'>Map of Roll Calls</span>: " + firstYear + " <span class='trn'>to</span> " + lastYear;
+                prettyTitle = "Map of Roll Calls: " + firstYear +  " to " + lastYear;
             }
 
             // Get the corresponding rollcalls to this deputyNodes set
@@ -1316,7 +1397,7 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
             rcs.map(function (e) {
                e.rollCallName = e.type + " " + e.number + " " + e.year;
             });
-            chartObj = {'chartID' : ROLLCALLS_HEATMAP, 'data': rcs, 'title':title};
+            chartObj = {'chartID' : ROLLCALLS_HEATMAP, 'data': rcs, 'title':title, 'prettyTitle': prettyTitle};
             createNewChild(panelID, chartObj);
         }
 }
@@ -1462,6 +1543,11 @@ function getTree() {
     tree.createJsonTree();
     return tree.getJsonTree();
 }   
+
+function getChartIconTitle(typeChart)
+{
+    return '<span class="icon node-icon ' + getChartIcon(typeChart) + '"></span>';
+}
 
 function getChartIcon(typeChart)
 {
