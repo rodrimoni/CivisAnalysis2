@@ -73,6 +73,7 @@ h2 {
 }
 
 .panel-subtitle {
+    margin-left: 24px;
     font-size: 14px;
 }
 
@@ -378,10 +379,6 @@ display: table;
     padding-left: 24px;
     -webkit-font-smoothing: antialiased;
 }
-
-.title-icon {
-    top: 10px;
-} 
 
 .minimized-icon {
     position: absolute;

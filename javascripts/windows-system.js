@@ -200,9 +200,15 @@ function initializeChart(newID, chartObj) {
 
     }
 
-    /* Set the new tittle */
+    /* Append the title icon to panel */
     $('#' +newID + ' .panel-title').append(getChartIconTitle(chartObj.chartID));
+    
+    /* Set the new tittle */    
     $('#' +newID + ' .panel-title').append(chartObj.title);
+
+    /* Set the title icon position when exists subtitle */
+    if ($('#' +newID + ' .panel-subtitle').length >= 1)
+        $("#" + newID + " .panel-title span.title-icon").css("top", "15px");    
 
     return chart;
 }
@@ -499,7 +505,15 @@ function addEditTitleInput(newID)
     $('input[type=radio][name=titleType]').change(function() {
         if (this.value == 'default') {
             if ( $("#" + newID + " .custom-title").length >= 1)
-                $("#" + newID + " .custom-title").remove();    
+            {
+                $("#" + newID + " .panel-title span").eq(2).removeClass('panel-subtitle');
+                $("#" + newID + " .custom-title").remove();
+                // Set position accordingly to number of subtitles
+                if($("#" + newID + " .panel-subtitle").length >= 1)
+                    $("#" + newID + " .panel-title span.title-icon").css("top", "15px");
+                else
+                    $("#" + newID + " .panel-title span.title-icon").css("top", "5px");
+            }
             
             $("#" + newID + " .panel-settings .newTitle").prop('disabled', true);
             $("#" + newID + " .newTitle").val(originalTitle);
@@ -518,9 +532,15 @@ function addEditTitleInput(newID)
                 newTitle = $(this).val();
                 node.title = newTitle;
                 if ( $("#" + newID + " .custom-title").length >= 1)
-                    $("#" + newID + " .custom-title").html(newTitle + "<br>")
+                    $("#" + newID + " .custom-title").remove();
+                
+                $("<span class='custom-title'>" + newTitle + "<br></span>").insertAfter("#" + newID + " .panel-title span.icon");
+                $("#" + newID + " .panel-title span").eq(2).addClass('panel-subtitle');
+                if($("#" + newID + " .panel-subtitle").length >= 2)
+                    $("#" + newID + " .panel-title span.title-icon").css("top", "25px");
                 else
-                    $("<span class='custom-title'> " + newTitle + "<br></span>").insertAfter("#" + newID + " .panel-title span.icon");
+                    $("#" + newID + " .panel-title span.title-icon").css("top", "15px");
+                
             }
             updateSideBar();
         }
@@ -774,7 +794,7 @@ function createNewChild(currentId, chartObj) {
     if (currentId === TIME_LINE)
     {
         newID = "panel-1-1";
-        newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" style="padding-top: 7.5px;"> <span class="icon node-icon custom-icon icon-time-line"></span> <span class ="trn">Timeline</span> </h4> <div class = "btn-group"> <button disabled class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button></div> </div><div class="panel-body center-panel"></div></div>').css({"position": "absolute"});
+        newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" style="padding-top: 7.5px;"> <span class="icon node-icon custom-icon title-icon icon-time-line"></span> <span class ="trn">Timeline</span> </h4> <div class = "btn-group"> <button disabled class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button></div> </div><div class="panel-body center-panel"></div></div>').css({"position": "absolute"});
 
         $(".container").append(newElem);
 
@@ -1047,15 +1067,17 @@ function handleContextMenuScatterPlot(invokedOn, selectedMenu)
     var chartObj = {};
 
     if(selectedMenu.context.id === "bar-chart") {
-        title = 'Bar Chart: Cluster ' + clusterID;
+        prettyTitle = 'Bar Chart: Cluster ' + clusterID;
+        title = "<span>" + prettyTitle + "</span>";
         var partyCountData = getPartyCount(chartData.clusters[clusterID].points);
-        chartObj = {'chartID' : BAR_CHART, 'data': partyCountData, 'title': title, "prettyTitle": title };
+        chartObj = {'chartID' : BAR_CHART, 'data': partyCountData, 'title': title, "prettyTitle": prettyTitle };
         createNewChild(panelID, chartObj );
     }
     else
         if(selectedMenu.context.id === "force-layout") {
-            title = 'Force Layout: Cluster ' + clusterID;
-            chartObj = {'chartID' : FORCE_LAYOUT, 'data': {'nodes': chartData.clusters[clusterID].points}, 'legend': false, 'title': title, 'prettyTitle': title};
+            prettyTitle = 'Force Layout: Cluster ' + clusterID;
+            title = "<span>" + prettyTitle + "</span>";
+            chartObj = {'chartID' : FORCE_LAYOUT, 'data': {'nodes': chartData.clusters[clusterID].points}, 'legend': false, 'title': title, 'prettyTitle': prettyTitle };
             createNewChild(panelID, chartObj);
         }
 }
@@ -1153,25 +1175,27 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
                     {
                         if (dataRange.type !== "year")
                         {
-                            title = "<span class ='trn'>"+CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name + "</span>";
+                            title = "<span><span class ='trn'>"+CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name + "</span>";
                             prettyTitle = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
                         }
                         else
                         {
-                            title = "<span class ='trn'>Year</span>: " + dataRange.id;
+                            title = "<span><span class ='trn'>Year</span>: " + dataRange.id;
                             prettyTitle = "Year: " + dataRange.id;
                         }
                         if (type !== CHAMBER_INFOGRAPHIC) {
-                            title += " (" + dimensionalReductionTechnique + ")";
+                            title += " (" + dimensionalReductionTechnique + ")" + "</span>";
                             prettyTitle += " (" + dimensionalReductionTechnique + ")";
                         }
-
+                        else
+                            title += "</span>";
+                            
                         var subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
                         title += subtitle;
                         panelClass = dataRange.type + '-' + dataRange.id;
                     }
                     else {
-                        title =  filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
+                        title =  '<span>' + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
                         prettyTitle = filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString();
                         panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear();
                     }
@@ -1219,7 +1243,7 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
                             }
                             else
                             {
-                                title = "<span class ='trn'>Year</span>: " + dataRange.id;
+                                title = "<span><span class ='trn'>Year</span>: " + dataRange.id + "</span>";
                                 prettyTitle = "Year: " + dataRange.id;
                             }
                             var subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
@@ -1228,7 +1252,7 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
                         }
                         else 
                         {
-                            title = filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
+                            title = "<span>" + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
                             prettyTitle = filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString();
                             panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear()
                         }
@@ -1258,12 +1282,12 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
         else {
             if (dataRange.type !== "year")
             {
-                title = "<span class ='trn'>"+CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name + "</span>";
+                title = "<span><span class ='trn'>"+CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name + "</span>";
                 prettyTitle = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
             }
             else
             {
-                title = "<span class ='trn'>Year</span>: " + dataRange.id;
+                title = "<span><span class ='trn'>Year</span>: " + dataRange.id;
                 prettyTitle = "Year: " + dataRange.id;
             }
             panelClass = dataRange.type + '-' + dataRange.id;
@@ -1275,10 +1299,12 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
             else if (type === ROLLCALLS_HEATMAP)
                 createChart = createRollCallsHeatMap;
             else {
-                title += " ("+ dimensionalReductionTechnique + ")";
+                title += " ("+ dimensionalReductionTechnique + ")" + "</span>";
                 prettyTitle += " (" + dimensionalReductionTechnique + ")";
                 createChart = createScatterPlot;
             }
+
+            title += "</span>";
 
             var subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
             title += subtitle;
@@ -1347,7 +1373,7 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
             type = periodID[0];
             firstYear = periodID[1];
             lastYear = periodID[2];
-            title = firstYear + " <span class='trn'>to</span> " + lastYear;
+            title = + "</span>" + firstYear + " <span class='trn'>to</span> " + lastYear + "</span>";
             prettyTitle = firstYear + " to " + lastYear
             panelClass = type + "-" + firstYear + "-" + lastYear;
             data.period = [new Date(firstYear,0,1),new Date(lastYear,0,1)];
@@ -1375,20 +1401,20 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
                 id = periodID[1];
                 if (type !== 'year'){
                     periodData = CONGRESS_DEFINE[type + "s"][id];
-                    title = "<span class='trn'>Map of Roll Calls</span>: <span class='trn'>"+ periodData.name+"</span>";
+                    title = "<span><span class='trn'>Map of Roll Calls</span>: <span class='trn'>"+ periodData.name+"</span></span>";
                     prettyTitle = "Map of Roll Calls: " + periodData.name;
                     subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " <span class='trn'>to</span> " + periodData.period[1].toLocaleDateString() + "</span>";
                     title += subtitle;
                 }
                 else {
-                    title = "<span class='trn'>Map of Roll Calls</span>: " + "<span class='trn'>Year</span> "+ id;
+                    title = "<span><span class='trn'>Map of Roll Calls</span>: " + "<span class='trn'>Year</span> "+ id + "</span>";
                     prettyTitle = "Map of Roll Calls: Year " + id;
                 }
             }
             else {
                 firstYear = periodID[1];
                 lastYear = periodID[2];
-                title = "<span class='trn'>Map of Roll Calls</span>: " + firstYear + " <span class='trn'>to</span> " + lastYear;
+                title = "<span><span class='trn'>Map of Roll Calls</span>: " + firstYear + " <span class='trn'>to</span> " + lastYear + "</span>";
                 prettyTitle = "Map of Roll Calls: " + firstYear +  " to " + lastYear;
             }
 
@@ -1546,7 +1572,7 @@ function getTree() {
 
 function getChartIconTitle(typeChart)
 {
-    return '<span class="icon node-icon ' + getChartIcon(typeChart) + '"></span>';
+    return '<span class="icon node-icon ' + getChartIcon(typeChart) + ' title-icon"></span>';
 }
 
 function getChartIcon(typeChart)
