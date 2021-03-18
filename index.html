@@ -286,12 +286,14 @@
 
     function openNav() {
         document.getElementById("mySidebar").style.width = "250px";
-        document.getElementById("windows-system").style.marginLeft = "250px";
+        document.getElementById("windows-system").style.paddingLeft = "250px";
+        checkLimits();
     }
 
     function closeNav() {
         document.getElementById("mySidebar").style.width = "0";
         document.getElementById("windows-system").style.marginLeft= "0";
+        checkLimits();
     }
 
     /* Initialization of System */

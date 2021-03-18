@@ -11,8 +11,8 @@ var MAX_HEIGHT  = 1080;
 var MAX_WIDTH   = 1920;
 
 /* Constant values of icon Height and Width */
-var HEIGHT_ICON = 28;
-var WIDTH_ICON  = 28;
+var HEIGHT_ICON = 24;
+var WIDTH_ICON  = 24;
 
 /* Constant to define the charts */
 var TIME_LINE                   = 0;
@@ -990,7 +990,7 @@ function setUpPanel(newID) {
     $( "#" + newID)
         .draggable({
             handle: ".panel-heading",
-            stack: ".panel, .fa-window-maximize",
+            stack: ".panel, .custom-icon",
             containment: [10,containerOffset.top, workspace.width() - initialWidth  - 10 , workspace.height() - initialHeight],
             drag: function(){
                 centerLine(this.id);
@@ -1439,6 +1439,7 @@ function createNewIcon(panelID)
 
     /* Getting the workspace SVG */
     var workspace = $("#workspace");
+    var containerOffset = $('.container').offset();
 
     $(".container").append(
         '<span id= "icon-' + panelID + '" class="'+ getChartIcon(typeChart) + ' minimized-icon"></span>'
@@ -1447,7 +1448,7 @@ function createNewIcon(panelID)
     $("#icon-"+panelID)
         .draggable({
             stack: ".panel, .custom-icon",
-            containment: [10,10, workspace.width() - WIDTH_ICON - 10 , workspace.height() - HEIGHT_ICON - 10],
+            containment: [10,containerOffset.top, workspace.width() - WIDTH_ICON  - 10 , workspace.height() - HEIGHT_ICON - 10 + containerOffset.top],
             drag: function(){
                 centerLine(panelID, true);
             },

@@ -295,9 +295,9 @@ line-height: normal;
   
 /* Clear floats after image containers */
 .row::after {
-content: "";
-clear: both;
-display: table;
+    content: "";
+    clear: both;
+    display: table;
 }
 
 .flag {
@@ -308,7 +308,7 @@ display: table;
     height: 100%;
     width: 0;
     position: fixed;
-    z-index: 1;
+    z-index: 9999;
     top: 0;
     left: 0;
     background-color: rgb(255, 255, 255);
