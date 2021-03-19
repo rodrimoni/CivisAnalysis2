@@ -506,10 +506,10 @@ function addEditTitleInput(newID)
     var newTitle = "";
     $("#" + newID + " .panel-settings")
         .append('<li role="presentation" class="dropdown-header"><span class="trn">Edit Panel Title</span></li>')
-        .append('<li><label class="radio-inline"><input type="radio" name="titleType" value = "default" checked>Default</label> <label class="radio-inline"><input type="radio" name="titleType" value = "custom">Custom</label></li>')
+        .append('<li><label class="radio-inline"><input id = "radio-'+ newID +'-default" type="radio" name="'+ newID +'-titleType" value = "default" checked>Default</label> <label class="radio-inline"><input id = "radio-'+ newID +'-custom" type="radio" name="'+ newID +'-titleType" value = "custom">Custom</label></li>')
         .append('<li><input type="text" class="form-control newTitle" value ="' + originalTitle + '" disabled></li>');
     
-    $('input[type=radio][name=titleType]').change(function() {
+    $('#'+ newID+ ' input[type=radio][name='+ newID+'-titleType]').change(function() {
         if (this.value == 'default') {
             if ( $("#" + newID + " .custom-title").length >= 1)
             {
@@ -1575,7 +1575,10 @@ function selectNodeSideBarByPanel(panelID)
     var nodes = $('#tree').treeview('getEnabled');
     nodes.forEach(function(node){
         if (node.panel === panelID)
-            $('#tree').treeview('selectNode', node);
+        {   
+            if (node.state !== 'selected')
+                $('#tree').treeview('selectNode', node);
+        }
     })
 }
 
@@ -1585,10 +1588,10 @@ function deselectNodeSideBarByPanel(panelID)
     nodes.forEach(function(node){
         if (node.panel === panelID)
         {  
-            console.log(node);
             $('#tree').treeview('unselectNode',  node);
         }
     })
+    $("#" + panelID).removeClass('panel-selected')
 }
 
 function updateSideBar()
@@ -1597,14 +1600,22 @@ function updateSideBar()
     $('#tree').treeview('expandAll', { levels: 2, silent: true });
     
     $('#tree').on('nodeSelected', function(event, data) {
+        $("#"+data.panel).addClass("panel-selected");
+        if($(".ui-draggable-dragging").length < 1)
+            $(window).scrollTo($("#"+data.panel).position(), 800);
         if ($("#icon-"+ data.panel).length >= 1)
         {
             maximizeWindow(data.panel);
             centerLine(data.panel);
+            $(window).scrollTo($("#"+data.panel).position(), 800);
         }
         /* Put the selected panel in front */
         $(".panel").css("z-index", "1");
         $("#"+data.panel).css("z-index", "100");
+    });
+
+    $('#tree').on('nodeUnselected', function(event, data) {
+        $('#' + data.panel).removeClass('panel-selected');
     });
 }
 

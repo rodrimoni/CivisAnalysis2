@@ -38,6 +38,9 @@
     <!-- Plugin for creation of custom context menus -->
     <script src = "javascripts/external/jquery.contextMenu.js" type = "text/javascript"></script>
 
+     <!-- Plugin for use of scroll animations -->
+     <script src = "javascripts/external/jquery.scrollTo.min.js" type = "text/javascript"></script>
+
     <!-- Library for crossfilter charts -->
     <script src = "javascripts/external/crossfilter.v1.min.js" type = "text/javascript"></script>
 
@@ -175,7 +178,7 @@
 </div>
 
 <div id="mySidebar" class="sidebar">
-    <h2>Treeview</h2>
+    <h2><i class="icon node-icon custom-icon hierarchy-black-transparent-icon"></i> Treeview</h2>
     <div id="tree"></div>
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
 </div>
@@ -211,7 +214,7 @@
       </div>
 
 <div id = "navbar">
-    <button class="openbtn" onclick="openNav()">☰</button><h2>CivisAnalysis 2.0</h2>
+    <button id ="openNavBtn" class="openbtn" onclick="openNav()"><i class="hierarchy-white-transparent-icon"></i></button><h2>CivisAnalysis 2.0</h2>
     <label id="selectLabel" for="selStates"></label>
     <select class="selectpicker" title= "Choose one of the following...>" multiple id="selStates">
         <option value="AC">Acre</option>
@@ -285,14 +288,16 @@
     var windowSystem = $("#windows-system");
 
     function openNav() {
-        document.getElementById("mySidebar").style.width = "250px";
-        document.getElementById("windows-system").style.marginLeft = "250px";
+        document.getElementById("mySidebar").style.width = "500px";
+        document.getElementById("windows-system").style.marginLeft = "500px";
+        $("#openNavBtn").hide();
         checkLimits(true);
     }
 
     function closeNav() {
         document.getElementById("mySidebar").style.width = "0";
         document.getElementById("windows-system").style.marginLeft= "0";
+        $("#openNavBtn").show();
         checkLimits(false);
     }
 
@@ -326,16 +331,15 @@
         windowSystem.on("dblclick", ".minimized-icon", function(event){
             var panelID = ($(this)).attr("id").replace("icon-", "");
             maximizeWindow(panelID);
+            centerLine(panelID);
         });
 
         /* Binding event to any click in a panel active respective node in tree view */
         windowSystem.on('click', '.panel', function(event){
-            console.log($(event.target));
+            /* Prevent to activate tree view node when click on panel's minimize button*/
             var isMinimizeButton = $(event.target).hasClass('btn-minimize') || $(event.target).hasClass('glyphicon-minus');
-            console.log(isMinimizeButton);
             if(isMinimizeButton)
                 return;
-            console.log("clicou no painel")
             var id = $(this)[0].id;
             selectNodeSideBarByPanel(id);
         });
