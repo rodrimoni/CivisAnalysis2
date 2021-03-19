@@ -11,8 +11,11 @@ var MAX_HEIGHT  = 1080;
 var MAX_WIDTH   = 1920;
 
 /* Constant values of icon Height and Width */
-var HEIGHT_ICON = 24;
-var WIDTH_ICON  = 24;
+var ICON_HEIGHT = 24;
+var ICON_WIDTH  = 24;
+
+/* Constant to define the sidebar size */
+var SIDEBAR_OFFSET = 250;
 
 /* Constant to define the charts */
 var TIME_LINE                   = 0;
@@ -47,6 +50,10 @@ var TSNE = 3;
 /* Constant to define languages allowed */
 const ENGLISH = 0;
 const PORTUGUESE = 1;
+
+/* Constant to define type of window */
+const PANEL = 0;
+const MINIMIZED_ICON = 1;
 
 /* Global variable to handle deputies selections */
 var selectionOn = false;
@@ -727,21 +734,20 @@ function removeLines(id)
 function minimizeWindow()
 {
     var panelID = $(this).parents(".panel").attr("id");
+    deselectNodeSideBarByPanel(panelID);
     createNewIcon(panelID);
+    checkLimits(isSideBarActive());
     centerLine(panelID, true);
     $("#"+ panelID).hide();
 }
 
 /**
  * Replaces a small icon with a Bootstrap Panel representing it maximized
- * @example
- * $('selector').on("event", "element", maximizeWindow);
  */
-function maximizeWindow()
+function maximizeWindow(panelID)
 {
-    var icon = $(this);
+    var icon = $("#icon-" + panelID);
     var iconOffset = icon.offset();
-    var panelID = icon.attr("id").replace("icon-", "");
     var panel = $("#"+panelID);
 
     var left = iconOffset.left - panel.width()/2;
@@ -764,6 +770,7 @@ function maximizeWindow()
     $("#"+ panelID + " .btn-default.btn-minimize").css("background", "#fff");
 
     icon.remove();
+    selectNodeSideBarByPanel(panelID);
 
     /* Removes the dotted stylesheets of lines */
     d3.selectAll("line").filter(".class-" + panelID).style("stroke-dasharray", "");
@@ -794,7 +801,7 @@ function createNewChild(currentId, chartObj) {
     if (currentId === TIME_LINE)
     {
         newID = "panel-1-1";
-        newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h4 class="panel-title pull-left" style="padding-top: 7.5px;"> <span class="icon node-icon custom-icon title-icon icon-time-line"></span> <span class ="trn">Timeline</span> </h4> <div class = "btn-group"> <button disabled class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button></div> </div><div class="panel-body center-panel"></div></div>').css({"position": "absolute"});
+        newElem = newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h6 class="panel-title pull-left" style="padding-top: 7.5px;"></h6> <div class="btn-group"> <button class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button></div></div><div class="panel-body center-panel"></div></div>').css({"position": "absolute"});
 
         $(".container").append(newElem);
 
@@ -856,6 +863,10 @@ function createNewChild(currentId, chartObj) {
         tree._root.typeChart = TIME_LINE;
         tree._root.title = "Timeline";
 
+        $('#' +newID + ' .panel-title').append(getChartIconTitle(TIME_LINE));
+        /* Set the new tittle */    
+        $('#' +newID + ' .panel-title').append("<span>Timeline</span");
+
         addConfigMenu(newID, 'time-line', true);
         addEditTitleInput(newID);
 
@@ -899,7 +910,8 @@ function createNewChild(currentId, chartObj) {
         /* Bind data chart to node in tree */
         node.chart      = chart;
 
-        updateSideBar();    
+        updateSideBar();
+        selectNodeSideBarByPanel(newID);    
 
         /* Sets up the panel settings as drag, resize, etc */
         setUpPanel(newID);
@@ -956,9 +968,6 @@ function setUpPanel(newID) {
             $(this).css("background", "#fff");
         });
 
-    /* Getting the workspace SVG */
-    var workspace = $("#workspace");
-
     var isTimeline = newID === "panel-1-1";
 
     var initialWidth, initialHeight, minWidth, minHeight, maxWidth, maxHeight;
@@ -984,14 +993,15 @@ function setUpPanel(newID) {
         maxHeight = MAX_HEIGHT;
     }
 
-    var containerOffset = $('.container').offset();
-
     /* Setting up the panel */
     $( "#" + newID)
         .draggable({
             handle: ".panel-heading",
             stack: ".panel, .custom-icon",
-            containment: [10,containerOffset.top, workspace.width() - initialWidth  - 10 , workspace.height() - initialHeight],
+            containment: getContainmentArray(initialWidth, initialHeight, isSideBarActive()),
+            start: function() {
+                selectNodeSideBarByPanel(newID);
+            },
             drag: function(){
                 centerLine(this.id);
             },
@@ -1448,11 +1458,11 @@ function createNewIcon(panelID)
     $("#icon-"+panelID)
         .draggable({
             stack: ".panel, .custom-icon",
-            containment: [10,containerOffset.top, workspace.width() - WIDTH_ICON  - 10 , workspace.height() - HEIGHT_ICON - 10 + containerOffset.top],
-            drag: function(){
+            containment: getContainmentArray(ICON_WIDTH, ICON_HEIGHT, isSideBarActive()),
+            drag: function() {
                 centerLine(panelID, true);
             },
-            stop:function(){
+            stop:function() {
                 centerLine(panelID, true);
             }
         })
@@ -1560,10 +1570,42 @@ function centerLine(panelID, icon) {
     }
 }
 
+function selectNodeSideBarByPanel(panelID)
+{
+    var nodes = $('#tree').treeview('getEnabled');
+    nodes.forEach(function(node){
+        if (node.panel === panelID)
+            $('#tree').treeview('selectNode', node);
+    })
+}
+
+function deselectNodeSideBarByPanel(panelID)
+{
+    var nodes = $('#tree').treeview('getEnabled');
+    nodes.forEach(function(node){
+        if (node.panel === panelID)
+        {  
+            console.log(node);
+            $('#tree').treeview('unselectNode',  node);
+        }
+    })
+}
+
 function updateSideBar()
 {
     $('#tree').treeview({data: getTree()});
     $('#tree').treeview('expandAll', { levels: 2, silent: true });
+    
+    $('#tree').on('nodeSelected', function(event, data) {
+        if ($("#icon-"+ data.panel).length >= 1)
+        {
+            maximizeWindow(data.panel);
+            centerLine(data.panel);
+        }
+        /* Put the selected panel in front */
+        $(".panel").css("z-index", "1");
+        $("#"+data.panel).css("z-index", "100");
+    });
 }
 
 function getTree() {
@@ -1603,6 +1645,11 @@ function hideToolTipCluster(){
     d3.select('.toolTipCluster').style("display", "none");
 }
 
+function isSideBarActive ()
+{
+    return $("#mySidebar").width() >= SIDEBAR_OFFSET
+}
+
 /**
  * Checks limits of window, guaranteeing that the panels and icons don't overflow
  * @example
@@ -1610,17 +1657,41 @@ function hideToolTipCluster(){
             checkLimits();
         });
  */
-function checkLimits()
+function checkLimits(isSideBarActive)
 {
-    var workspace =  $("#workspace");
-    var containerOffset = $('.container').offset();
     var panels = $(".panel");
     panels.each(function(index){
         var getElem = $( "#"+panels[index].id);
-        var offsetWidth = workspace.width() - getElem.width() - 10;
-        var offsetHeight= workspace.height() - getElem.height() - 10;
-        $(getElem).draggable( "option", "containment", [10,containerOffset.top,offsetWidth,offsetHeight + containerOffset.top]);
+        $(getElem).draggable( "option", "containment", getContainmentArray(getElem.width(), 
+                                                                            getElem.height(), 
+                                                                            isSideBarActive));
     })
+
+    var minimizedIcons = $(".minimized-icon");
+    minimizedIcons.each(function(index){
+        var getElem = $( "#"+minimizedIcons[index].id);
+        $(getElem).draggable( "option", "containment", getContainmentArray(getElem.width(), 
+                                                                            getElem.height(), 
+                                                                            isSideBarActive));
+    })
+}
+
+/* Returns an array of containment for draggable options [x1, y1, x2, y2] */
+function getContainmentArray(elementWidth, elementHeight, isSideBarActive)
+{
+    var sideBarOffSet = isSideBarActive ? SIDEBAR_OFFSET : 0;
+    var containmentArr = [];
+    /* Getting the workspace SVG */
+    var workspace = $("#workspace");
+    /* Getting nav bar offset */
+    var containerOffset = $('.container').offset();
+    var offsetWidth = workspace.width() - elementWidth - 10;
+    var offsetHeight= workspace.height() - elementHeight - 10;
+    containmentArr = [10 + sideBarOffSet, 
+                        containerOffset.top, 
+                        offsetWidth + sideBarOffSet, 
+                        offsetHeight + containerOffset.top]; 
+    return containmentArr;
 }
 
 function  initializeSlider(id, chart) {

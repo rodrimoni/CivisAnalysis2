@@ -286,14 +286,14 @@
 
     function openNav() {
         document.getElementById("mySidebar").style.width = "250px";
-        document.getElementById("windows-system").style.paddingLeft = "250px";
-        checkLimits();
+        document.getElementById("windows-system").style.marginLeft = "250px";
+        checkLimits(true);
     }
 
     function closeNav() {
         document.getElementById("mySidebar").style.width = "0";
         document.getElementById("windows-system").style.marginLeft= "0";
-        checkLimits();
+        checkLimits(false);
     }
 
     /* Initialization of System */
@@ -307,7 +307,7 @@
         /* Check limits whenever a resize event was trigger */
         $(window).on('resize', function(){
             hideToolTipCluster();
-            checkLimits();
+            checkLimits(isSideBarActive());
         });
 
         /* Binding event to minimize buttons */
@@ -323,7 +323,22 @@
         //windowSystem.on("click", ".btn-settings-scatterplot", checkChildrenScatterPlot);
 
         /* Binding event to minimized window */
-        windowSystem.on("dblclick", ".minimized-icon", maximizeWindow);
+        windowSystem.on("dblclick", ".minimized-icon", function(event){
+            var panelID = ($(this)).attr("id").replace("icon-", "");
+            maximizeWindow(panelID);
+        });
+
+        /* Binding event to any click in a panel active respective node in tree view */
+        windowSystem.on('click', '.panel', function(event){
+            console.log($(event.target));
+            var isMinimizeButton = $(event.target).hasClass('btn-minimize') || $(event.target).hasClass('glyphicon-minus');
+            console.log(isMinimizeButton);
+            if(isMinimizeButton)
+                return;
+            console.log("clicou no painel")
+            var id = $(this)[0].id;
+            selectNodeSideBarByPanel(id);
+        });
 
         /* Avoid to close settings menu */
         windowSystem.on('click', '.panel-settings', function(event){

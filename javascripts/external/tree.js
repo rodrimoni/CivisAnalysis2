@@ -56,24 +56,25 @@ Tree.prototype.traverseBF = function(callback) {
 Tree.prototype.createJsonTree = function (){
     var queue = new Queue();
     queue.enqueue(this._root);
-    var jsonTree = [{text: this._root.title, icon: "custom-icon icon-time-line"}];
+    var jsonTree = [{text: this._root.title, icon: "custom-icon icon-time-line", panel: this._root.data, state:{selected: true}}];
     var currentTree = queue.dequeue();
     var count = 0;
 
-    while(currentTree){
+    while(currentTree) {
         for (var i = 0, length = currentTree.children.length; i < length; i++) {
             queue.enqueue(currentTree.children[i]);
+            var currentNodeData = currentTree.children[i];
             if (currentTree.depth === 1)
             {
                 if (jsonTree[0].nodes === undefined)
                     jsonTree[0].nodes = [];
-                jsonTree[0].nodes.push({text: currentTree.children[i].title, icon: getChartIcon(currentTree.children[i].typeChart)})
+                jsonTree[0].nodes.push({text: currentNodeData.title, icon: getChartIcon(currentNodeData.typeChart), panel: currentNodeData.data })
             }
             else if (currentTree.depth === 2)
             {
                 if (jsonTree[0].nodes[count].nodes === undefined)
                     jsonTree[0].nodes[count].nodes = [];
-                jsonTree[0].nodes[count].nodes.push({text: currentTree.children[i].title, icon: getChartIcon(currentTree.children[i].typeChart)})
+                jsonTree[0].nodes[count].nodes.push({text: currentNodeData.title, icon: getChartIcon(currentNodeData.typeChart), panel: currentNodeData.data })
             }
         }
         if (currentTree.depth === 2)

@@ -73,7 +73,7 @@ h2 {
 }
 
 .panel-subtitle {
-    margin-left: 24px;
+    margin-left: 34px;
     font-size: 14px;
 }
 
@@ -148,7 +148,7 @@ a{
     border: 0 none;
     box-shadow: -3px 3px 15px #888888;
     text-align: center;
-    z-index: 99;
+    z-index: 9999;
     line-height: 1;
     font-weight: bold;
     padding: 12px;
@@ -168,7 +168,7 @@ a{
     border: 0 none;
     box-shadow: -3px 3px 15px #888888;
     text-align: justify;
-    z-index: 99;
+    z-index: 9999;
     line-height: 1;
     font-weight: normal;
     font-size: 11px;
@@ -179,7 +179,7 @@ a{
 }
 
 .toolTipCluster{
-    z-index: 98;
+    z-index: 9998;
 }
 
 /* Start by setting display:none to make this hidden.
@@ -190,7 +190,7 @@ a{
 .panel .modal {
     display:    none;
     position:   relative;
-    z-index:    1000;
+    z-index:    9999;
     top:        0;
     left:       0;
     height:     100%;
@@ -213,7 +213,7 @@ a{
 #loading {
     height: 200%;
     width: 100%;
-    z-index: 1000;
+    z-index: 9999;
     position: absolute;
     top: 0;
     visibility: hidden;
@@ -380,6 +380,13 @@ line-height: normal;
     -webkit-font-smoothing: antialiased;
 }
 
+.title-icon {
+    margin-right: 5px;
+    padding: 12px;
+    border-style: solid;
+    border-width: 2px;
+}
+
 .minimized-icon {
     position: absolute;
     padding: 12px;
@@ -451,3 +458,4 @@ line-height: normal;
 .icon-force-layout.minimized-icon {
     background-color: white;
 }
+
