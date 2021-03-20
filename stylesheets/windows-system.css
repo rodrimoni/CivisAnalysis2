@@ -347,15 +347,17 @@ line-height: normal;
   .openbtn {
     font-size: 20px;
     cursor: pointer;
-    background-color: #111;
-    color: white;
+    color: #333;
+    background-color: #fff;
+    border-color: #ccc;
     padding: 10px 15px;
-    border: none;
   }
   
   .openbtn:hover {
-    background-color: #444;
-  }
+    color: #333;
+    background-color: #e6e6e6;
+    border-color: #adadad;
+}
 
 .fa-window-maximize{
     background: white;
@@ -459,19 +461,11 @@ line-height: normal;
     background-color: white;
 }
 
-.hierarchy-white-transparent-icon {
-    position: relative;
-    top: 5px;
-    display: inline-block;
-    height: 50px;
-    width: 50px;
-    background: url("../images/icons/hierarchy-icon-white-transparent.png");
-}
-
 .hierarchy-black-transparent-icon {
-    top: 0px;
     background: url("../images/icons/hierarchy-black-transparent.png");
 }
+
+
 
 .panel::after{
     content: "";

@@ -178,7 +178,7 @@
 </div>
 
 <div id="mySidebar" class="sidebar">
-    <h2><i class="icon node-icon custom-icon hierarchy-black-transparent-icon"></i> Treeview</h2>
+    <h2><i class="icon node-icon custom-icon hierarchy-black-transparent-icon" style ="top:0px"></i> Treeview</h2>
     <div id="tree"></div>
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
 </div>
@@ -214,7 +214,10 @@
       </div>
 
 <div id = "navbar">
-    <button id ="openNavBtn" class="openbtn" onclick="openNav()"><i class="hierarchy-white-transparent-icon"></i></button><h2>CivisAnalysis 2.0</h2>
+    <button id ="openNavBtn" class="openbtn btn" onclick="openNav()">
+        <i class="custom-icon hierarchy-black-transparent-icon"></i>
+    </button>
+    <h2 style=" position: relative; top: 10px; ">CivisAnalysis 2.0</h2>
     <label id="selectLabel" for="selStates"></label>
     <select class="selectpicker" title= "Choose one of the following...>" multiple id="selStates">
         <option value="AC">Acre</option>
