@@ -6,7 +6,7 @@ h2 {
 #navbar #resetBtn, #navbar #match {
     margin-right: 30px;
     float: right;
-    margin-top: 20px;
+    margin-top: 36px;
 }
 
 #selectLabel {
@@ -465,8 +465,6 @@ line-height: normal;
     background: url("../images/icons/hierarchy-black-transparent.png");
 }
 
-
-
 .panel::after{
     content: "";
     border-radius: 5px;
@@ -484,6 +482,20 @@ line-height: normal;
   
 .panel:hover::after {
       opacity: 1;
+}
+
+#system-title {
+    display: inline;
+    position: relative;
+    top: 10px;
+    left: 36%;
+}
+
+#statesFilter {
+    display: inline;
+    position: relative;
+    left: 48%;
+    top: 10px;
 }
 
 @-webkit-keyframes fadein {
