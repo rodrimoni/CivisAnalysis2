@@ -6,7 +6,7 @@ h2 {
 #navbar #resetBtn, #navbar #match {
     margin-right: 30px;
     float: right;
-    margin-top: 36px;
+    margin-top: 44px;
 }
 
 #selectLabel {
@@ -15,6 +15,10 @@ h2 {
 
 #navbar {
     margin-bottom: 20px;
+    display: block;
+    background-color: #E9E9ED;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #ccc!important;
 }
 
 .panel {
@@ -488,13 +492,18 @@ line-height: normal;
     display: inline;
     position: relative;
     top: 10px;
-    left: 36%;
+    left: 30%;
+}
+
+#system-title h2 {
+    color: #5C5C5C;
+    font-size: 40px;
 }
 
 #statesFilter {
     display: inline;
     position: relative;
-    left: 48%;
+    left: 44%;
     top: 10px;
 }
 
