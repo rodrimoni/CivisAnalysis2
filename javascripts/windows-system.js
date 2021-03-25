@@ -15,7 +15,7 @@ var ICON_HEIGHT = 24;
 var ICON_WIDTH  = 24;
 
 /* Constant to define the sidebar size */
-var SIDEBAR_OFFSET = 250;
+var SIDEBAR_OFFSET = 400;
 
 /* Constant to define the charts */
 var TIME_LINE                   = 0;
@@ -801,7 +801,7 @@ function createNewChild(currentId, chartObj) {
     if (currentId === TIME_LINE)
     {
         newID = "panel-1-1";
-        newElem = newElem = $('<div '+ 'id="' + newID + '" class="panel panel-default"> <div class="panel-heading clearfix"> <h6 class="panel-title pull-left" style="padding-top: 7.5px;"></h6> <div class="btn-group"> <button class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button></div></div><div class="panel-body center-panel"></div></div>').css({"position": "absolute"});
+        newElem = newElem = $('<div '+ 'id="' + newID + '" class="panel panel-selected panel-default"> <div class="panel-heading clearfix"> <h6 class="panel-title pull-left" style="padding-top: 7.5px;"></h6> <div class="btn-group"> <button disabled class="btn btn-default btn-remove"><i class="glyphicon glyphicon-remove"></i></button> <button class="btn btn-default btn-minimize"><i class="glyphicon glyphicon-minus"></i></button></div></div><div class="panel-body center-panel"></div></div>').css({"position": "absolute"});
 
         $(".container").append(newElem);
 
@@ -1445,25 +1445,35 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
 function createNewIcon(panelID)
 {
     var panelCenter = getCenter(panelID);
-    var typeChart = tree.getNode(panelID, tree.traverseBF).typeChart;
-
-    /* Getting the workspace SVG */
-    var workspace = $("#workspace");
-    var containerOffset = $('.container').offset();
+    var node = tree.getNode(panelID, tree.traverseBF);
+    var typeChart = node.typeChart;
+    var iconHoverText = node.title;
 
     $(".container").append(
-        '<span id= "icon-' + panelID + '" class="'+ getChartIcon(typeChart) + ' minimized-icon"></span>'
+        '<a id= "icon-' + panelID + '" class="'+ getChartIcon(typeChart) + ' minimized-icon"></a>'
     );
+
+    $("#icon-"+panelID).attr(popoverAttrFocus(function() { 
+        return iconHoverText; 
+    },'top'));
+
+    $("#icon-"+panelID).popover({trigger:"focus"});
 
     $("#icon-"+panelID)
         .draggable({
             stack: ".panel, .custom-icon",
             containment: getContainmentArray(ICON_WIDTH, ICON_HEIGHT, isSideBarActive()),
+            start: function() {
+                //hide tooltip
+                $(this).blur();                
+            },
             drag: function() {
                 centerLine(panelID, true);
             },
             stop:function() {
                 centerLine(panelID, true);
+                //hide tooltip
+                $(this).blur();
             }
         })
         .css({

@@ -7,18 +7,17 @@
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-
     <!-- jQuery library -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
-
-    <!-- jQueryUI library -->
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 
     <!-- Latest compiled Bootstrap JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.js"></script>
+
+    <!-- jQueryUI library -->
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
     <!-- D3 library -->
     <script type="text/javascript" src="javascripts/external/d3v3.min.js"></script>
@@ -214,52 +213,65 @@
       </div>
 
 <div id = "navbar">
-    <button id ="openNavBtn" class="openbtn btn" onclick="openNav()">
-        <i class="custom-icon hierarchy-black-transparent-icon"></i>
-    </button>
-    <div id = "system-title"><h2>CivisAnalysis 2.0</h2></div>
-    <div id ="statesFilter">
-        <label id="selectLabel" for="selStates"></label>
-        <select class="selectpicker" title= "Choose one of the following...>" multiple id="selStates">
-            <option value="AC">Acre</option>
-            <option value="AL">Alagoas</option>
-            <option value="AP">Amapá</option>
-            <option value="AM">Amazonas</option>
-            <option value="BA">Bahia</option>
-            <option value="CE">Ceará</option>
-            <option value="DF">Distrito Federal</option>
-            <option value="ES">Espírito Santo</option>
-            <option value="GO">Goiás</option>
-            <option value="MA">Maranhão</option>
-            <option value="MT">Mato Grosso</option>
-            <option value="MS">Mato Grosso do Sul</option>
-            <option value="MG">Minas Gerais</option>
-            <option value="PA">Pará</option>
-            <option value="PB">Paraíba</option>
-            <option value="PR">Paraná</option>
-            <option value="PE">Pernambuco</option>
-            <option value="PI">Piauí</option>
-            <option value="RJ">Rio de Janeiro</option>
-            <option value="RN">Rio Grande do Norte</option>
-            <option value="RS">Rio Grande do Sul</option>
-            <option value="RO">Rondônia</option>
-            <option value="RR">Roraima</option>
-            <option value="SC">Santa Catarina</option>
-            <option value="SP">São Paulo</option>
-            <option value="SE">Sergipe</option>
-            <option value="TO">Tocantins</option>
-        </select>
-        <button id = "statesBtn" type="button" class="btn btn-default trn">Apply filter</button>
+    <div class ='container-fluid'>
+        <div class = "row">
+            <div class="col-md-6">
+                <div id = "system-title"><h2>CivisAnalysis 2.0</h2>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div id ="statesFilter">
+                    <label id="selectLabel" for="selStates"></label>
+                    <select class="selectpicker" title= "Choose one of the following...>" multiple id="selStates">
+                        <option value="AC">Acre</option>
+                        <option value="AL">Alagoas</option>
+                        <option value="AP">Amapá</option>
+                        <option value="AM">Amazonas</option>
+                        <option value="BA">Bahia</option>
+                        <option value="CE">Ceará</option>
+                        <option value="DF">Distrito Federal</option>
+                        <option value="ES">Espírito Santo</option>
+                        <option value="GO">Goiás</option>
+                        <option value="MA">Maranhão</option>
+                        <option value="MT">Mato Grosso</option>
+                        <option value="MS">Mato Grosso do Sul</option>
+                        <option value="MG">Minas Gerais</option>
+                        <option value="PA">Pará</option>
+                        <option value="PB">Paraíba</option>
+                        <option value="PR">Paraná</option>
+                        <option value="PE">Pernambuco</option>
+                        <option value="PI">Piauí</option>
+                        <option value="RJ">Rio de Janeiro</option>
+                        <option value="RN">Rio Grande do Norte</option>
+                        <option value="RS">Rio Grande do Sul</option>
+                        <option value="RO">Rondônia</option>
+                        <option value="RR">Roraima</option>
+                        <option value="SC">Santa Catarina</option>
+                        <option value="SP">São Paulo</option>
+                        <option value="SE">Sergipe</option>
+                        <option value="TO">Tocantins</option>
+                    </select>
+                    <button id = "statesBtn" type="button" class="btn btn-default trn">Apply filter</button>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button id = "resetBtn" type="button" class="btn btn-default trn">Reset all selections</button>
+                <label style = "display:none"> <input id="match" type="checkbox"> Match Deputies </label>
+            </div>
+            <!--
+            <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#languageModal" data-backdrop="static" data-keyboard="false">Open Modal</button> 
+            -->
+        </div>
     </div>
-    <button id = "resetBtn" type="button" class="btn btn-default trn">Reset all selections</button>
-    <label style = "display:none"> <input id="match" type="checkbox"> Match Deputies </label>
-    <!--
-       <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#languageModal" data-backdrop="static" data-keyboard="false">Open Modal</button> 
-    -->
 </div>
 
+<div class="fab">
+    <button id ="openNavBtn" class="main openbtn" onclick="openNav()">
+        <i class="custom-icon hierarchy-white-transparent-icon"></i>
+    </button>
+</div>
 
-<div class="container ">
+<div class="container">
     <svg id ="workspace" width = "100%" height = "100%" class="svg-content-responsive"></svg>
     <!-- Secondary, outline button -->
     <ul id="contextMenuScatterPlot" class="dropdown-menu" role="menu" style="display:none" >
@@ -295,14 +307,12 @@
     function openNav() {
         document.getElementById("mySidebar").style.width = "400px";
         document.getElementById("windows-system").style.marginLeft = "400px";
-        $("#openNavBtn").hide();
         checkLimits(true);
     }
 
     function closeNav() {
         document.getElementById("mySidebar").style.width = "0";
         document.getElementById("windows-system").style.marginLeft= "0";
-        $("#openNavBtn").show();
         checkLimits(false);
     }
 
@@ -334,7 +344,9 @@
 
         /* Binding event to minimized window */
         windowSystem.on("dblclick", ".minimized-icon", function(event){
-            var panelID = ($(this)).attr("id").replace("icon-", "");
+            var iconID = ($(this)).attr("id");
+            var panelID = iconID.replace("icon-", "");
+            $("#"+iconID).blur();
             maximizeWindow(panelID);
             centerLine(panelID);
         });
@@ -365,6 +377,12 @@
         });
 
         windowSystem.on('click', '#statesBtn', selectByStates);
+
+        $("#openNavBtn").attr(popoverAttr(function() { 
+            return "Click to open Treeview" 
+        },'right'));
+
+        $('#openNavBtn').popover({ trigger: "hover" });
 
         windowSystem.on('click', '#pt-br', function() {
             language = PORTUGUESE;

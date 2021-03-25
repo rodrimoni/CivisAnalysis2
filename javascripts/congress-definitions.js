@@ -227,6 +227,13 @@ var CONGRESS_DEFINE = {
                     result:[0.0155]
                 }
             ]
+        },
+        56:{
+            name: "2018",
+            turns:2,
+            dates:[new Date(2018,10,7)],
+            alliances: [
+            ]
         }
     },
 

@@ -685,6 +685,19 @@ function popoverAttr(htmlContent,placement){
     }
 }
 
+function popoverAttrFocus(htmlContent,placement){
+    return {
+        cursor : 'pointer',
+        href:"javascript:",
+        'data-container':'body',
+        'data-content': htmlContent,
+        'data-html': true,
+        rel:"popover",
+        'data-placement': (placement)?placement:'bottom',
+        'data-trigger':"focus",
+    }
+}
+
 function resetSelection(){
     for (var key in deputyNodes){
         for (var index in deputyNodes[key])

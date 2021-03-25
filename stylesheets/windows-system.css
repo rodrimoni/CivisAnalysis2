@@ -4,13 +4,8 @@ h2 {
 }
 
 #navbar #resetBtn, #navbar #match {
-    margin-right: 30px;
-    float: right;
-    margin-top: 44px;
-}
-
-#selectLabel {
-    margin-left: 5%;
+    position: relative;
+    top: 40px;
 }
 
 #navbar {
@@ -87,8 +82,12 @@ i{
 
 a{
     cursor: pointer;
+    color: black;
 }
 
+a:hover, a:focus, a:active{
+    color: black;
+}
 
 .dropdown-submenu {
     position: relative;
@@ -316,6 +315,7 @@ line-height: normal;
     top: 0;
     left: 0;
     background-color: rgb(255, 255, 255);
+    box-shadow: 0 5px 15px 2px rgb(0 0 0 / 30%);
     overflow-x: hidden;
     transition: 0.5s;
     padding-top: 60px;
@@ -469,6 +469,10 @@ line-height: normal;
     background: url("../images/icons/hierarchy-black-transparent.png");
 }
 
+.hierarchy-white-transparent-icon {
+    background: url("../images/icons/hierarchy-icon-white-transparent-24x24.png");
+}
+
 .panel::after{
     content: "";
     border-radius: 5px;
@@ -488,11 +492,14 @@ line-height: normal;
       opacity: 1;
 }
 
+.panel.panel-selected::after {
+    opacity: 1;
+}
+
 #system-title {
     display: inline;
     position: relative;
     top: 10px;
-    left: 30%;
 }
 
 #system-title h2 {
@@ -501,35 +508,48 @@ line-height: normal;
 }
 
 #statesFilter {
-    display: inline;
-    position: relative;
-    left: 44%;
-    top: 10px;
+    float: right;
+    position:relative;
+    top:40px;
 }
 
-@-webkit-keyframes fadein {
-    from { opacity: 0; }
-    to { opacity: 1; }
+.fab {
+    position: fixed;
+    bottom:15px;
+    left:15px;
+    z-index: 1000;
+  }
+  
+.fab button{
+    cursor: pointer;
+    width: 48px;
+    height: 48px;
+    border-radius: 30px;
+    background-color: #cb60b3;
+    border: none;
+    box-shadow: 0 1px 5px rgba(0,0,0,.4);
+    font-size: 24px;
+    color: white;
+      
+    -webkit-transition: .2s ease-out;
+    -moz-transition: .2s ease-out;
+    transition: .2s ease-out;
+}
+  
+.fab button.main { 
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 30px;
+    background-color: #000000;
+    left: 0;
+    bottom: 0;
+    z-index: 20;
 }
 
-@-moz-keyframes fadein {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes fadein {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-.panel.panel-selected::after {
-    -webkit-animation: fadein 0.6s cubic-bezier(0.165, 0.84, 0.44, 1) alternate 2;
-    -moz-animation: fadein  0.6s cubic-bezier(0.165, 0.84, 0.44, 1) alternate 2;
-    animation: fadein  0.6s cubic-bezier(0.165, 0.84, 0.44, 1) alternate 2;
-}
-
-.panel.panel-selected:hover::after {
-    -webkit-animation: fadein 0s cubic-bezier(0.165, 0.84, 0.44, 1) alternate 2;
-    -moz-animation: fadein  0s cubic-bezier(0.165, 0.84, 0.44, 1) alternate 2;
-    animation: fadein  0s cubic-bezier(0.165, 0.84, 0.44, 1) alternate 2;
-}
+.fab button.main:hover,
+.fab button.main:focus{
+  outline: none;
+  background-color: #131212;
+  box-shadow: 0 3px 8px rgba(0,0,0,1);
+ }
