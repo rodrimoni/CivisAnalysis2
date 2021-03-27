@@ -1,6 +1,4 @@
 function rollCallsHeatmap(){
-
-
     var outerWidth = MAX_WIDTH,
         outerHeight = MAX_HEIGHT;
     margin = {top: 60, right: 0, bottom: 20, left: 10};
@@ -30,6 +28,7 @@ function rollCallsHeatmap(){
     var svg;
     var parentID;
     var panelID;
+    var heatMapMode;
 
     var itemWidth, itemHeight;
 
@@ -419,6 +418,14 @@ function rollCallsHeatmap(){
             .style("fill", function(d) { return setRollCallFill(d); })
             .style("stroke-width", function (d) { return (d.hovered) ? "6px" : "2px"; })
             .attr("class", function (d) {return (d.selected)? "rollCall bordered selected": ( (d.hovered)? "rollCall bordered hovered" : "rollCall bordered"); });
+    };
+
+    chart.setHeatMapMode = function (mode) {
+        heatMapMode = mode;
+    };
+
+    chart.getHeatMapMode = function () {
+       return heatMapMode;
     };
 
     chart.selectRollCallBySearch = function (id)

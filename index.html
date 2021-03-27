@@ -177,9 +177,10 @@
 </div>
 
 <div id="mySidebar" class="sidebar">
-    <h2><i class="icon node-icon custom-icon hierarchy-black-transparent-icon" style ="top:0px"></i> Treeview</h2>
+    <div class ="sidebar-title">
+        <h2><i class="icon node-icon custom-icon hierarchy-black-transparent-icon" style ="top:0px"></i> Treeview</h2>
+    </div>
     <div id="tree"></div>
-    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
 </div>
 
 <!-- Modal -->
@@ -266,9 +267,7 @@
 </div>
 
 <div class="fab">
-    <button id ="openNavBtn" class="main openbtn" onclick="openNav()">
-        <i class="custom-icon hierarchy-white-transparent-icon"></i>
-    </button>
+    <button id ="openNavBtn" class="main openbtn" onclick="toogleNav()">></button>
 </div>
 
 <div class="container">
@@ -304,15 +303,27 @@
     /* Getting the document body */
     var windowSystem = $("#windows-system");
 
+    function toogleNav()
+    {
+        if ($("#mySidebar").width() > 0)
+            closeNav();
+        else
+            openNav();
+    }
+
     function openNav() {
-        document.getElementById("mySidebar").style.width = "400px";
-        document.getElementById("windows-system").style.marginLeft = "400px";
+        document.getElementById("mySidebar").style.width = SIDEBAR_OFFSET + "px";
+        document.getElementById("windows-system").style.marginLeft = SIDEBAR_OFFSET + "px";
+        document.getElementById("openNavBtn").style.marginLeft = SIDEBAR_OFFSET + "px";
+        $("#openNavBtn").html("<");
         checkLimits(true);
     }
 
     function closeNav() {
         document.getElementById("mySidebar").style.width = "0";
         document.getElementById("windows-system").style.marginLeft= "0";
+        document.getElementById("openNavBtn").style.marginLeft = "0";
+        $("#openNavBtn").html(">");
         checkLimits(false);
     }
 

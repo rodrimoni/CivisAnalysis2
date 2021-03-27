@@ -318,7 +318,6 @@ line-height: normal;
     box-shadow: 0 5px 15px 2px rgb(0 0 0 / 30%);
     overflow-x: hidden;
     transition: 0.5s;
-    padding-top: 60px;
   }
   
   .sidebar a {
@@ -344,7 +343,7 @@ line-height: normal;
 
   .sidebar h2 {
     position: absolute;
-    top: 0;
+    top: 15px;
     margin-left: 10px;
   }
   
@@ -354,7 +353,7 @@ line-height: normal;
     color: #333;
     background-color: #fff;
     border-color: #ccc;
-    padding: 10px 15px;
+    padding: 0px;
   }
   
   .openbtn:hover {
@@ -515,7 +514,7 @@ line-height: normal;
 
 .fab {
     position: fixed;
-    bottom:15px;
+    top:15px;
     left:15px;
     z-index: 1000;
   }
@@ -524,7 +523,6 @@ line-height: normal;
     cursor: pointer;
     width: 48px;
     height: 48px;
-    border-radius: 30px;
     background-color: #cb60b3;
     border: none;
     box-shadow: 0 1px 5px rgba(0,0,0,.4);
@@ -538,18 +536,25 @@ line-height: normal;
   
 .fab button.main { 
     position: absolute;
-    width: 60px;
+    width: 25px;
     height: 60px;
-    border-radius: 30px;
     background-color: #000000;
-    left: 0;
-    bottom: 0;
+    left: -15px;
+    top: 450px;
     z-index: 20;
+    transition: margin-left .5s;
 }
 
-.fab button.main:hover,
-.fab button.main:focus{
-  outline: none;
-  background-color: #131212;
-  box-shadow: 0 3px 8px rgba(0,0,0,1);
+.fab button.main:hover {
+    color:white;
+    outline: none;
+    background-color: #18171b;
+    box-shadow: 0 3px 8px rgba(0,0,0,1);
  }
+
+.sidebar-title {
+    height: 95px;
+    background-color: #e9e9ed;
+    border-bottom: 1px solid #ccc!important;
+    margin-bottom: 1px;
+}

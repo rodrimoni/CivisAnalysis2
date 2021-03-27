@@ -174,6 +174,7 @@ function initializeChart(newID, chartObj) {
             chart = rollCallsHeatmap();
             deputyNodes[newID] = currentDeputies;
             rollCallsRates[newID] = currentRollCalls;
+            setVotesForSelectedDeputies(newID);
             addConfigMenu(newID, 'rollCallsHeatmap', false);
             var rollCallsTypeAhead = addSearchRollCallMenu(newID, chartObj.data);
             addFilterMotionTypeMenu(newID, chartObj.data, rollCallsTypeAhead);
@@ -1428,6 +1429,7 @@ function handleContextMenuDeputy(invokedOn, selectedMenu)
                 prettyTitle = "Map of Roll Calls: " + firstYear +  " to " + lastYear;
             }
 
+            setVotesForSelectedDeputies(panelID);
             // Get the corresponding rollcalls to this deputyNodes set
             var rcs =  rollCallsRates[panelID];
             rcs.map(function (e) {
@@ -1856,42 +1858,46 @@ function updateRollCalls(parentID) {
     updateVisualizations();
 }
 
+function setVotesForSelectedDeputies(panelID)
+{
+    var selectedDeputies    = [];
+    var hoveredDeputies     = [];
+
+    deputyNodes[panelID].forEach(function (deputy) {
+        if(deputy.selected) selectedDeputies.push(deputy);
+        if(deputy.hovered) hoveredDeputies.push(deputy);
+    });
+
+    // Update Roll Calls Votes accordingly deputies individual votes
+    rollCallsRates[panelID].forEach(function (rollCall) {
+        rollCall.vote = null;
+        rollCall.rate = null;
+    });
+
+    // show the votes of one deputy
+    if( (hoveredDeputies.length === 1) || (selectedDeputies.length===1) ){
+        // get the deputy id
+        var deputy = (hoveredDeputies.length === 1)? hoveredDeputies[0] : selectedDeputies[0];
+        // set the deputy vote for each rollCall
+        rollCallsRates[panelID].forEach( function(rollCall){
+            rollCall.vote = 'null';
+            rollCall.votes.forEach( function(vote){
+                if(vote.deputyID === deputy.deputyID){
+                    rollCall.vote = vote.vote;
+                }
+            })
+        });
+    } else {
+        calcRollCallRate(rollCallsRates[panelID],selectedDeputies);
+    }
+}
+
 function updateDeputies(panelID) {
-    var node = tree.getNode(panelID, tree.traverseBF);
+    //var node = tree.getNode(panelID, tree.traverseBF);
 
-    node.children.forEach(function (value) {
+    tree.traverseBF(function (value) {
         if (value.typeChart === ROLLCALLS_HEATMAP) {
-
-            var selectedDeputies    = [];
-            var hoveredDeputies     = [];
-
-            deputyNodes[panelID].forEach(function (deputy) {
-                if(deputy.selected) selectedDeputies.push(deputy);
-                if(deputy.hovered) hoveredDeputies.push(deputy);
-            });
-
-            // Update Roll Calls Votes accordingly deputies individual votes
-            rollCallsRates[panelID].forEach(function (rollCall) {
-                rollCall.vote = null;
-                rollCall.rate = null;
-            });
-
-            // show the votes of one deputy
-            if( (hoveredDeputies.length === 1) || (selectedDeputies.length===1) ){
-                // get the deputy id
-                var deputy = (hoveredDeputies.length === 1)? hoveredDeputies[0] : selectedDeputies[0];
-                // set the deputy vote for each rollCall
-                rollCallsRates[panelID].forEach( function(rollCall){
-                    rollCall.vote = 'null';
-                    rollCall.votes.forEach( function(vote){
-                        if(vote.deputyID === deputy.deputyID){
-                            rollCall.vote = vote.vote;
-                        }
-                    })
-                });
-            } else {
-                calcRollCallRate(rollCallsRates[panelID],selectedDeputies);
-            }
+            setVotesForSelectedDeputies(panelID);
         }
     });
 
