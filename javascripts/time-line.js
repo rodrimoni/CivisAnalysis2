@@ -373,7 +373,6 @@ d3.chart.timeline = function() {
                 sumDistances+=distances[i];
                 sumDeputies+=partiesInPeriod[i].size;
             }
-            console.log(partiesInPeriod);
             sumDeputies+=partiesInPeriod[partiesInPeriod.length-1].size;
             // save half of the spectrum to show the parties
             var partiesPixels = (sumDeputies/513) * (pixelPercentageToParties * (height));

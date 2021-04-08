@@ -103,6 +103,9 @@
     <!-- Scale Adjustment Functions -->
     <script src="javascripts/scaleAdjustment.js"></script>
 
+    <!-- Project dealing Functions -->
+    <script src="javascripts/project.js"></script>
+
     <!-- TSNe Functions -->
     <script src="javascripts/external/tsne.js"></script>
 
@@ -122,7 +125,7 @@
     <link rel="stylesheet" href="stylesheets/windows-system.css">
 
     <!-- Font Awesome CSS -->
-    <link rel="stylesheet" href="stylesheets/font-awesome.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css" integrity="sha384-SZXxX4whJ79/gErwcOYf+zWLeJdY/qpuqC4cAa9rOGUstPomtqpuNWT9wdPEn2fk" crossorigin="anonymous">
 
     <!-- Scatter Plot CSS -->
     <link rel="stylesheet" href="stylesheets/scatter-plot.css">
@@ -216,7 +219,7 @@
 <div id = "navbar">
     <div class ='container-fluid'>
         <div class = "row">
-            <div class="col-md-6">
+            <div class="col-md-5">
                 <div id = "system-title"><h2>CivisAnalysis 2.0</h2>
                 </div>
             </div>
@@ -255,9 +258,24 @@
                     <button id = "statesBtn" type="button" class="btn btn-default trn">Apply filter</button>
                 </div>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-1">
                 <button id = "resetBtn" type="button" class="btn btn-default trn">Reset all selections</button>
                 <label style = "display:none"> <input id="match" type="checkbox"> Match Deputies </label>
+            </div>
+            <div class="col-md-1">
+                <!-- Single button -->
+                <div class="btn-group" style ="top:40px; float: right;">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="fas fa-project-diagram"></span> Project <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                    <li><a onclick="saveProjectFile(); return false;"><span class="fas fa-download" aria-hidden="true"></span> Save project</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li>
+                        <a id="loadBtn"><span class="fas fa-cloud-upload-alt" aria-hidden="true"></span> Load project</a>
+                    </li>
+                    </ul>
+                </div>
             </div>
             <!--
             <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#languageModal" data-backdrop="static" data-keyboard="false">Open Modal</button> 
@@ -266,8 +284,8 @@
     </div>
 </div>
 
-<div class="fab">
-    <button id ="openNavBtn" class="main openbtn" onclick="toogleNav()">></button>
+<div class="float-action-button">
+    <button id ="openNavBtn" class="main openbtn" onclick="toogleNav(); return false;">></button>
 </div>
 
 <div class="container">
@@ -326,6 +344,18 @@
         $("#openNavBtn").html(">");
         checkLimits(false);
     }
+
+    function saveProjectFile() {
+        saveProject(tree.getJsonTree());
+    }
+
+    let fileHandle;
+    document.getElementById("loadBtn").addEventListener('click', async () => {
+        [fileHandle] = await window.showOpenFilePicker();
+        const file = await fileHandle.getFile();
+        const contents = await file.text();
+        loadProject(JSON.parse(contents));
+    });
 
     /* Initialization of System */
     $(document).ready(function(){

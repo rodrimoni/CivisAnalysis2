@@ -6,6 +6,7 @@ function Node(data) {
     this.id         = 1;
     this.chart      = null;
     this.typeChart  = null;
+    this.args       = null;
     this.title      = "";
 }
 
@@ -56,9 +57,10 @@ Tree.prototype.traverseBF = function(callback) {
 Tree.prototype.createJsonTree = function (){
     var queue = new Queue();
     queue.enqueue(this._root);
-    var jsonTree = [{text: this._root.title, icon: "custom-icon icon-time-line", panel: this._root.data, state:{selected: true}}];
+    var jsonTree = [{text: this._root.title, icon: "custom-icon icon-time-line", nodes: [], panel: this._root.data, chart: {typeChart: TIME_LINE, args:[]}, state:{selected: true}}];
     var currentTree = queue.dequeue();
     var count = 0;
+    var chartObj = {};
 
     while(currentTree) {
         for (var i = 0, length = currentTree.children.length; i < length; i++) {
@@ -66,15 +68,13 @@ Tree.prototype.createJsonTree = function (){
             var currentNodeData = currentTree.children[i];
             if (currentTree.depth === 1)
             {
-                if (jsonTree[0].nodes === undefined)
-                    jsonTree[0].nodes = [];
-                jsonTree[0].nodes.push({text: currentNodeData.title, icon: getChartIcon(currentNodeData.typeChart), panel: currentNodeData.data })
+                chartObj = {typeChart: currentNodeData.typeChart, args: currentNodeData.args};
+                jsonTree[0].nodes.push({text: currentNodeData.title, icon: getChartIcon(currentNodeData.typeChart), nodes: [], chart: chartObj, panel: currentNodeData.data })
             }
             else if (currentTree.depth === 2)
             {
-                if (jsonTree[0].nodes[count].nodes === undefined)
-                    jsonTree[0].nodes[count].nodes = [];
-                jsonTree[0].nodes[count].nodes.push({text: currentNodeData.title, icon: getChartIcon(currentNodeData.typeChart), panel: currentNodeData.data })
+                chartObj = {typeChart: currentNodeData.typeChart, args: currentNodeData.args};
+                jsonTree[0].nodes[count].nodes.push({text: currentNodeData.title, icon: getChartIcon(currentNodeData.typeChart), nodes: [], chart: chartObj, panel: currentNodeData.data })
             }
         }
         if (currentTree.depth === 2)

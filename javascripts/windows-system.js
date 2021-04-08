@@ -536,25 +536,28 @@ function addEditTitleInput(newID)
     $("#" + newID + " .newTitle").on('keypress',function(e) {
         if(e.which == 13) {
             if ($(this).val())
-            {
+            {   
                 newTitle = $(this).val();
+                insertCustomTitle(newID, newTitle);
                 node.title = newTitle;
-                if ( $("#" + newID + " .custom-title").length >= 1)
-                    $("#" + newID + " .custom-title").remove();
-                
-                $("<span class='custom-title'>" + newTitle + "<br></span>").insertAfter("#" + newID + " .panel-title span.icon");
-                $("#" + newID + " .panel-title span").eq(2).addClass('panel-subtitle');
-                if($("#" + newID + " .panel-subtitle").length >= 2)
-                    $("#" + newID + " .panel-title span.title-icon").css("top", "25px");
-                else
-                    $("#" + newID + " .panel-title span.title-icon").css("top", "15px");
-                
             }
             updateSideBar();
         }
     });
 }
 
+function insertCustomTitle(newID, newTitle) {
+    if ( $("#" + newID + " .custom-title").length >= 1)
+        $("#" + newID + " .custom-title").remove();
+    
+    $("<span class='custom-title'>" + newTitle + "<br></span>").insertAfter("#" + newID + " .panel-title span.icon");
+    $("#" + newID + " .panel-title span").eq(2).addClass('panel-subtitle');
+    if($("#" + newID + " .panel-subtitle").length >= 2)
+        $("#" + newID + " .panel-title span.title-icon").css("top", "25px");
+    else
+        $("#" + newID + " .panel-title span.title-icon").css("top", "15px");
+}
+               
 function addSearchDeputyMenu(newID, deputies) {
     var placeholder = language === ENGLISH ? "Type a deputy name..." : "Digite o nome de um deputado..."
     $("#" + newID + " .panel-settings")
@@ -679,8 +682,6 @@ function removeDeputiesAndRollCalls(panelID) {
         delete deputyNodes[panelID];
         delete rollCallsRates[panelID];
     }
-    console.log(deputyNodes);
-    console.log(rollCallsRates);
 }
 
 /**
@@ -702,6 +703,7 @@ function removeChildren(node) {
             idToRemove = children[0].data;
             tree.remove(idToRemove, node.data, tree.traverseBF);
             removeLines(idToRemove);
+            removeDeputiesAndRollCalls(idToRemove);
             $("#"+ idToRemove).remove();
             $("#icon-"+ idToRemove).remove();
         }
@@ -903,6 +905,7 @@ function createNewChild(currentId, chartObj) {
 
         node.typeChart  = chartObj.chartID;
         node.title      = chartObj.prettyTitle;
+        node.args       = chartObj.args;
 
         /* Initialize charts */
         if (chartObj !== null)
@@ -1093,13 +1096,14 @@ function handleContextMenuScatterPlot(invokedOn, selectedMenu)
         }
 }
 
-function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechnique, type)
+function setUpScatterPlotData(filteredData, dimensionalReductionTechnique, type)
 {
-    var panelClass, title, prettyTitle;
+    var panelClass, title, prettyTitle, args ={'filteredData': filteredData, 'dimensionalReductionTechnique': dimensionalReductionTechnique};
 
     currentDeputies = [];
     currentRollCalls = [];
 
+    console.log(filteredData);
     var dataRange = setNewDateRange(filteredData);
 
     var matrixDistanceDeputies;
@@ -1114,7 +1118,7 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
             var nodesValues = d3.values(currentDeputies);
             var parties = calcPartiesSizeAndCenter(nodesValues);
             var data = {'deputies': nodesValues, 'partiesMap' : parties };
-            var chartObj = {'chartID': CHAMBER_INFOGRAPHIC, 'data': data, 'title': title, 'prettyTitle': prettyTitle, 'panelClass' : panelClass};
+            var chartObj = {'chartID': CHAMBER_INFOGRAPHIC, 'data': data, 'title': title, 'prettyTitle': prettyTitle, 'panelClass' : panelClass, 'args': args};
             createNewChild('panel-1-1', chartObj);
         };
     }
@@ -1126,7 +1130,8 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
                     'data': similarityGraph,
                     'title': title,
                     'prettyTitle': prettyTitle,
-                    'panelClass': panelClass
+                    'panelClass': panelClass,
+                    'args': args
                 };
                 createNewChild('panel-1-1', chartObj);
             };
@@ -1142,7 +1147,8 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
                         'data': currentDeputies,
                         'title': title,
                         'prettyTitle': prettyTitle,
-                        'panelClass': panelClass
+                        'panelClass': panelClass,
+                        'args': args
                     };
                     createNewChild('panel-1-1', chartObj);
                 };
@@ -1160,7 +1166,8 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
                         'data': currentRollCalls,
                         'title': title,
                         'prettyTitle': prettyTitle,
-                        'panelClass': panelClass
+                        'panelClass': panelClass,
+                        'args': args
                     }
                     createNewChild('panel-1-1', chartObj);
                 }
@@ -1286,8 +1293,8 @@ function setUpScatterPlotData(filteredData, panelID, dimensionalReductionTechniq
             }
             else
             {
-                alert("Roll calls not found for this period! Please try again with another start and end date.");
-                $('#loading').css('visibility', 'hidden');
+                /*alert("Roll calls not found for this period! Please try again with another start and end date.");
+                $('#loading').css('visibility', 'hidden');*/
             }
         }
         else {
@@ -1336,23 +1343,23 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
     var panelID = invokedOn.parents(".panel").attr('id');
 
     if (selectedMenu.context.id === "scatter-plot-pca") {
-        setUpScatterPlotData(filteredData, panelID, "PCA", SCATTER_PLOT);
+        setUpScatterPlotData(filteredData,"PCA", SCATTER_PLOT);
     }
     else
         if (selectedMenu.context.id === "chamber-infographic")
-            setUpScatterPlotData(filteredData, panelID, "PCA", CHAMBER_INFOGRAPHIC);
+            setUpScatterPlotData(filteredData,"PCA", CHAMBER_INFOGRAPHIC);
         else
             if (selectedMenu.context.id === "scatter-plot-mds")
-                setUpScatterPlotData(filteredData, panelID, "MDS", SCATTER_PLOT);
+                setUpScatterPlotData(filteredData, "MDS", SCATTER_PLOT);
             else
                 if (selectedMenu.context.id ==='scatter-plot-tsne')
-                    setUpScatterPlotData(filteredData, panelID, "t-SNE", SCATTER_PLOT);
+                    setUpScatterPlotData(filteredData, "t-SNE", SCATTER_PLOT);
                 else
                     if (selectedMenu.context.id === 'deputies-similarity-force')
-                        setUpScatterPlotData(filteredData, panelID, "MDS", DEPUTIES_SIMILARITY_FORCE);
+                        setUpScatterPlotData(filteredData, "MDS", DEPUTIES_SIMILARITY_FORCE);
                     else
                         if (selectedMenu.context.id === 'rollcalls-heatmap')
-                        setUpScatterPlotData(filteredData, panelID, "PCA", ROLLCALLS_HEATMAP);
+                        setUpScatterPlotData(filteredData, "PCA", ROLLCALLS_HEATMAP);
 }
 
 function handleContextMenuDeputy(invokedOn, selectedMenu)
@@ -1633,6 +1640,7 @@ function updateSideBar()
 
 function getTree() {
     tree.createJsonTree();
+    console.log(tree.getJsonTree());
     return tree.getJsonTree();
 }   
 

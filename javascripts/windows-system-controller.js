@@ -238,7 +238,7 @@ function setNewDateRange(period)
     var precalc = {found:false, id:''};
 
     CONGRESS_DEFINE.years.forEach( function(yearObj){
-        if(yearObj.period === period){
+        if(yearObj.period[0].getTime() === period[0].getTime() && yearObj.period[1].getTime() === period[1].getTime()){
             precalc.found = true;
             precalc.id = yearObj.name;
             precalc.type = 'year';
@@ -247,7 +247,7 @@ function setNewDateRange(period)
 
     if(!precalc.found)
         CONGRESS_DEFINE.legislatures.forEach( function(legislatureObj,i){
-            if(legislatureObj.period === period){
+            if(legislatureObj.period[0].getTime() === period[0].getTime() && legislatureObj.period[1].getTime() === period[1].getTime()){
                 precalc.found = true;
                 precalc.id = i;
                 precalc.type = 'legislature';
@@ -256,7 +256,7 @@ function setNewDateRange(period)
 
     if(!precalc.found)
         CONGRESS_DEFINE.presidents.forEach( function(presidentObj,i){
-            if(presidentObj.period === period){
+            if(presidentObj.period[0].getTime() === period[0].getTime() && presidentObj.period[1].getTime() === period[1].getTime()){
                 precalc.found = true;
                 precalc.id = i;
                 precalc.type = 'president';

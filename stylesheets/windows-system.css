@@ -512,14 +512,14 @@ line-height: normal;
     top:40px;
 }
 
-.fab {
+.float-action-button {
     position: fixed;
     top:15px;
     left:15px;
     z-index: 1000;
   }
   
-.fab button{
+.float-action-button button{
     cursor: pointer;
     width: 48px;
     height: 48px;
@@ -534,7 +534,7 @@ line-height: normal;
     transition: .2s ease-out;
 }
   
-.fab button.main { 
+.float-action-button button.main { 
     position: absolute;
     width: 25px;
     height: 60px;
@@ -545,7 +545,7 @@ line-height: normal;
     transition: margin-left .5s;
 }
 
-.fab button.main:hover {
+.float-action-button button.main:hover {
     color:white;
     outline: none;
     background-color: #18171b;
