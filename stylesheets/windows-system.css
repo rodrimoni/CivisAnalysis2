@@ -213,10 +213,40 @@ a:hover, a:focus, a:active{
     display: block;
 }
 
-#loading {
+#loading-project {
     height: 200%;
     width: 100%;
     z-index: 9999;
+    position: absolute;
+    top: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .5s;
+}
+
+#loading-project #greyScreen-project{
+    height: 100%;
+    width: 100%;
+    background-color: black;
+    position: absolute;
+    opacity: 1;
+}
+
+#loading-project .gif {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    top: 20%;
+    color: white;
+    text-align: center;
+    font-size: xx-large;
+}
+
+#loading {
+    height: 200%;
+    width: 100%;
+    z-index: 9000;
     position: absolute;
     top: 0;
     visibility: hidden;

@@ -1,3 +1,10 @@
+/*  The parameter 'matrixDepXRollCall' is a matrix N x M where N is the number of deputies and M is the number of roll calls, each cell represents one vote.
+    Vote values are defined as follows: 1 for Yes, -1 for No, and 0 when the deputy was absent, obstructed, or there is no data.
+    To obtain PCA-based spectrum, the SVD method is applied to matrix R (recorded votes), producing the following matrices:
+    The matrix U is a 513 x N real unitary matrix, V is an N x N real unitary matrix, and S is a rectangular diagonal 
+    matrix of singular values. To calculate the bidimensional deputies spectrum we multiply the two largest singular values found in S by the 
+    left-singular vectors of U. 
+*/
 function calcSVD(matrixDepXRollCall,endCalcCallback){
     // -----------------------------------------------------------------------------------------------------------------
     // CALC the Singular Value Decomposition (SVD) ---------------------------------------------------------------------
@@ -35,6 +42,10 @@ function calcSVD(matrixDepXRollCall,endCalcCallback){
     var result = {deputies: data_deputies, voting: data_voting};
     endCalcCallback(result);
 }
+
+/*  The parameter 'matrixDepXRollCall' is a matrix N x M where N is the number of deputies and M is the number of roll calls, each cell represents one vote.
+    Vote values are defined as follows: 1 for Yes, -1 for No, and 0 when the deputy was absent, obstructed, or there is no data.
+*/
 
 function calcTSNE(matrixDepXRollCall,endCalcCallback){
     // -----------------------------------------------------------------------------------------------------------------
@@ -82,6 +93,21 @@ function calcTSNE(matrixDepXRollCall,endCalcCallback){
     // return {deputies: data_deputies, voting: data_voting};
 }
 
+/*  MDS requires a dissimilarity matrix as input, so we have to apply a function to calculate the distance between representatives. 
+    The result is a dissimilarity matrix D(N x N) where N = 513 deputies and the D[m,n] value represents the dissimilarity between the mth and the nth deputies.  
+    We first count the number of matching votes between each pair of deputies, i.e., if the deputies' votes for a determined roll call are equal, we increase the number of matching votes for the pair. 
+    Matching votes are saved in a matrix N x N, then we calculate the correspondent percentage of each match according to the total number of votes in the given period, which yields a matrix A (N x N), 
+    where A[m,n] element is the percentage of matching votes between the mth and nth deputies. Finally, the "distance" between any two deputies is calculated according to:
+    D[m,n] = 0,  if m = n,
+    D[m,n] = 100 - A[m,n], otherwise.
+
+    Classical MDS uses the fact that the coordinate matrix X can be derived by eigenvalue decomposition from B=XX'. And the matrix B can be computed from proximity matrix D by using double centering.
+    Set up the squared proximity matrix  D^(2) = d[i,j]^2   
+    Apply double centering: B=-1/2 using the centering matrix C= I - 1/N * Jn, where n is the number of objects, I is the n x n identity matrix, and Jn is an n x n matrix of all ones.
+    Determine the m largest eigenvalues and corresponding eigenvectors  B (where m is the number of dimensions desired for the output, in our case m = 2).
+    Now, X = Em*Am^2 , where Em is the matrix of m eigenvectors and Am is the diagonal matrix of m eigenvalues of B. 
+    Source: (Wickelmaier, Florian. "An introduction to MDS." Sound Quality Research Unit, Aalborg University, Denmark (2003): 46)
+*/
 function calcMDS(matrixDistancesDepXDep,endCalcCallback){
     // -----------------------------------------------------------------------------------------------------------------
     // CALC the multidimensional dimensional scaling  (MDS) ------------------------------------------------------------

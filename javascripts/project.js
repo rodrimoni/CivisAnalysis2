@@ -4,7 +4,10 @@ function loadProject (jsonTree) {
     if (node.children.length > 0)
         removeChildren(node);
 
-     readJsonTree(jsonTree);
+    $('#loading-project #msg-project').text("Loading Data from project");
+    $('#loading-project').css('visibility', 'visible');
+    $('#loading-project').css('opacity', 1);
+    readJsonTree(jsonTree);
 }
 
 function saveProject(projectTree) {
@@ -20,29 +23,40 @@ function download(content, fileName, contentType) {
 }
 
 function readJsonTree(jsonTree) {
-    traverseBFJsonTree(jsonTree[0], readChart)
+    traverseBFJsonTree(jsonTree[0])
 }
 
-function traverseBFJsonTree (root, callback) {
+function traverseBFJsonTree (root) {
     var queue = new Queue();
     queue.enqueue(root);
 
     var currentTree = queue.dequeue();
-    while(currentTree){
-        for (var i = 0, length = currentTree.nodes.length; i < length; i++) {
-            queue.enqueue(currentTree.nodes[i]);
+    (async function loop() {
+        while(1){
+            if (!currentTree)
+            {
+                await new Promise(resolve => setTimeout(resolve, 5000));
+                $('#loading-project').css('opacity', 0);
+                $('#loading-project').css('visibility', 'hidden');
+                return;
+            }
+            for (var i = 0, length = currentTree.nodes.length; i < length; i++) {
+                queue.enqueue(currentTree.nodes[i]);
+            }
+            await new Promise(resolve => setTimeout(resolve, 5000));
+            readChart(currentTree); 
+            currentTree = queue.dequeue();
         }
-        callback(currentTree);
-        currentTree = queue.dequeue();
-    }
+    })();
 };
 
-function readChart(node) 
+
+function readChart(node)
 {
     let chart = node.chart;
-    if (chart.typeChart === SCATTER_PLOT)
+    if (chart.typeChart === SCATTER_PLOT || chart.typeChart === CHAMBER_INFOGRAPHIC || chart.typeChart === ROLLCALLS_HEATMAP || chart.typeChart === DEPUTIES_SIMILARITY_FORCE)
     {
         chart.args.filteredData = [new Date(chart.args.filteredData[0]), new Date(chart.args.filteredData[1])];
         setUpScatterPlotData(chart.args.filteredData, chart.args.dimensionalReductionTechnique, chart.typeChart);
-    }
+    } 
 }

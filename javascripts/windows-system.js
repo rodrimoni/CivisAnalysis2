@@ -90,7 +90,7 @@ function initSystem() {
     loadDeputiesNodesByYear(deputiesNodesByYear);
     loadRollCalls(arrayRollCalls, function () {
         createNewChild(TIME_LINE, {});
-        startIntro();
+        //startIntro();
         //TODO: create a separate application to load these files
         //createTraces1by1();
         //calcPreSetsHistory("year");
@@ -929,21 +929,21 @@ function createNewChild(currentId, chartObj) {
         /* Consist only one call for tutorials for each visualization */
         if (node.typeChart === SCATTER_PLOT && firstScatterPlot)
         {
-            startIntroScatterplot(newID);
+            //startIntroScatterplot(newID);
             firstScatterPlot = false;
         } else if (node.typeChart === CHAMBER_INFOGRAPHIC && firstChamberInfographic)
         {
-            startIntroChamberInfographic(newID);
+            //startIntroChamberInfographic(newID);
             firstChamberInfographic = false;
         } else if (node.typeChart === DEPUTIES_SIMILARITY_FORCE && firstDeputiesSimilarity)
         {
-            startIntroDeputiesSimilarity(newID);
+            //startIntroDeputiesSimilarity(newID);
             firstDeputiesSimilarity = false;
         } else if (node.typeChart === ROLLCALLS_HEATMAP && firstRollCallHeatMap) {
-            startIntroRollCallsHeatMap(newID);
+            //startIntroRollCallsHeatMap(newID);
             firstRollCallHeatMap = false;
         } else if (node.typeChart === TIME_LINE_CROP && firstTimelineCrop){
-            startIntroTimelineCrop(newID);
+            //startIntroTimelineCrop(newID);
             firstTimelineCrop = false;
         }
 
@@ -1103,7 +1103,6 @@ function setUpScatterPlotData(filteredData, dimensionalReductionTechnique, type)
     currentDeputies = [];
     currentRollCalls = [];
 
-    console.log(filteredData);
     var dataRange = setNewDateRange(filteredData);
 
     var matrixDistanceDeputies;
