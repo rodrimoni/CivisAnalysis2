@@ -108,7 +108,7 @@ function scatterPlotChart()
             var controls = d3.select("#" + panelID).append("label")
                 .attr("id", "controls");
             checkbox = controls.append("input")
-                .attr("id", "forceLayoutApply")
+                .attr("id", panelID +"-forceLayoutApply")
                 .attr("type", "checkbox");
             controls.append("span")
              .text("Show overlapping deputies ");
@@ -234,7 +234,7 @@ function scatterPlotChart()
 
         updateLegend(nodes, svg);
 
-        d3.select("#forceLayoutApply").on("change", function() {
+        d3.select("#" + panelID + "-forceLayoutApply").on("change", function() {
             if (checkbox.node().checked){
                 if (!isForceLayout)
                 {
