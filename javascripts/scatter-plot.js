@@ -601,7 +601,7 @@ function scatterPlotChart()
     }
 
     function mouseoverParty(d) {
-        var deputies = svg.selectAll(".deputiesNodesDots .deputy").filter(function (dep) {
+        var deputies = svg.selectAll(".deputiesNodesDots .node").filter(function (dep) {
             return dep.party === d;
         }).data();
 
@@ -626,7 +626,7 @@ function scatterPlotChart()
         /* Reset the search input */
         $('.searchDeputies').tagsinput('removeAll');
 
-        var deputies = svg.selectAll(".deputiesNodesDots .deputy").filter(function (dep) {
+        var deputies = svg.selectAll(".deputiesNodesDots .node").filter(function (dep) {
             return dep.party === d;
         }).data();
 
