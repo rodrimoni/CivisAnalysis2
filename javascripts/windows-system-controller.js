@@ -90,7 +90,7 @@ function checkSelectedValue(id) {
 
 function loadScatterPlotDataByYear() {
     var startYear = 1991;
-    var endYear = 2020;
+    var endYear = 2022;
 
     var deputiesNodesYearsArray = [];
 
@@ -134,7 +134,7 @@ function loadScatterPlotDataByYear() {
 
 function calcExtentValuesByYear() {
     var startYear = 1991;
-    var endYear = 2020;
+    var endYear = 2022;
 
     var extentValuesArray = {};
 
@@ -554,7 +554,7 @@ function getPartyCountAllScatter(nodes)
 }
 
 function calcThePartyTracesByYear( periodOfYears ){
-    var startYear = 1991, endYear = 2020;
+    var startYear = 1991, endYear = 2022;
 
     function calcOneYearRecursive(year) {
         console.log('calcThePartyTracesByYear ' + year);

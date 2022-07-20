@@ -1289,6 +1289,11 @@ function setUpScatterPlotData(filteredData, dimensionalReductionTechnique, type)
                     $('#loading #msg').text(text);
                     calcTSNE(matrixDeputiesPerRollCall, calcCallback);
                 }
+                else if (dimensionalReductionTechnique === "UMAP") {
+                    var text = language === ENGLISH ? "Generating Political Spectra by UMAP" : "Gerando Espectro Político por UMAP";
+                    $('#loading #msg').text(text);
+                    calcUMAP(matrixDeputiesPerRollCall, calcCallback);
+                }
             }
             else
             {
@@ -1354,11 +1359,14 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData)
                 if (selectedMenu.context.id ==='scatter-plot-tsne')
                     setUpScatterPlotData(filteredData, "t-SNE", SCATTER_PLOT);
                 else
-                    if (selectedMenu.context.id === 'deputies-similarity-force')
-                        setUpScatterPlotData(filteredData, "MDS", DEPUTIES_SIMILARITY_FORCE);
+                    if (selectedMenu.context.id ==='scatter-plot-umap')
+                        setUpScatterPlotData(filteredData, "UMAP", SCATTER_PLOT);
                     else
-                        if (selectedMenu.context.id === 'rollcalls-heatmap')
-                        setUpScatterPlotData(filteredData, "PCA", ROLLCALLS_HEATMAP);
+                        if (selectedMenu.context.id === 'deputies-similarity-force')
+                            setUpScatterPlotData(filteredData, "MDS", DEPUTIES_SIMILARITY_FORCE);
+                        else
+                            if (selectedMenu.context.id === 'rollcalls-heatmap')
+                            setUpScatterPlotData(filteredData, "PCA", ROLLCALLS_HEATMAP);
 }
 
 function handleContextMenuDeputy(invokedOn, selectedMenu)

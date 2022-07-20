@@ -56,33 +56,33 @@ function calcTSNE(matrixDepXRollCall,endCalcCallback){
     var T = new tsnejs.tSNE(opt); // create a tSNE instance
     T.initDataRaw(matrixDepXRollCall);
 
-    var opt1 = {epsilon: 10, perplexity: 30, dim: 2, iterationSec :10};
+    /*var opt1 = {epsilon: 10, perplexity: 30, dim: 2, iterationSec :10};
     var X = new tsnejs.tSNE(opt1); // create a tSNE instance
     var matrixRollCallXDep = numeric.transpose(matrixDepXRollCall);
-    X.initDataRaw(matrixRollCallXDep);
+    X.initDataRaw(matrixRollCallXDep);*/
 
     var intervalT = setInterval(stepT, 5);
     function stepT() {
         var cost = T.step(); // do a few steps
         //console.log("iteration Y " + T.iter + ", cost: " + cost);
     }
-    var intervalX = setInterval(stepX, 5);
+    /*var intervalX = setInterval(stepX, 5);
     function stepX() {
         var cost = X.step(); // do a few steps
         //console.log("iteration X " + X.iter + ", cost: " + cost);
-    }
+    }*/
 
-    var result = {deputies: [], voting: []};
+    var result = {deputies: []};
 
     setTimeout(function(){
         clearInterval(intervalT);
         result.deputies = T.getSolution();
     },opt.iterationSec*1000);
 
-    setTimeout(function(){
+    /*setTimeout(function(){
         clearInterval(intervalX);
         result.voting = X.getSolution();
-    },opt.iterationSec*1000);
+    },opt.iterationSec*1000);*/
 
     setTimeout(function () {
         endCalcCallback(result);
@@ -145,4 +145,20 @@ function calcMDS(matrixDistancesDepXDep,endCalcCallback){
     // ----------------------------------------------------------------------------------------------------------------
     var result = {deputies: data_deputies};
     endCalcCallback(result);
+}
+
+function calcUMAP(matrixDepXRollCall, endCalcCallback){
+    console.log("calc UMAP", matrixDepXRollCall);
+    var myrng = new Math.seedrandom('hello.');
+
+    const umap = new UMAP({
+        random: function(){return myrng();}
+    });
+    const data_deputies = umap.fit(matrixDepXRollCall);
+
+    console.log("CALC UMAP - FINISHED!! => PLOT");
+    var result = {deputies: data_deputies};
+    setTimeout(function () {
+        endCalcCallback(result);
+    },1000);
 }

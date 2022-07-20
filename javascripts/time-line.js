@@ -477,6 +477,7 @@ d3.chart.timeline = function() {
             .attr( popoverAttr(partyPopOver,'top') );
 
         function partyPopOver( d ){
+            console.log(d.value.party);
             return '<h4>'+d.value.party+'</h4><em>'+((d.value.party) ? CONGRESS_DEFINE.parties[d.value.party].name:'')+'</em>';
         }
         $('.timeline .parties .party .steps .step').popover({ trigger: "hover" });
