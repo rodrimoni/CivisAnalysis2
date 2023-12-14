@@ -134,7 +134,7 @@ function loadScatterPlotDataByYear() {
 
 function calcExtentValuesByYear() {
     var startYear = 1991;
-    var endYear = 2022;
+    var endYear = 2023;
 
     var extentValuesArray = {};
 
@@ -353,7 +353,13 @@ function loadMotion(type,number,year,defer){
             if(rollCall.votes !== undefined){
                 rollCall.votes.forEach( function(vote){
                     vote.vote = CONGRESS_DEFINE.integerToVote[vote.vote];
-                    vote.name = deputiesArray[vote.deputyID].name;
+                    try {
+                        let name = deputiesArray[vote.deputyID].name;
+                        vote.name = name
+                    }
+                    catch {
+                        console.log(vote);
+                    }
                     vote.district = deputiesArray[vote.deputyID].district; // assuming the distric does not change for the congressman
                     if(vote.party === 'Solidaried') vote.party = 'SDD';
                     if(vote.party === 'S.Part.') vote.party = 'NoParty';
@@ -554,18 +560,20 @@ function getPartyCountAllScatter(nodes)
 }
 
 function calcThePartyTracesByYear( periodOfYears ){
-    var startYear = 1991, endYear = 2022;
+    var startYear = 1991, endYear = 2023;
 
     function calcOneYearRecursive(year) {
         console.log('calcThePartyTracesByYear ' + year);
         if(year > endYear){  
             partyTrace['DEM'] = mergeObjects(partyTrace['PFL'],partyTrace['DEM']);
+            partyTrace['União'] = mergeObjects(partyTrace['DEM'],partyTrace['União']);
             partyTrace['PR'] = mergeObjects(partyTrace['PL'],partyTrace['PR']);
             partyTrace['PP'] = mergeObjects(partyTrace['PPB'],partyTrace['PP']);
             partyTrace['Podemos'] = mergeObjects(partyTrace['PTN'],partyTrace['Podemos']);
             partyTrace['MDB'] = mergeObjects(partyTrace['PMDB'],partyTrace['MDB']);
             partyTrace['CIDADANIA'] = mergeObjects(partyTrace['PPS'],partyTrace['CIDADANIA']);
 
+            delete partyTrace['DEM'];
             delete partyTrace['PFL'];
             delete partyTrace['PL'];
             delete partyTrace['PPB'];

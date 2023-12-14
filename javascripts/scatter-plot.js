@@ -1,5 +1,4 @@
-function scatterPlotChart()
-{
+function scatterPlotChart() {
     var margin = { top: 30, right: 350, bottom: 20, left: 50 },
         outerWidth = MAX_WIDTH,
         outerHeight = MAX_HEIGHT,
@@ -15,7 +14,7 @@ function scatterPlotChart()
     var offSetBigCluster = 0;
 
     var x = d3.scale.linear()
-        .range([width,0]);
+        .range([width, 0]);
 
     var y = d3.scale.linear()
         .range([0, height]);
@@ -31,7 +30,7 @@ function scatterPlotChart()
     var brush;
     var isForceLayout = false;
 
-    function chart(selection){
+    function chart(selection) {
         selection.each(function (data) {
             var nodes = d3.values(data);
             panelID = ($(this).parents('.panel')).attr('id');
@@ -45,52 +44,46 @@ function scatterPlotChart()
 
                 if (a.scatterplot[1] > b.scatterplot[1]) return 1;
                 if (a.scatterplot[1] < b.scatterplot[1]) return -1;
-              });
+            });
 
             var groupId = 0;
             var countDuplicates = 0;
-            function addInOverlappedGroup(elem)
-            {
-                if (partyCountByOverlappedGroup[elem.overlapped] === undefined)
-                {
+            function addInOverlappedGroup(elem) {
+                if (partyCountByOverlappedGroup[elem.overlapped] === undefined) {
                     /*partyCountByOverlappedGroup[elem.overlapped] = {"name": elem.overlapped, "scatX": elem.scatterplot[1], "scatY": elem.scatterplot[0]}
                     partyCountByOverlappedGroup[elem.overlapped]["children"] = [];
                     partyCountByOverlappedGroup[elem.overlapped]["children"][elem.party] = {"name": elem.party, "size": 1};*/
 
-                    partyCountByOverlappedGroup[elem.overlapped] = {"name": elem.overlapped, "parties": []};
-                    partyCountByOverlappedGroup[elem.overlapped]["parties"][elem.party] = {"name": elem.party, "elem": elem};
+                    partyCountByOverlappedGroup[elem.overlapped] = { "name": elem.overlapped, "parties": [] };
+                    partyCountByOverlappedGroup[elem.overlapped]["parties"][elem.party] = { "name": elem.party, "elem": elem };
                 }
-                else
-                {
+                else {
                     /*if (partyCountByOverlappedGroup[elem.overlapped]["children"][elem.party] === undefined)
                         partyCountByOverlappedGroup[elem.overlapped]["children"][elem.party] = {"name": elem.party, "size": 1};
                     else
                         partyCountByOverlappedGroup[elem.overlapped]["children"][elem.party].size += 1;*/
                     if (partyCountByOverlappedGroup[elem.overlapped]["parties"][elem.party] === undefined)
-                        partyCountByOverlappedGroup[elem.overlapped]["parties"][elem.party] = {"name": elem.party,  "elem": elem};
+                        partyCountByOverlappedGroup[elem.overlapped]["parties"][elem.party] = { "name": elem.party, "elem": elem };
                 }
             }
 
             for (let i = 0; i < nodes.length; i++) {
                 if (i >= nodes.length - 1) //last element
                 {
-                    if (Number(nodes[i - 1].scatterplot[0]).toFixed(7) == Number(nodes[i].scatterplot[0]).toFixed(7) && Number(nodes[i - 1].scatterplot[1]).toFixed(7) == Number(nodes[i].scatterplot[1]).toFixed(7)){
+                    if (Number(nodes[i - 1].scatterplot[0]).toFixed(7) == Number(nodes[i].scatterplot[0]).toFixed(7) && Number(nodes[i - 1].scatterplot[1]).toFixed(7) == Number(nodes[i].scatterplot[1]).toFixed(7)) {
                         nodes[i].overlapped = groupId;
                         addInOverlappedGroup(nodes[i]);
                         countDuplicates++;
                     }
                 }
-                else
-                {
-                    if (Number(nodes[i + 1].scatterplot[0]).toFixed(7) == Number(nodes[i].scatterplot[0]).toFixed(7) && Number(nodes[i + 1].scatterplot[1]).toFixed(7) == Number(nodes[i].scatterplot[1]).toFixed(7)){
+                else {
+                    if (Number(nodes[i + 1].scatterplot[0]).toFixed(7) == Number(nodes[i].scatterplot[0]).toFixed(7) && Number(nodes[i + 1].scatterplot[1]).toFixed(7) == Number(nodes[i].scatterplot[1]).toFixed(7)) {
                         nodes[i].overlapped = groupId;
                         addInOverlappedGroup(nodes[i]);
                         countDuplicates++;
                     }
-                    else
-                    {
-                        if (countDuplicates > 0)
-                        {   
+                    else {
+                        if (countDuplicates > 0) {
                             nodes[i].overlapped = groupId;
                             addInOverlappedGroup(nodes[i]);
                             groupId++;
@@ -108,26 +101,25 @@ function scatterPlotChart()
             var controls = d3.select("#" + panelID).append("label")
                 .attr("id", "controls");
             checkbox = controls.append("input")
-                .attr("id", panelID +"-forceLayoutApply")
+                .attr("id", panelID + "-forceLayoutApply")
                 .attr("type", "checkbox");
             controls.append("span")
-             .text("Show overlapping deputies ");
+                .text("Show overlapping deputies ");
 
             drawScatterPlot(nodes, this);
         })
     }
 
-    function drawScatterPlot(nodes, htmlContent)
-    {
+    function drawScatterPlot(nodes, htmlContent) {
         offSetBigCluster = 1.10;
         if (partyCountByOverlappedGroup.length > 20)
             offSetBigCluster = 1.35;
 
-        var xMax = d3.max(nodes, function(d) { return d.scatterplot[1]; })  * offSetBigCluster,
-            xMin = d3.min(nodes, function(d) { return d.scatterplot[1]; }),
+        var xMax = d3.max(nodes, function (d) { return d.scatterplot[1]; }) * offSetBigCluster,
+            xMin = d3.min(nodes, function (d) { return d.scatterplot[1]; }),
             xMin = xMin > 0 ? 0 : xMin * offSetBigCluster,
-            yMax = d3.max(nodes, function(d) { return d.scatterplot[0]; })  * offSetBigCluster,
-            yMin = d3.min(nodes, function(d) { return d.scatterplot[0]; }),
+            yMax = d3.max(nodes, function (d) { return d.scatterplot[0]; }) * offSetBigCluster,
+            yMin = d3.min(nodes, function (d) { return d.scatterplot[0]; }),
             yMin = yMin > 0 ? 0 : yMin * offSetBigCluster;
 
         x.domain([xMin, xMax]);
@@ -166,7 +158,7 @@ function scatterPlotChart()
 
         objects.append("svg:g").attr("class", "deputiesClusters");
 
-        var deputiesNodesDots   = objects.append("svg:g").attr("class", "deputiesNodesDots");
+        var deputiesNodesDots = objects.append("svg:g").attr("class", "deputiesNodesDots");
 
         var force = d3.layout.force()
             .nodes(nodes)
@@ -175,10 +167,10 @@ function scatterPlotChart()
             .charge(-0.1)
             .gravity(0)
             .chargeDistance(20);
-        
+
 
         // Set initial positions
-        nodes.forEach(function(d) {
+        nodes.forEach(function (d) {
             d.x = x(d.scatterplot[1]);
             d.y = y(d.scatterplot[0]);
             d.radius = nodeRadius;
@@ -188,33 +180,33 @@ function scatterPlotChart()
             .data(nodes)
             .enter()
             .append("circle")
-            .attr( popoverAttr(deputyPopOver,'top'))
-            .attr("class", function (d) {return (d.selected)? "node selected": ( (d.hovered)? "node hovered" : "node"); })
-            .attr("r", function(d){ return (d.hovered)? nodeRadius*2 : nodeRadius;})
-            .attr("id", function(d) { return panelID + "_deputy-id-" + d.deputyID; })
-            .attr("cx", function(d) { return x(d.scatterplot[1]); })
-            .attr("cy", function(d) { return y(d.scatterplot[0]); })
-            .style("fill", function(d) { return setDeputyFill(d); })
-            .on('mousedown', function(d) {
+            .attr(popoverAttr(deputyPopOver, 'top'))
+            .attr("class", function (d) { return (d.selected) ? "node selected" : ((d.hovered) ? "node hovered" : "node"); })
+            .attr("r", function (d) { return (d.hovered) ? nodeRadius * 2 : nodeRadius; })
+            .attr("id", function (d) { return panelID + "_deputy-id-" + d.deputyID; })
+            .attr("cx", function (d) { return x(d.scatterplot[1]); })
+            .attr("cy", function (d) { return y(d.scatterplot[0]); })
+            .style("fill", function (d) { return setDeputyFill(d); })
+            .on('mousedown', function (d) {
                 mouseClickDeputy(d);
             })
-            .on('mouseup', function(){
+            .on('mouseup', function () {
                 $('.searchDeputies').tagsinput('removeAll');
             })
             .on("mouseover",
                 //mouseOverDeputy(d.deputyID, this);
                 mouseoverDeputy
             )
-            .on("mouseout", function(d){
+            .on("mouseout", function (d) {
                 div.style("display", "none");
                 mouseoutDeputy(d);
             });
 
-        function deputyPopOver(d){
+        function deputyPopOver(d) {
             var deputyTooltipEnglish;
             var deputyTooltipPortuguese;
-            deputyTooltipEnglish = '<strong>' + d.name +' ('+d.party+'-'+d.district+")</strong><br><em>Left-Click to select</em><br><em>Right-Click to create new visualizations</em>";
-            deputyTooltipPortuguese= '<strong>' + d.name +' ('+d.party+'-'+d.district+")</strong><br><em>Botão esquerdo para selecionar</em><br><em>Botão direito para criar novas vis.</em>";
+            deputyTooltipEnglish = '<strong>' + d.name + ' (' + d.party + '-' + d.district + ")</strong><br><em>Left-Click to select</em><br><em>Right-Click to create new visualizations</em>";
+            deputyTooltipPortuguese = '<strong>' + d.name + ' (' + d.party + '-' + d.district + ")</strong><br><em>Botão esquerdo para selecionar</em><br><em>Botão direito para criar novas vis.</em>";
 
             if (language === PORTUGUESE)
                 return deputyTooltipPortuguese;
@@ -234,27 +226,25 @@ function scatterPlotChart()
 
         updateLegend(nodes, svg);
 
-        d3.select("#" + panelID + "-forceLayoutApply").on("change", function() {
-            if (checkbox.node().checked){
-                if (!isForceLayout)
-                {
+        d3.select("#" + panelID + "-forceLayoutApply").on("change", function () {
+            if (checkbox.node().checked) {
+                if (!isForceLayout) {
                     force.start();
                     isForceLayout = true;
                 }
                 else {
                     svg.selectAll('.node')
                         .transition().duration(1000)
-                        .attr('cx', function(d){ return d.x; })
-                        .attr('cy', function(d){ return d.y; });
+                        .attr('cx', function (d) { return d.x; })
+                        .attr('cy', function (d) { return d.y; });
                 }
             }
-            else
-            {
+            else {
                 force.stop();
                 svg.selectAll('.node')
                     .transition().duration(1000)
-                    .attr('cx', function(d){ return x(d.scatterplot[1]); })
-                    .attr('cy', function(d){ return y(d.scatterplot[0]); });
+                    .attr('cx', function (d) { return x(d.scatterplot[1]); })
+                    .attr('cy', function (d) { return y(d.scatterplot[0]); });
                 /*$(panelToBeRedrawn).find('svg').remove();
                 deputies.each(resetPositions);
                 drawScatterPlot(nodes, panelToBeRedrawn, false);*/
@@ -265,32 +255,29 @@ function scatterPlotChart()
             deputies.each(moveTowardDataPosition(e.alpha));
             deputies.each(cluster(10 * e.alpha * e.alpha))
             deputies.each(collide(e.alpha));
-            
-            deputies.attr("cx", function(d) { return d.x; })
-                .attr("cy", function(d) { return d.y; });
-            
+
+            deputies.attr("cx", function (d) { return d.x; })
+                .attr("cy", function (d) { return d.y; });
+
         }
 
-        function resetPositions()
-        {
-            return function(d){
-                d.x = x(d.scatterplot[1]); 
+        function resetPositions() {
+            return function (d) {
+                d.x = x(d.scatterplot[1]);
                 d.y = y(scatterplot[0]);
             }
         }
 
         function moveTowardDataPosition(alpha) {
-            return function(d) {
+            return function (d) {
                 d.x += (x(d.scatterplot[1]) - d.x) * 0.1 * alpha;
                 d.y += (y(d.scatterplot[0]) - d.y) * 0.1 * alpha;
             };
         }
 
-        function cluster(alpha)
-        {
-            return function(d) {
-                if (d.overlapped !== null)
-                {
+        function cluster(alpha) {
+            return function (d) {
+                if (d.overlapped !== null) {
                     var cluster = partyCountByOverlappedGroup[d.overlapped].parties[d.party].elem;
                     if (cluster.deputyID === d.deputyID) return;
                     var x = d.x - cluster.x,
@@ -298,11 +285,11 @@ function scatterPlotChart()
                         l = Math.sqrt(x * x + y * y),
                         r = d.radius + cluster.radius;
                     if (l != r) {
-                    l = (l - r) / l * alpha;
-                    d.x -= x *= l;
-                    d.y -= y *= l;
-                    cluster.x += x;
-                    cluster.y += y;
+                        l = (l - r) / l * alpha;
+                        d.x -= x *= l;
+                        d.y -= y *= l;
+                        cluster.x += x;
+                        cluster.y += y;
                     }
                 }
             };
@@ -311,65 +298,65 @@ function scatterPlotChart()
         // Resolve collisions between nodes.
         function collide(alpha) {
             var quadtree = d3.geom.quadtree(nodes);
-            return function(d) {
-            var r = d.radius + nodeRadius + padding,
-                nx1 = d.x - r,
-                nx2 = d.x + r,
-                ny1 = d.y - r,
-                ny2 = d.y + r;
-            quadtree.visit(function(quad, x1, y1, x2, y2) {
-                if (quad.point && (quad.point !== d)) {
-                var x = d.x - quad.point.x,
-                    y = d.y - quad.point.y,
-                    l = Math.sqrt(x * x + y * y),
-                    r = d.radius + quad.point.radius + (d.color !== quad.point.color) * padding;
-                if (l < r) {
-                    l = (l - r) / l * alpha;
-                    d.x -= x *= l;
-                    d.y -= y *= l;
-                    quad.point.x += x;
-                    quad.point.y += y;
-                }
-                }
-                return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
-            });
+            return function (d) {
+                var r = d.radius + nodeRadius + padding,
+                    nx1 = d.x - r,
+                    nx2 = d.x + r,
+                    ny1 = d.y - r,
+                    ny2 = d.y + r;
+                quadtree.visit(function (quad, x1, y1, x2, y2) {
+                    if (quad.point && (quad.point !== d)) {
+                        var x = d.x - quad.point.x,
+                            y = d.y - quad.point.y,
+                            l = Math.sqrt(x * x + y * y),
+                            r = d.radius + quad.point.radius + (d.color !== quad.point.color) * padding;
+                        if (l < r) {
+                            l = (l - r) / l * alpha;
+                            d.x -= x *= l;
+                            d.y -= y *= l;
+                            quad.point.x += x;
+                            quad.point.y += y;
+                        }
+                    }
+                    return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
+                });
             };
         }
 
         function zoomed() {
             objects.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-            }
+        }
 
         function updateLegend(data, svg) {
             var legend = svg.selectAll(".legend")
-                .data(d3.map(data, function(d){return d.party;}).keys());
+                .data(d3.map(data, function (d) { return d.party; }).keys());
 
             var updateCircles = svg.selectAll('.legend circle');
 
             updateCircles
-                .attr("fill", function (d) {return selColor(d);});
+                .attr("fill", function (d) { return selColor(d); });
 
             var enterLegend =
                 legend.enter().append("g")
                     .classed("legend", true)
-                    .on('click', function(d) {
+                    .on('click', function (d) {
                         clickParty(d);
                     })
                     .on('mouseover', mouseoverParty)
                     .on('mouseout', mouseoutParty);
 
             enterLegend
-                .attr("transform", function(d, i) { if (i % 2 === 0) return "translate(0," + i * 30 + ")"; else return "translate(150," + (i-1) * 30 + ")" ; });
+                .attr("transform", function (d, i) { if (i % 2 === 0) return "translate(0," + i * 30 + ")"; else return "translate(150," + (i - 1) * 30 + ")"; });
 
             enterLegend.append("circle")
-                .attr("r", 12)
+                .attr("r", 6)
                 .attr("cx", width + 20)
-                .attr("fill", function (d) {return selColor(d);});
+                .attr("fill", function (d) { return selColor(d); });
 
             enterLegend.append("text")
                 .attr("x", width + 40)
                 .attr("dy", ".45em")
-                .text(function(d) { return d });
+                .text(function (d) { return d });
 
         }
 
@@ -388,7 +375,7 @@ function scatterPlotChart()
                 svg = svg.call(d3.behavior.zoom().on("zoom", null));
                 var e = brush.extent();
                 console.log(e);
-                var deps = svg.selectAll(".node").filter(function(d) {
+                var deps = svg.selectAll(".node").filter(function (d) {
                     return e[0][0] < d.scatterplot[1] && d.scatterplot[1] < e[1][0]
                         && e[0][1] < d.scatterplot[0] && d.scatterplot[0] < e[1][1];
                 }).data();
@@ -413,37 +400,37 @@ function scatterPlotChart()
 
     };
 
-    chart.margin = function(_) {
+    chart.margin = function (_) {
         if (!arguments.length) return margin;
         margin = _;
         return chart;
     };
 
-    chart.width = function(_) {
+    chart.width = function (_) {
         if (!arguments.length) return width;
         width = _;
         return chart;
     };
 
-    chart.height = function(_) {
+    chart.height = function (_) {
         if (!arguments.length) return height;
         height = _;
         return chart;
     };
 
-    chart.outerWidth = function(_) {
+    chart.outerWidth = function (_) {
         if (!arguments.length) return outerWidth;
         outerWidth = _;
         return chart;
     };
 
-    chart.outerHeight = function(_) {
+    chart.outerHeight = function (_) {
         if (!arguments.length) return outerHeight;
         outerHeight = _;
         return chart;
     };
 
-    chart.partyCount = function(_) {
+    chart.partyCount = function (_) {
         if (!arguments.length) return partyCount;
         partyCount = _;
         return chart;
@@ -452,21 +439,19 @@ function scatterPlotChart()
     chart.update = function () {
         svg.selectAll(".deputiesNodesDots .node")
             .transition()
-            .style("fill", function(d) { return setDeputyFill(d); })
-            .attr("class", function (d) { return (d.selected)? "node selected": (d.hovered)? "node hovered" : "node"; })
-            .attr("r", function(d){ return (d.hovered) ? nodeRadius*2 : nodeRadius;});
+            .style("fill", function (d) { return setDeputyFill(d); })
+            .attr("class", function (d) { return (d.selected) ? "node selected" : (d.hovered) ? "node hovered" : "node"; })
+            .attr("r", function (d) { return (d.hovered) ? nodeRadius * 2 : nodeRadius; });
 
         svg.selectAll('.legend circle')
             .attr("fill", function (d) { return selColor(d); });
     };
 
-    chart.setThreshold = function (threshold)
-    {
+    chart.setThreshold = function (threshold) {
         _threshold = threshold;
     }
 
-    chart.setHasTreshold = function(hasTreshold)
-    {
+    chart.setHasTreshold = function (hasTreshold) {
         _hasThreshold = hasTreshold;
     }
 
@@ -480,29 +465,26 @@ function scatterPlotChart()
         //data from which to identify clusters, defaults to []
         clusterMaker.data(data);
 
-        //console.log(clusterMaker.clusters());
         this.clusters = clusterMaker.clusters();
-        var hullSets = [];
-
-        this.clusters.forEach(function(cluster, index){
-            hullSets.push( {"cluster" : index, "points" : hull(cluster.points.map(function(e) {return e.location; }), 20)} );
-        });
-
         var clustersPoints = [];
 
         this.clusters.forEach(function (cluster, index) {
-            clustersPoints.push({"cluster": index, "points" : cluster.points.map(function (t) { return t.location; })});
+            clustersPoints.push({
+                "cluster": index, "points": cluster.points.map(function (t) {
+                    updateDeputyNodeInAllPeriods(t.deputyID, "virtualParty", index);
+                    return t.location;
+                })
+            });
         });
 
         //updateHulls(hullSets, id);
         updateHullsTest(clustersPoints, id);
     };
 
-    function updateHullsTest(data, id)
-    {
-        var groupPath = function(d) {
+    function updateHullsTest(data, id) {
+        var groupPath = function (d) {
             return "M" +
-                d3.geom.hull(d.points.map(function(i) { return [x(i[1]), y(i[0])]; }))
+                d3.geom.hull(d.points.map(function (i) { return [x(i[1]), y(i[0])]; }))
                     .join("L")
                 + "Z";
         };
@@ -514,13 +496,13 @@ function scatterPlotChart()
         var toolTipCluster = d3.select('.toolTipCluster');
 
         var objects = svg.selectAll(".hull")
-            .data(data, function(d){return d;});
+            .data(data, function (d) { return d; });
 
         objects
             .attr("d", groupPath)
             .style("fill", "#ffffff")
             .style("stroke", "#c4c7c8")
-            .style("stroke-width",8)
+            .style("stroke-width", 8)
             .style("stroke-linejoin", "round")
             .style("opacity", .4);
 
@@ -532,7 +514,7 @@ function scatterPlotChart()
         enterObjects
             .append("a")
             .attr("xlink:href", "javascript:;")
-            .on("click", function(d){
+            .on("click", function (d) {
                 toolTipCluster.style("left", d3.event.pageX + 10 + "px");
                 toolTipCluster.style("top", d3.event.pageY - 25 + "px");
                 toolTipCluster.style("display", "inline-block");
@@ -541,7 +523,7 @@ function scatterPlotChart()
             .on("blur", hideToolTipCluster)
             .append("path")
             .classed("hull", true)
-            .attr("id", function(d) { return "cluster_id_" + d.cluster; })
+            .attr("id", function (d) { return "cluster_id_" + d.cluster; })
             .attr("d", groupPath)
             .style("fill", "#ffffff")
             .style("stroke", "#c4c7c8")
@@ -559,6 +541,7 @@ function scatterPlotChart()
             });
 
         objects.exit().remove();
+        dispatch.update();
 
     }
 
@@ -569,34 +552,34 @@ function scatterPlotChart()
     }
 
     // mouse OUT circle deputy
-    function mouseoutDeputy(d){
+    function mouseoutDeputy(d) {
         updateDeputyNodeInAllPeriods(d.deputyID, "hovered", false);
         dispatch.update();
     }
 
-    function mouseClickDeputy(d){
+    function mouseClickDeputy(d) {
         d3.event.preventDefault();
-        if (d3.event.shiftKey){
+        if (d3.event.shiftKey) {
             // using the shiftKey deselect the deputy
             updateDeputyNodeInAllPeriods(d.deputyID, "selected", false);
         } else
-        if (d3.event.ctrlKey || d3.event.metaKey){
-            // using the ctrlKey add deputy to selection
-            updateDeputyNodeInAllPeriods(d.deputyID, "selected", !d.selected);
-        }
-        else {
-            // a left click without any key pressed and
-            // a right click in a deputy unselected
-            // -> select only the deputy (deselect others)
-            if (d3.event.which === 1 || (d3.event.which ===3 && !d.selected)) {
-                for (var key in deputyNodes) {
-                    for (var index in deputyNodes[key])
-                        deputyNodes[key][index].selected = false;
-                }
-                updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
-                
+            if (d3.event.ctrlKey || d3.event.metaKey) {
+                // using the ctrlKey add deputy to selection
+                updateDeputyNodeInAllPeriods(d.deputyID, "selected", !d.selected);
             }
-        }
+            else {
+                // a left click without any key pressed and
+                // a right click in a deputy unselected
+                // -> select only the deputy (deselect others)
+                if (d3.event.which === 1 || (d3.event.which === 3 && !d.selected)) {
+                    for (var key in deputyNodes) {
+                        for (var index in deputyNodes[key])
+                            deputyNodes[key][index].selected = false;
+                    }
+                    updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
+
+                }
+            }
         dispatch.update();
     }
 
@@ -613,8 +596,8 @@ function scatterPlotChart()
 
     }
 
-    function mouseoutParty(){
-        for (var key in deputyNodes){
+    function mouseoutParty() {
+        for (var key in deputyNodes) {
             for (var index in deputyNodes[key])
                 deputyNodes[key][index].hovered = false;
         }
@@ -630,58 +613,65 @@ function scatterPlotChart()
             return dep.party === d;
         }).data();
 
-        if (d3.event.shiftKey){
+        if (d3.event.shiftKey) {
             deputies.forEach(function (d) {
                 updateDeputyNodeInAllPeriods(d.deputyID, "selected", false);
             });
         } else
-        if (d3.event.ctrlKey || d3.event.metaKey){
-            deputies.forEach(function (d) {
-                updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
-            });
-        }
-        else {
-            for (var key in deputyNodes){
-                for (var index in deputyNodes[key])
-                    deputyNodes[key][index].selected = false;
+            if (d3.event.ctrlKey || d3.event.metaKey) {
+                deputies.forEach(function (d) {
+                    updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
+                });
             }
+            else {
+                for (var key in deputyNodes) {
+                    for (var index in deputyNodes[key])
+                        deputyNodes[key][index].selected = false;
+                }
 
-            deputies.forEach(function (d) {
-                updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
-            });
-        }
+                deputies.forEach(function (d) {
+                    updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
+                });
+            }
 
         dispatch.update();
     }
 
-    function setDeputyFill( d ){
+    function setDeputyFill(d) {
+        let virtualPartyColors =  ["#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c", "#98df8a",
+        "#d62728", "#ff9896", "#9467bd", "#c5b0d5", "#8c564b", "#c49c94", "#e377c2", "#f7b6d2", "#7f7f7f",
+         "#c7c7c7", "#bcbd22", "#dbdb8d", "#17becf", "#9edae5"];
+
         //if (d.overlapped === null)
         //{
-            if(d.vote != null){
-                return CONGRESS_DEFINE.votoStringToColor[d.vote];
+        if (d.vote != null) {
+            return CONGRESS_DEFINE.votoStringToColor[d.vote];
+        }
+        if (d.rate != null) {
+            if (d.rate == "noVotes")
+                return 'grey'
+            else return CONGRESS_DEFINE.votingColor(d.rate)
+        } else {
+            if (d.virtualParty !== undefined) {
+                return virtualPartyColors[d.virtualParty];
             }
-            if(d.rate != null)
-            {
-                if (d.rate == "noVotes")
-                    return 'grey'
-                else return CONGRESS_DEFINE.votingColor(d.rate)
-            } else
-            {
+            else {
                 if (_hasThreshold && _deputiesByParties[d.party] <= _threshold)
                     return 'grey';
                 else
                     return CONGRESS_DEFINE.getPartyColor(d.party)
             }
+        }
         //}
         //else
-            //return '#ecdd06' //yellow;
+        //return '#ecdd06' //yellow;
     }
 
-    function selColor(c){
+    function selColor(c) {
         if (_hasThreshold && _deputiesByParties[c] <= _threshold)
-            return 'grey'; 
+            return 'grey';
         else
-            return CONGRESS_DEFINE.partiesArbitraryColor[c]; 
+            return CONGRESS_DEFINE.partiesArbitraryColor[c];
     }
 
     chart.selectDeputiesBySearch = function (deputies) {
@@ -690,20 +680,20 @@ function scatterPlotChart()
                 deputyNodes[key][index].selected = false;
         }
 
-        deputies.forEach(function(d){
+        deputies.forEach(function (d) {
             updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
         });
 
         dispatch.update();
     };
 
-    chart.enableBrush = function(){
+    chart.enableBrush = function () {
         svg.select(".objects").append("g")
             .attr("class", "brush")
             .call(brush);
     };
 
-    chart.disableBrush = function(){
+    chart.disableBrush = function () {
         svg.select(".brush").remove();
     };
 
