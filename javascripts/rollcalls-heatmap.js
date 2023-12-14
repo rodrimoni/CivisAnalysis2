@@ -28,14 +28,15 @@ function rollCallsHeatmap(){
     var svg;
     var parentID;
     var panelID;
-    var heatMapMode;
+    var heatMapDeputies = [];
 
     var itemWidth, itemHeight;
 
     function chart(selection) {
         selection.each(function (data) {
             // filter empty, all rollCalls
-            var rcs = groupRollCallsByMonth(data, {motionTypeFilter:[], dateFilter:[undefined, undefined]});
+            chart.heatMapDeputies(data.deputies);
+            var rcs = groupRollCallsByMonth(data.rcs, {motionTypeFilter:[], dateFilter:[undefined, undefined]});
             chart.drawRollCallsHeatMap(rcs, this);
         });
     }
@@ -420,12 +421,10 @@ function rollCallsHeatmap(){
             .attr("class", function (d) {return (d.selected)? "rollCall bordered selected": ( (d.hovered)? "rollCall bordered hovered" : "rollCall bordered"); });
     };
 
-    chart.setHeatMapMode = function (mode) {
-        heatMapMode = mode;
-    };
-
-    chart.getHeatMapMode = function () {
-       return heatMapMode;
+    chart.heatMapDeputies = function (_) {
+        if (!arguments.length) return heatMapDeputies;
+        heatMapDeputies = _;
+        return chart;
     };
 
     chart.selectRollCallBySearch = function (id)

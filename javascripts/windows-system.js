@@ -176,9 +176,9 @@ function initializeChart(newID, chartObj) {
             rollCallsRates[newID] = currentRollCalls;
             setVotesForSelectedDeputies(newID);
             addConfigMenu(newID, 'rollCallsHeatmap', false);
-            var rollCallsTypeAhead = addSearchRollCallMenu(newID, chartObj.data);
-            addFilterMotionTypeMenu(newID, chartObj.data, rollCallsTypeAhead);
-            addFilterDateRollCallMenu(newID, chartObj.data, rollCallsTypeAhead);
+            var rollCallsTypeAhead = addSearchRollCallMenu(newID, chartObj.data.rcs);
+            addFilterMotionTypeMenu(newID, chartObj.data.rcs, rollCallsTypeAhead);
+            addFilterDateRollCallMenu(newID, chartObj.data.rcs, rollCallsTypeAhead);
             addEditTitleInput(newID);
 
             chart.on('update', function () {
@@ -193,9 +193,9 @@ function initializeChart(newID, chartObj) {
             rollCallsRates[newID] = currentRollCalls;
             setVotesForSelectedDeputies(newID);
             addConfigMenu(newID, 'rollCallsHeatmap', false);
-            var rollCallsTypeAhead = addSearchRollCallMenu(newID, chartObj.data);
-            addFilterMotionTypeMenu(newID, chartObj.data, rollCallsTypeAhead);
-            addFilterDateRollCallMenu(newID, chartObj.data, rollCallsTypeAhead);
+            var rollCallsTypeAhead = addSearchRollCallMenu(newID, chartObj.data.rcs);
+            addFilterMotionTypeMenu(newID, chartObj.data.rcs, rollCallsTypeAhead);
+            addFilterDateRollCallMenu(newID, chartObj.data.rcs, rollCallsTypeAhead);
             addEditTitleInput(newID);
 
             updateRollCalls(newID);
@@ -1142,13 +1142,17 @@ function setUpScatterPlotData(filteredData, dimensionalReductionTechnique, type)
                     var createRollCallsHeatMap = function () {
                         currentRollCalls = rollCallInTheDateRange;
                         calcRollCallRate(currentRollCalls, currentDeputies);
-                        console.log(currentRollCalls);
                         currentRollCalls.map(function (e) {
                             e.rollCallName = e.type + " " + e.number + " " + e.year;
                         });
+
+                        var data = {}
+                        data.rcs = currentRollCalls;
+                        data.deputies = {};
+
                         var chartObj = {
                             'chartID': ROLLCALLS_HEATMAP,
-                            'data': currentRollCalls,
+                            'data': data,
                             'title': title,
                             'prettyTitle': prettyTitle,
                             'panelClass': panelClass,
@@ -1390,7 +1394,6 @@ function handleContextMenuDeputy(invokedOn, selectedMenu) {
     }
     else
         if (selectedMenu.context.id === 'rollcalls-heatmap') {
-
             var periodID = period.split("-");
             var id, periodData, subtitle, panelClass, firstYear, lastYear;
             if (periodID.length <= 2) {
@@ -1415,13 +1418,25 @@ function handleContextMenuDeputy(invokedOn, selectedMenu) {
                 prettyTitle = "Map of Roll Calls: " + firstYear + " to " + lastYear;
             }
 
+            var selectedDeputies = [];
+            var hoveredDeputies = [];
+            var data = {};
+
+            deputyNodes[panelID].forEach(function (deputy) {
+                if (deputy.selected) selectedDeputies.push(deputy);
+            });
+
             setVotesForSelectedDeputies(panelID);
             // Get the corresponding rollcalls to this deputyNodes set
             var rcs = rollCallsRates[panelID];
             rcs.map(function (e) {
                 e.rollCallName = e.type + " " + e.number + " " + e.year;
             });
-            chartObj = { 'chartID': STATIC_ROLLCALLS_HEATMAP, 'data': rcs, 'title': title, 'prettyTitle': prettyTitle };
+
+            data.rcs = rcs;
+            data.deputies = selectedDeputies;
+
+            chartObj = { 'chartID': STATIC_ROLLCALLS_HEATMAP, 'data': data, 'title': title, 'prettyTitle': prettyTitle };
             createNewChild(panelID, chartObj);
         }
 }
@@ -1562,8 +1577,24 @@ function selectNodeSideBarByPanel(panelID) {
     var nodes = $('#tree').treeview('getEnabled');
     nodes.forEach(function (node) {
         if (node.panel === panelID) {
-            if (node.state !== 'selected')
+            if (node.state !== 'selected') {
                 $('#tree').treeview('selectNode', node);
+                // When clicks on static heatmap, selects all deputies used to create the heatmap.
+                if (node.chart.typeChart === STATIC_ROLLCALLS_HEATMAP) {
+                    var chartNode = tree.getNode(panelID, tree.traverseBF);
+                    var heatMapDeputies = chartNode.chart.heatMapDeputies();
+                    // Deselect All deputies
+                    for (var key in deputyNodes) {
+                        for (var index in deputyNodes[key])
+                            deputyNodes[key][index].selected = false;
+                    }
+                    // Select only deputies previously selected
+                    heatMapDeputies.forEach(function (elem) {
+                        updateDeputyNodeInAllPeriods(elem.deputyID, "selected", true);
+                    })
+                    updateVisualizations();
+                }
+            }
         }
     })
 }
@@ -1603,7 +1634,6 @@ function updateSideBar() {
 
 function getTree() {
     tree.createJsonTree();
-    console.log(tree.getJsonTree());
     return tree.getJsonTree();
 }
 
@@ -1809,9 +1839,9 @@ function updateRollCalls(parentID) {
             var rollCall = (hoveredRollCalls.length === 1) ? hoveredRollCalls[0] : selectedRollCalls[0];
             // set the deputy votes
             rollCall.votes.forEach(function (deputyVote) {
-                // TODO: Check this code. Is it necessary this test?
-                if (deputyNodes[parentID][deputyVote.deputyID] !== undefined)
-                    deputyNodes[parentID][deputyVote.deputyID].vote = deputyVote.vote;
+                for (var key in deputyNodes) {
+                    deputyNodes[key][deputyVote.deputyID].vote = deputyVote.vote;
+                }
             });
 
             if (node.typeChart === CHAMBER_INFOGRAPHIC) {

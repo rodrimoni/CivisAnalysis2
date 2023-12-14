@@ -638,12 +638,7 @@ function scatterPlotChart() {
     }
 
     function setDeputyFill(d) {
-        let virtualPartyColors =  ["#1f77b4", "#aec7e8", "#ff7f0e", "#ffbb78", "#2ca02c", "#98df8a",
-        "#d62728", "#ff9896", "#9467bd", "#c5b0d5", "#8c564b", "#c49c94", "#e377c2", "#f7b6d2", "#7f7f7f",
-         "#c7c7c7", "#bcbd22", "#dbdb8d", "#17becf", "#9edae5"];
-
-        //if (d.overlapped === null)
-        //{
+        console.log(d);
         if (d.vote != null) {
             return CONGRESS_DEFINE.votoStringToColor[d.vote];
         }
@@ -652,19 +647,12 @@ function scatterPlotChart() {
                 return 'grey'
             else return CONGRESS_DEFINE.votingColor(d.rate)
         } else {
-            if (d.virtualParty !== undefined) {
-                return virtualPartyColors[d.virtualParty];
-            }
-            else {
-                if (_hasThreshold && _deputiesByParties[d.party] <= _threshold)
-                    return 'grey';
-                else
-                    return CONGRESS_DEFINE.getPartyColor(d.party)
-            }
+            if (_hasThreshold && _deputiesByParties[d.party] <= _threshold)
+                return 'grey';
+            else
+                return CONGRESS_DEFINE.getPartyColor(d.party)
         }
-        //}
-        //else
-        //return '#ecdd06' //yellow;
+
     }
 
     function selColor(c) {

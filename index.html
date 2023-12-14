@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <link rel="icon" type="image/png" href="images/favicon.png" />
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
@@ -38,13 +39,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
 
     <!-- Plugin for creation of custom context menus -->
-    <script src = "javascripts/external/jquery.contextMenu.js" type = "text/javascript"></script>
+    <script src="javascripts/external/jquery.contextMenu.js" type="text/javascript"></script>
 
-     <!-- Plugin for use of scroll animations -->
-     <script src = "javascripts/external/jquery.scrollTo.min.js" type = "text/javascript"></script>
+    <!-- Plugin for use of scroll animations -->
+    <script src="javascripts/external/jquery.scrollTo.min.js" type="text/javascript"></script>
 
     <!-- Library for crossfilter charts -->
-    <script src = "javascripts/external/crossfilter.v1.min.js" type = "text/javascript"></script>
+    <script src="javascripts/external/crossfilter.v1.min.js" type="text/javascript"></script>
 
     <!-- Library for queue structure -->
     <script src="javascripts/external/queue.v1.min.js" type="text/javascript"></script>
@@ -56,7 +57,7 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
 
     <!-- Library for translation -->
-    <script src="javascripts/external/translate.js" type ="text/javascript"></script>
+    <script src="javascripts/external/translate.js" type="text/javascript"></script>
 
     <!-- Structure tree -->
     <script src="javascripts/external/tree.js"></script>
@@ -122,19 +123,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.6.3/d3-tip.min.js"></script>
 
     <!-- Intro JS -->
-    <script src= "javascripts/external/intro.js"></script>
+    <script src="javascripts/external/intro.js"></script>
 
     <!-- All the customized intro functions -->
-    <script src= "javascripts/introFunctions.js"></script>
+    <script src="javascripts/introFunctions.js"></script>
 
     <!-- Bootstrap-slider CSS -->
-    <link rel ="stylesheet" href= "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.1/css/bootstrap-slider.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/9.8.1/css/bootstrap-slider.css">
 
     <!-- Windows System CSS -->
     <link rel="stylesheet" href="stylesheets/windows-system.css">
 
     <!-- Font Awesome CSS -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css" integrity="sha384-SZXxX4whJ79/gErwcOYf+zWLeJdY/qpuqC4cAa9rOGUstPomtqpuNWT9wdPEn2fk" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css"
+        integrity="sha384-SZXxX4whJ79/gErwcOYf+zWLeJdY/qpuqC4cAa9rOGUstPomtqpuNWT9wdPEn2fk" crossorigin="anonymous">
 
     <!-- Scatter Plot CSS -->
     <link rel="stylesheet" href="stylesheets/scatter-plot.css">
@@ -164,7 +167,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.3.2/spin.min.js"></script>
 
     <!-- Latest compiled and minified CSS for Bootstrap Select-->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
 
     <!-- Latest compiled and minified JavaScript for Bootstrap Select  -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
@@ -173,166 +177,173 @@
     <script src="javascripts/external/bootstrap-treeview-1.2.0/src/js/bootstrap-treeview.js"></script>
 
     <script src="javascripts/external/bootstrap-tagsinput.js"></script>
-    <link rel ="stylesheet" href="stylesheets/bootstrap-tagsinput.css">
-    <link rel ="stylesheet" href="stylesheets/typehead.css">
+    <link rel="stylesheet" href="stylesheets/bootstrap-tagsinput.css">
+    <link rel="stylesheet" href="stylesheets/typehead.css">
 
     <script src="javascripts/external/typeahead.bundle.js"></script>
 
-    <title> CivisAnalysis 2.0  </title>
+    <title> CivisAnalysis 2.0 </title>
 </head>
 
-<body id = "windows-system">
-<div id="loading">
-    <div id="greyScreen"></div>
-    <img src="./images/ajax_loader.gif" width="100px" class="gif">
-    <span id="msg" class="gif">Loading</span>
-</div>
-
-<div id="loading-project">
-    <div id="greyScreen-project"></div>
-    <img src="./images/ajax_loader.gif" width="100px" class="gif">
-    <span id="msg-project" class="gif">Loading</span>
-</div>
-
-<div id="mySidebar" class="sidebar">
-    <div class ="sidebar-title">
-        <h2><i class="icon node-icon custom-icon hierarchy-black-transparent-icon" style ="top:0px"></i> Treeview</h2>
+<body id="windows-system">
+    <div id="loading">
+        <div id="greyScreen"></div>
+        <img src="./images/ajax_loader.gif" width="100px" class="gif">
+        <span id="msg" class="gif">Loading</span>
     </div>
-    <div id="tree"></div>
-</div>
 
-<!-- Modal -->
-<div class="modal fade" id="languageModal" role="dialog">
-        <div class="modal-dialog">
-          <!-- Modal content-->
-          <div class="modal-content">
-            <div class="modal-header">
-              <h4 class="modal-title">Please, choose your language:</h4>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="column">
-                        <img id = "pt-br" class="flag" src="images/flags/4x3/br.svg" alt="Brazil Flag" style="width:100%">
-                    </div>
-                    <div class="column">
-                        <img id = "en-us" class="flag" src="images/flags/4x3/us.svg" alt="US Flag" style="width:100%">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="column text-center">
-                        <strong>Portuguese - BR</strong>
-                    </div>
-                    <div class="column text-center">
-                        <strong>English - US</strong>
-                    </div>
-                </div>
-            </div>
-          </div>
+    <div id="loading-project">
+        <div id="greyScreen-project"></div>
+        <img src="./images/ajax_loader.gif" width="100px" class="gif">
+        <span id="msg-project" class="gif">Loading</span>
+    </div>
+
+    <div id="mySidebar" class="sidebar">
+        <div class="sidebar-title">
+            <h2><i class="icon node-icon custom-icon hierarchy-black-transparent-icon" style="top:0px"></i> Treeview
+            </h2>
         </div>
-      </div>
+        <div id="tree"></div>
+    </div>
 
-<div id = "navbar">
-    <div class ='container-fluid'>
-        <div class = "row">
-            <div class="col-md-5">
-                <div id = "system-title">
-                    <a href="#">
-                        <img src="images/logo-civis-anaylsis.png" alt="Logo" width="225" height="112">
-                    </a>
+    <!-- Modal -->
+    <div class="modal fade" id="languageModal" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Please, choose your language:</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="column">
+                            <img id="pt-br" class="flag" src="images/flags/4x3/br.svg" alt="Brazil Flag"
+                                style="width:100%">
+                        </div>
+                        <div class="column">
+                            <img id="en-us" class="flag" src="images/flags/4x3/us.svg" alt="US Flag" style="width:100%">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="column text-center">
+                            <strong>Portuguese - BR</strong>
+                        </div>
+                        <div class="column text-center">
+                            <strong>English - US</strong>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div id ="statesFilter">
-                    <label id="selectLabel" for="selStates"></label>
-                    <select class="selectpicker" title= "Choose one of the following...>" multiple id="selStates">
-                        <option value="AC">Acree</option>
-                        <option value="AL">Alagoas</option>
-                        <option value="AP">Amapá</option>
-                        <option value="AM">Amazonas</option>
-                        <option value="BA">Bahia</option>
-                        <option value="CE">Ceará</option>
-                        <option value="DF">Distrito Federal</option>
-                        <option value="ES">Espírito Santo</option>
-                        <option value="GO">Goiás</option>
-                        <option value="MA">Maranhão</option>
-                        <option value="MT">Mato Grosso</option>
-                        <option value="MS">Mato Grosso do Sul</option>
-                        <option value="MG">Minas Gerais</option>
-                        <option value="PA">Pará</option>
-                        <option value="PB">Paraíba</option>
-                        <option value="PR">Paraná</option>
-                        <option value="PE">Pernambuco</option>
-                        <option value="PI">Piauí</option>
-                        <option value="RJ">Rio de Janeiro</option>
-                        <option value="RN">Rio Grande do Norte</option>
-                        <option value="RS">Rio Grande do Sul</option>
-                        <option value="RO">Rondônia</option>
-                        <option value="RR">Roraima</option>
-                        <option value="SC">Santa Catarina</option>
-                        <option value="SP">São Paulo</option>
-                        <option value="SE">Sergipe</option>
-                        <option value="TO">Tocantins</option>
-                    </select>
-                    <button id = "statesBtn" type="button" class="btn btn-default trn">Apply filter</button>
+        </div>
+    </div>
+
+    <div id="navbar">
+        <div class='container-fluid'>
+            <div class="row">
+                <div class="col-md-5">
+                    <div id="system-title">
+                        <a href="#">
+                            <img src="images/logo-civis-anaylsis.png" alt="Logo" width="225" height="112">
+                        </a>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-1">
-                <button id = "resetBtn" type="button" class="btn btn-default trn">Reset all selections</button>
-                <label style = "display:none"> <input id="match" type="checkbox"> Match Deputies </label>
-            </div>
-            <div class="col-md-1">
-                <!-- Single button -->
-                <div class="btn-group" style ="top:40px; float: right;">
-                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span class="fas fa-project-diagram"></span> Project <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                    <li><a onclick="saveProjectFile(); return false;"><span class="fas fa-download" aria-hidden="true"></span> Save project</a></li>
-                    <li role="separator" class="divider"></li>
-                    <li>
-                        <a id="loadBtn"><span class="fas fa-cloud-upload-alt" aria-hidden="true"></span> Load project</a>
-                    </li>
-                    </ul>
+                <div class="col-md-4">
+                    <div id="statesFilter">
+                        <label id="selectLabel" for="selStates"></label>
+                        <select class="selectpicker" title="Choose one of the following...>" multiple id="selStates">
+                            <option value="AC">Acree</option>
+                            <option value="AL">Alagoas</option>
+                            <option value="AP">Amapá</option>
+                            <option value="AM">Amazonas</option>
+                            <option value="BA">Bahia</option>
+                            <option value="CE">Ceará</option>
+                            <option value="DF">Distrito Federal</option>
+                            <option value="ES">Espírito Santo</option>
+                            <option value="GO">Goiás</option>
+                            <option value="MA">Maranhão</option>
+                            <option value="MT">Mato Grosso</option>
+                            <option value="MS">Mato Grosso do Sul</option>
+                            <option value="MG">Minas Gerais</option>
+                            <option value="PA">Pará</option>
+                            <option value="PB">Paraíba</option>
+                            <option value="PR">Paraná</option>
+                            <option value="PE">Pernambuco</option>
+                            <option value="PI">Piauí</option>
+                            <option value="RJ">Rio de Janeiro</option>
+                            <option value="RN">Rio Grande do Norte</option>
+                            <option value="RS">Rio Grande do Sul</option>
+                            <option value="RO">Rondônia</option>
+                            <option value="RR">Roraima</option>
+                            <option value="SC">Santa Catarina</option>
+                            <option value="SP">São Paulo</option>
+                            <option value="SE">Sergipe</option>
+                            <option value="TO">Tocantins</option>
+                        </select>
+                        <button id="statesBtn" type="button" class="btn btn-default trn">Apply filter</button>
+                    </div>
                 </div>
-            </div>
-            <!--
-            <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#languageModal" data-backdrop="static" data-keyboard="false">Open Modal</button> 
+                <div class="col-md-1">
+                    <button id="resetBtn" type="button" class="btn btn-default trn">Reset all selections</button>
+                    <label style="display:none"> <input id="match" type="checkbox"> Match Deputies </label>
+                </div>
+                <!-- Buttons for save and load projects
+                    <div class="col-md-1">
+                    <div class="btn-group" style="top:40px; float: right;">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                            <span class="fas fa-project-diagram"></span> Project <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a onclick="saveProjectFile(); return false;"><span class="fas fa-download"
+                                        aria-hidden="true"></span> Save project</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li>
+                                <a id="loadBtn"><span class="fas fa-cloud-upload-alt" aria-hidden="true"></span> Load
+                                    project</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             -->
         </div>
     </div>
-</div>
+    </div>
 
-<div class="float-action-button">
-    <button id ="openNavBtn" class="main openbtn" onclick="toogleNav(); return false;">></button>
-</div>
+    <div class="float-action-button">
+        <button id="openNavBtn" class="main openbtn" onclick="toogleNav(); return false;">></button>
+    </div>
 
-<div class="container">
-    <svg id ="workspace" width = "100%" height = "100%" class="svg-content-responsive"></svg>
-    <!-- Secondary, outline button -->
-    <ul id="contextMenuScatterPlot" class="dropdown-menu" role="menu" style="display:none" >
-        <li><a tabindex="-1" id="bar-chart">Create a bar chart</a></li>
-        <li><a tabindex="-1" id="force-layout">Show parties clusters</a></li>
-    </ul>
-    <ul id="contextMenuTimeline" class="dropdown-menu" role="menu" style="display:none" >
-        <li><a tabindex="-1" id="scatter-plot-pca">Create a Political Spectrum of Deputies - Technique: PCA</a></li>
-        <li><a tabindex="-1" id="scatter-plot-mds">Create a Political Spectrum of Deputies - Technique: MDS</a></li>
-        <li><a tabindex="-1" id="scatter-plot-tsne">Create a Political Spectrum of Deputies - Technique: t-SNE</a></li>
-        <li><a tabindex="-1" id="scatter-plot-umap">Create a Political Spectrum of Deputies - Technique: UMAP</a></li>
-        <li><a tabindex="-1" id="chamber-infographic">Create a Chamber Infographic</a></li>
-        <li><a tabindex="-1" id="deputies-similarity-force">Create a Deputies Similarity Graph</a></li>
-        <li><a tabindex="-1" id="rollcalls-heatmap">Create a Map of Roll Calls</a></li>
-    </ul>
-    <ul id="contextMenuDeputy" class="dropdown-menu" role="menu" style="display:none" >
-        <li><a tabindex="-1" id="rollcalls-heatmap">Create a Map of Roll Calls</a></li>
-        <li><a class="btn disabled" style="text-align:left;" tabindex="-1" id="time-line-crop-behavior-selection">Create a timeline with selected deputies</a></li>
-    </ul>
-</div>
+    <div class="container">
+        <svg id="workspace" width="100%" height="100%" class="svg-content-responsive"></svg>
+        <!-- Secondary, outline button -->
+        <ul id="contextMenuScatterPlot" class="dropdown-menu" role="menu" style="display:none">
+            <li><a tabindex="-1" id="bar-chart">Create a bar chart</a></li>
+            <li><a tabindex="-1" id="force-layout">Show parties clusters</a></li>
+        </ul>
+        <ul id="contextMenuTimeline" class="dropdown-menu" role="menu" style="display:none">
+            <li><a tabindex="-1" id="scatter-plot-pca">Create a Political Spectrum of Deputies - Technique: PCA</a></li>
+            <li><a tabindex="-1" id="scatter-plot-mds">Create a Political Spectrum of Deputies - Technique: MDS</a></li>
+            <li><a tabindex="-1" id="scatter-plot-tsne">Create a Political Spectrum of Deputies - Technique: t-SNE</a>
+            </li>
+            <li><a tabindex="-1" id="scatter-plot-umap">Create a Political Spectrum of Deputies - Technique: UMAP</a>
+            </li>
+            <li><a tabindex="-1" id="chamber-infographic">Create a Chamber Infographic</a></li>
+            <li><a tabindex="-1" id="deputies-similarity-force">Create a Deputies Similarity Graph</a></li>
+            <li><a tabindex="-1" id="rollcalls-heatmap">Create a Map of Roll Calls</a></li>
+        </ul>
+        <ul id="contextMenuDeputy" class="dropdown-menu" role="menu" style="display:none">
+            <li><a tabindex="-1" id="rollcalls-heatmap">Create a Map of Roll Calls</a></li>
+            <li><a class="btn disabled" style="text-align:left;" tabindex="-1"
+                    id="time-line-crop-behavior-selection">Create a timeline with selected deputies</a></li>
+        </ul>
+    </div>
 
-<div class ="toolTip" style="display: none;"></div>
-<div class ="toolTipHeatMap" style="display: none;"></div>
-<div class ="toolTip toolTipCluster" style="display: none;"></div>
+    <div class="toolTip" style="display: none;"></div>
+    <div class="toolTipHeatMap" style="display: none;"></div>
+    <div class="toolTip toolTipCluster" style="display: none;"></div>
 
 </body>
+
 </html>
 
 <script>
@@ -340,8 +351,7 @@
     /* Getting the document body */
     var windowSystem = $("#windows-system");
 
-    function toogleNav()
-    {
+    function toogleNav() {
         if ($("#mySidebar").width() > 0)
             closeNav();
         else
@@ -358,7 +368,7 @@
 
     function closeNav() {
         document.getElementById("mySidebar").style.width = "0";
-        document.getElementById("windows-system").style.marginLeft= "0";
+        document.getElementById("windows-system").style.marginLeft = "0";
         document.getElementById("openNavBtn").style.marginLeft = "0";
         $("#openNavBtn").html(">");
         checkLimits(false);
@@ -368,6 +378,8 @@
         saveProject(tree.getJsonTree());
     }
 
+    /* Code for load and save projects
+    
     let fileHandle;
     document.getElementById("loadBtn").addEventListener('click', async () => {
         [fileHandle] = await window.showOpenFilePicker();
@@ -375,17 +387,18 @@
         const contents = await file.text();
         loadProject(JSON.parse(contents));
     });
+    */
 
     /* Initialization of System */
-    $(document).ready(function(){
+    $(document).ready(function () {
         $("#navbar").hide();
-        
+
         /* Open language modal */
-        $('#languageModal').modal({backdrop: 'static', keyboard: false}); 
+        $('#languageModal').modal({ backdrop: 'static', keyboard: false });
         resizeTimeline();
 
         /* Check limits whenever a resize event was trigger */
-        $(window).on('resize', function(){
+        $(window).on('resize', function () {
             hideToolTipCluster();
             checkLimits(isSideBarActive());
         });
@@ -394,7 +407,7 @@
         windowSystem.on("click", ".btn-minimize", minimizeWindow);
 
         /* Binding event to remove buttons */
-        windowSystem.on("click", ".btn-remove", function(){
+        windowSystem.on("click", ".btn-remove", function () {
             var id = $(this).parents(".panel").attr("id");
             removeWindow(id, true);
         });
@@ -403,34 +416,34 @@
         //windowSystem.on("click", ".btn-settings-scatterplot", checkChildrenScatterPlot);
 
         /* Binding event to minimized window */
-        windowSystem.on("dblclick", ".minimized-icon", function(event){
+        windowSystem.on("dblclick", ".minimized-icon", function (event) {
             var iconID = ($(this)).attr("id");
             var panelID = iconID.replace("icon-", "");
-            $("#"+iconID).blur();
+            $("#" + iconID).blur();
             maximizeWindow(panelID);
             centerLine(panelID);
         });
 
         /* Binding event to any click in a panel active respective node in tree view */
-        windowSystem.on('click', '.panel', function(event){
+        windowSystem.on('click', '.panel', function (event) {
             /* Prevent to activate tree view node when click on panel's minimize button*/
             var isMinimizeButton = $(event.target).hasClass('btn-minimize') || $(event.target).hasClass('glyphicon-minus');
-            if(isMinimizeButton)
+            if (isMinimizeButton)
                 return;
             var id = $(this)[0].id;
             selectNodeSideBarByPanel(id);
         });
 
         /* Avoid to close settings menu */
-        windowSystem.on('click', '.panel-settings', function(event){
+        windowSystem.on('click', '.panel-settings', function (event) {
             event.stopPropagation();
         });
 
-        windowSystem.on('mousedown', '.panel .node', function(event){
+        windowSystem.on('mousedown', '.panel .node', function (event) {
             checkPeriodTimeLineCrop(event, this);
         });
 
-        windowSystem.on('click', '#resetBtn', function() {
+        windowSystem.on('click', '#resetBtn', function () {
             /* Reset the States select box values */
             $('#selStates').selectpicker('val', '');
             resetSelection();
@@ -438,13 +451,13 @@
 
         windowSystem.on('click', '#statesBtn', selectByStates);
 
-        $("#openNavBtn").attr(popoverAttr(function() { 
-            return "Click to open Treeview" 
-        },'right'));
+        $("#openNavBtn").attr(popoverAttr(function () {
+            return "Click to open Treeview"
+        }, 'right'));
 
         $('#openNavBtn').popover({ trigger: "hover" });
 
-        windowSystem.on('click', '#pt-br', function() {
+        windowSystem.on('click', '#pt-br', function () {
             language = PORTUGUESE;
             $('#languageModal').modal('hide');
             $("#navbar").show();
@@ -453,7 +466,7 @@
             initDict();
         });
 
-        windowSystem.on('click', '#en-us', function() {
+        windowSystem.on('click', '#en-us', function () {
             language = ENGLISH;
             $('#languageModal').modal('hide');
             $("#navbar").show();
@@ -471,7 +484,7 @@
                 enableBrushForAllScatterPlots();
                 activeBrush = false;
             })
-            .on("keyup", function(){
+            .on("keyup", function () {
                 activeBrush = true;
                 disableBrushForAllScatterPlots();
             });
