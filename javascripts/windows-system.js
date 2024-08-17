@@ -416,6 +416,59 @@ function addFilterMotionTypeMenu(newID, rollCalls, rollCallsTypeAhead) {
 
 }
 
+function addDatePickerTimeline() {
+    $("#panel-1-1 .panel-settings")
+        .append('<li role="presentation" class="dropdown-header"><span class="trn">Select the initial and final date</span></li>')
+        .append('<li> <div class="input-daterange input-group" id="timeline-datepicker">' +
+            '<input type="text" class="input-sm form-control" placeholder="mm/dd/yyyy" name="start" />' +
+            '<span class="input-group-addon">to</span>' +
+            '<input type="text" class="input-sm form-control" placeholder="mm/dd/yyyy" name="end" />' +
+            '</div> </li>');
+
+    var startDate = new Date(1991, 0, 1);
+    var endDate = new Date();
+
+    var elt = '#panel-1-1 .input-daterange';
+    var chart;
+
+    $(elt + ' input').keydown(function (event) {
+        return false;
+    });
+
+    var datetimeLocal = language === ENGLISH ? 'en' : 'pt-BR'
+
+    $(elt).datepicker({
+        autoclose: true,
+        keyboardNavigation: false,
+        keepEmptyValues: true,
+        orientation: "bottom",
+        startDate: startDate,
+        endDate: endDate,
+        language: datetimeLocal
+    });
+
+    // For some reason endDate of datapicker options resets to time 00:00, so we have to set our endDate to
+    // time 00:00 for then the date be accepted in input.
+    endDate.setHours(0, 0, 0, 0);
+
+    const today = new Date();
+
+    // Set initial date
+    $(elt + ' input[name="start"]').datepicker('setDate', today);
+    // Set end date
+    $(elt + ' input[name="end"]').datepicker('setDate', endDate);
+
+    $(elt).on('changeDate', function (e) {
+        var initialDate = $(elt + ' input[name="start"]').datepicker('getDate');
+        var endDate = $(elt + ' input[name="end"]').datepicker('getDate');
+
+        const period = [initialDate, endDate];
+
+        chart = tree.getNode("panel-1-1", tree.traverseBF).chart;
+        chart.selectPeriodByDatePicker(period)
+    });
+}
+
 function addFilterDateRollCallMenu(newID, rollCalls, rollCallsTypeAhead) {
     $("#" + newID + " .panel-settings")
         .append('<li role="presentation" class="dropdown-header"><span class="trn">Select the initial and final date</span></li>')
@@ -870,6 +923,7 @@ function createNewChild(currentId, chartObj) {
         $('#' + newID + ' .panel-title').append("<span>Timeline</span");
 
         addConfigMenu(newID, 'time-line', true);
+        addDatePickerTimeline();
         addEditTitleInput(newID);
 
         updateSideBar();
