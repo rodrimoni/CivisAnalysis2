@@ -451,10 +451,10 @@ function addDatePickerTimeline() {
     // time 00:00 for then the date be accepted in input.
     endDate.setHours(0, 0, 0, 0);
 
-    const today = new Date();
+    const currentBeginningOfYear = new Date(endDate.getFullYear(), 0, 1);
 
     // Set initial date
-    $(elt + ' input[name="start"]').datepicker('setDate', today);
+    $(elt + ' input[name="start"]').datepicker('setDate', currentBeginningOfYear);
     // Set end date
     $(elt + ' input[name="end"]').datepicker('setDate', endDate);
 
