@@ -638,7 +638,6 @@ function scatterPlotChart() {
     }
 
     function setDeputyFill(d) {
-        console.log(d);
         if (d.vote != null) {
             return CONGRESS_DEFINE.votoStringToColor[d.vote];
         }

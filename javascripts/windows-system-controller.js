@@ -1,14 +1,13 @@
-var rollCallInTheDateRange =[];
-var deputiesInTheDateRange ={};
+var rollCallInTheDateRange = [];
+var deputiesInTheDateRange = {};
 var motions = {};
-var yearPartyExtent ={};
+var yearPartyExtent = {};
 var partyTrace = {};
 
 
-function loadDeputies(deputiesArray)
-{
-    d3.json('data/deputies.json', function(a_deputiesArray) {
-        a_deputiesArray.forEach( function(deputy,i){
+function loadDeputies(deputiesArray) {
+    d3.json('data/deputies.json', function (a_deputiesArray) {
+        a_deputiesArray.forEach(function (deputy, i) {
             deputy.deputyID = i;
             deputiesArray.push(deputy)
         });
@@ -17,8 +16,8 @@ function loadDeputies(deputiesArray)
 }
 
 function loadDeputiesNodesByYear(deputiesNodesByYear) {
-    d3.json('data/deputiesNodesByYear.json', function(a_deputiesArray) {
-        a_deputiesArray.forEach( function(deputy){
+    d3.json('data/deputiesNodesByYear.json', function (a_deputiesArray) {
+        a_deputiesArray.forEach(function (deputy) {
             deputiesNodesByYear.push(deputy)
         });
     });
@@ -37,17 +36,16 @@ function loadRollCalls(arrayRollCalls, callback) {
     });
 }
 
-function loadNodes(type, selectedTime, callback)
-{
-    d3.json('data/precalc/'+type+'.'+selectedTime +'.json', function (precalc) {
+function loadNodes(type, selectedTime, callback) {
+    d3.json('data/precalc/' + type + '.' + selectedTime + '.json', function (precalc) {
         // SET THE precalc DEPUTIES to their constant object in the app
-        precalc.deputyNodes.forEach( function(precalcDeputy){
+        precalc.deputyNodes.forEach(function (precalcDeputy) {
             var deputy = deputiesArray[precalcDeputy.deputyID], depObj = {};
             depObj.name = deputy.name;
             depObj.district = deputy.district;
             depObj.deputyID = precalcDeputy.deputyID;
             depObj.party = precalcDeputy.party;
-            depObj.scatterplot  = precalcDeputy.scatterplot;
+            depObj.scatterplot = precalcDeputy.scatterplot;
 
             depObj.selected = true;
             depObj.hovered = false;
@@ -66,13 +64,12 @@ function checkSelectedValue(id) {
     var deputyNodesLength = Object.keys(deputyNodes).length;
     var cont = 0;
 
-    if (selectionOn)
-    {
-        if ( deputyNodesLength > 1) {
-            for (var key in deputyNodes){
-                if (cont < deputyNodesLength - 1){
+    if (selectionOn) {
+        if (deputyNodesLength > 1) {
+            for (var key in deputyNodes) {
+                if (cont < deputyNodesLength - 1) {
                     var dep = deputyNodes[key][id];
-                    if (dep !== undefined){
+                    if (dep !== undefined) {
                         selectValue = dep.selected;
                         if (selectValue)
                             break;
@@ -104,25 +101,25 @@ function loadScatterPlotDataByYear() {
 
         console.log(year);
 
-        d3.json('data/precalc/year.'+ year +'.json', function (precalc) {
-            precalc.deputyNodes.forEach( function(precalcDeputy){
+        d3.json('data/precalc/year.' + year + '.json', function (precalc) {
+            precalc.deputyNodes.forEach(function (precalcDeputy) {
                 if (deputiesNodesYearsArray[precalcDeputy.deputyID] === undefined) {
                     deputiesNodesYearsArray[precalcDeputy.deputyID] = {};
                     deputiesNodesYearsArray[precalcDeputy.deputyID].deputyID = precalcDeputy.deputyID;
-                    deputiesNodesYearsArray[precalcDeputy.deputyID].name =deputiesArray[precalcDeputy.deputyID].name;
+                    deputiesNodesYearsArray[precalcDeputy.deputyID].name = deputiesArray[precalcDeputy.deputyID].name;
                 }
                 if (deputiesNodesYearsArray[precalcDeputy.deputyID].nodes) {
                     deputiesNodesYearsArray[precalcDeputy.deputyID].nodes.push({
                         year: year,
-                        party : precalcDeputy.party,
+                        party: precalcDeputy.party,
                         scatterplot: precalcDeputy.scatterplot
                     })
                 }
-                else{
+                else {
                     deputiesNodesYearsArray[precalcDeputy.deputyID].nodes = [];
                     deputiesNodesYearsArray[precalcDeputy.deputyID].nodes.push({
                         year: year,
-                        party : precalcDeputy.party,
+                        party: precalcDeputy.party,
                         scatterplot: precalcDeputy.scatterplot
                     })
                 }
@@ -148,14 +145,14 @@ function calcExtentValuesByYear() {
 
         console.log(year);
 
-        d3.json('data/precalc/year.'+ year +'.json', function (precalc) {
-            extentValuesArray[year] = d3.extent(precalc.deputyNodes, function(d) { return d.scatterplot[1]; });
+        d3.json('data/precalc/year.' + year + '.json', function (precalc) {
+            extentValuesArray[year] = d3.extent(precalc.deputyNodes, function (d) { return d.scatterplot[1]; });
             calcExtentRecursive(year + 1);
         })
     }
 }
 
-function createDeputyNodes(data_deputies, selecteddeputies){
+function createDeputyNodes(data_deputies, selecteddeputies) {
     var deputies = [];
 
     for (var i = 0; i < selecteddeputies.length; i++) {
@@ -164,21 +161,21 @@ function createDeputyNodes(data_deputies, selecteddeputies){
         depObj.district = deputy.district;
         depObj.deputyID = deputy.deputyID;
         depObj.party = deputy.party;
-        depObj.scatterplot  = data_deputies[i];
+        depObj.scatterplot = data_deputies[i];
         depObj.selected = true;
         depObj.overlapped = null;
         deputies[depObj.deputyID] = depObj;
     }
-    
+
     return deputies;
 }
 
 
 function createDeputySimilarityGraph(data_deputies, selectedDeputies) {
     var numDeputies = selectedDeputies.length;
-    var graph = {nodes:[], links: []};
+    var graph = { nodes: [], links: [] };
 
-    for (var i = 0; i< numDeputies; i++){
+    for (var i = 0; i < numDeputies; i++) {
         var deputy = selectedDeputies[i]; node = {};
         node.deputyID = deputy.deputyID;
         node.party = deputy.party;
@@ -186,8 +183,7 @@ function createDeputySimilarityGraph(data_deputies, selectedDeputies) {
         node.district = deputy.district;
         node.selected = true;
         graph.nodes[deputy.deputyID] = node;
-        for (var j = 0; j < i; j++)
-        {
+        for (var j = 0; j < i; j++) {
             var source = selectedDeputies[i];
             var target = selectedDeputies[j];
             var link = {};
@@ -207,8 +203,7 @@ function filterMotions(arr, filter) {
         var resultDate = false;
 
         // Verify if satisfies the motion type
-        if (filter.motionTypeFilter.length > 0)
-        {
+        if (filter.motionTypeFilter.length > 0) {
             if (filter.motionTypeFilter.indexOf(e.type) > -1)
                 resultType = true;
         }
@@ -225,53 +220,55 @@ function filterMotions(arr, filter) {
     });
 }
 
-function getMotion (type,number,year,callback){
-    d3.json('data/motions.min/'+type+''+number+''+year+'.json', function(motion) {
-        if(motion === null) console.log('Could not load DB getMotion/'+type+'/'+number+'/'+year);
+function getMotion(type, number, year, callback) {
+    d3.json('data/motions.min/' + type + '' + number + '' + year + '.json', function (motion) {
+        if (motion === null) console.log('Could not load DB getMotion/' + type + '/' + number + '/' + year);
         callback(motion);
     })
 }
 
-function setNewDateRange(period)
-{
+function setNewDateRange(period) {
     // find if there is an pre calc of this period
-    var precalc = {found:false, id:''};
+    var precalc = { found: false, id: '' };
 
-    CONGRESS_DEFINE.years.forEach( function(yearObj){
-        if(yearObj.period[0].getTime() === period[0].getTime() && yearObj.period[1].getTime() === period[1].getTime()){
+    CONGRESS_DEFINE.years.forEach(function (yearObj) {
+        if (yearObj.period[0].getTime() === period[0].getTime() && yearObj.period[1].getTime() === period[1].getTime()) {
             precalc.found = true;
             precalc.id = yearObj.name;
             precalc.type = 'year';
-            console.log('YEAR - preCALC!!'); }
+            console.log('YEAR - preCALC!!');
+        }
     });
 
-    if(!precalc.found)
-        CONGRESS_DEFINE.legislatures.forEach( function(legislatureObj,i){
-            if(legislatureObj.period[0].getTime() === period[0].getTime() && legislatureObj.period[1].getTime() === period[1].getTime()){
+    if (!precalc.found)
+        CONGRESS_DEFINE.legislatures.forEach(function (legislatureObj, i) {
+            if (legislatureObj.period[0].getTime() === period[0].getTime() && legislatureObj.period[1].getTime() === period[1].getTime()) {
                 precalc.found = true;
                 precalc.id = i;
                 precalc.type = 'legislature';
-                console.log('LEGISLATURE - preCALC!!'); }
+                console.log('LEGISLATURE - preCALC!!');
+            }
         });
 
-    if(!precalc.found)
-        CONGRESS_DEFINE.presidents.forEach( function(presidentObj,i){
-            if(presidentObj.period[0].getTime() === period[0].getTime() && presidentObj.period[1].getTime() === period[1].getTime()){
+    if (!precalc.found)
+        CONGRESS_DEFINE.presidents.forEach(function (presidentObj, i) {
+            if (presidentObj.period[0].getTime() === period[0].getTime() && presidentObj.period[1].getTime() === period[1].getTime()) {
                 precalc.found = true;
                 precalc.id = i;
                 precalc.type = 'president';
-                console.log('PRESIDENT - preCALC!!'); }
+                console.log('PRESIDENT - preCALC!!');
+            }
         });
 
     return precalc;
 }
 
-function refreshDeputies(defer){
+function refreshDeputies(defer) {
 
-    rollCallInTheDateRange.forEach( function( rollCall ){
-        if(rollCall.votes === undefined){ console.log('withoutVotes',rollCall) }
+    rollCallInTheDateRange.forEach(function (rollCall) {
+        if (rollCall.votes === undefined) { console.log('withoutVotes', rollCall) }
         else
-            rollCall.votes.forEach( function(vote){
+            rollCall.votes.forEach(function (vote) {
                 deputiesInTheDateRange[vote.deputyID] = deputiesArray[vote.deputyID];
                 deputiesInTheDateRange[vote.deputyID].party = vote.party; // refresh party
             })
@@ -280,14 +277,14 @@ function refreshDeputies(defer){
     defer(null, true);
 }
 
-function updateDataforDateRange(period,callback){
+function updateDataforDateRange(period, callback) {
     var text = language === ENGLISH ? "Loading Data" : "Carregando dados";
     $('#loading #msg').text(text);
     // get the data (from db or already loaded in the dataWrapper)
-    setDateRange(period[0],period[1], function(arollCallInTheDateRange,adeputiesInTheDateRange){
+    setDateRange(period[0], period[1], function (arollCallInTheDateRange, adeputiesInTheDateRange) {
 
         rollCallInTheDateRange = [];
-        arollCallInTheDateRange.forEach(function(rollCall){ if( (rollCall.votes!==null) && (rollCall.votes!==undefined) )  rollCallInTheDateRange.push(rollCall); })
+        arollCallInTheDateRange.forEach(function (rollCall) { if ((rollCall.votes !== null) && (rollCall.votes !== undefined)) rollCallInTheDateRange.push(rollCall); })
         deputiesInTheDateRange = adeputiesInTheDateRange;
 
         //AT THIS POINT rollCallInTheDateRange and deputiesInTheDateRange are updated with the new date range
@@ -296,43 +293,43 @@ function updateDataforDateRange(period,callback){
     });
 }
 
-function setDateRange(start,end, callback){
+function setDateRange(start, end, callback) {
 
-    rollCallInTheDateRange =[];
-    deputiesInTheDateRange ={};
+    rollCallInTheDateRange = [];
+    deputiesInTheDateRange = {};
 
     var q = queue(1);
     q
-        .defer(loadMotionsInDateRange,start,end) // new queue(20) of load motions
+        .defer(loadMotionsInDateRange, start, end) // new queue(20) of load motions
         .defer(refreshDeputies); // new queue(20) of load motions
 
     // wait for all loading and call the app function
-    q.awaitAll(function(){
-        callback(rollCallInTheDateRange,deputiesInTheDateRange)
+    q.awaitAll(function () {
+        callback(rollCallInTheDateRange, deputiesInTheDateRange)
 
     });
 }
 
-function loadMotionsInDateRange(start,end,defer){
+function loadMotionsInDateRange(start, end, defer) {
     // get the list of rollCalls of the period [start,end]
-    rollCallInTheDateRange = arrayRollCalls.filter( function(rollCall){
+    rollCallInTheDateRange = arrayRollCalls.filter(function (rollCall) {
         return (start <= rollCall.datetime) && (rollCall.datetime <= end)
     });
     //console.log("rollCallInTheDateRange",rollCallInTheDateRange)
 
     // check if the motion is already loaded AND reduce repeated motions(with the map{})
     var motionsToLoad = {};
-    rollCallInTheDateRange.forEach( function(d){
-        if(motions[d.type+d.number+d.year] === undefined){
-            motionsToLoad[d.type+d.number+d.year] = d;
+    rollCallInTheDateRange.forEach(function (d) {
+        if (motions[d.type + d.number + d.year] === undefined) {
+            motionsToLoad[d.type + d.number + d.year] = d;
         }
     });
 
     //console.log("motionsToLoad",motionsToLoad)
     var loadMotionsQueue = queue(20);
 
-    $.each(motionsToLoad, function(motion) {
-        motions[motion]={};
+    $.each(motionsToLoad, function (motion) {
+        motions[motion] = {};
         loadMotionsQueue.defer(
             loadMotion,
             motionsToLoad[motion].type,
@@ -342,16 +339,16 @@ function loadMotionsInDateRange(start,end,defer){
 
     });
 
-    loadMotionsQueue.awaitAll(function(){ defer(null, true);} ) // return to setDateRange()
+    loadMotionsQueue.awaitAll(function () { defer(null, true); }) // return to setDateRange()
 }
 
-function loadMotion(type,number,year,defer){
-    getMotion(type,number,year, function(motion){
-        motions[type+number+year] = motion;
+function loadMotion(type, number, year, defer) {
+    getMotion(type, number, year, function (motion) {
+        motions[type + number + year] = motion;
 
-        motion.rollCalls.forEach( function(rollCall){
-            if(rollCall.votes !== undefined){
-                rollCall.votes.forEach( function(vote){
+        motion.rollCalls.forEach(function (rollCall) {
+            if (rollCall.votes !== undefined) {
+                rollCall.votes.forEach(function (vote) {
                     vote.vote = CONGRESS_DEFINE.integerToVote[vote.vote];
                     try {
                         let name = deputiesArray[vote.deputyID].name;
@@ -361,23 +358,26 @@ function loadMotion(type,number,year,defer){
                         console.log(vote);
                     }
                     vote.district = deputiesArray[vote.deputyID].district; // assuming the distric does not change for the congressman
-                    if(vote.party === 'Solidaried') vote.party = 'SDD';
-                    if(vote.party === 'S.Part.') vote.party = 'NoParty';
+                    if (vote.party === 'Solidaried') vote.party = 'SDD';
+                    if (vote.party === 'S.Part.') vote.party = 'NoParty';
                 })
             }
+
+            // assign motion theme to roll call to verify in vis the distribution of rollcalls by theme
+            rollCall.theme = !!motion?.theme?.length ? motion?.theme[0] : undefined;
 
             // create the Date obj
             rollCall.datetime = new Date(rollCall.datetime);
 
             // find the arrayRollCalls
-            var dtRollCall = arrayRollCalls.filter(function(d){ return (d.datetime.toUTCString() === rollCall.datetime.toUTCString() ) } )
+            var dtRollCall = arrayRollCalls.filter(function (d) { return (d.datetime.toUTCString() === rollCall.datetime.toUTCString()) })
             // console.log(dtRollCall)
-            if(dtRollCall.length === 0) {
-                console.log(type+number+year,'rollCall',rollCall)
+            if (dtRollCall.length === 0) {
+                console.log(type + number + year, 'rollCall', rollCall)
             }
             // set rollCall to the arrayRollCalls entry
             else {
-                for( var atribute in rollCall) dtRollCall[0][atribute] = rollCall[atribute];
+                for (var atribute in rollCall) dtRollCall[0][atribute] = rollCall[atribute];
                 rollCall.rollCallID = dtRollCall[0].rollCallID;
                 rollCall = dtRollCall[0];
             }
@@ -387,30 +387,30 @@ function loadMotion(type,number,year,defer){
     })
 }
 
-function createMatrixDeputiesPerRollCall (deputies){
+function createMatrixDeputiesPerRollCall(deputies) {
     // -------------------------------------------------------------------------------------------------------------------
     // Create the matrix [ Deputy ] X [ RollCall ] => table[Deputy(i)][RollCall(j)] = vote of deputy(i) in the rollCall(j)
     console.log("create matrix deputy X rollCall!!");
     var rollCalls = rollCallInTheDateRange;
 
-    var tableDepXRollCall = numeric.rep([Object.keys(deputies).length, Object.keys(rollCalls).length],0);
+    var tableDepXRollCall = numeric.rep([Object.keys(deputies).length, Object.keys(rollCalls).length], 0);
 
     // How the votes will be represented in the matrix for the calc of SVD
-    var votoStringToInteger = {"Sim":1,"Não":-1,"Abstenção":0,"Obstrução":0,"Art. 17":0,"Branco":0};
+    var votoStringToInteger = { "Sim": 1, "Não": -1, "Abstenção": 0, "Obstrução": 0, "Art. 17": 0, "Branco": 0 };
 
     // for each rollCall
-    rollCalls.forEach( function( rollCallEntry, rollCallKey ){
+    rollCalls.forEach(function (rollCallEntry, rollCallKey) {
 
 
-        if(rollCallEntry.votes.length === 0) console.log("NO VOTES('secret')! -"+rollCallEntry.obj);
-        else{
+        if (rollCallEntry.votes.length === 0) console.log("NO VOTES('secret')! -" + rollCallEntry.obj);
+        else {
             // for each vote in the roll call
-            rollCallEntry.votes.forEach( function(vote){
+            rollCallEntry.votes.forEach(function (vote) {
 
                 var svdKey = deputiesInTheDateRange[vote.deputyID].svdKey;
-                if(svdKey !== null){
+                if (svdKey !== null) {
                     //if(votoStringToInteger[vote.vote]===undefined) console.log("'"+vote.vote+"'");
-                    tableDepXRollCall[svdKey][rollCallKey]=votoStringToInteger[vote.vote];
+                    tableDepXRollCall[svdKey][rollCallKey] = votoStringToInteger[vote.vote];
                 }
             })
         }
@@ -419,60 +419,60 @@ function createMatrixDeputiesPerRollCall (deputies){
 }
 
 // calc how many votes each congressman made in the period
-function calcNumVotes(deputiesInTheDateRange){
-    $.each(deputiesInTheDateRange, function(deputy){    deputiesInTheDateRange[deputy].numVotes = 0;  });
+function calcNumVotes(deputiesInTheDateRange) {
+    $.each(deputiesInTheDateRange, function (deputy) { deputiesInTheDateRange[deputy].numVotes = 0; });
 
-    rollCallInTheDateRange.forEach( function( rollCall ){
-        rollCall.votes.forEach( function(vote){
+    rollCallInTheDateRange.forEach(function (rollCall) {
+        rollCall.votes.forEach(function (vote) {
             deputiesInTheDateRange[vote.deputyID].numVotes++;
         })
     });
 }
 
-function filterDeputies () {
+function filterDeputies() {
     // calc the number of votes for each congressman
     calcNumVotes(deputiesInTheDateRange);
 
     // select only congressmans who votead at least one third 1/3 of all roll calls in the selected period
-    function filterDeputiesWhoVotedAtLeastOneThirdOfVotes(){
-        var svdKey =0;
-        var dep = $.map(deputiesInTheDateRange, function(deputy){
+    function filterDeputiesWhoVotedAtLeastOneThirdOfVotes() {
+        var svdKey = 0;
+        var dep = $.map(deputiesInTheDateRange, function (deputy) {
 
-            if(deputy.numVotes > (rollCallInTheDateRange.length/3) ){
+            if (deputy.numVotes > (rollCallInTheDateRange.length / 3)) {
 
                 deputy.svdKey = svdKey++;
                 //deputy.selected = true;
                 return deputy;
 
             }
-            else{
+            else {
                 deputy.scatterplot = null;
-                deputy.svdKey= null;
+                deputy.svdKey = null;
             }
         });
         return dep;
     }
 
     // select 513 deputies, deputies with more present in votings.
-    function filter513DeputiesMorePresent(){
-        var deputies = $.map(deputiesInTheDateRange, function(deputy){
+    function filter513DeputiesMorePresent() {
+        var deputies = $.map(deputiesInTheDateRange, function (deputy) {
             return deputy;
         });
-        deputies = deputies.sort(function(a,b){ return b.numVotes - a.numVotes});
+        deputies = deputies.sort(function (a, b) { return b.numVotes - a.numVotes });
 
         // get the first 513nd deputies
-        var selectedDeputies = deputies.splice(0, ((deputies.lenght < 513)? deputies.lenght : 513) );
+        var selectedDeputies = deputies.splice(0, ((deputies.lenght < 513) ? deputies.lenght : 513));
 
         // set selected
-        var svdKey =0;
-        selectedDeputies.forEach( function(deputy,i){
+        var svdKey = 0;
+        selectedDeputies.forEach(function (deputy, i) {
             deputy.svdKey = svdKey++;
         });
 
         // reset non selected
-        deputies.forEach( function(deputy){
+        deputies.forEach(function (deputy) {
             deputy.scatterplot = null;
-            deputy.svdKey= null;
+            deputy.svdKey = null;
         });
 
         return selectedDeputies;
@@ -486,8 +486,8 @@ function createMatrixDistanceDeputies(matrixDeputiesPerRollCall) {
     var numberOfDeputies = matrixDeputiesPerRollCall.length;
     var numberOfRollCalls = matrixDeputiesPerRollCall[0].length;
 
-    var matrixMatches   = createArray(numberOfDeputies,numberOfDeputies);
-    var matrixDistances = createArray(numberOfDeputies,numberOfDeputies);
+    var matrixMatches = createArray(numberOfDeputies, numberOfDeputies);
+    var matrixDistances = createArray(numberOfDeputies, numberOfDeputies);
 
     for (var i = 0; i < numberOfDeputies; i++)
         for (var j = 0; j < numberOfDeputies; j++)
@@ -495,7 +495,7 @@ function createMatrixDistanceDeputies(matrixDeputiesPerRollCall) {
 
     for (var d = 0; d < numberOfDeputies; d++)
         for (var r = 0; r < numberOfRollCalls; r++)
-            for (var compareDeputy = d+1; compareDeputy < numberOfDeputies; compareDeputy++)
+            for (var compareDeputy = d + 1; compareDeputy < numberOfDeputies; compareDeputy++)
                 if (matrixDeputiesPerRollCall[d][r] === matrixDeputiesPerRollCall[compareDeputy][r]) {
                     matrixMatches[d][compareDeputy] += 1;
                     matrixMatches[compareDeputy][d] += 1;
@@ -504,8 +504,8 @@ function createMatrixDistanceDeputies(matrixDeputiesPerRollCall) {
     for (var i = 0; i < numberOfDeputies; i++)
         for (var j = 0; j < numberOfDeputies; j++)
             if (matrixMatches[i][j] !== 0)
-                matrixDistances[i][j] = 100 - (matrixMatches[i][j] * 100) / numberOfRollCalls ;
-                //matrixDistances[i][j] = numberOfRollCalls - matrixMatches[i][j];
+                matrixDistances[i][j] = 100 - (matrixMatches[i][j] * 100) / numberOfRollCalls;
+            //matrixDistances[i][j] = numberOfRollCalls - matrixMatches[i][j];
             else
                 matrixDistances[i][j] = 0;
 
@@ -518,7 +518,7 @@ function createArray(length) {
 
     if (arguments.length > 1) {
         var args = Array.prototype.slice.call(arguments, 1);
-        while(i--) arr[length-1 - i] = createArray.apply(this, args);
+        while (i--) arr[length - 1 - i] = createArray.apply(this, args);
     }
 
     return arr;
@@ -527,10 +527,10 @@ function createArray(length) {
 function getPartyCount(cluster) {
 
     var currentPartyCount = [];
-    cluster.forEach(function(deputy){
-        var result = $.grep(currentPartyCount, function(e){ return e.party === deputy.party; });
+    cluster.forEach(function (deputy) {
+        var result = $.grep(currentPartyCount, function (e) { return e.party === deputy.party; });
         if (result.length === 0) {
-            currentPartyCount.push({"party" : deputy.party, "number": 1});
+            currentPartyCount.push({ "party": deputy.party, "number": 1 });
         }
         else
             if (result.length === 1) {
@@ -539,17 +539,16 @@ function getPartyCount(cluster) {
     });
 
     /* Sort and count the number of deputies per party*/
-    currentPartyCount.sort(function(x,y){
+    currentPartyCount.sort(function (x, y) {
         return d3.descending(x.number, y.number);
     });
 
     return currentPartyCount;
 }
 
-function getPartyCountAllScatter(nodes)
-{
+function getPartyCountAllScatter(nodes) {
     var currentPartyCount = {};
-    nodes.forEach(function(deputy){
+    nodes.forEach(function (deputy) {
         if (currentPartyCount[deputy.party] === undefined)
             currentPartyCount[deputy.party] = 1
         else
@@ -559,19 +558,19 @@ function getPartyCountAllScatter(nodes)
     return currentPartyCount;
 }
 
-function calcThePartyTracesByYear( periodOfYears ){
+function calcThePartyTracesByYear(periodOfYears) {
     var startYear = 1991, endYear = 2024;
 
     function calcOneYearRecursive(year) {
         console.log('calcThePartyTracesByYear ' + year);
-        if(year > endYear){  
-            partyTrace['DEM'] = mergeObjects(partyTrace['PFL'],partyTrace['DEM']);
-            partyTrace['União'] = mergeObjects(partyTrace['DEM'],partyTrace['União']);
-            partyTrace['PR'] = mergeObjects(partyTrace['PL'],partyTrace['PR']);
-            partyTrace['PP'] = mergeObjects(partyTrace['PPB'],partyTrace['PP']);
-            partyTrace['Podemos'] = mergeObjects(partyTrace['PTN'],partyTrace['Podemos']);
-            partyTrace['MDB'] = mergeObjects(partyTrace['PMDB'],partyTrace['MDB']);
-            partyTrace['CIDADANIA'] = mergeObjects(partyTrace['PPS'],partyTrace['CIDADANIA']);
+        if (year > endYear) {
+            partyTrace['DEM'] = mergeObjects(partyTrace['PFL'], partyTrace['DEM']);
+            partyTrace['União'] = mergeObjects(partyTrace['DEM'], partyTrace['União']);
+            partyTrace['PR'] = mergeObjects(partyTrace['PL'], partyTrace['PR']);
+            partyTrace['PP'] = mergeObjects(partyTrace['PPB'], partyTrace['PP']);
+            partyTrace['Podemos'] = mergeObjects(partyTrace['PTN'], partyTrace['Podemos']);
+            partyTrace['MDB'] = mergeObjects(partyTrace['PMDB'], partyTrace['MDB']);
+            partyTrace['CIDADANIA'] = mergeObjects(partyTrace['PPS'], partyTrace['CIDADANIA']);
 
             delete partyTrace['DEM'];
             delete partyTrace['PFL'];
@@ -589,26 +588,26 @@ function calcThePartyTracesByYear( periodOfYears ){
                 "traces": partyTrace
             };
 
-            console.log(JSON.stringify(saveTrace)); 
-            return; 
+            console.log(JSON.stringify(saveTrace));
+            return;
         }
-        
+
         var period = [];
-        period[0] = new Date(year,0,1);
-        period[1] = new Date(year+periodOfYears,0,1);
+        period[0] = new Date(year, 0, 1);
+        period[1] = new Date(year + periodOfYears, 0, 1);
 
         console.log(period);
 
-        updateDataforDateRange( period , function(){
+        updateDataforDateRange(period, function () {
             var filteredDeputies = filterDeputies();
             var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
 
             // var SVDdata = calcSVD(filteredDeputies,rollCallInTheDateRange);
-            calcSVD(matrixDeputiesPerRollCall, function(SVDdata) {
+            calcSVD(matrixDeputiesPerRollCall, function (SVDdata) {
                 // Deputies array
-                deputyNodes = createDeputyNodes(SVDdata.deputies,filteredDeputies);
+                deputyNodes = createDeputyNodes(SVDdata.deputies, filteredDeputies);
 
-                scaleAdjustment().setGovernmentTo3rdQuadrant(d3.values(deputyNodes),period[1]);
+                scaleAdjustment().setGovernmentTo3rdQuadrant(d3.values(deputyNodes), period[1]);
 
                 // store parties trace
                 var parties = calcPartiesSizeAndCenter(d3.values(deputyNodes));
@@ -617,17 +616,17 @@ function calcThePartyTracesByYear( periodOfYears ){
                 // });
 
                 //console.log(parties)
-                $.each(parties, function(party){
-                    if(partyTrace[party] === undefined) partyTrace[party] = {};
+                $.each(parties, function (party) {
+                    if (partyTrace[party] === undefined) partyTrace[party] = {};
 
-                    partyTrace[party][year]={};
+                    partyTrace[party][year] = {};
                     partyTrace[party][year].center = this.center;
                     partyTrace[party][year].size = this.size;
 
                 });
-                yearPartyExtent[year] = d3.extent( d3.entries(parties), function(d){ return d.value.center[1] });
+                yearPartyExtent[year] = d3.extent(d3.entries(parties), function (d) { return d.value.center[1] });
 
-                calcOneYearRecursive(year+periodOfYears);
+                calcOneYearRecursive(year + periodOfYears);
             })
         })
 
@@ -637,28 +636,28 @@ function calcThePartyTracesByYear( periodOfYears ){
 
 }
 
-function createTraces1by1 (){
+function createTraces1by1() {
     calcThePartyTracesByYear(1); // calc by two years
 }
 
 
-function mergeObjects(obj1,obj2){
+function mergeObjects(obj1, obj2) {
     var obj3 = {};
     for (var attrname in obj1) { obj3[attrname] = obj1[attrname]; }
     for (var attrname in obj2) { obj3[attrname] = obj2[attrname]; }
     return obj3;
 }
 
-function calcPartiesSizeAndCenter( deputies ){
-    if(deputies===null) return null;
+function calcPartiesSizeAndCenter(deputies) {
+    if (deputies === null) return null;
 
     var parties = {};
 
-    deputies.forEach(function(deputy){
+    deputies.forEach(function (deputy) {
 
-        if(parties[deputy.party] === undefined) parties[deputy.party] = {size:0, selected:0, center:[0,0], stdev:[0,0]};
+        if (parties[deputy.party] === undefined) parties[deputy.party] = { size: 0, selected: 0, center: [0, 0], stdev: [0, 0] };
         parties[deputy.party].size++;
-        if(deputy.selected) parties[deputy.party].selected++;
+        if (deputy.selected) parties[deputy.party].selected++;
         // sum of values
         parties[deputy.party].center[0] += deputy.scatterplot[0];
         parties[deputy.party].center[1] += deputy.scatterplot[1];
@@ -667,53 +666,53 @@ function calcPartiesSizeAndCenter( deputies ){
         parties[deputy.party].stdev[1] += Math.pow(deputy.scatterplot[1], 2);
     });
 
-    $.each(parties, function(party){
+    $.each(parties, function (party) {
         // calc stdev
-        parties[party].stdev[0] = Math.sqrt(  ( parties[party].stdev[0] - Math.pow(parties[party].center[0],2)/parties[party].size) / (parties[party].size -1) )
-        parties[party].stdev[1] = Math.sqrt(  ( parties[party].stdev[1] - Math.pow(parties[party].center[1],2)/parties[party].size) / (parties[party].size -1) )
+        parties[party].stdev[0] = Math.sqrt((parties[party].stdev[0] - Math.pow(parties[party].center[0], 2) / parties[party].size) / (parties[party].size - 1))
+        parties[party].stdev[1] = Math.sqrt((parties[party].stdev[1] - Math.pow(parties[party].center[1], 2) / parties[party].size) / (parties[party].size - 1))
         // calc mean
-        parties[party].center[0] = parties[party].center[0]/parties[party].size;
-        parties[party].center[1] = parties[party].center[1]/parties[party].size;
+        parties[party].center[0] = parties[party].center[0] / parties[party].size;
+        parties[party].center[1] = parties[party].center[1] / parties[party].size;
     });
 
     return parties;
 }
 
-function popoverAttr(htmlContent,placement){
+function popoverAttr(htmlContent, placement) {
     return {
-        cursor : 'pointer',
-        href:"#",
-        'data-container':'body',
+        cursor: 'pointer',
+        href: "#",
+        'data-container': 'body',
         'data-content': htmlContent,
         'data-html': true,
-        rel:"popover",
-        'data-placement': (placement)?placement:'bottom',
-        'data-trigger':"hover",
+        rel: "popover",
+        'data-placement': (placement) ? placement : 'bottom',
+        'data-trigger': "hover",
         'data-viewport': 'body'
     }
 }
 
-function popoverAttrFocus(htmlContent,placement){
+function popoverAttrFocus(htmlContent, placement) {
     return {
-        cursor : 'pointer',
-        href:"javascript:",
-        'data-container':'body',
+        cursor: 'pointer',
+        href: "javascript:",
+        'data-container': 'body',
         'data-content': htmlContent,
         'data-html': true,
-        rel:"popover",
-        'data-placement': (placement)?placement:'bottom',
-        'data-trigger':"focus",
+        rel: "popover",
+        'data-placement': (placement) ? placement : 'bottom',
+        'data-trigger': "focus",
     }
 }
 
-function resetSelection(){
-    for (var key in deputyNodes){
+function resetSelection() {
+    for (var key in deputyNodes) {
         for (var index in deputyNodes[key])
             deputyNodes[key][index].selected = true;
         updateDeputies(key);
     }
 
-    for (var key in rollCallsRates){
+    for (var key in rollCallsRates) {
         for (var index in rollCallsRates[key])
             rollCallsRates[key][index].selected = true;
         updateRollCalls(key);
@@ -721,7 +720,7 @@ function resetSelection(){
 
     /* Reset the roll calls selection by search */
     $('.searchRollCall.tt-input').each(function () {
-       $(this).val('');
+        $(this).val('');
     });
     /* Reset the deputies selection by search */
     $('.searchDeputies').tagsinput('removeAll');
@@ -729,7 +728,7 @@ function resetSelection(){
     updateVisualizations();
 }
 
-function updateDeputyNodeInAllPeriods(deputyID, attr, value ) {
+function updateDeputyNodeInAllPeriods(deputyID, attr, value) {
     for (var key in deputyNodes) {
         var deputy = deputyNodes[key][deputyID];
         if (deputy !== undefined)
@@ -737,7 +736,7 @@ function updateDeputyNodeInAllPeriods(deputyID, attr, value ) {
     }
 }
 
-function selectByStates (){
+function selectByStates() {
 
     var states = $('select[id="selStates"]').val();
 
@@ -757,41 +756,41 @@ function selectByStates (){
 }
 
 // for each roll call rate how many yes and no it has, in the range [1(yes),-1(no)]
-function calcRollCallRate(rollCalls,deputies){
+function calcRollCallRate(rollCalls, deputies) {
     var mapSelectedDeputies = {};
 
     for (var key in deputies) {
         var dep = deputies[key];
-        mapSelectedDeputies[dep.deputyID]=true;
+        mapSelectedDeputies[dep.deputyID] = true;
     }
 
-    $.each(rollCalls, function(d){
-        rollCalls[d].rate='noVotes';
+    $.each(rollCalls, function (d) {
+        rollCalls[d].rate = 'noVotes';
 
-        var totalVotes=0, // total of votes
+        var totalVotes = 0, // total of votes
             votes = {};   // sum of each type
 
-        rollCalls[d].votes.forEach( function (vote){
+        rollCalls[d].votes.forEach(function (vote) {
             // if deputy is selected count the vote
-            if(mapSelectedDeputies[vote.deputyID]!== undefined){
-                if( votes[vote.vote] === undefined )
-                    votes[vote.vote]=0;
+            if (mapSelectedDeputies[vote.deputyID] !== undefined) {
+                if (votes[vote.vote] === undefined)
+                    votes[vote.vote] = 0;
 
-                votes[vote.vote] ++;
-                totalVotes ++;
+                votes[vote.vote]++;
+                totalVotes++;
             }
         });
 
-        if(( (votes['Sim'] ===undefined ) && (votes['Não'] === undefined ) )) {
+        if (((votes['Sim'] === undefined) && (votes['Não'] === undefined))) {
             rollCalls[d].rate = 'noVotes'
         }
         else {
-            if(votes['Sim'] === undefined) votes['Sim']=0;
-            if(votes['Não'] === undefined) votes['Não']=0;
-            rollCalls[d].rate = (votes['Sim']-votes['Não'])/( votes['Sim']+votes['Não']);
+            if (votes['Sim'] === undefined) votes['Sim'] = 0;
+            if (votes['Não'] === undefined) votes['Não'] = 0;
+            rollCalls[d].rate = (votes['Sim'] - votes['Não']) / (votes['Sim'] + votes['Não']);
             rollCalls[d].countVotes = [
-                {'vote' : 'Sim', 'qtd': votes['Sim']},
-                {'vote' : 'Não', 'qtd': votes['Não']}
+                { 'vote': 'Sim', 'qtd': votes['Sim'] },
+                { 'vote': 'Não', 'qtd': votes['Não'] }
             ]
         }
     })
@@ -851,7 +850,7 @@ function calcPreSetsHistory(type) {
                 calcRollCallRate(currentRollCalls, currentDeputies);
 
                 // STORE OBJECT - TO SAVE
-                var storeCalcObject = {deputyNodes: []};
+                var storeCalcObject = { deputyNodes: [] };
 
                 // store deputy trace
                 deputyNodes.forEach(function (deputy) {
@@ -870,60 +869,59 @@ function calcPreSetsHistory(type) {
                 // SAVE!!
                 if (type) console.save(storeCalcObject, type + '.' + i + '.json');
                 //====================================
-                calcRecursive(i+1);
+                calcRecursive(i + 1);
             });
         })
 
     }
-    if(type == 'year') calcRecursive(CONGRESS_DEFINE.startingYear);
+    if (type == 'year') calcRecursive(CONGRESS_DEFINE.startingYear);
     else calcRecursive(0);
 }
 var translator;
-function initDict()
-{
-    var dict = 
+function initDict() {
+    var dict =
     {
         "Reset all selections": {
-          br: "Desfazer todas as seleções"
+            br: "Desfazer todas as seleções"
         },
         "Choose one of the following...": {
-         br: "Escolha os estados...",
-         en: "Choose one of the following..."  
+            br: "Escolha os estados...",
+            en: "Choose one of the following..."
         },
-        "Apply filter":{
-            br:" Aplicar filtro"
+        "Apply filter": {
+            br: " Aplicar filtro"
         },
-        "Create a bar chart":{
-            br:"Criar um gráfico de barras"
+        "Create a bar chart": {
+            br: "Criar um gráfico de barras"
         },
-        "Show parties clusters":{
-            br:"Mostrar os grupos por partidos"
+        "Show parties clusters": {
+            br: "Mostrar os grupos por partidos"
         },
-        "Create a Political Spectrum of Deputies - Technique: PCA" :{
-            br:"Criar um Espectro Político de Deputados - Técnica: PCA"
+        "Create a Political Spectrum of Deputies - Technique: PCA": {
+            br: "Criar um Espectro Político de Deputados - Técnica: PCA"
         },
-        "Create a Political Spectrum of Deputies - Technique: MDS":{
-            br:"Criar um Espectro Político de Deputados - Técnica: MDS"
+        "Create a Political Spectrum of Deputies - Technique: MDS": {
+            br: "Criar um Espectro Político de Deputados - Técnica: MDS"
         },
         "Create a Political Spectrum of Deputies - Technique: t-SNE": {
-            br:"Criar um Espectro Político de Deputados - Técnica: t-SNE"
+            br: "Criar um Espectro Político de Deputados - Técnica: t-SNE"
         },
-        "Create a Chamber Infographic":{
-            br:"Criar um Infográfico da Câmara"
+        "Create a Chamber Infographic": {
+            br: "Criar um Infográfico da Câmara"
         },
-        "Create a Deputies Similarity Graph":{
-            br:"Criar um Grafo de Similaridade dos Deputados"
+        "Create a Deputies Similarity Graph": {
+            br: "Criar um Grafo de Similaridade dos Deputados"
         },
-        "Create a Map of Roll Calls":{
-            br:"Criar um Mapa de Votações"
+        "Create a Map of Roll Calls": {
+            br: "Criar um Mapa de Votações"
         },
-        "Create a timeline with selected deputies":{
-            br:"Criar uma linha do tempo com os deputados selecionados"
+        "Create a timeline with selected deputies": {
+            br: "Criar uma linha do tempo com os deputados selecionados"
         },
-        "Timeline":{
+        "Timeline": {
             br: "Linha do tempo"
         },
-        "YEARLY POLITICAL SPECTRA":{
+        "YEARLY POLITICAL SPECTRA": {
             br: "ESPECTRO POLÍTICO ANUAL"
         },
         "GOVERNMENT": {
@@ -935,52 +933,52 @@ function initDict()
         "max RollCalls/week": {
             br: "máx. Votações/Semana"
         },
-        "49th Legislature":{
+        "49th Legislature": {
             br: "49ª Legislatura"
         },
-        "50th Legislature":{
+        "50th Legislature": {
             br: "50ª Legislatura"
         },
-        "51th Legislature":{
+        "51th Legislature": {
             br: "51ª Legislatura"
         },
-        "52th Legislature":{
+        "52th Legislature": {
             br: "52ª Legislatura"
         },
-        "53th Legislature":{
+        "53th Legislature": {
             br: "53ª Legislatura"
         },
-        "54th Legislature":{
+        "54th Legislature": {
             br: "54ª Legislatura"
         },
-        "55th Legislature":{
+        "55th Legislature": {
             br: "55ª Legislatura"
         },
-        "56th Legislature":{
+        "56th Legislature": {
             br: "56ª Legislatura"
         },
-        "FHC (PSDB) 1st Term":{
+        "FHC (PSDB) 1st Term": {
             br: "FHC (PSDB) 1º Man"
         },
-        "FHC (PSDB) 2nd Term":{
+        "FHC (PSDB) 2nd Term": {
             br: "FHC (PSDB) 2º Man"
         },
-        "Lula (PT) 1st Term":{
+        "Lula (PT) 1st Term": {
             br: "Lula (PT) 1º Man"
         },
-        "Lula (PT) 2nd Term":{
+        "Lula (PT) 2nd Term": {
             br: "Lula (PT) 2º Man"
         },
-        "Dilma (PT) 1st Term":{
+        "Dilma (PT) 1st Term": {
             br: "Dilma (PT) 1º Man"
         },
-        "Dilma (PT) 2nd Term":{
+        "Dilma (PT) 2nd Term": {
             br: "Dilma (PT) 2º Man"
         },
-        "elections":{
+        "elections": {
             br: "eleições"
         },
-        "Grouping deputies":{
+        "Grouping deputies": {
             br: "Agrupar deputados"
         },
         "Number of groups": {
@@ -989,86 +987,85 @@ function initDict()
         "Value of": {
             br: "Valor para"
         },
-        "Select Deputies":{
+        "Select Deputies": {
             br: "Selecione os Deputados"
         },
-        "Select the grade of similarity":{
-            br:"Selecione o grau de similaridade"
+        "Select the grade of similarity": {
+            br: "Selecione o grau de similaridade"
         },
-        "Select one Roll Call":{
-            br:"Selecione uma votação"
+        "Select one Roll Call": {
+            br: "Selecione uma votação"
         },
-        "Select motion types":{
+        "Select motion types": {
             br: "Selecione tipos de votação"
         },
-        "Select the initial and final date":{
-            br:"Selecione a data inicial e final"
+        "Select the initial and final date": {
+            br: "Selecione a data inicial e final"
         },
-        "Roll Calls":{
+        "Roll Calls": {
             br: "Votações"
         },
-        "Yes (approved)":{
-            br:"Sim (aprovado)"
+        "Yes (approved)": {
+            br: "Sim (aprovado)"
         },
-        "No (not approved)":{
-            br:"Não (não aprovado)"
+        "No (not approved)": {
+            br: "Não (não aprovado)"
         },
-        "YES":{
-            br:"SIM"
+        "YES": {
+            br: "SIM"
         },
-        "NO":{
-            br: "NÃO" 
+        "NO": {
+            br: "NÃO"
         },
-        "ABSTENTION":{
-            br: "ABSTENÇÃO" 
+        "ABSTENTION": {
+            br: "ABSTENÇÃO"
         },
-        "OBSTRUCTION":{
-            br: "OBSTRUÇÃO" 
+        "OBSTRUCTION": {
+            br: "OBSTRUÇÃO"
         },
-        "No Votes":{
-            br: "Sem Votos" 
+        "No Votes": {
+            br: "Sem Votos"
         },
-        "VOTE":{
-            br: "VOTO" 
+        "VOTE": {
+            br: "VOTO"
         },
-        "Map of Roll Calls":{
+        "Map of Roll Calls": {
             br: "Mapa de Votações"
         },
-        "to":{
+        "to": {
             br: "até"
         },
-        "Year":{
+        "Year": {
             br: "Ano"
         },
-        "Feb":{
+        "Feb": {
             br: "Fev"
         },
-        "Apr":{
+        "Apr": {
             br: "Abr"
         },
-        "May":{
+        "May": {
             br: "Maio"
         },
-        "Aug":{
+        "Aug": {
             br: "Ago"
         },
-        "Sep":{
+        "Sep": {
             br: "Set"
         },
         "Oct": {
             br: "Out"
         },
-        "Dec":{
+        "Dec": {
             br: "Dez"
         },
         "Amendment": {
             br: "Emenda"
         }
-      }
+    }
 
-      if (language === PORTUGUESE)
-      {
-        translator = $('body').translate({lang: "br", t: dict}); //use BR
+    if (language === PORTUGUESE) {
+        translator = $('body').translate({ lang: "br", t: dict }); //use BR
         $("button .filter-option").text(translator.get("Choose one of the following..."));
         $("#bar-chart").text(translator.get("Create a bar chart"));
         $("#force-layout").text(translator.get("Show parties clusters"));
@@ -1079,31 +1076,31 @@ function initDict()
         $("#deputies-similarity-force").text(translator.get("Create a Deputies Similarity Graph"));
         $("#rollcalls-heatmap").text(translator.get("Create a Map of Roll Calls"));
         $("#time-line-crop-behavior-selection").text(translator.get("Create a timeline with selected deputies"));
-      }
+    }
 }
 
-(function(console){
+(function (console) {
 
-    console.save = function(data, filename){
+    console.save = function (data, filename) {
 
-        if(!data) {
+        if (!data) {
             console.error('Console.save: No data')
             return;
         }
 
-        if(!filename) filename = 'console.json'
+        if (!filename) filename = 'console.json'
 
-        if(typeof data === "object"){
+        if (typeof data === "object") {
             data = JSON.stringify(data, undefined, 4)
         }
 
-        var blob = new Blob([data], {type: 'text/json'}),
-            e    = document.createEvent('MouseEvents'),
-            a    = document.createElement('a')
+        var blob = new Blob([data], { type: 'text/json' }),
+            e = document.createEvent('MouseEvents'),
+            a = document.createElement('a')
 
         a.download = filename
         a.href = window.URL.createObjectURL(blob)
-        a.dataset.downloadurl =  ['text/json', a.download, a.href].join(':')
+        a.dataset.downloadurl = ['text/json', a.download, a.href].join(':')
         e.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
         a.dispatchEvent(e)
     }

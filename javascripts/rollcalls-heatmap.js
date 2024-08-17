@@ -1,26 +1,26 @@
-function rollCallsHeatmap(){
+function rollCallsHeatmap() {
     var outerWidth = MAX_WIDTH,
         outerHeight = MAX_HEIGHT;
-    margin = {top: 60, right: 0, bottom: 20, left: 10};
+    margin = { top: 60, right: 0, bottom: 20, left: 10 };
 
     var legendHeight = 60;
 
     var width = 750 - margin.right - margin.left - 15,
         height = 750 - margin.top - margin.bottom - legendHeight,
         buckets = 11,
-        colors = ['#a50026','#d73027','#f46d43','#fdae61','#fee090','#ffffbf','#e0f3f8','#abd9e9','#74add1','#4575b4','#313695']; // RdYlBu colorbrewer scale
+        colors = ['#a50026', '#d73027', '#f46d43', '#fdae61', '#fee090', '#ffffbf', '#e0f3f8', '#abd9e9', '#74add1', '#4575b4', '#313695']; // RdYlBu colorbrewer scale
 
     var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     ];
 
-    var yearsColors = ["#f0f0f0","#d9d9d9"];
-    var singleVotes = {"Sim" : '#313695', "Não":'#a50026'};
-    var englishVotes =  {"Sim":"Yes","Não":"No","Abstenção":"Abstention","Obstrução":"Obstruction","Art. 17":"Art.17"};
+    var yearsColors = ["#f0f0f0", "#d9d9d9"];
+    var singleVotes = { "Sim": '#313695', "Não": '#a50026' };
+    var englishVotes = { "Sim": "Yes", "Não": "No", "Abstenção": "Abstention", "Obstrução": "Obstruction", "Art. 17": "Art.17" };
 
     var colorScale = d3.scale.quantize()
         .domain([-1.0, 1.0])
-        .range(d3.range(buckets).map(function(d) {  return colors[d] }));
+        .range(d3.range(buckets).map(function (d) { return colors[d] }));
 
     var itemMaxSize = 16;
     var dispatch = d3.dispatch('update');
@@ -31,23 +31,26 @@ function rollCallsHeatmap(){
     var heatMapDeputies = [];
 
     var itemWidth, itemHeight;
+    let themesCount = null;
 
     function chart(selection) {
         selection.each(function (data) {
             // filter empty, all rollCalls
             chart.heatMapDeputies(data.deputies);
-            var rcs = groupRollCallsByMonth(data.rcs, {motionTypeFilter:[], dateFilter:[undefined, undefined]});
+            var rcs = groupRollCallsByMonth(data.rcs, { motionTypeFilter: [], dateFilter: [undefined, undefined] });
+            themesCount = calculateThemesOcurrency(rcs);
+            console.log(themesCount);
             chart.drawRollCallsHeatMap(rcs, this);
         });
     }
 
-    function drawPieChart(votes){
+    function drawPieChart(votes) {
         var width = 170;
         var height = 170;
         var radius = Math.min(width, height) / 2;
 
         if (votes !== undefined) {
-            var tots = d3.sum(votes, function(d) {
+            var tots = d3.sum(votes, function (d) {
                 return d.qtd;
             });
 
@@ -57,7 +60,7 @@ function rollCallsHeatmap(){
 
             var pie = d3.layout.pie()
                 .sort(null)
-                .value(function(d) { return d.qtd; });
+                .value(function (d) { return d.qtd; });
 
             var svg = d3.select("#tipDiv").append("svg")
                 .attr("width", width)
@@ -72,7 +75,7 @@ function rollCallsHeatmap(){
 
             g.append("path")
                 .attr("d", arc)
-                .style("fill", function(d) { return singleVotes[d.data.vote]});
+                .style("fill", function (d) { return singleVotes[d.data.vote] });
 
             function pointIsInArc(pt, ptData, d3Arc) {
                 // Center of the arc is assumed to be 0,0
@@ -92,12 +95,12 @@ function rollCallsHeatmap(){
             }
 
             g.append("text")
-                .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+                .attr("transform", function (d) { return "translate(" + arc.centroid(d) + ")"; })
                 .attr("dy", ".35em")
                 .style("text-anchor", "middle")
-                .text(function(d) { 
-                    var vote = language === PORTUGUESE ? d.data.vote : englishVotes[d.data.vote]; 
-                    return vote  + " (" + d3.format("%") (d.data.qtd/tots) + ")"; 
+                .text(function (d) {
+                    var vote = language === PORTUGUESE ? d.data.vote : englishVotes[d.data.vote];
+                    return vote + " (" + d3.format("%")(d.data.qtd / tots) + ")";
                 })
                 .call(wrap, 40)
                 .each(function (d) {
@@ -105,23 +108,23 @@ function rollCallsHeatmap(){
                         center = arc.centroid(d);
 
                     var topLeft = {
-                        x : center[0] + bb.x,
-                        y : center[1] + bb.y
+                        x: center[0] + bb.x,
+                        y: center[1] + bb.y
                     };
 
                     var topRight = {
-                        x : topLeft.x + bb.width,
-                        y : topLeft.y
+                        x: topLeft.x + bb.width,
+                        y: topLeft.y
                     };
 
                     var bottomLeft = {
-                        x : topLeft.x,
-                        y : topLeft.y + bb.height
+                        x: topLeft.x,
+                        y: topLeft.y + bb.height
                     };
 
                     var bottomRight = {
-                        x : topLeft.x + bb.width,
-                        y : topLeft.y + bb.height
+                        x: topLeft.x + bb.width,
+                        y: topLeft.y + bb.height
                     };
 
                     d.visible = pointIsInArc(topLeft, d, arc) &&
@@ -138,7 +141,7 @@ function rollCallsHeatmap(){
     }
 
     function wrap(text, width) {
-        text.each(function() {
+        text.each(function () {
             var text = d3.select(this),
                 words = text.text().split(/\s+/).reverse(),
                 word,
@@ -162,8 +165,7 @@ function rollCallsHeatmap(){
     }
 
     // @param htmlBody = Current panel-body
-    chart.drawRollCallsHeatMap = function(data, htmlBody)
-    {
+    chart.drawRollCallsHeatMap = function (data, htmlBody) {
         //var maxRollCallsPeriod = d3.max(data, function (d) { return d.index; });
         //var itemSize = 15;
         //  legendElementWidth = gridSize*2;
@@ -175,8 +177,8 @@ function rollCallsHeatmap(){
         if (data.length === 0)
             return;
 
-        var x_elements = d3.set(data.map(function( rc ) { return rc.index; } )).values(),
-            y_elements = d3.set(data.map(function( rc ) { return rc.period; } )).values();
+        var x_elements = d3.set(data.map(function (rc) { return rc.index; })).values(),
+            y_elements = d3.set(data.map(function (rc) { return rc.period; })).values();
 
 
         itemWidth = Math.floor(width / x_elements.length);
@@ -201,14 +203,23 @@ function rollCallsHeatmap(){
         var yAxis = d3.svg.axis()
             .scale(yScale)
             .tickValues(y_elements)
-            .tickFormat(function(d) { var period = d.split("/"); return monthNames[period[0]];})
+            .tickFormat(function (d) { var period = d.split("/"); return monthNames[period[0]]; })
             .orient("left");
 
         panelID = ($(htmlBody).parents('.panel')).attr('id');
         var node = tree.getNode(panelID, tree.traverseBF);
         parentID = node.parent.data;
 
-        svg =  d3.select(htmlBody)
+        const button = d3.select(htmlBody) // You can change "body" to the parent container element where you want the button
+            .append("button")
+            .attr("id", "showRollCallsTheme")
+            .attr("style", "position:absolute; left:75%;")
+            .text("Show Themes!")
+            .on("click", function () {
+                handleButtonThemes(panelID, themesCount)
+            });
+
+        svg = d3.select(htmlBody)
             .append("svg")
             .attr("width", "100%")
             .attr("height", "100%")
@@ -222,8 +233,7 @@ function rollCallsHeatmap(){
         var hashYears = {};
         y_elements.forEach(function (d) {
             var currentYear = d.split("/")[1];
-            if (hashYears[currentYear] === undefined)
-            {
+            if (hashYears[currentYear] === undefined) {
                 hashYears[currentYear] = [d];
             }
             else
@@ -235,27 +245,27 @@ function rollCallsHeatmap(){
         var yearsLabels = svg.selectAll('.yearLabel')
             .data(d3.keys(hashYears));
 
-        var yearLabelOffset = width+20;
+        var yearLabelOffset = width + 20;
 
         yearsLabels.enter().append('text')
             .attr('class', 'yearLabel')
             .attr("transform", function (d) {
-                var arraySize =  hashYears[d].length;
+                var arraySize = hashYears[d].length;
                 var rotate = true;
                 var yValue;
-                if (arraySize === 1){
+                if (arraySize === 1) {
                     yValue = yScale(hashYears[d][0]) + 10;
                     rotate = false;
                 }
                 else
-                if ( arraySize  % 2 === 0)
-                    yValue = yScale(hashYears[d][arraySize/2]);
-                else
-                    yValue = yScale(hashYears[d][(arraySize+1)/2]);
+                    if (arraySize % 2 === 0)
+                        yValue = yScale(hashYears[d][arraySize / 2]);
+                    else
+                        yValue = yScale(hashYears[d][(arraySize + 1) / 2]);
 
                 var rotateValue = rotate ? 270 : 0;
                 return "translate(" + yearLabelOffset + " ," +
-                    yValue + ") rotate(" + rotateValue  + ")";
+                    yValue + ") rotate(" + rotateValue + ")";
             })
             .style("text-anchor", "middle")
             .style('font-size', 'small')
@@ -268,7 +278,7 @@ function rollCallsHeatmap(){
 
         yearsBg.enter().append("rect")
             .attr("x", 0)
-            .attr("y", function(d) { return yScale(d); })
+            .attr("y", function (d) { return yScale(d); })
             .attr("rx", 2)
             .attr("ry", 2)
             .attr("class", "yearBg")
@@ -276,7 +286,7 @@ function rollCallsHeatmap(){
             .attr("height", itemHeight)
             .style("fill", function (d) {
                 var year = d.split("/")[1];
-                var index = (year - initialYear)  % yearsColors.length;
+                var index = (year - initialYear) % yearsColors.length;
                 return yearsColors[index];
             });
 
@@ -286,7 +296,7 @@ function rollCallsHeatmap(){
             .attr("class", "y axis")
             .call(yAxis)
             .selectAll('text')
-            .attr({'font-weight': 'normal', 'class':'trn'});
+            .attr({ 'font-weight': 'normal', 'class': 'trn' });
 
         svg.append("g")
             .attr("class", "x axis")
@@ -303,40 +313,43 @@ function rollCallsHeatmap(){
         cards.append("title");
 
         cards.enter().append("rect")
-            .attr("x", function(d) { return xScale(d.index); })
-            .attr("y", function(d) { return yScale(d.period); })
+            .attr("x", function (d) { return xScale(d.index); })
+            .attr("y", function (d) { return yScale(d.period); })
             .attr("rx", 4)
             .attr("ry", 4)
-            .attr("class", function (d) {return (d.selected)? "rollCall bordered selected": ( (d.hovered)? "rollCall bordered hovered" : "rollCall bordered"); })
+            .attr("class", function (d) { return (d.selected) ? "rollCall bordered selected" : ((d.hovered) ? "rollCall bordered hovered" : "rollCall bordered"); })
             .attr("width", itemWidth)
             .attr("height", itemHeight)
             .style("stroke-width", function (d) {
                 return (d.hovered) ? "6px" : "2px";
             })
             .style("fill", "grey")
-            .on('click', function(d) {
+            .on('click', function (d) {
                 mouseClickRollCall(d);
             })
-            .on("mousemove",  function(d) {
-                div.style("left", d3.event.pageX+15+"px");
-                div.style("top", d3.event.pageY-25+"px");
+            .on("mousemove", function (d) {
+                div.style("left", d3.event.pageX + 15 + "px");
+                div.style("top", d3.event.pageY - 25 + "px");
                 div.style("display", "inline-block");
-                div.html(function() {
-                        var htmlContent = "<div class ='text-center'><strong>" + d.type + ' ' + d.number + '/' + d.year + "</strong></div><br>";
-                        htmlContent += "<strong><span class='trn'>Amendment</span></strong>:  " + motions[d.type+d.number+d.year].amendment.trim() + "<br><br>";
-                        if (d.summary !== "")
-                            htmlContent += "<strong>Status: </strong>" + d.summary.trim() + "<br>";
-                        if (d.rate !== null) {
-                            htmlContent += "<div id='tipDiv' class = 'text-center'></div><br>";
-                        }
-                        else
+                div.html(function () {
+                    var htmlContent = "<div class ='text-center'><strong>" + d.type + ' ' + d.number + '/' + d.year + "</strong></div><br>";
+                    htmlContent += "<strong><span class='trn'>Amendment</span></strong>:  " + motions[d.type + d.number + d.year].amendment.trim() + "<br><br>";
+                    const theme = motions[d.type + d.number + d.year]?.theme
+                    if (!!theme.length)
+                        htmlContent += "<strong><span class='trn'>Theme</span></strong>:  " + theme[0].trim() + "<br><br>"; // Pode ter mais de um tema, pegar sempre o primeiro
+                    if (d.summary !== "")
+                        htmlContent += "<strong>Status: </strong>" + d.summary.trim() + "<br>";
+                    if (d.rate !== null) {
+                        htmlContent += "<div id='tipDiv' class = 'text-center'></div><br>";
+                    }
+                    else
                         if (d.vote !== 'null')
                             htmlContent += '<br><div class="text-center"><strong><span class="trn">VOTE</span>: <span class="trn">' + englishVotes[d.vote].toUpperCase() + '</span><strong></div>';
                         else
                             htmlContent += '<br><div class="text-center"><strong><span class="trn">No Votes</span><strong></p>';
 
-                        return htmlContent;
-                    }
+                    return htmlContent;
+                }
                 );
 
                 if (d.rate !== null) {
@@ -346,13 +359,13 @@ function rollCallsHeatmap(){
                     translator.lang('br');
             })
             .on("mouseover", mouseoverRollCall)
-            .on("mouseout", function(d){
+            .on("mouseout", function (d) {
                 mouseoutRollCall(d);
                 div.style("display", "none");
             });
 
         cards.transition().duration(1000)
-            .style("fill", function(d) { return setRollCallFill(d); });
+            .style("fill", function (d) { return setRollCallFill(d); });
 
         //cards.select("title").text(function(d) { return d.rate; });
 
@@ -361,14 +374,14 @@ function rollCallsHeatmap(){
         // text label for the x axis
         svg.append("text")
             .attr("transform",
-                "translate(" + (width/2) + " ," +
-                (0 - margin.top/2) + ")")
+                "translate(" + (width / 2) + " ," +
+                (0 - margin.top / 2) + ")")
             .style("text-anchor", "middle")
             .text("Roll Calls")
-            .attr({'class':'trn'});
+            .attr({ 'class': 'trn' });
 
         var legend = svg.selectAll(".legend")
-            .data(colors, function(d) { return d; });
+            .data(colors, function (d) { return d; });
 
         legend.enter().append("g")
             .attr("class", "legend");
@@ -379,19 +392,19 @@ function rollCallsHeatmap(){
         var legendItemHeight = 12;
 
         legend.append("rect")
-            .attr("x", function(d, i) { return (legendItemWidth*2) * i + centralizeOffset; })
-            .attr("y", height + (legendHeight/2))
+            .attr("x", function (d, i) { return (legendItemWidth * 2) * i + centralizeOffset; })
+            .attr("y", height + (legendHeight / 2))
             .attr("width", legendItemWidth * 2)
             .attr("height", legendItemHeight)
-            .style("fill", function(d, i) { return colors[i]; });
+            .style("fill", function (d, i) { return colors[i]; });
 
         svg.append('text').text('Yes (approved)')
             .attr({
                 class: 'trn',
                 dx: totalLegendWidth + centralizeOffset,
-                dy: height + (legendHeight/2) + legendItemHeight*2.5,
+                dy: height + (legendHeight / 2) + legendItemHeight * 2.5,
                 //'font-size': 'small',
-                fill:'black'
+                fill: 'black'
             })
             .style("text-anchor", "end");
 
@@ -399,9 +412,9 @@ function rollCallsHeatmap(){
             .attr({
                 class: 'trn',
                 dx: centralizeOffset,
-                dy: height + (legendHeight/2) + legendItemHeight*2.5,
+                dy: height + (legendHeight / 2) + legendItemHeight * 2.5,
                 //'font-size': 'small',
-                fill:'black'
+                fill: 'black'
             })
 
         /*legend.append("text")
@@ -416,9 +429,9 @@ function rollCallsHeatmap(){
     chart.update = function () {
         svg.selectAll(".rollCall")
             .transition(750)
-            .style("fill", function(d) { return setRollCallFill(d); })
+            .style("fill", function (d) { return setRollCallFill(d); })
             .style("stroke-width", function (d) { return (d.hovered) ? "6px" : "2px"; })
-            .attr("class", function (d) {return (d.selected)? "rollCall bordered selected": ( (d.hovered)? "rollCall bordered hovered" : "rollCall bordered"); });
+            .attr("class", function (d) { return (d.selected) ? "rollCall bordered selected" : ((d.hovered) ? "rollCall bordered hovered" : "rollCall bordered"); });
     };
 
     chart.heatMapDeputies = function (_) {
@@ -427,8 +440,7 @@ function rollCallsHeatmap(){
         return chart;
     };
 
-    chart.selectRollCallBySearch = function (id)
-    {
+    chart.selectRollCallBySearch = function (id) {
         rollCallsRates[parentID].forEach(function (rc) {
             if (rc.rollCallID === id)
                 rc.selected = true;
@@ -439,25 +451,23 @@ function rollCallsHeatmap(){
         dispatch.update()
     };
 
-    chart.selectAllRollCalls = function (id)
-    {
+    chart.selectAllRollCalls = function (id) {
         rollCallsRates[parentID].forEach(function (rc) {
-                rc.selected = true;
+            rc.selected = true;
         });
 
         dispatch.update()
     };
 
-    chart.selectRollCallsByFilter = function(panelID)
-    {
-        var htmlContent = $('#' +panelID + " .panel-body");
+    chart.selectRollCallsByFilter = function (panelID) {
+        var htmlContent = $('#' + panelID + " .panel-body");
         var filter = getFilters(panelID);
 
         // Remove old svg
-        d3.select('#' +panelID + " .rollcalls-heatmap").remove();
+        d3.select('#' + panelID + " .rollcalls-heatmap").remove();
 
         // Load data with all rollCalls
-        var data = d3.select('#' +panelID + " .panel-body").data()[0];
+        var data = d3.select('#' + panelID + " .panel-body").data()[0];
         // Group by Month with filter
         var rcs = groupRollCallsByMonth(data, filter);
         chart.drawRollCallsHeatMap(rcs, htmlContent[0]);
@@ -469,8 +479,8 @@ function rollCallsHeatmap(){
         var countRollCalls = 1;
 
         // motionTypeFilter.length == 0, all rollcalls must be selected
-        if(filter.motionTypeFilter.length > 0 || (filter.dateFilter[0] !== undefined && filter.dateFilter[1] !== undefined)){
-                rcs = filterMotions(rcs, filter);
+        if (filter.motionTypeFilter.length > 0 || (filter.dateFilter[0] !== undefined && filter.dateFilter[1] !== undefined)) {
+            rcs = filterMotions(rcs, filter);
         }
 
         rcs.forEach(function (rc) {
@@ -478,10 +488,10 @@ function rollCallsHeatmap(){
             if (lastMonth === undefined)
                 lastMonth = currentMonth;
             else
-            if (lastMonth !== currentMonth){
-                countRollCalls = 1;
-                lastMonth = currentMonth;
-            }
+                if (lastMonth !== currentMonth) {
+                    countRollCalls = 1;
+                    lastMonth = currentMonth;
+                }
 
             var currentYear = rc.datetime.getFullYear();
             var period = currentMonth + "/" + currentYear;
@@ -502,29 +512,28 @@ function rollCallsHeatmap(){
         return data;
     }
 
-    function setRollCallFill (d){
-        if(d.vote != null){
+    function setRollCallFill(d) {
+        if (d.vote != null) {
             return CONGRESS_DEFINE.votoStringToColor[d.vote];
         }
-        if(d.rate != null){
+        if (d.rate != null) {
             if (d.rate === "noVotes")
                 return 'grey';
             else return colorScale(d.rate)
-        } else{
+        } else {
             return 'grey';
         }
     }
 
-    function mouseClickRollCall(d)
-    {
+    function mouseClickRollCall(d) {
         var eltInput = $('#' + panelID + ' .searchRollCall.tt-input');
         // Reset the selected RollCall in filter
         eltInput.val('');
         rollCallsRates[parentID].forEach(function (rc) {
-           if (rc.rollCallID === d.rollCallID)
-               rc.selected = true;
-           else
-               rc.selected = false;
+            if (rc.rollCallID === d.rollCallID)
+                rc.selected = true;
+            else
+                rc.selected = false;
         });
 
         dispatch.update()
@@ -538,6 +547,23 @@ function rollCallsHeatmap(){
     function mouseoutRollCall(d) {
         d.hovered = false;
         dispatch.update();
+    }
+
+    function calculateThemesOcurrency(rcs) {
+        // Count the themes
+        const themeCounts = rcs.reduce((acc, curr) => {
+            if (curr.theme !== undefined) { // Check if theme is not undefined
+                if (acc[curr.theme]) {
+                    acc[curr.theme]++;
+                } else {
+                    acc[curr.theme] = 1;
+                }
+            }
+            return acc;
+        }, {});
+
+        // Convert the result to an array of objects with {theme, count}
+        return Object.entries(themeCounts).map(([theme, count]) => ({ theme, count }));
     }
 
     return d3.rebind(chart, dispatch, 'on');

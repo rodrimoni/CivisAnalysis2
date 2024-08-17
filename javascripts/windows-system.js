@@ -27,9 +27,10 @@ var CHAMBER_INFOGRAPHIC = 5;
 var ROLLCALLS_HEATMAP = 6;
 var DEPUTIES_SIMILARITY_FORCE = 7;
 var STATIC_ROLLCALLS_HEATMAP = 8;
+var THEMES_BUBBLE_CHART = 9;
 
 /* Transfer function of Plots */
-var typeChartToString = ["Timeline", "Spectrum of Deputies", "Bar Chart", "Force Layout", "Cropped Timeline", "Chamber Infographic", "Map of Roll Calls", "Similarity Force", "Map of Roll Calls"];
+var typeChartToString = ["Timeline", "Spectrum of Deputies", "Bar Chart", "Force Layout", "Cropped Timeline", "Chamber Infographic", "Map of Roll Calls", "Similarity Force", "Map of Roll Calls", "Themes"];
 
 /* Variables to check if the chart was instantiate before */
 var firstScatterPlot = true;
@@ -39,6 +40,7 @@ var firstTimelineCrop = true;
 var firstChamberInfographic = true;
 var firstRollCallHeatMap = true;
 var firstDeputiesSimilarity = true;
+var firstThemesBubbleChart = true;
 
 /* Constant to keep the value of ShiftKey */
 var SHIFTKEY = false;
@@ -218,6 +220,11 @@ function initializeChart(newID, chartObj) {
             });
 
             break;
+        case THEMES_BUBBLE_CHART:
+            chart = themesBubbleChart();
+            addConfigMenu(newID, 'themes-bubble-chart', false);
+            addEditTitleInput(newID);
+            break;
         default:
             break;
 
@@ -278,8 +285,6 @@ function addSearchRollCallMenu(newID, rollCalls) {
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         local: rollCalls
     });
-
-    console.log(rollCalls);
 
     var elt = $('#' + newID + ' .searchRollCall');
 
@@ -935,6 +940,10 @@ function createNewChild(currentId, chartObj) {
             //startIntroTimelineCrop(newID);
             firstTimelineCrop = false;
         }
+        else if (node.typeChart === THEMES_BUBBLE_CHART && firstThemesBubbleChart) {
+            //startIntroTimelineCrop(newID);
+            firstThemesBubbleChart = false;
+        }
 
         /* Draws the lines between the two panels */
         drawLine(currentId, newID);
@@ -1439,6 +1448,14 @@ function handleContextMenuDeputy(invokedOn, selectedMenu) {
             chartObj = { 'chartID': STATIC_ROLLCALLS_HEATMAP, 'data': data, 'title': title, 'prettyTitle': prettyTitle };
             createNewChild(panelID, chartObj);
         }
+}
+
+function handleButtonThemes(panelID, themesCount) {
+    title = "<span><span class='trn'>Themes</span>: " + "<span class='trn'>Year</span> " + 2024 + "</span>";
+    prettyTitle = "Themes: Year " + 2024;
+
+    chartObj = { 'chartID': THEMES_BUBBLE_CHART, 'data': themesCount, 'title': title, 'prettyTitle': prettyTitle };
+    createNewChild(panelID, chartObj);
 }
 
 /**
