@@ -3,7 +3,8 @@ h2 {
     display: inline-block;
 }
 
-#navbar #resetBtn, #navbar #match {
+#navbar #resetBtn,
+#navbar #match {
     position: relative;
     top: 40px;
 }
@@ -13,7 +14,7 @@ h2 {
     display: block;
     background-color: #E9E9ED;
     padding-bottom: 20px;
-    border-bottom: 1px solid #ccc!important;
+    border-bottom: 1px solid #ccc !important;
 }
 
 .panel {
@@ -34,19 +35,19 @@ h2 {
     min-width: 450px;
 }
 
-#windows-system .panel-body{
+#windows-system .panel-body {
     height: 100%;
     padding: 0;
 }
 
-#windows-system{
-    width:100%;
+#windows-system {
+    width: 100%;
     height: 100%;
     transition: margin-left .5s;
 }
 
-#windows-system .slider.slider-horizontal.slider-k-means{
-    width:100%;
+#windows-system .slider.slider-horizontal.slider-k-means {
+    width: 100%;
 }
 
 
@@ -66,8 +67,7 @@ h2 {
     left: 0;
 }
 
-.panel-heading .btn
-{
+.panel-heading .btn {
     float: right;
 }
 
@@ -76,16 +76,18 @@ h2 {
     font-size: 14px;
 }
 
-i{
+i {
     position: absolute;
 }
 
-a{
+a {
     cursor: pointer;
     color: black;
 }
 
-a:hover, a:focus, a:active{
+a:hover,
+a:focus,
+a:active {
     color: black;
 }
 
@@ -137,7 +139,7 @@ a:hover, a:focus, a:active{
     border-radius: 6px 0 6px 6px;
 }
 
-.panel-heading .dropdown-menu>li{
+.panel-heading .dropdown-menu>li {
     padding: 3px 20px;
 }
 
@@ -181,7 +183,7 @@ a:hover, a:focus, a:active{
     border-radius: 2px;
 }
 
-.toolTipCluster{
+.toolTipCluster {
     z-index: 9998;
 }
 
@@ -191,14 +193,14 @@ a:hover, a:focus, a:active{
    speak for themselves. Background we set to 80% white with
    our animation centered, and no-repeating */
 .panel .modal {
-    display:    none;
-    position:   relative;
-    z-index:    9999;
-    top:        0;
-    left:       0;
-    height:     100%;
-    width:      100%;
-    background: rgba( 255, 255, 255, .8 );
+    display: none;
+    position: relative;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: rgba(255, 255, 255, .8);
 }
 
 /* When the body has the loading class, we turn
@@ -224,7 +226,7 @@ a:hover, a:focus, a:active{
     transition: opacity .5s;
 }
 
-#loading-project #greyScreen-project{
+#loading-project #greyScreen-project {
     height: 100%;
     width: 100%;
     background-color: black;
@@ -251,7 +253,8 @@ a:hover, a:focus, a:active{
     top: 0;
     visibility: hidden;
 }
-#loading #greyScreen{
+
+#loading #greyScreen {
     height: 100%;
     width: 100%;
     background-color: black;
@@ -271,8 +274,7 @@ a:hover, a:focus, a:active{
 }
 
 /* CSS for Datepicker div */
-.input-daterange
-{
+.input-daterange {
     background-color: #fff;
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
     color: #555;
@@ -288,10 +290,12 @@ a:hover, a:focus, a:active{
     display: inline-block;
     position: relative;
     width: 100%;
-    padding-bottom: 100%; /* aspect ratio */
+    padding-bottom: 100%;
+    /* aspect ratio */
     vertical-align: top;
     overflow: hidden;
 }
+
 .svg-content-responsive {
     display: inline-block;
     position: absolute;
@@ -303,15 +307,15 @@ a:hover, a:focus, a:active{
 .btn-primary-outline {
     background-color: transparent;
     border-color: #ccc;
-  }
+}
 
 .btn-xlarge {
-padding: 18px 28px;
-font-size: 22px;
-line-height: normal;
--webkit-border-radius: 8px;
+    padding: 18px 28px;
+    font-size: 22px;
+    line-height: normal;
+    -webkit-border-radius: 8px;
     -moz-border-radius: 8px;
-        border-radius: 8px;
+    border-radius: 8px;
 }
 
 .modal-body {
@@ -324,8 +328,8 @@ line-height: normal;
     float: left;
     width: 50%;
     padding: 5px;
-  }
-  
+}
+
 /* Clear floats after image containers */
 .row::after {
     content: "";
@@ -334,7 +338,7 @@ line-height: normal;
 }
 
 .flag {
-    cursor:pointer;
+    cursor: pointer;
 }
 
 .sidebar {
@@ -348,60 +352,59 @@ line-height: normal;
     box-shadow: 0 5px 15px 2px rgb(0 0 0 / 30%);
     overflow-x: hidden;
     transition: 0.5s;
-  }
-  
-  .sidebar a {
+}
+
+.sidebar a {
     padding: 8px 8px 8px 32px;
     text-decoration: none;
     font-size: 25px;
     color: #818181;
     display: block;
     transition: 0.3s;
-  }
-  
-  .sidebar a:hover {
+}
+
+.sidebar a:hover {
     color: #0a0101;
-  }
-  
-  .sidebar .closebtn {
+}
+
+.sidebar .closebtn {
     position: absolute;
     top: 0;
     right: 25px;
     font-size: 36px;
     margin-left: 50px;
-  }
+}
 
-  .sidebar h2 {
+.sidebar h2 {
     position: absolute;
     top: 15px;
     margin-left: 10px;
-  }
-  
-  .openbtn {
+}
+
+.openbtn {
     font-size: 20px;
     cursor: pointer;
     color: #333;
     background-color: #fff;
     border-color: #ccc;
     padding: 0px;
-  }
-  
-  .openbtn:hover {
+}
+
+.openbtn:hover {
     color: #333;
     background-color: #e6e6e6;
     border-color: #adadad;
 }
 
-.fa-window-maximize{
+.fa-window-maximize {
     background: white;
     border-radius: 40%;
     height: 0.9em;
     position: absolute;
-    clip: rect(2px,30px,26px,0px);
+    clip: rect(2px, 30px, 26px, 0px);
 }
 
-.fa-window-maximize:hover
-{
+.fa-window-maximize:hover {
     cursor: move;
 }
 
@@ -427,7 +430,7 @@ line-height: normal;
     padding: 12px;
     border-style: solid;
     border-width: 2px;
-    cursor:move;
+    cursor: move;
 }
 
 .icon-scatter-plot {
@@ -494,6 +497,14 @@ line-height: normal;
     background-color: white;
 }
 
+.icon-bubble-chart {
+    background: url("../images/icons/bubble-chart-icon.png");
+}
+
+.icon-bubble-chart.minimized-icon {
+    background-color: white;
+}
+
 .hierarchy-black-transparent-icon {
     background: url("../images/icons/hierarchy-black-transparent.png");
 }
@@ -502,7 +513,7 @@ line-height: normal;
     background: url("../images/icons/hierarchy-icon-white-transparent-24x24.png");
 }
 
-.panel::after{
+.panel::after {
     content: "";
     border-radius: 5px;
     position: absolute;
@@ -516,9 +527,9 @@ line-height: normal;
     -webkit-transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
     transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
-  
+
 .panel:hover::after {
-      opacity: 1;
+    opacity: 1;
 }
 
 .panel.panel-selected::after {
@@ -538,33 +549,33 @@ line-height: normal;
 
 #statesFilter {
     float: right;
-    position:relative;
-    top:40px;
+    position: relative;
+    top: 40px;
 }
 
 .float-action-button {
     position: fixed;
-    top:15px;
-    left:15px;
+    top: 15px;
+    left: 15px;
     z-index: 1000;
-  }
-  
-.float-action-button button{
+}
+
+.float-action-button button {
     cursor: pointer;
     width: 48px;
     height: 48px;
     background-color: #cb60b3;
     border: none;
-    box-shadow: 0 1px 5px rgba(0,0,0,.4);
+    box-shadow: 0 1px 5px rgba(0, 0, 0, .4);
     font-size: 24px;
     color: white;
-      
+
     -webkit-transition: .2s ease-out;
     -moz-transition: .2s ease-out;
     transition: .2s ease-out;
 }
-  
-.float-action-button button.main { 
+
+.float-action-button button.main {
     position: absolute;
     width: 25px;
     height: 60px;
@@ -576,15 +587,15 @@ line-height: normal;
 }
 
 .float-action-button button.main:hover {
-    color:white;
+    color: white;
     outline: none;
     background-color: #18171b;
-    box-shadow: 0 3px 8px rgba(0,0,0,1);
- }
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 1);
+}
 
 .sidebar-title {
     height: 95px;
     background-color: #e9e9ed;
-    border-bottom: 1px solid #ccc!important;
+    border-bottom: 1px solid #ccc !important;
     margin-bottom: 1px;
 }

@@ -1,6 +1,6 @@
 .rollcalls-heatmap rect.bordered {
     stroke: #E6E6E6;
-    /*stroke-width:2px;*/
+    stroke-width: 2px;
     cursor: pointer;
 }
 
@@ -15,13 +15,13 @@
     stroke: rgba(0, 0, 0, 0.1);
 }
 
-.rollcalls-heatmap .axis line{
+.rollcalls-heatmap .axis line {
     fill: none;
     stroke: rgba(0, 0, 0, 0.1);
     stroke-dasharray: 5;
 }
 
-.rollcalls-heatmap .tick text{
+.rollcalls-heatmap .tick text {
     font-size: 11px;
 }
 
@@ -47,4 +47,5 @@
 
 .rollCall.hovered {
     opacity: 0.4;
+    stroke: #141313 !important;
 }

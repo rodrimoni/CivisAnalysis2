@@ -30,7 +30,7 @@ var STATIC_ROLLCALLS_HEATMAP = 8;
 var THEMES_BUBBLE_CHART = 9;
 
 /* Transfer function of Plots */
-var typeChartToString = ["Timeline", "Spectrum of Deputies", "Bar Chart", "Force Layout", "Cropped Timeline", "Chamber Infographic", "Map of Roll Calls", "Similarity Force", "Map of Roll Calls", "Themes"];
+var typeChartToString = ["Timeline", "Spectrum of Deputies", "Bar Chart", "Force Layout", "Cropped Timeline", "Chamber Infographic", "Map of Roll Calls", "Similarity Force", "Map of Roll Calls", "Subjects"];
 
 /* Variables to check if the chart was instantiate before */
 var firstScatterPlot = true;
@@ -180,6 +180,7 @@ function initializeChart(newID, chartObj) {
             addConfigMenu(newID, 'rollCallsHeatmap', false);
             var rollCallsTypeAhead = addSearchRollCallMenu(newID, chartObj.data.rcs);
             addFilterMotionTypeMenu(newID, chartObj.data.rcs, rollCallsTypeAhead);
+            addThemeFilter(newID, chartObj.data.rcs, rollCallsTypeAhead);
             addFilterDateRollCallMenu(newID, chartObj.data.rcs, rollCallsTypeAhead);
             addEditTitleInput(newID);
 
@@ -197,6 +198,7 @@ function initializeChart(newID, chartObj) {
             addConfigMenu(newID, 'rollCallsHeatmap', false);
             var rollCallsTypeAhead = addSearchRollCallMenu(newID, chartObj.data.rcs);
             addFilterMotionTypeMenu(newID, chartObj.data.rcs, rollCallsTypeAhead);
+            addThemeFilter(newID, chartObj.data.rcs, rollCallsTypeAhead);
             addFilterDateRollCallMenu(newID, chartObj.data.rcs, rollCallsTypeAhead);
             addEditTitleInput(newID);
 
@@ -289,7 +291,7 @@ function addSearchRollCallMenu(newID, rollCalls) {
     var elt = $('#' + newID + ' .searchRollCall');
 
     elt.typeahead({
-        hint: true,
+        hint: false,
         highlight: true,
         minLength: 1
     },
@@ -364,7 +366,7 @@ function addFilterMotionTypeMenu(newID, rollCalls, rollCallsTypeAhead) {
         itemValue: 'key',
         itemText: 'value',
         typeaheadjs: [{
-            hint: true,
+            hint: false,
             highlight: true,
             minLength: 0
         },
@@ -530,6 +532,7 @@ function getFilters(panelID) {
     var filter = {};
     var dateElt = '#' + panelID + ' .input-daterange';
     var motionTypeElt = $('#' + panelID + ' .filterMotions');
+    var motionThemeElt = $('#' + panelID + ' .filterSubjectMotions');
 
     var dateFilter = [];
     var initialDate = $(dateElt + ' input[name="start"]').datepicker('getDate');
@@ -544,8 +547,15 @@ function getFilters(panelID) {
         return e.value;
     });
 
+    var motionThemeFilter = motionThemeElt.tagsinput('items');
+    // Serialize the result of .tagsipunt, get only values of motions. Ex: PEC, PL, MPV, etc.
+    motionThemeFilter = motionThemeFilter.map(function (e) {
+        return e.value;
+    });
+
     filter.dateFilter = dateFilter;
     filter.motionTypeFilter = motionTypeFilter;
+    filter.motionThemeFilter = motionThemeFilter;
 
     return filter;
 }
@@ -702,6 +712,99 @@ function addSearchDeputyMenu(newID, deputies) {
 
 }
 
+
+function addThemeFilter(newID, rollCalls, rollCallsTypeAhead) {
+    var placeholder = language === ENGLISH
+        ? "Type motion subject to filter (e.g. Health, Education, Economy, etc)"
+        : "Digite temas de votações para filtrar (e.g. Saúde, Educação, Economia, etc)"
+
+    $("#" + newID + " .panel-settings")
+        .append('<li role="presentation" class="dropdown-header"><span class="trn">Select Subjects</span></li>')
+        .append('<li><input type="text" ' +
+            'class="form-control typeahead filterSubjectMotions" ' +
+            'placeholder="' + placeholder + '"/> </li>');
+
+    // Get motions unique type array
+    var rollCallsThemes = d3.map(rollCalls, function (d) { return language === PORTUGUESE ? d.theme : subjectsToEnglish[d.theme]; }).keys();
+    var defaultOptions = rollCallsThemes.sort();
+
+    // Convert to {key : index, value: themeMotion}
+    rollCallsThemes = d3.entries(rollCallsThemes);
+
+    var rollCallsThemes = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        local: rollCallsThemes,
+        identify: function (obj) { return obj.value; }
+    });
+
+    rollCallsThemes.initialize();
+
+    // Generate all values to give hints to user
+    function values(q, sync) {
+        if (q === '') {
+            sync(rollCallsThemes.get(defaultOptions));
+        }
+        else {
+            rollCallsThemes.search(q, sync);
+        }
+    }
+
+    var elt = $('#' + newID + ' .filterSubjectMotions');
+    elt.tagsinput({
+        itemValue: 'key',
+        itemText: 'value',
+        typeaheadjs: [{
+            hint: false,
+            highlight: true,
+            minLength: 0
+        },
+        {
+            name: 'rollCallsThemes',
+            displayKey: 'value',
+            limit: 10,
+            source: values
+        }]
+    });
+
+    var chart;
+    var filter;
+    var filteredRollCalls = rollCalls;
+    elt.on('itemAdded', function (event) {
+        /* Select the rollcalls in input */
+        chart = tree.getNode(newID, tree.traverseBF).chart;
+        chart.selectRollCallsByFilter(newID);
+
+        /* Update the motions in single search */
+        filter = getFilters(newID);
+        if (filter.motionTypeFilter.length > 0 || (filter.dateFilter[0] !== undefined && filter.dateFilter[1] !== undefined)) {
+            filteredRollCalls = filterMotions(rollCalls, filter);
+            rollCallsTypeAhead.clear();
+            rollCallsTypeAhead.local = filteredRollCalls;
+            rollCallsTypeAhead.initialize(true);
+        }
+    });
+
+    elt.on('itemRemoved', function (event) {
+        /* Select the deputies in input */
+        chart = tree.getNode(newID, tree.traverseBF).chart;
+        chart.selectRollCallsByFilter(newID);
+
+        /* Update the motions in single search */
+        filter = getFilters(newID);
+        if (filter.motionTypeFilter.length > 0 || (filter.dateFilter[0] !== undefined && filter.dateFilter[1] !== undefined)) {
+            filteredRollCalls = filterMotions(rollCalls, filter);
+            rollCallsTypeAhead.clear();
+            rollCallsTypeAhead.local = filteredRollCalls;
+            rollCallsTypeAhead.initialize(true);
+        }
+    });
+
+    /* Prevents click to close the settings menu */
+    $("#" + newID + " .bootstrap-tagsinput").click(function (e) {
+        e.stopPropagation();
+    });
+}
 
 /**
  * Remove selected panel and his children
@@ -1505,8 +1608,8 @@ function handleContextMenuDeputy(invokedOn, selectedMenu) {
 }
 
 function handleButtonThemes(panelID, themesCount) {
-    title = "<span><span class='trn'>Themes</span>: " + "<span class='trn'>Year</span> " + 2024 + "</span>";
-    prettyTitle = "Themes: Year " + 2024;
+    title = "<span><span class='trn'>Subjects</span>: " + "<span class='trn'>Year</span> " + 2024 + "</span>";
+    prettyTitle = "Subjects: Year " + 2024;
 
     chartObj = { 'chartID': THEMES_BUBBLE_CHART, 'data': themesCount, 'title': title, 'prettyTitle': prettyTitle };
     createNewChild(panelID, chartObj);
@@ -1732,6 +1835,8 @@ function getChartIcon(typeChart) {
         icon += "icon-bar-chart";
     else if (typeChart === FORCE_LAYOUT)
         icon += "icon-force-layout";
+    else if (typeChart === THEMES_BUBBLE_CHART)
+        icon += "icon-bubble-chart";
 
     return icon;
 }
@@ -1879,39 +1984,40 @@ function checkPeriodTimeLineCrop(event, deputy) {
     }
 }
 
-function updateRollCalls(parentID) {
+function updateRollCalls(panelId) {
     var selectedRollCalls = [];
     var hoveredRollCalls = [];
-    var node = tree.getNode(parentID, tree.traverseBF);
+    var node = tree.getNode(panelId, tree.traverseBF);
 
-    rollCallsRates[parentID].forEach(function (rollCall) {
+    rollCallsRates[panelId].forEach(function (rollCall) {
         if (rollCall.selected) selectedRollCalls.push(rollCall);
         if (rollCall.hovered) hoveredRollCalls.push(rollCall);
     });
 
-    if ((selectedRollCalls.length === rollCallsRates[parentID].length) && (hoveredRollCalls.length === 0)) {
+    if ((selectedRollCalls.length === rollCallsRates[panelId].length) && (hoveredRollCalls.length === 0)) {
         // reset deputies
-        deputyNodes[parentID].forEach(function (deputy) { deputy.rate = null; deputy.vote = null; });
+        deputyNodes[panelId].forEach(function (deputy) { deputy.rate = null; deputy.vote = null; });
 
         if (node.typeChart === CHAMBER_INFOGRAPHIC) {
             node.chart.resetParties();
         }
-
     }
 
     else {
         // ONLY ONE ROLL CALL SELECTED || HOVER
         if ((hoveredRollCalls.length === 1) || (selectedRollCalls.length === 1)) {
 
-            deputyNodes[parentID].forEach(function (deputy) {
+            deputyNodes[panelId].forEach(function (deputy) {
                 deputy.vote = 'null';
             });
 
             var rollCall = (hoveredRollCalls.length === 1) ? hoveredRollCalls[0] : selectedRollCalls[0];
+
             // set the deputy votes
             rollCall.votes.forEach(function (deputyVote) {
                 for (var key in deputyNodes) {
-                    deputyNodes[key][deputyVote.deputyID].vote = deputyVote.vote;
+                    if (deputyNodes[key][deputyVote.deputyID])
+                        deputyNodes[key][deputyVote.deputyID].vote = deputyVote.vote;
                 }
             });
 

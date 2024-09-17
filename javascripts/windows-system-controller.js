@@ -200,6 +200,7 @@ function createDeputySimilarityGraph(data_deputies, selectedDeputies) {
 function filterMotions(arr, filter) {
     return arr.filter(function (e) {
         var resultType = false;
+        var resultTheme = false;
         var resultDate = false;
 
         // Verify if satisfies the motion type
@@ -210,13 +211,21 @@ function filterMotions(arr, filter) {
         else // The type filter its not setted, so all types must be selected
             resultType = true;
 
+        // Verify if satisfies the motion theme
+        if (filter.motionThemeFilter.length > 0) {
+            if (filter.motionThemeFilter.indexOf(e.theme) > -1)
+                resultTheme = true;
+        }
+        else // The type filter its not setted, so all types must be selected
+            resultTheme = true;
+
         // Verify if are inside the datarange
         if (filter.dateFilter[0] !== undefined && filter.dateFilter[1] !== undefined)
             resultDate = e.datetime >= filter.dateFilter[0] && e.datetime <= filter.dateFilter[1];
         else // The date filter its not setted, so all in period must be selected
             resultDate = true;
 
-        return resultType && resultDate;
+        return resultType && resultDate && resultTheme;
     });
 }
 
@@ -876,207 +885,6 @@ function calcPreSetsHistory(type) {
     }
     if (type == 'year') calcRecursive(CONGRESS_DEFINE.startingYear);
     else calcRecursive(0);
-}
-var translator;
-function initDict() {
-    var dict =
-    {
-        "Reset all selections": {
-            br: "Desfazer todas as seleções"
-        },
-        "Choose one of the following...": {
-            br: "Escolha os estados...",
-            en: "Choose one of the following..."
-        },
-        "Apply filter": {
-            br: " Aplicar filtro"
-        },
-        "Create a bar chart": {
-            br: "Criar um gráfico de barras"
-        },
-        "Show parties clusters": {
-            br: "Mostrar os grupos por partidos"
-        },
-        "Create a Political Spectrum of Deputies - Technique: PCA": {
-            br: "Criar um Espectro Político de Deputados - Técnica: PCA"
-        },
-        "Create a Political Spectrum of Deputies - Technique: MDS": {
-            br: "Criar um Espectro Político de Deputados - Técnica: MDS"
-        },
-        "Create a Political Spectrum of Deputies - Technique: t-SNE": {
-            br: "Criar um Espectro Político de Deputados - Técnica: t-SNE"
-        },
-        "Create a Chamber Infographic": {
-            br: "Criar um Infográfico da Câmara"
-        },
-        "Create a Deputies Similarity Graph": {
-            br: "Criar um Grafo de Similaridade dos Deputados"
-        },
-        "Create a Map of Roll Calls": {
-            br: "Criar um Mapa de Votações"
-        },
-        "Create a timeline with selected deputies": {
-            br: "Criar uma linha do tempo com os deputados selecionados"
-        },
-        "Timeline": {
-            br: "Linha do tempo"
-        },
-        "YEARLY POLITICAL SPECTRA": {
-            br: "ESPECTRO POLÍTICO ANUAL"
-        },
-        "GOVERNMENT": {
-            br: "GOVERNO"
-        },
-        "OPPOSITION": {
-            br: "OPOSIÇÃO"
-        },
-        "max RollCalls/week": {
-            br: "máx. Votações/Semana"
-        },
-        "49th Legislature": {
-            br: "49ª Legislatura"
-        },
-        "50th Legislature": {
-            br: "50ª Legislatura"
-        },
-        "51th Legislature": {
-            br: "51ª Legislatura"
-        },
-        "52th Legislature": {
-            br: "52ª Legislatura"
-        },
-        "53th Legislature": {
-            br: "53ª Legislatura"
-        },
-        "54th Legislature": {
-            br: "54ª Legislatura"
-        },
-        "55th Legislature": {
-            br: "55ª Legislatura"
-        },
-        "56th Legislature": {
-            br: "56ª Legislatura"
-        },
-        "FHC (PSDB) 1st Term": {
-            br: "FHC (PSDB) 1º Man"
-        },
-        "FHC (PSDB) 2nd Term": {
-            br: "FHC (PSDB) 2º Man"
-        },
-        "Lula (PT) 1st Term": {
-            br: "Lula (PT) 1º Man"
-        },
-        "Lula (PT) 2nd Term": {
-            br: "Lula (PT) 2º Man"
-        },
-        "Dilma (PT) 1st Term": {
-            br: "Dilma (PT) 1º Man"
-        },
-        "Dilma (PT) 2nd Term": {
-            br: "Dilma (PT) 2º Man"
-        },
-        "elections": {
-            br: "eleições"
-        },
-        "Grouping deputies": {
-            br: "Agrupar deputados"
-        },
-        "Number of groups": {
-            br: "Número de grupos"
-        },
-        "Value of": {
-            br: "Valor para"
-        },
-        "Select Deputies": {
-            br: "Selecione os Deputados"
-        },
-        "Select the grade of similarity": {
-            br: "Selecione o grau de similaridade"
-        },
-        "Select one Roll Call": {
-            br: "Selecione uma votação"
-        },
-        "Select motion types": {
-            br: "Selecione tipos de votação"
-        },
-        "Select the initial and final date": {
-            br: "Selecione a data inicial e final"
-        },
-        "Roll Calls": {
-            br: "Votações"
-        },
-        "Yes (approved)": {
-            br: "Sim (aprovado)"
-        },
-        "No (not approved)": {
-            br: "Não (não aprovado)"
-        },
-        "YES": {
-            br: "SIM"
-        },
-        "NO": {
-            br: "NÃO"
-        },
-        "ABSTENTION": {
-            br: "ABSTENÇÃO"
-        },
-        "OBSTRUCTION": {
-            br: "OBSTRUÇÃO"
-        },
-        "No Votes": {
-            br: "Sem Votos"
-        },
-        "VOTE": {
-            br: "VOTO"
-        },
-        "Map of Roll Calls": {
-            br: "Mapa de Votações"
-        },
-        "to": {
-            br: "até"
-        },
-        "Year": {
-            br: "Ano"
-        },
-        "Feb": {
-            br: "Fev"
-        },
-        "Apr": {
-            br: "Abr"
-        },
-        "May": {
-            br: "Maio"
-        },
-        "Aug": {
-            br: "Ago"
-        },
-        "Sep": {
-            br: "Set"
-        },
-        "Oct": {
-            br: "Out"
-        },
-        "Dec": {
-            br: "Dez"
-        },
-        "Amendment": {
-            br: "Emenda"
-        }
-    }
-
-    if (language === PORTUGUESE) {
-        translator = $('body').translate({ lang: "br", t: dict }); //use BR
-        $("button .filter-option").text(translator.get("Choose one of the following..."));
-        $("#bar-chart").text(translator.get("Create a bar chart"));
-        $("#force-layout").text(translator.get("Show parties clusters"));
-        $("#scatter-plot-pca").text(translator.get("Create a Political Spectrum of Deputies - Technique: PCA"));
-        $("#scatter-plot-mds").text(translator.get("Create a Political Spectrum of Deputies - Technique: MDS"));
-        $("#scatter-plot-tsne").text(translator.get("Create a Political Spectrum of Deputies - Technique: t-SNE"));
-        $("#chamber-infographic").text(translator.get("Create a Chamber Infographic"));
-        $("#deputies-similarity-force").text(translator.get("Create a Deputies Similarity Graph"));
-        $("#rollcalls-heatmap").text(translator.get("Create a Map of Roll Calls"));
-        $("#time-line-crop-behavior-selection").text(translator.get("Create a timeline with selected deputies"));
-    }
 }
 
 (function (console) {

@@ -5,7 +5,6 @@ function themesBubbleChart() {
     var padding = 5; // separation between nodes
     var dispatch = d3.dispatch('update');
     const names = d => {
-        console.log(d)
         return d.split(" ")
     };
 
@@ -15,18 +14,11 @@ function themesBubbleChart() {
         });
     }
 
-    function convertSecondsToHours(seconds) {
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        const remainingSeconds = seconds % 60;
-        return `${hours}h ${minutes}m ${remainingSeconds}s`;
-    }
-
     function drawBubbleChart(data, htmlContent) {
         // Create the color scale
         const colorScale = d3v4.scaleOrdinal()
             .domain(data.map(d => d.theme))
-            .range(d3v4.schemeCategory10);
+            .range(d3v4.schemeCategory20);
 
         // Create the pack layout
         const pack = d3v4.pack()
@@ -47,7 +39,7 @@ function themesBubbleChart() {
             .attr("height", "100%")
             .attr("viewBox", `250 0 1300 1000`)
             .classed("bubble-chart", true)
-            .attr("style", "max-width: 100%; height: auto; font: 20px sans-serif;")
+            .attr("style", "max-width: 100%; height: auto; font: 30px sans-serif;")
             .attr("text-anchor", "middle");
 
         // Create the bubbles
@@ -61,14 +53,26 @@ function themesBubbleChart() {
         // Add the circles to the bubbles
         bubbles.append("circle")
             .attr("r", d => d.r)
-            .attr("fill", d => colorScale(d.data.theme));
+            .attr("fill", d => colorScale(d.data.theme))
+            .each(function (d) {
+                const attrs = popoverAttr(themePopOver(d), 'top');
+                Object.entries(attrs).forEach(([key, value]) => {
+                    d3.select(this).attr(key, value);
+                });
+            });
+
+        $('.bubble-chart circle').popover({ trigger: "hover" });
 
         // Add a label.
-        const text = bubbles.append("text")
-            .attr("clip-path", d => `circle(${d.r})`);
+        const text = bubbles.filter(d => d.r > 60)
+            .append("text")
+            .attr("clip-path", d => `circle(${d.r})`)
+            .style("font-size", d => `${Math.min(d.r / 4, 25)}px`)  // Font size is a fraction of the radius, with a max limit
+            .style("pointer-events", "none");  // Disable pointer events for text
 
         // Add a tspan for each CamelCase-separated word.
         text.selectAll("tspan")
+            .filter(d => d.r > 60)
             .data(d => names(d.data.theme))
             .enter()
             .append("tspan")
@@ -80,9 +84,21 @@ function themesBubbleChart() {
         text.append("tspan")
             .attr("x", 0)
             .attr("y", d => `${names(d.data.theme).length / 2 + 0.35}em`)
-            .attr("fill-opacity", 0.7)
-            .text(d => d.data.count);
+            .attr("fill-opacity", 0.5)
+            .text(d => `(${d.data.count})`);
 
+    }
+
+    function themePopOver(d) {
+        var subjectTooltipEnglish;
+        var subjectTooltipPortuguese;
+        subjectTooltipEnglish = '<strong>' + d.data.theme + ' (' + d.data.count + ")</strong><br><em>Left-Click to select</em>";
+        subjectTooltipPortuguese = '<strong>' + d.data.theme + ' (' + d.data.count + ")</strong><br><em>Botão esquerdo para selecionar</em>";
+
+        if (language === PORTUGUESE)
+            return subjectTooltipEnglish;
+        else
+            return subjectTooltipPortuguese;
     }
 
 

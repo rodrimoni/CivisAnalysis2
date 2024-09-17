@@ -37,9 +37,8 @@ function rollCallsHeatmap() {
         selection.each(function (data) {
             // filter empty, all rollCalls
             chart.heatMapDeputies(data.deputies);
-            var rcs = groupRollCallsByMonth(data.rcs, { motionTypeFilter: [], dateFilter: [undefined, undefined] });
+            var rcs = groupRollCallsByMonth(data.rcs, { motionTypeFilter: [], motionThemeFilter: [], dateFilter: [undefined, undefined] });
             themesCount = calculateThemesOcurrency(rcs);
-            console.log(themesCount);
             chart.drawRollCallsHeatMap(rcs, this);
         });
     }
@@ -210,13 +209,14 @@ function rollCallsHeatmap() {
         var node = tree.getNode(panelID, tree.traverseBF);
         parentID = node.parent.data;
 
-        const button = d3.select(htmlBody) // You can change "body" to the parent container element where you want the button
+        const button = d3.select(htmlBody)
             .append("button")
             .attr("id", "showRollCallsTheme")
             .attr("style", "position:absolute; left:75%;")
-            .text("Show Themes!")
+            .text("Show subjects")
             .on("click", function () {
                 handleButtonThemes(panelID, themesCount)
+                d3.event.stopPropagation();
             });
 
         svg = d3.select(htmlBody)
@@ -239,8 +239,6 @@ function rollCallsHeatmap() {
             else
                 hashYears[currentYear].push(d);
         });
-
-        console.log(hashYears);
 
         var yearsLabels = svg.selectAll('.yearLabel')
             .data(d3.keys(hashYears));
@@ -317,12 +315,14 @@ function rollCallsHeatmap() {
             .attr("y", function (d) { return yScale(d.period); })
             .attr("rx", 4)
             .attr("ry", 4)
-            .attr("class", function (d) { return (d.selected) ? "rollCall bordered selected" : ((d.hovered) ? "rollCall bordered hovered" : "rollCall bordered"); })
+            .attr("class", function (d) {
+                let classes = "rollCall bordered";
+                if (d.selected) classes += " selected";
+                if (d.hovered) classes += " hovered";
+                return classes;
+            })
             .attr("width", itemWidth)
             .attr("height", itemHeight)
-            .style("stroke-width", function (d) {
-                return (d.hovered) ? "6px" : "2px";
-            })
             .style("fill", "grey")
             .on('click', function (d) {
                 mouseClickRollCall(d);
@@ -335,8 +335,10 @@ function rollCallsHeatmap() {
                     var htmlContent = "<div class ='text-center'><strong>" + d.type + ' ' + d.number + '/' + d.year + "</strong></div><br>";
                     htmlContent += "<strong><span class='trn'>Amendment</span></strong>:  " + motions[d.type + d.number + d.year].amendment.trim() + "<br><br>";
                     const theme = motions[d.type + d.number + d.year]?.theme
-                    if (!!theme.length)
-                        htmlContent += "<strong><span class='trn'>Theme</span></strong>:  " + theme[0].trim() + "<br><br>"; // Pode ter mais de um tema, pegar sempre o primeiro
+                    if (!!theme && theme.length) {
+                        const subject = language === PORTUGUESE ? theme[0].trim() : subjectsToEnglish[theme[0].trim()]; // Pode ter mais de um tema, pegar sempre o primeiro
+                        htmlContent += "<strong><span class='trn'>Subject</span></strong>:  " + subject + "<br><br>";
+                    }
                     if (d.summary !== "")
                         htmlContent += "<strong>Status: </strong>" + d.summary.trim() + "<br>";
                     if (d.rate !== null) {
@@ -430,8 +432,12 @@ function rollCallsHeatmap() {
         svg.selectAll(".rollCall")
             .transition(750)
             .style("fill", function (d) { return setRollCallFill(d); })
-            .style("stroke-width", function (d) { return (d.hovered) ? "6px" : "2px"; })
-            .attr("class", function (d) { return (d.selected) ? "rollCall bordered selected" : ((d.hovered) ? "rollCall bordered hovered" : "rollCall bordered"); });
+            .attr("class", function (d) {
+                let classes = "rollCall bordered";
+                if (d.selected) classes += " selected";
+                if (d.hovered) classes += " hovered";
+                return classes;
+            })
     };
 
     chart.heatMapDeputies = function (_) {
@@ -441,7 +447,7 @@ function rollCallsHeatmap() {
     };
 
     chart.selectRollCallBySearch = function (id) {
-        rollCallsRates[parentID].forEach(function (rc) {
+        rollCallsRates[panelID].forEach(function (rc) {
             if (rc.rollCallID === id)
                 rc.selected = true;
             else
@@ -452,7 +458,7 @@ function rollCallsHeatmap() {
     };
 
     chart.selectAllRollCalls = function (id) {
-        rollCallsRates[parentID].forEach(function (rc) {
+        rollCallsRates[panelID].forEach(function (rc) {
             rc.selected = true;
         });
 
@@ -469,7 +475,7 @@ function rollCallsHeatmap() {
         // Load data with all rollCalls
         var data = d3.select('#' + panelID + " .panel-body").data()[0];
         // Group by Month with filter
-        var rcs = groupRollCallsByMonth(data, filter);
+        var rcs = groupRollCallsByMonth(data.rcs, filter);
         chart.drawRollCallsHeatMap(rcs, htmlContent[0]);
     };
 
@@ -479,7 +485,7 @@ function rollCallsHeatmap() {
         var countRollCalls = 1;
 
         // motionTypeFilter.length == 0, all rollcalls must be selected
-        if (filter.motionTypeFilter.length > 0 || (filter.dateFilter[0] !== undefined && filter.dateFilter[1] !== undefined)) {
+        if (filter.motionTypeFilter.length > 0 || filter.motionThemeFilter.length > 0 || (filter.dateFilter[0] !== undefined && filter.dateFilter[1] !== undefined)) {
             rcs = filterMotions(rcs, filter);
         }
 
@@ -529,7 +535,7 @@ function rollCallsHeatmap() {
         var eltInput = $('#' + panelID + ' .searchRollCall.tt-input');
         // Reset the selected RollCall in filter
         eltInput.val('');
-        rollCallsRates[parentID].forEach(function (rc) {
+        rollCallsRates[panelID].forEach(function (rc) {
             if (rc.rollCallID === d.rollCallID)
                 rc.selected = true;
             else
@@ -552,6 +558,10 @@ function rollCallsHeatmap() {
     function calculateThemesOcurrency(rcs) {
         // Count the themes
         const themeCounts = rcs.reduce((acc, curr) => {
+            if (language !== PORTUGUESE) {
+                curr.theme = subjectsToEnglish[curr.theme]
+            }
+
             if (curr.theme !== undefined) { // Check if theme is not undefined
                 if (acc[curr.theme]) {
                     acc[curr.theme]++;
