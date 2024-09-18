@@ -5,7 +5,8 @@ function themesBubbleChart() {
     var padding = 5; // separation between nodes
     var dispatch = d3.dispatch('update');
     const names = d => {
-        return d.split(" ")
+        const name = language === ENGLISH ? subjectsToEnglish[d] : d
+        return name.split(" ")
     };
 
     function chart(selection) {
@@ -92,13 +93,13 @@ function themesBubbleChart() {
     function themePopOver(d) {
         var subjectTooltipEnglish;
         var subjectTooltipPortuguese;
-        subjectTooltipEnglish = '<strong>' + d.data.theme + ' (' + d.data.count + ")</strong><br><em>Left-Click to select</em>";
+        subjectTooltipEnglish = '<strong>' + subjectsToEnglish[d.data.theme] + ' (' + d.data.count + ")</strong><br><em>Left-Click to select</em>";
         subjectTooltipPortuguese = '<strong>' + d.data.theme + ' (' + d.data.count + ")</strong><br><em>Botão esquerdo para selecionar</em>";
 
         if (language === PORTUGUESE)
-            return subjectTooltipEnglish;
-        else
             return subjectTooltipPortuguese;
+        else
+            return subjectTooltipEnglish;
     }
 
 

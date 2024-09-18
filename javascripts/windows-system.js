@@ -184,6 +184,8 @@ function initializeChart(newID, chartObj) {
             addFilterDateRollCallMenu(newID, chartObj.data.rcs, rollCallsTypeAhead);
             addEditTitleInput(newID);
 
+            $('#' + newID).attr('data-type-period', chartObj.panelClass);
+
             chart.on('update', function () {
                 updateRollCalls(newID);
             });
@@ -201,6 +203,8 @@ function initializeChart(newID, chartObj) {
             addThemeFilter(newID, chartObj.data.rcs, rollCallsTypeAhead);
             addFilterDateRollCallMenu(newID, chartObj.data.rcs, rollCallsTypeAhead);
             addEditTitleInput(newID);
+
+            $('#' + newID).attr('data-type-period', chartObj.panelClass);
 
             updateRollCalls(newID);
 
@@ -226,6 +230,9 @@ function initializeChart(newID, chartObj) {
             chart = themesBubbleChart();
             addConfigMenu(newID, 'themes-bubble-chart', false);
             addEditTitleInput(newID);
+
+            $('#' + newID).attr('data-type-period', chartObj.panelClass);
+
             break;
         default:
             break;
@@ -725,7 +732,7 @@ function addThemeFilter(newID, rollCalls, rollCallsTypeAhead) {
             'placeholder="' + placeholder + '"/> </li>');
 
     // Get motions unique type array
-    var rollCallsThemes = d3.map(rollCalls, function (d) { return language === PORTUGUESE ? d.theme : subjectsToEnglish[d.theme]; }).keys();
+    var rollCallsThemes = d3.map(rollCalls, function (d) { return language === ENGLISH ? subjectsToEnglish[d.theme] : d.theme }).keys();
     var defaultOptions = rollCallsThemes.sort();
 
     // Convert to {key : index, value: themeMotion}
@@ -1576,12 +1583,14 @@ function handleContextMenuDeputy(invokedOn, selectedMenu) {
                     title = "<span><span class='trn'>Map of Roll Calls</span>: " + "<span class='trn'>Year</span> " + id + "</span>";
                     prettyTitle = "Map of Roll Calls: Year " + id;
                 }
+                panelClass = type + '-' + id;
             }
             else {
                 firstYear = periodID[1];
                 lastYear = periodID[2];
                 title = "<span><span class='trn'>Map of Roll Calls</span>: " + firstYear + " <span class='trn'>to</span> " + lastYear + "</span>";
                 prettyTitle = "Map of Roll Calls: " + firstYear + " to " + lastYear;
+                panelClass = type + "-" + firstYear + "-" + lastYear;
             }
 
             var selectedDeputies = [];
@@ -1602,16 +1611,43 @@ function handleContextMenuDeputy(invokedOn, selectedMenu) {
             data.rcs = rcs;
             data.deputies = selectedDeputies;
 
-            chartObj = { 'chartID': STATIC_ROLLCALLS_HEATMAP, 'data': data, 'title': title, 'prettyTitle': prettyTitle };
+            chartObj = { 'chartID': STATIC_ROLLCALLS_HEATMAP, 'data': data, 'title': title, 'prettyTitle': prettyTitle, 'panelClass': panelClass };
             createNewChild(panelID, chartObj);
         }
 }
 
 function handleButtonThemes(panelID, themesCount) {
-    title = "<span><span class='trn'>Subjects</span>: " + "<span class='trn'>Year</span> " + 2024 + "</span>";
-    prettyTitle = "Subjects: Year " + 2024;
+    console.log({ themesCount })
+    //TODO: transformar em função
+    /* Get period of the Heat Map */
+    const period = $("#" + panelID).data().typePeriod;
+    var periodID = period.split("-");
+    var id, periodData, subtitle, panelClass, firstYear, lastYear;
+    if (periodID.length <= 2) {
+        type = periodID[0];
+        id = periodID[1];
+        if (type !== 'year') {
+            periodData = CONGRESS_DEFINE[type + "s"][id];
+            title = "<span><span class='trn'>Subjects</span>: <span class='trn'>" + periodData.name + "</span></span>";
+            prettyTitle = "Subjects: " + periodData.name;
+            subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " <span class='trn'>to</span> " + periodData.period[1].toLocaleDateString() + "</span>";
+            title += subtitle;
+        }
+        else {
+            title = "<span><span class='trn'>Subjects</span>: " + "<span class='trn'>Year</span> " + id + "</span>";
+            prettyTitle = "Subjects: Year " + id;
+        }
+        panelClass = type + '-' + id;
+    }
+    else {
+        firstYear = periodID[1];
+        lastYear = periodID[2];
+        title = "<span><span class='trn'>Subjects</span>: " + firstYear + " <span class='trn'>to</span> " + lastYear + "</span>";
+        prettyTitle = "Subjects: " + firstYear + " to " + lastYear;
+        panelClass = type + "-" + firstYear + "-" + lastYear;
+    }
 
-    chartObj = { 'chartID': THEMES_BUBBLE_CHART, 'data': themesCount, 'title': title, 'prettyTitle': prettyTitle };
+    chartObj = { 'chartID': THEMES_BUBBLE_CHART, 'data': themesCount, 'title': title, 'prettyTitle': prettyTitle, 'panelClass': panelClass };
     createNewChild(panelID, chartObj);
 }
 
@@ -1753,21 +1789,6 @@ function selectNodeSideBarByPanel(panelID) {
         if (node.panel === panelID) {
             if (node.state !== 'selected') {
                 $('#tree').treeview('selectNode', node);
-                // When clicks on static heatmap, selects all deputies used to create the heatmap.
-                if (node.chart.typeChart === STATIC_ROLLCALLS_HEATMAP) {
-                    var chartNode = tree.getNode(panelID, tree.traverseBF);
-                    var heatMapDeputies = chartNode.chart.heatMapDeputies();
-                    // Deselect All deputies
-                    for (var key in deputyNodes) {
-                        for (var index in deputyNodes[key])
-                            deputyNodes[key][index].selected = false;
-                    }
-                    // Select only deputies previously selected
-                    heatMapDeputies.forEach(function (elem) {
-                        updateDeputyNodeInAllPeriods(elem.deputyID, "selected", true);
-                    })
-                    updateVisualizations();
-                }
             }
         }
     })

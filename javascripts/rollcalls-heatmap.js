@@ -38,7 +38,9 @@ function rollCallsHeatmap() {
             // filter empty, all rollCalls
             chart.heatMapDeputies(data.deputies);
             var rcs = groupRollCallsByMonth(data.rcs, { motionTypeFilter: [], motionThemeFilter: [], dateFilter: [undefined, undefined] });
+            console.log(rcs)
             themesCount = calculateThemesOcurrency(rcs);
+            console.log(themesCount)
             chart.drawRollCallsHeatMap(rcs, this);
         });
     }
@@ -558,10 +560,6 @@ function rollCallsHeatmap() {
     function calculateThemesOcurrency(rcs) {
         // Count the themes
         const themeCounts = rcs.reduce((acc, curr) => {
-            if (language !== PORTUGUESE) {
-                curr.theme = subjectsToEnglish[curr.theme]
-            }
-
             if (curr.theme !== undefined) { // Check if theme is not undefined
                 if (acc[curr.theme]) {
                     acc[curr.theme]++;

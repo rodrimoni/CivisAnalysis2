@@ -213,7 +213,8 @@ function filterMotions(arr, filter) {
 
         // Verify if satisfies the motion theme
         if (filter.motionThemeFilter.length > 0) {
-            if (filter.motionThemeFilter.indexOf(e.theme) > -1)
+            const theme = language === ENGLISH ? subjectsToEnglish[e.theme] : e.theme
+            if (filter.motionThemeFilter.indexOf(theme) > -1)
                 resultTheme = true;
         }
         else // The type filter its not setted, so all types must be selected
