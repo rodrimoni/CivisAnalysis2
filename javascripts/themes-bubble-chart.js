@@ -16,11 +16,6 @@ function themesBubbleChart() {
     }
 
     function drawBubbleChart(data, htmlContent) {
-        // Create the color scale
-        const colorScale = d3v4.scaleOrdinal()
-            .domain(data.map(d => d.theme))
-            .range(d3v4.schemeCategory20);
-
         // Create the pack layout
         const pack = d3v4.pack()
             .size([width - padding, height - padding])
@@ -28,7 +23,7 @@ function themesBubbleChart() {
 
         // Create the hierarchy from the data
         const hierarchy = d3v4.hierarchy({ children: data })
-            .sum(d => d.count);
+            .sum(d => d.frequency);
 
         // Compute the pack layout
         const root = pack(hierarchy);
@@ -51,10 +46,11 @@ function themesBubbleChart() {
             .attr("class", "bubble")
             .attr("transform", d => `translate(${d.x + padding}, ${d.y + padding})`);
 
+
         // Add the circles to the bubbles
         bubbles.append("circle")
             .attr("r", d => d.r)
-            .attr("fill", d => colorScale(d.data.theme))
+            .attr("fill", d => CONGRESS_DEFINE.subjectsToColor[d.data.category])
             .each(function (d) {
                 const attrs = popoverAttr(themePopOver(d), 'top');
                 Object.entries(attrs).forEach(([key, value]) => {
@@ -74,7 +70,7 @@ function themesBubbleChart() {
         // Add a tspan for each CamelCase-separated word.
         text.selectAll("tspan")
             .filter(d => d.r > 60)
-            .data(d => names(d.data.theme))
+            .data(d => names(d.data.category))
             .enter()
             .append("tspan")
             .attr("x", 0)
@@ -84,17 +80,17 @@ function themesBubbleChart() {
         // Add a tspan for the node’s value.
         text.append("tspan")
             .attr("x", 0)
-            .attr("y", d => `${names(d.data.theme).length / 2 + 0.35}em`)
+            .attr("y", d => `${names(d.data.category).length / 2 + 0.35}em`)
             .attr("fill-opacity", 0.5)
-            .text(d => `(${d.data.count})`);
+            .text(d => `(${d.data.frequency})`);
 
     }
 
     function themePopOver(d) {
         var subjectTooltipEnglish;
         var subjectTooltipPortuguese;
-        subjectTooltipEnglish = '<strong>' + subjectsToEnglish[d.data.theme] + ' (' + d.data.count + ")</strong><br><em>Left-Click to select</em>";
-        subjectTooltipPortuguese = '<strong>' + d.data.theme + ' (' + d.data.count + ")</strong><br><em>Botão esquerdo para selecionar</em>";
+        subjectTooltipEnglish = '<strong>' + subjectsToEnglish[d.data.category] + ' (' + d.data.frequency + ")" //+ "</strong><br><em>Left-Click to select</em>";
+        subjectTooltipPortuguese = '<strong>' + d.data.category + ' (' + d.data.frequency + ")" //+ "</strong><br><em>Botão esquerdo para selecionar</em>";
 
         if (language === PORTUGUESE)
             return subjectTooltipPortuguese;

@@ -18,16 +18,20 @@ var ICON_WIDTH = 24;
 var SIDEBAR_OFFSET = 400;
 
 /* Constant to define the charts */
-var TIME_LINE = 0;
-var SCATTER_PLOT = 1;
-var BAR_CHART = 2;
-var FORCE_LAYOUT = 3;
-var TIME_LINE_CROP = 4;
-var CHAMBER_INFOGRAPHIC = 5;
-var ROLLCALLS_HEATMAP = 6;
-var DEPUTIES_SIMILARITY_FORCE = 7;
-var STATIC_ROLLCALLS_HEATMAP = 8;
-var THEMES_BUBBLE_CHART = 9;
+const TIME_LINE = 0;
+const SCATTER_PLOT = 1;
+const BAR_CHART = 2;
+const FORCE_LAYOUT = 3;
+const TIME_LINE_CROP = 4;
+const CHAMBER_INFOGRAPHIC = 5;
+const ROLLCALLS_HEATMAP = 6;
+const DEPUTIES_SIMILARITY_FORCE = 7;
+const STATIC_ROLLCALLS_HEATMAP = 8;
+const THEMES_BUBBLE_CHART = 9;
+const THEMES_LINE_CHART = 10;
+
+const PARTIES_BAR_CHART = 1;
+const THEMES_BAR_CHART = 2;
 
 /* Transfer function of Plots */
 var typeChartToString = ["Timeline", "Spectrum of Deputies", "Bar Chart", "Force Layout", "Cropped Timeline", "Chamber Infographic", "Map of Roll Calls", "Similarity Force", "Map of Roll Calls", "Subjects"];
@@ -135,7 +139,8 @@ function initializeChart(newID, chartObj) {
             break;
 
         case BAR_CHART:
-            chart = barChart();
+            const { typeBarChart } = chartObj.args
+            chart = barChart(typeBarChart);
             addConfigMenu(newID, 'barChart', false);
             addEditTitleInput(newID);
             break;
@@ -1244,7 +1249,8 @@ function handleContextMenuScatterPlot(invokedOn, selectedMenu) {
         prettyTitle = 'Bar Chart: Cluster ' + clusterID;
         title = "<span>" + prettyTitle + "</span>";
         var partyCountData = getPartyCount(chartData.clusters[clusterID].points);
-        chartObj = { 'chartID': BAR_CHART, 'data': partyCountData, 'title': title, "prettyTitle": prettyTitle };
+        const args = { 'typeBarChart': PARTIES_BAR_CHART }
+        chartObj = { 'chartID': BAR_CHART, 'data': partyCountData, 'title': title, "prettyTitle": prettyTitle, "args": args };
         createNewChild(panelID, chartObj);
     }
     else
@@ -1616,8 +1622,7 @@ function handleContextMenuDeputy(invokedOn, selectedMenu) {
         }
 }
 
-function handleButtonThemes(panelID, themesCount) {
-    console.log({ themesCount })
+function handleButtonThemes(panelID, data, chartID) {
     //TODO: transformar em função
     /* Get period of the Heat Map */
     const period = $("#" + panelID).data().typePeriod;
@@ -1647,7 +1652,9 @@ function handleButtonThemes(panelID, themesCount) {
         panelClass = type + "-" + firstYear + "-" + lastYear;
     }
 
-    chartObj = { 'chartID': THEMES_BUBBLE_CHART, 'data': themesCount, 'title': title, 'prettyTitle': prettyTitle, 'panelClass': panelClass };
+    const args = { "typeBarChart": THEMES_BAR_CHART }
+
+    chartObj = { 'chartID': chartID, 'data': data, 'title': title, 'prettyTitle': prettyTitle, 'panelClass': panelClass, "args": args };
     createNewChild(panelID, chartObj);
 }
 

@@ -1,18 +1,19 @@
 .bar-chart text {
-    font: 16px sans-serif;
-    color: white;
-}
-.bar-chart text.value {
-    font-size: 120%;
-    fill: white;
+    font: 30px sans-serif;
+    color: black;
 }
 
-.bar-chart text.label {
-    font: 16px sans-serif;
+.bar-chart text.value {
+    font-size: 30px;
     fill: black;
 }
 
-.bar-chart .axisHorizontal path{
+.bar-chart text.label {
+    font: 30px sans-serif;
+    fill: black;
+}
+
+.bar-chart .axisHorizontal path {
     fill: none;
 }
 
@@ -24,4 +25,3 @@
 .bar-chart .bar {
     fill-opacity: .9;
 }
-

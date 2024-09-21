@@ -538,19 +538,19 @@ function getPartyCount(cluster) {
 
     var currentPartyCount = [];
     cluster.forEach(function (deputy) {
-        var result = $.grep(currentPartyCount, function (e) { return e.party === deputy.party; });
+        var result = $.grep(currentPartyCount, function (e) { return e.category === deputy.party; });
         if (result.length === 0) {
-            currentPartyCount.push({ "party": deputy.party, "number": 1 });
+            currentPartyCount.push({ "category": deputy.party, "frequency": 1 });
         }
         else
             if (result.length === 1) {
-                result[0].number += 1;
+                result[0].frequency += 1;
             }
     });
 
     /* Sort and count the number of deputies per party*/
     currentPartyCount.sort(function (x, y) {
-        return d3.descending(x.number, y.number);
+        return d3.descending(x.frequency, y.frequency);
     });
 
     return currentPartyCount;

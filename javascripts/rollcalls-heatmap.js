@@ -38,9 +38,6 @@ function rollCallsHeatmap() {
             // filter empty, all rollCalls
             chart.heatMapDeputies(data.deputies);
             var rcs = groupRollCallsByMonth(data.rcs, { motionTypeFilter: [], motionThemeFilter: [], dateFilter: [undefined, undefined] });
-            console.log(rcs)
-            themesCount = calculateThemesOcurrency(rcs);
-            console.log(themesCount)
             chart.drawRollCallsHeatMap(rcs, this);
         });
     }
@@ -211,13 +208,60 @@ function rollCallsHeatmap() {
         var node = tree.getNode(panelID, tree.traverseBF);
         parentID = node.parent.data;
 
+        // Create the dropdown
+        const dropdown = d3.select(htmlBody)
+            .append("select")
+            .attr("id", "themeDropdown")
+            .attr("style", "position:absolute; left:60%;") // Adjust position as needed
+            .on("click", function () {
+                d3.event.stopPropagation(); // avoid ui to navigate to panel
+            })
+
+        // Add options to the dropdown
+        const options = [
+            { value: "default", text: "Select..." }, // Placeholder option
+            { value: "bubble", text: "Proportion" },
+            { value: "bar", text: "Histogram" },
+            { value: "line", text: "Trends" },
+            // Add more options here if needed
+        ];
+
+        dropdown.selectAll("option")
+            .data(options)
+            .enter()
+            .append("option")
+            .attr("value", d => d.value)
+            .text(d => d.text);
+
+        // Keep the original button
         const button = d3.select(htmlBody)
             .append("button")
             .attr("id", "showRollCallsTheme")
             .attr("style", "position:absolute; left:75%;")
             .text("Show subjects")
             .on("click", function () {
-                handleButtonThemes(panelID, themesCount)
+                const selectedValue = d3.select("#themeDropdown").property("value");
+                let chartData, chartID;
+
+                switch (selectedValue) {
+                    case "bubble":
+                        chartData = calculateThemesOcurrency(data);;
+                        chartID = THEMES_BUBBLE_CHART
+                        break;
+                    case "bar":
+                        chartData = calculateThemesOcurrency(data);;
+                        chartID = BAR_CHART
+                        break;
+                    case "line":
+                        chartData = []
+                        chartID = THEMES_LINE_CHART
+                        break;
+                    default:
+                        return;
+                }
+
+                handleButtonThemes(panelID, chartData, chartID);
+                // Prevent any default behavior
                 d3.event.stopPropagation();
             });
 
@@ -570,8 +614,11 @@ function rollCallsHeatmap() {
             return acc;
         }, {});
 
-        // Convert the result to an array of objects with {theme, count}
-        return Object.entries(themeCounts).map(([theme, count]) => ({ theme, count }));
+        // Convert the result to an array of objects with {category, frequency}
+        const result = Object.entries(themeCounts).map(([category, frequency]) => ({ category, frequency }));
+
+        // Sort the array by frequency in descending order
+        return result.sort((a, b) => b.frequency - a.frequency);
     }
 
     return d3.rebind(chart, dispatch, 'on');
