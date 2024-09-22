@@ -296,7 +296,7 @@ d3.chart.timeline = function () {
             .text('YEARLY POLITICAL SPECTRA')
             .attr({
                 'class': "partiesLabel trn",
-                x: scaleX_middleOfBiennial(1990) + scaleX_middleOfBiennial(CONGRESS_DEFINE.startingYear) / 2 - 50,
+                x: scaleX_middleOfBiennial(1990) + scaleX_middleOfBiennial(CONGRESS_DEFINE.startingYear) / 2 - 80,
                 y: timelineDim.height / 2 + 5
             });
 
@@ -304,7 +304,7 @@ d3.chart.timeline = function () {
         gg.append('text')
             .text('GOVERNMENT')
             .attr({
-                x: scaleX_middleOfBiennial(1990) + scaleX_middleOfBiennial(1991) / 2 - 20,
+                x: scaleX_middleOfBiennial(1990) + scaleX_middleOfBiennial(1991) / 2 - 40,
                 y: 5,
                 'text-anchor': 'start',
                 'class': "partiesLabel trn"
@@ -314,7 +314,7 @@ d3.chart.timeline = function () {
             .attr({
                 'class': "partiesLabel trn",
                 'text-anchor': 'end',
-                x: scaleX_middleOfBiennial(1990) + scaleX_middleOfBiennial(1991) / 2 - 20,
+                x: scaleX_middleOfBiennial(1990) + scaleX_middleOfBiennial(1991) / 2 - 40,
                 y: timelineDim.height - 5
             });
 

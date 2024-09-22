@@ -505,6 +505,14 @@ a:active {
     background-color: white;
 }
 
+.icon-line-chart {
+    background: url("../images/icons/line-chart-icon.png");
+}
+
+.icon-line-chart.minimized-icon {
+    background-color: white;
+}
+
 .hierarchy-black-transparent-icon {
     background: url("../images/icons/hierarchy-black-transparent.png");
 }

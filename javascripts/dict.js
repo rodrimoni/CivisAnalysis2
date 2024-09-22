@@ -203,6 +203,10 @@ function initDict() {
     }
 }
 
+const subjectsNames = () => {
+    return Object.keys(subjectsToEnglish);
+}
+
 const subjectsToEnglish = {
     "Defesa e Segurança": "Defense and Security",
     "Administração Pública": "Public Administration",

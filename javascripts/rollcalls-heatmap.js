@@ -38,6 +38,68 @@ function rollCallsHeatmap() {
             // filter empty, all rollCalls
             chart.heatMapDeputies(data.deputies);
             var rcs = groupRollCallsByMonth(data.rcs, { motionTypeFilter: [], motionThemeFilter: [], dateFilter: [undefined, undefined] });
+
+            const controls = d3.select(this)
+                .append("div")
+                .classed("controls", true)
+
+            // Create the dropdown
+            const dropdown = controls
+                .append("select")
+                .attr("class", "themeDropdown")
+                .attr("style", "position:absolute; left:60%;") // Adjust position as needed
+                .on("click", function () {
+                    d3.event.stopPropagation(); // avoid ui to navigate to panel
+                })
+
+            // Add options to the dropdown
+            const options = [
+                { value: "default", text: "Select..." }, // Placeholder option
+                { value: "bubble", text: "Proportion" },
+                { value: "bar", text: "Histogram" },
+                { value: "line", text: "Trends" },
+                // Add more options here if needed
+            ];
+
+            dropdown.selectAll("option")
+                .data(options)
+                .enter()
+                .append("option")
+                .attr("value", d => d.value)
+                .text(d => d.text);
+
+            // Keep the original button
+            const button = controls
+                .append("button")
+                .attr("id", "showRollCallsTheme")
+                .attr("style", "position:absolute; left:75%;")
+                .text("Show subjects")
+                .on("click", function () {
+                    const selectedValue = d3.select("#" + panelID + " .themeDropdown").property("value");
+                    let chartData, chartID;
+
+                    switch (selectedValue) {
+                        case "bubble":
+                            chartData = calculateThemesOcurrency(data.rcs);
+                            chartID = THEMES_BUBBLE_CHART
+                            break;
+                        case "bar":
+                            chartData = calculateThemesOcurrency(data.rcs);
+                            chartID = BAR_CHART
+                            break;
+                        case "line":
+                            chartData = calculateSmallMultiplesData(data.rcs);
+                            chartID = SMALL_MULTIPLES_CHART
+                            break;
+                        default:
+                            return;
+                    }
+
+                    handleButtonThemes(panelID, chartData, chartID);
+                    // Prevent any default behavior
+                    d3.event.stopPropagation();
+                });
+
             chart.drawRollCallsHeatMap(rcs, this);
         });
     }
@@ -207,63 +269,6 @@ function rollCallsHeatmap() {
         panelID = ($(htmlBody).parents('.panel')).attr('id');
         var node = tree.getNode(panelID, tree.traverseBF);
         parentID = node.parent.data;
-
-        // Create the dropdown
-        const dropdown = d3.select(htmlBody)
-            .append("select")
-            .attr("id", "themeDropdown")
-            .attr("style", "position:absolute; left:60%;") // Adjust position as needed
-            .on("click", function () {
-                d3.event.stopPropagation(); // avoid ui to navigate to panel
-            })
-
-        // Add options to the dropdown
-        const options = [
-            { value: "default", text: "Select..." }, // Placeholder option
-            { value: "bubble", text: "Proportion" },
-            { value: "bar", text: "Histogram" },
-            { value: "line", text: "Trends" },
-            // Add more options here if needed
-        ];
-
-        dropdown.selectAll("option")
-            .data(options)
-            .enter()
-            .append("option")
-            .attr("value", d => d.value)
-            .text(d => d.text);
-
-        // Keep the original button
-        const button = d3.select(htmlBody)
-            .append("button")
-            .attr("id", "showRollCallsTheme")
-            .attr("style", "position:absolute; left:75%;")
-            .text("Show subjects")
-            .on("click", function () {
-                const selectedValue = d3.select("#themeDropdown").property("value");
-                let chartData, chartID;
-
-                switch (selectedValue) {
-                    case "bubble":
-                        chartData = calculateThemesOcurrency(data);;
-                        chartID = THEMES_BUBBLE_CHART
-                        break;
-                    case "bar":
-                        chartData = calculateThemesOcurrency(data);;
-                        chartID = BAR_CHART
-                        break;
-                    case "line":
-                        chartData = []
-                        chartID = THEMES_LINE_CHART
-                        break;
-                    default:
-                        return;
-                }
-
-                handleButtonThemes(panelID, chartData, chartID);
-                // Prevent any default behavior
-                d3.event.stopPropagation();
-            });
 
         svg = d3.select(htmlBody)
             .append("svg")
@@ -620,6 +625,84 @@ function rollCallsHeatmap() {
         // Sort the array by frequency in descending order
         return result.sort((a, b) => b.frequency - a.frequency);
     }
+
+    function calculateSmallMultiplesData(rcs) {
+        const [startYear, endYear] = d3.extent(rcs, d => new Date(d.datetime).getFullYear());
+        const themes = subjectsNames();
+
+        // Initialize the base structure
+        const baseStructure = themes.map(theme => {
+            const frequency = [];
+
+            // Create frequency entries for each month from startYear to endYear
+            for (let year = startYear; year <= endYear; year++) {
+                for (let month = 0; month < 12; month++) {
+                    const date = new Date(year, month, 1);
+                    frequency.push({ date: date.toISOString(), count: 0 });
+                }
+            }
+
+            return {
+                theme: theme,
+                frequency: frequency,
+                average: null
+            };
+        });
+
+        // Populate the base structure with data
+        rcs.forEach(entry => {
+            const themeIndex = baseStructure.findIndex(item => item.theme === entry.theme);
+            if (themeIndex !== -1) {
+                const date = new Date(entry.datetime);
+                const year = date.getFullYear();
+                const month = date.getMonth(); // 0-11 for January-December
+
+                if (year >= startYear && year <= endYear) {
+                    baseStructure[themeIndex].frequency[(year - startYear) * 12 + month].count += 1;
+                }
+            }
+        });
+
+        // Calculate averages for each theme
+        baseStructure.forEach(item => {
+            const totalCount = item.frequency.reduce((sum, freq) => sum + freq.count, 0);
+            const totalMonths = item.frequency.length;
+            item.average = totalCount / totalMonths;
+        });
+
+        const result = baseStructure
+            .filter(item => item.average > 0)
+            .sort((a, b) => b.average - a.average);
+
+        return result;
+    }
+
+    // Caso seja necessário reviver o line chart simples
+
+    // function calculateThemesSeries(rcs) {
+    //     // Transform the data to count theme frequency by month and year
+    //     const frequencyMap = {};
+
+    //     // Populate frequency map
+    //     for (const item of rcs) {
+    //         if (item.theme === undefined) continue;
+    //         const date = item.datetime;
+    //         const year = date.getFullYear();
+    //         const key = `${year}-${item.theme}`;
+
+    //         frequencyMap[key] = (frequencyMap[key] || 0) + 1;
+    //     }
+
+    //     // Transform map to desired array format
+    //     const transformedData = Object.keys(frequencyMap).map(key => {
+    //         const [year, theme] = key.split('-');
+    //         return { date: new Date(year, 0, 1), category: theme, value: frequencyMap[key] };
+    //     });
+
+    //     console.log(transformedData);
+
+    //     return transformedData;
+    // }
 
     return d3.rebind(chart, dispatch, 'on');
 }

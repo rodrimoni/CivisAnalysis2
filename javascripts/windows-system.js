@@ -28,7 +28,7 @@ const ROLLCALLS_HEATMAP = 6;
 const DEPUTIES_SIMILARITY_FORCE = 7;
 const STATIC_ROLLCALLS_HEATMAP = 8;
 const THEMES_BUBBLE_CHART = 9;
-const THEMES_LINE_CHART = 10;
+const SMALL_MULTIPLES_CHART = 10;
 
 const PARTIES_BAR_CHART = 1;
 const THEMES_BAR_CHART = 2;
@@ -238,6 +238,13 @@ function initializeChart(newID, chartObj) {
 
             $('#' + newID).attr('data-type-period', chartObj.panelClass);
 
+            break;
+        case SMALL_MULTIPLES_CHART:
+            chart = smallMultiples();
+            addConfigMenu(newID, 'line-chart', false);
+            addEditTitleInput(newID);
+
+            $('#' + newID).attr('data-type-period', chartObj.panelClass);
             break;
         default:
             break;
@@ -1652,7 +1659,10 @@ function handleButtonThemes(panelID, data, chartID) {
         panelClass = type + "-" + firstYear + "-" + lastYear;
     }
 
-    const args = { "typeBarChart": THEMES_BAR_CHART }
+    let args = {}
+
+    if (chartID === BAR_CHART)
+        args = { "typeBarChart": THEMES_BAR_CHART }
 
     chartObj = { 'chartID': chartID, 'data': data, 'title': title, 'prettyTitle': prettyTitle, 'panelClass': panelClass, "args": args };
     createNewChild(panelID, chartObj);
@@ -1865,6 +1875,8 @@ function getChartIcon(typeChart) {
         icon += "icon-force-layout";
     else if (typeChart === THEMES_BUBBLE_CHART)
         icon += "icon-bubble-chart";
+    else if (typeChart === SMALL_MULTIPLES_CHART)
+        icon += "icon-line-chart";
 
     return icon;
 }
