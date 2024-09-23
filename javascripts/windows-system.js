@@ -127,6 +127,7 @@ function initializeChart(newID, chartObj) {
                 deputies.push(chartObj.data[key])
             }
             addSearchDeputyMenu(newID, deputies);
+            addThemeSearchScatterPlot(newID, chartObj.args.rcs)
             addPartySizeFilter(newID, chart);
             addEditTitleInput(newID);
 
@@ -183,10 +184,10 @@ function initializeChart(newID, chartObj) {
             rollCallsRates[newID] = currentRollCalls;
             setVotesForSelectedDeputies(newID);
             addConfigMenu(newID, 'rollCallsHeatmap', false);
-            var rollCallsTypeAhead = addSearchRollCallMenu(newID, chartObj.data.rcs);
-            addFilterMotionTypeMenu(newID, chartObj.data.rcs, rollCallsTypeAhead);
-            addThemeFilter(newID, chartObj.data.rcs, rollCallsTypeAhead);
-            addFilterDateRollCallMenu(newID, chartObj.data.rcs, rollCallsTypeAhead);
+            addSearchRollCallMenu(newID, chartObj.data.rcs);
+            addFilterMotionTypeMenu(newID, chartObj.data.rcs);
+            addThemeFilter(newID, chartObj.data.rcs);
+            addFilterDateRollCallMenu(newID, chartObj.data.rcs);
             addEditTitleInput(newID);
 
             $('#' + newID).attr('data-type-period', chartObj.panelClass);
@@ -203,10 +204,10 @@ function initializeChart(newID, chartObj) {
             rollCallsRates[newID] = currentRollCalls;
             setVotesForSelectedDeputies(newID);
             addConfigMenu(newID, 'rollCallsHeatmap', false);
-            var rollCallsTypeAhead = addSearchRollCallMenu(newID, chartObj.data.rcs);
-            addFilterMotionTypeMenu(newID, chartObj.data.rcs, rollCallsTypeAhead);
-            addThemeFilter(newID, chartObj.data.rcs, rollCallsTypeAhead);
-            addFilterDateRollCallMenu(newID, chartObj.data.rcs, rollCallsTypeAhead);
+            addSearchRollCallMenu(newID, chartObj.data.rcs);
+            addFilterMotionTypeMenu(newID, chartObj.data.rcs);
+            addThemeFilter(newID, chartObj.data.rcs);
+            addFilterDateRollCallMenu(newID, chartObj.data.rcs);
             addEditTitleInput(newID);
 
             $('#' + newID).attr('data-type-period', chartObj.panelClass);
@@ -346,7 +347,7 @@ function addSearchRollCallMenu(newID, rollCalls) {
     return rollCalls;
 }
 
-function addFilterMotionTypeMenu(newID, rollCalls, rollCallsTypeAhead) {
+function addFilterMotionTypeMenu(newID, rollCalls) {
     var placeholder = language === ENGLISH ? "Type motion type to filter" : "Digite tipos de votações para filtrar"
     $("#" + newID + " .panel-settings")
         .append('<li role="presentation" class="dropdown-header"><span class="trn">Select motion types</span></li>')
@@ -398,36 +399,16 @@ function addFilterMotionTypeMenu(newID, rollCalls, rollCallsTypeAhead) {
     });
 
     var chart;
-    var filter;
-    var filteredRollCalls = rollCalls;
     elt.on('itemAdded', function (event) {
         /* Select the rollcalls in input */
         chart = tree.getNode(newID, tree.traverseBF).chart;
         chart.selectRollCallsByFilter(newID);
-
-        /* Update the motions in single search */
-        filter = getFilters(newID);
-        if (filter.motionTypeFilter.length > 0 || (filter.dateFilter[0] !== undefined && filter.dateFilter[1] !== undefined)) {
-            filteredRollCalls = filterMotions(rollCalls, filter);
-            rollCallsTypeAhead.clear();
-            rollCallsTypeAhead.local = filteredRollCalls;
-            rollCallsTypeAhead.initialize(true);
-        }
     });
 
     elt.on('itemRemoved', function (event) {
         /* Select the deputies in input */
         chart = tree.getNode(newID, tree.traverseBF).chart;
         chart.selectRollCallsByFilter(newID);
-
-        /* Update the motions in single search */
-        filter = getFilters(newID);
-        if (filter.motionTypeFilter.length > 0 || (filter.dateFilter[0] !== undefined && filter.dateFilter[1] !== undefined)) {
-            filteredRollCalls = filterMotions(rollCalls, filter);
-            rollCallsTypeAhead.clear();
-            rollCallsTypeAhead.local = filteredRollCalls;
-            rollCallsTypeAhead.initialize(true);
-        }
     });
 
     /* Prevents click to close the settings menu */
@@ -490,7 +471,7 @@ function addDatePickerTimeline() {
     });
 }
 
-function addFilterDateRollCallMenu(newID, rollCalls, rollCallsTypeAhead) {
+function addFilterDateRollCallMenu(newID, rollCalls) {
     $("#" + newID + " .panel-settings")
         .append('<li role="presentation" class="dropdown-header"><span class="trn">Select the initial and final date</span></li>')
         .append('<li> <div class="input-daterange input-group" id="datepicker">' +
@@ -534,15 +515,6 @@ function addFilterDateRollCallMenu(newID, rollCalls, rollCallsTypeAhead) {
     $(elt).on('changeDate', function (e) {
         chart = tree.getNode(newID, tree.traverseBF).chart;
         chart.selectRollCallsByFilter(newID);
-        var filteredRollCalls = rollCalls;
-        /* Update the motions in single search */
-        var filter = getFilters(newID);
-        if (filter.motionTypeFilter.length > 0 || (filter.dateFilter[0] !== undefined && filter.dateFilter[1] !== undefined)) {
-            filteredRollCalls = filterMotions(rollCalls, filter);
-            rollCallsTypeAhead.clear();
-            rollCallsTypeAhead.local = filteredRollCalls;
-            rollCallsTypeAhead.initialize(true);
-        }
     });
 
 }
@@ -567,7 +539,7 @@ function getFilters(panelID) {
     });
 
     var motionThemeFilter = motionThemeElt.tagsinput('items');
-    // Serialize the result of .tagsipunt, get only values of motions. Ex: PEC, PL, MPV, etc.
+    // Serialize the result of .tagsipunt, get only values of themes. Ex: Admnistration, Finance, etc.
     motionThemeFilter = motionThemeFilter.map(function (e) {
         return e.value;
     });
@@ -732,7 +704,7 @@ function addSearchDeputyMenu(newID, deputies) {
 }
 
 
-function addThemeFilter(newID, rollCalls, rollCallsTypeAhead) {
+function addThemeFilter(newID, rollCalls) {
     var placeholder = language === ENGLISH
         ? "Type motion subject to filter (e.g. Health, Education, Economy, etc)"
         : "Digite temas de votações para filtrar (e.g. Saúde, Educação, Economia, etc)"
@@ -776,7 +748,6 @@ function addThemeFilter(newID, rollCalls, rollCallsTypeAhead) {
         typeaheadjs: [{
             hint: false,
             highlight: true,
-            minLength: 0
         },
         {
             name: 'rollCallsThemes',
@@ -787,36 +758,16 @@ function addThemeFilter(newID, rollCalls, rollCallsTypeAhead) {
     });
 
     var chart;
-    var filter;
-    var filteredRollCalls = rollCalls;
     elt.on('itemAdded', function (event) {
         /* Select the rollcalls in input */
         chart = tree.getNode(newID, tree.traverseBF).chart;
         chart.selectRollCallsByFilter(newID);
-
-        /* Update the motions in single search */
-        filter = getFilters(newID);
-        if (filter.motionTypeFilter.length > 0 || (filter.dateFilter[0] !== undefined && filter.dateFilter[1] !== undefined)) {
-            filteredRollCalls = filterMotions(rollCalls, filter);
-            rollCallsTypeAhead.clear();
-            rollCallsTypeAhead.local = filteredRollCalls;
-            rollCallsTypeAhead.initialize(true);
-        }
     });
 
     elt.on('itemRemoved', function (event) {
         /* Select the deputies in input */
         chart = tree.getNode(newID, tree.traverseBF).chart;
         chart.selectRollCallsByFilter(newID);
-
-        /* Update the motions in single search */
-        filter = getFilters(newID);
-        if (filter.motionTypeFilter.length > 0 || (filter.dateFilter[0] !== undefined && filter.dateFilter[1] !== undefined)) {
-            filteredRollCalls = filterMotions(rollCalls, filter);
-            rollCallsTypeAhead.clear();
-            rollCallsTypeAhead.local = filteredRollCalls;
-            rollCallsTypeAhead.initialize(true);
-        }
     });
 
     /* Prevents click to close the settings menu */
@@ -824,6 +775,84 @@ function addThemeFilter(newID, rollCalls, rollCallsTypeAhead) {
         e.stopPropagation();
     });
 }
+
+function addThemeSearchScatterPlot(newID, rollCalls) {
+    var placeholder = language === ENGLISH
+        ? "Type subject to select (e.g. Health, Education, etc)"
+        : "Digite temas de votações para filtrar (e.g. Saúde, Educação, Economia, etc)"
+
+    const popoverContent = 'Reload scatterplot with subjects';
+
+    $("#" + newID + " .panel-settings")
+        .append('<li role="presentation" class="dropdown-header"><span class="trn">Select Subjects</span></li>')
+        .append('<li><div class="row" style="width: 100%;">' +
+            '<div class="col-xs-11"><input type="text" class="form-control typeahead filterSubjectMotions" placeholder="' + placeholder + '"/></div>' +
+            '<div class="col-xs-1" style="padding-left: 0;">' +
+            '<button class="btn btn-primary reloadScatter" style="padding:12px; display: flex; align-items: center; justify-content: center;" ' +
+            'data-container="body" data-content="' + popoverContent + '" data-html="true" rel="popover" ' +
+            'data-placement="top" data-trigger="hover" data-viewport="body">' +
+            '<i class="fa fa-rotate-right"></i></button></div>' +
+            '</div></li>');
+
+
+    // Initialize the popover
+    $('#' + newID + ' .reloadScatter').popover();
+
+    // Get motions unique type array
+    var rollCallsThemes = d3.map(rollCalls, function (d) { return language === ENGLISH ? subjectsToEnglish[d.theme] : d.theme }).keys();
+    var defaultOptions = rollCallsThemes.sort();
+
+    // Convert to {key : index, value: themeMotion}
+    rollCallsThemes = d3.entries(rollCallsThemes);
+
+    var rollCallsThemes = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        local: rollCallsThemes,
+        identify: function (obj) { return obj.value; }
+    });
+
+    rollCallsThemes.initialize();
+
+    // Generate all values to give hints to user
+    function values(q, sync) {
+        if (q === '') {
+            sync(rollCallsThemes.get(defaultOptions));
+        }
+        else {
+            rollCallsThemes.search(q, sync);
+        }
+    }
+
+    var elt = $('#' + newID + ' .filterSubjectMotions');
+    elt.tagsinput({
+        itemValue: 'key',
+        itemText: 'value',
+        typeaheadjs: [{
+            hint: false,
+            highlight: true,
+        },
+        {
+            name: 'rollCallsThemes',
+            displayKey: 'value',
+            limit: 10,
+            source: values
+        }]
+    });
+
+    /* Prevents click to close the settings menu */
+    $("#" + newID + " .bootstrap-tagsinput").click(function (e) {
+        e.stopPropagation();
+    });
+
+    // bind click event
+    $('#' + newID + ' .reloadScatter').click(function () {
+        const { filteredData, dimensionalReductionTechnique } = tree.getNode(newID, tree.traverseBF).args;
+        const subjects = elt.tagsinput('items').map(item => item.value);
+        reloadScatterPlotData(filteredData, dimensionalReductionTechnique, newID, subjects);
+    });
+}
+
 
 /**
  * Remove selected panel and his children
@@ -1312,6 +1341,12 @@ function setUpScatterPlotData(filteredData, dimensionalReductionTechnique, type)
                 var createScatterPlot = function () {
                     currentRollCalls = rollCallInTheDateRange;
                     calcRollCallRate(currentRollCalls, currentDeputies);
+                    currentRollCalls.map(function (e) {
+                        e.rollCallName = e.type + " " + e.number + " " + e.year;
+                    });
+
+                    args = { ...args, rcs: currentRollCalls };
+
                     var chartObj = {
                         'chartID': SCATTER_PLOT,
                         'data': currentDeputies,
@@ -1502,6 +1537,76 @@ function setUpScatterPlotData(filteredData, dimensionalReductionTechnique, type)
                 $('#loading').css('visibility', 'hidden');
                 //}, 10);
             }
+        }
+    });
+}
+
+function reloadScatterPlotData(filteredData, dimensionalReductionTechnique, panelID, subjects) {
+
+    $('#loading').css('visibility', 'visible');
+
+    currentDeputies = [];
+    currentRollCalls = [];
+
+    const chart = tree.getNode(panelID, tree.traverseBF).chart;
+
+    updateDataforDateRange(filteredData, function () {
+        if (!!subjects.length)
+            rollCallInTheDateRange = rollCallInTheDateRange.filter(rollCall => {
+                const theme = language === ENGLISH ? subjectsToEnglish[rollCall.theme] : rollCall.theme;
+                return subjects.includes(theme)
+            });
+
+        var filteredDeputies = filterDeputies();
+        var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
+        if (matrixDeputiesPerRollCall.length > 0 && matrixDeputiesPerRollCall[0].length > 0) {
+            if (dimensionalReductionTechnique === "MDS")
+                matrixDistanceDeputies = createMatrixDistanceDeputies(matrixDeputiesPerRollCall);
+
+            function calcCallback(twoDimData) {
+                currentDeputies = createDeputyNodes(twoDimData.deputies, filteredDeputies);
+                scaleAdjustment().setGovernmentTo3rdQuadrant(d3.values(currentDeputies), filteredData[1]);
+
+                currentRollCalls = rollCallInTheDateRange;
+                calcRollCallRate(currentRollCalls, currentDeputies);
+
+                deputyNodes[panelID] = currentDeputies;
+                rollCallsRates[panelID] = currentRollCalls;
+
+                chart.reloadScatterPlotChart(currentDeputies, panelID);
+
+                $('#loading').css('visibility', 'hidden');
+            }
+
+            if (dimensionalReductionTechnique === "PCA") {
+                var text = language === ENGLISH ? "Generating Political Spectra by PCA" : "Gerando Espectro Político por PCA";
+                $('#loading #msg').text(text);
+                setTimeout(function () {
+                    calcSVD(matrixDeputiesPerRollCall, calcCallback)
+                }, 10);
+            }
+            else if (dimensionalReductionTechnique === "MDS") {
+                // The call to calc of MDS here
+                var text = language === ENGLISH ? "Generating Political Spectra by MDS" : "Gerando Espectro Político por MDS";
+                $('#loading #msg').text(text);
+                setTimeout(function () {
+                    calcMDS(matrixDistanceDeputies, calcCallback)
+                }, 10);
+            }
+            else if (dimensionalReductionTechnique === "t-SNE") {
+                var text = language === ENGLISH ? "Generating Political Spectra by t-SNE" : "Gerando Espectro Político por t-SNE";
+                $('#loading #msg').text(text);
+                calcTSNE(matrixDeputiesPerRollCall, calcCallback);
+            }
+            else if (dimensionalReductionTechnique === "UMAP") {
+                var text = language === ENGLISH ? "Generating Political Spectra by UMAP" : "Gerando Espectro Político por UMAP";
+                $('#loading #msg').text(text);
+                calcUMAP(matrixDeputiesPerRollCall, calcCallback);
+            }
+        }
+        else {
+            /*alert("Roll calls not found for this period! Please try again with another start and end date.");
+            $('#loading').css('visibility', 'hidden');*/
         }
     });
 }

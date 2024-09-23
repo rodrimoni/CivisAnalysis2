@@ -41,7 +41,7 @@ function rollCallsHeatmap() {
 
             const controls = d3.select(this)
                 .append("div")
-                .classed("controls", true)
+                .classed("heat-map-controls", true)
 
             // Create the dropdown
             const dropdown = controls

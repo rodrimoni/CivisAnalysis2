@@ -32,82 +32,107 @@ function scatterPlotChart() {
 
     function chart(selection) {
         selection.each(function (data) {
-            var nodes = d3.values(data);
             panelID = ($(this).parents('.panel')).attr('id');
-            panelToBeRedrawn = this;
-            _deputiesByParties = getPartyCountAllScatter(nodes);
-
-            //sorting nodes to compare and find duplicates
-            nodes.sort(function (a, b) {
-                if (a.scatterplot[0] > b.scatterplot[0]) return 1;
-                if (a.scatterplot[0] < b.scatterplot[0]) return -1;
-
-                if (a.scatterplot[1] > b.scatterplot[1]) return 1;
-                if (a.scatterplot[1] < b.scatterplot[1]) return -1;
-            });
-
-            var groupId = 0;
-            var countDuplicates = 0;
-            function addInOverlappedGroup(elem) {
-                if (partyCountByOverlappedGroup[elem.overlapped] === undefined) {
-                    /*partyCountByOverlappedGroup[elem.overlapped] = {"name": elem.overlapped, "scatX": elem.scatterplot[1], "scatY": elem.scatterplot[0]}
-                    partyCountByOverlappedGroup[elem.overlapped]["children"] = [];
-                    partyCountByOverlappedGroup[elem.overlapped]["children"][elem.party] = {"name": elem.party, "size": 1};*/
-
-                    partyCountByOverlappedGroup[elem.overlapped] = { "name": elem.overlapped, "parties": [] };
-                    partyCountByOverlappedGroup[elem.overlapped]["parties"][elem.party] = { "name": elem.party, "elem": elem };
-                }
-                else {
-                    /*if (partyCountByOverlappedGroup[elem.overlapped]["children"][elem.party] === undefined)
-                        partyCountByOverlappedGroup[elem.overlapped]["children"][elem.party] = {"name": elem.party, "size": 1};
-                    else
-                        partyCountByOverlappedGroup[elem.overlapped]["children"][elem.party].size += 1;*/
-                    if (partyCountByOverlappedGroup[elem.overlapped]["parties"][elem.party] === undefined)
-                        partyCountByOverlappedGroup[elem.overlapped]["parties"][elem.party] = { "name": elem.party, "elem": elem };
-                }
-            }
-
-            for (let i = 0; i < nodes.length; i++) {
-                if (i >= nodes.length - 1) //last element
-                {
-                    if (Number(nodes[i - 1].scatterplot[0]).toFixed(7) == Number(nodes[i].scatterplot[0]).toFixed(7) && Number(nodes[i - 1].scatterplot[1]).toFixed(7) == Number(nodes[i].scatterplot[1]).toFixed(7)) {
-                        nodes[i].overlapped = groupId;
-                        addInOverlappedGroup(nodes[i]);
-                        countDuplicates++;
-                    }
-                }
-                else {
-                    if (Number(nodes[i + 1].scatterplot[0]).toFixed(7) == Number(nodes[i].scatterplot[0]).toFixed(7) && Number(nodes[i + 1].scatterplot[1]).toFixed(7) == Number(nodes[i].scatterplot[1]).toFixed(7)) {
-                        nodes[i].overlapped = groupId;
-                        addInOverlappedGroup(nodes[i]);
-                        countDuplicates++;
-                    }
-                    else {
-                        if (countDuplicates > 0) {
-                            nodes[i].overlapped = groupId;
-                            addInOverlappedGroup(nodes[i]);
-                            groupId++;
-                            countDuplicates = 0;
-                        }
-                    }
-                }
-            }
-            // getting only values, ignoring the keys
-            //var temp = d3.values(partyCountByOverlappedGroup);
-            // temp.map(function(e) { e['children'] = d3.values(e['children']); return e; })
-
-            //var packedData = {name: "root", "children": temp};
 
             var controls = d3.select("#" + panelID).append("label")
-                .attr("id", "controls");
+                .attr("class", "controls");
             checkbox = controls.append("input")
                 .attr("id", panelID + "-forceLayoutApply")
                 .attr("type", "checkbox");
             controls.append("span")
                 .text("Show overlapping deputies ");
 
-            drawScatterPlot(nodes, this);
+            chart.createScatterPlotChart(data, this);
+
         })
+    }
+
+    chart.createScatterPlotChart = function (data, htmlBody) {
+        var nodes = d3.values(data);
+        panelToBeRedrawn = htmlBody;
+        _deputiesByParties = getPartyCountAllScatter(nodes);
+
+        preProcessOverlappingData(nodes);
+        drawScatterPlot(nodes, htmlBody);
+    }
+
+    chart.reloadScatterPlotChart = function (data, panelID) {
+        var htmlContent = $('#' + panelID + " .panel-body");
+
+        // Remove old svg
+        d3.select('#' + panelID + " .scatter-plot").remove();
+
+        // reset globals
+        isForceLayout = false;
+        partyCountByOverlappedGroup = []
+
+        // reset checkbox
+        document.getElementById(panelID + "-forceLayoutApply").checked = false;
+
+        chart.createScatterPlotChart(data, htmlContent[0]);
+    };
+
+    function preProcessOverlappingData(nodes) {
+        //sorting nodes to compare and find duplicates
+        nodes.sort(function (a, b) {
+            if (a.scatterplot[0] > b.scatterplot[0]) return 1;
+            if (a.scatterplot[0] < b.scatterplot[0]) return -1;
+
+            if (a.scatterplot[1] > b.scatterplot[1]) return 1;
+            if (a.scatterplot[1] < b.scatterplot[1]) return -1;
+        });
+
+        var groupId = 0;
+        var countDuplicates = 0;
+        function addInOverlappedGroup(elem) {
+            if (partyCountByOverlappedGroup[elem.overlapped] === undefined) {
+                /*partyCountByOverlappedGroup[elem.overlapped] = {"name": elem.overlapped, "scatX": elem.scatterplot[1], "scatY": elem.scatterplot[0]}
+                partyCountByOverlappedGroup[elem.overlapped]["children"] = [];
+                partyCountByOverlappedGroup[elem.overlapped]["children"][elem.party] = {"name": elem.party, "size": 1};*/
+
+                partyCountByOverlappedGroup[elem.overlapped] = { "name": elem.overlapped, "parties": [] };
+                partyCountByOverlappedGroup[elem.overlapped]["parties"][elem.party] = { "name": elem.party, "elem": elem };
+            }
+            else {
+                /*if (partyCountByOverlappedGroup[elem.overlapped]["children"][elem.party] === undefined)
+                    partyCountByOverlappedGroup[elem.overlapped]["children"][elem.party] = {"name": elem.party, "size": 1};
+                else
+                    partyCountByOverlappedGroup[elem.overlapped]["children"][elem.party].size += 1;*/
+                if (partyCountByOverlappedGroup[elem.overlapped]["parties"][elem.party] === undefined)
+                    partyCountByOverlappedGroup[elem.overlapped]["parties"][elem.party] = { "name": elem.party, "elem": elem };
+            }
+        }
+
+        for (let i = 0; i < nodes.length; i++) {
+            if (i >= nodes.length - 1) //last element
+            {
+                if (Number(nodes[i - 1].scatterplot[0]).toFixed(7) == Number(nodes[i].scatterplot[0]).toFixed(7) && Number(nodes[i - 1].scatterplot[1]).toFixed(7) == Number(nodes[i].scatterplot[1]).toFixed(7)) {
+                    nodes[i].overlapped = groupId;
+                    addInOverlappedGroup(nodes[i]);
+                    countDuplicates++;
+                }
+            }
+            else {
+                if (Number(nodes[i + 1].scatterplot[0]).toFixed(7) == Number(nodes[i].scatterplot[0]).toFixed(7) && Number(nodes[i + 1].scatterplot[1]).toFixed(7) == Number(nodes[i].scatterplot[1]).toFixed(7)) {
+                    nodes[i].overlapped = groupId;
+                    addInOverlappedGroup(nodes[i]);
+                    countDuplicates++;
+                }
+                else {
+                    if (countDuplicates > 0) {
+                        nodes[i].overlapped = groupId;
+                        addInOverlappedGroup(nodes[i]);
+                        groupId++;
+                        countDuplicates = 0;
+                    }
+                }
+            }
+        }
+        // getting only values, ignoring the keys
+        //var temp = d3.values(partyCountByOverlappedGroup);
+        // temp.map(function(e) { e['children'] = d3.values(e['children']); return e; })
+
+        //var packedData = {name: "root", "children": temp};
     }
 
     function drawScatterPlot(nodes, htmlContent) {
