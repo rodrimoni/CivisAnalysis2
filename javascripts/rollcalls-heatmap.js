@@ -1,6 +1,4 @@
 function rollCallsHeatmap() {
-    var outerWidth = MAX_WIDTH,
-        outerHeight = MAX_HEIGHT;
     margin = { top: 60, right: 0, bottom: 20, left: 10 };
 
     var legendHeight = 60;
