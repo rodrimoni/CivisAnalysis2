@@ -2061,7 +2061,11 @@ function initializeSlider(id, chart) {
             removeWindow(panelID, false);
 
         k = slideEvt.value;
-        data = d3.select('#' + id + ' .panel-body').data()[0];
+        data = d3.select('#' + id + ' .deputiesNodesDots')
+            .selectAll("circle")
+            .data();
+
+
 
         var spinner = new Spinner().spin();
 
