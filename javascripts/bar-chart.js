@@ -138,7 +138,7 @@ function barChart(typeChart) {
                 if (this.checked) {
                     // Sort data alphabetically
                     var sortedData = data.slice().sort(function (a, b) {
-                        if (language === ENGLISH) {
+                        if (language === ENGLISH && typeChart === THEMES_BAR_CHART) {
                             return d3.ascending(subjectsToEnglish[a.category], subjectsToEnglish[b.category]);
                         }
                         return d3.ascending(a.category, b.category);
