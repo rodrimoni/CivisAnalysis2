@@ -1,0 +1,21 @@
+{
+    "name": "civis-analysis2",
+    "version": "0.1.0",
+    "private": true,
+    "description": "Legacy jQuery/D3 static site with live reload dev server and static build.",
+    "scripts": {
+        "dev": "live-server --port=3000 --watch=. --wait=200 --ignore=dist,node_modules,.git --no-browser",
+        "clean": "rimraf dist",
+        "build": "rimraf dist && cpy \"{index.html,images/**,javascripts/**,stylesheets/**,fonts/**,data/**}\" dist --parents",
+        "preview": "serve dist -l 3000"
+    },
+    "devDependencies": {
+        "cpy-cli": "^5.0.0",
+        "live-server": "^1.2.2",
+        "rimraf": "^5.0.5",
+        "serve": "^14.2.3"
+    },
+    "engines": {
+        "node": ">=18"
+    }
+}
