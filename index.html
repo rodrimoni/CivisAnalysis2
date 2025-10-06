@@ -95,11 +95,32 @@
     <!-- Small Multiples visualization -->
     <script src="javascripts/small-multiples-chart.js"></script>
 
-    <!-- Windows System View Functions -->
-    <script src="javascripts/windows-system.js"></script>
+    <!-- ====== REFACTORED MODULAR ARCHITECTURE ====== -->
+    <!-- Core Modules -->
+    <script src="javascripts/core/constants.js"></script>
+    <script src="javascripts/core/state-manager.js"></script>
 
-    <!-- Windows System Controller Functions -->
-    <script src="javascripts/windows-system-controller.js"></script>
+    <!-- Data Modules -->
+    <script src="javascripts/data/data-loader.js"></script>
+    <script src="javascripts/data/data-processor.js"></script>
+
+    <!-- UI Modules -->
+    <script src="javascripts/ui/ui-utilities.js"></script>
+    <script src="javascripts/ui/ui-menu-factory.js"></script>
+    <script src="javascripts/ui/panel-manager.js"></script>
+
+    <!-- Chart Modules -->
+    <script src="javascripts/charts/chart-initializer.js"></script>
+    <script src="javascripts/charts/visualization-updater.js"></script>
+
+    <!-- Event Modules -->
+    <script src="javascripts/events/event-handlers.js"></script>
+
+    <!-- Utility Modules -->
+    <script src="javascripts/utils/general-utilities.js"></script>
+
+    <!-- ====== LEGACY FILES REMOVED ====== -->
+    <!-- windows-system.js and windows-system-controller.js are now fully replaced by modular architecture -->
 
     <!-- K-Means clusterization library -->
     <script src="javascripts/external/kmeans.js"></script>
