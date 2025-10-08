@@ -66,6 +66,7 @@ function loadNodes(type, selectedTime, callback) {
             depObj.deputyID = precalcDeputy.deputyID;
             depObj.party = precalcDeputy.party;
             depObj.scatterplot = precalcDeputy.scatterplot;
+            depObj.alignment = precalcDeputy.alignment;
 
             depObj.selected = true;
             depObj.hovered = false;
@@ -255,3 +256,82 @@ function updateDataforDateRange(period, callback) {
     });
 }
 
+function calculatePrecalc(type) {
+    function calcRecursive(i) {
+        console.log(i + " gerando precalc ")
+
+        if (type == 'year') {
+            if (i == CONGRESS_DEFINE.endingYear + 1) return;
+        }
+        else if (type == 'legislature') {
+            if (CONGRESS_DEFINE.legislatures.length == i) {
+                return;
+            }
+        }
+        else if (type == 'president') {
+            if (CONGRESS_DEFINE.presidents.length == i) {
+                return;
+            }
+        }
+
+        var start, end;
+        if (type == 'year') {
+            start = new Date(i, 0);
+            end = new Date(i + 1, 0);
+        }
+        else if (type == 'legislature') {
+            start = CONGRESS_DEFINE.legislatures[i].period[0];
+            end = CONGRESS_DEFINE.legislatures[i].period[1];
+        }
+        else if (type == 'president') {
+            start = CONGRESS_DEFINE.presidents[i].period[0];
+            end = CONGRESS_DEFINE.presidents[i].period[1];
+        }
+
+        updateDataforDateRange([start, end], function () {
+            var filteredDeputies = filterDeputies();
+            var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
+
+            const deputiesAligment = calculateDeputiesAligment(matrixDeputiesPerRollCall, filteredDeputies);
+
+            calcSVD(matrixDeputiesPerRollCall, function (SVDdata) {
+                // Deputies array
+                deputyNodes = createDeputyNodes(SVDdata.deputies, filteredDeputies, deputiesAligment);
+                // RollCalls array
+                // Adjust the SVD result to the political spectrum
+                scaleAdjustment().setGovernmentTo3rdQuadrant(d3.values(deputyNodes), end);
+
+                var currentRollCalls = state.getCurrentRollCalls();
+                var currentDeputies = state.getCurrentDeputies();
+
+                calcRollCallRate(currentRollCalls, currentDeputies);
+
+                // STORE OBJECT - TO SAVE
+                var storeCalcObject = { deputyNodes: [] };
+
+                // store deputy trace
+                deputyNodes.forEach(function (deputy) {
+                    deputy.scatterplot[0] = Number(deputy.scatterplot[0].toPrecision(4));
+                    deputy.scatterplot[1] = Number(deputy.scatterplot[1].toPrecision(4));
+
+                    var storeDeputyTrace = {
+                        deputyID: deputy.deputyID,
+                        scatterplot: deputy.scatterplot,
+                        party: deputy.party,
+                        alignment: deputy.alignment
+                    };
+
+                    storeCalcObject.deputyNodes.push(storeDeputyTrace)
+                });
+
+                // SAVE!!
+                if (type) console.save(storeCalcObject, type + '.' + i + '.json');
+                //====================================
+                calcRecursive(i + 1);
+            });
+        })
+
+    }
+    if (type == 'year') calcRecursive(CONGRESS_DEFINE.startingYear);
+    else calcRecursive(0);
+}

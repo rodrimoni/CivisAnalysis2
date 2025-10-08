@@ -24,23 +24,43 @@ function scatterPlotChart() {
     var panelID;
     var panelToBeRedrawn;
     var checkbox;
+    var alignmentCheckbox;
 
     var dispatch = d3.dispatch('update');
     var div = d3.select(".toolTip");
     var brush;
     var isForceLayout = false;
+    var showAlignmentOpacity = false;
 
     function chart(selection) {
         selection.each(function (data) {
             panelID = ($(this).parents('.panel')).attr('id');
 
-            var controls = d3.select("#" + panelID).append("label")
-                .attr("class", "controls");
-            checkbox = controls.append("input")
+            // Add the checkbox container for controls
+            var checkboxContainer = d3.select(this)
+                .append("div")
+                .attr("class", "checkbox-container")
+                .attr("style", "margin-top:20px; margin-left: 20px; position: absolute");
+
+            // Overlapping deputies checkbox
+            var label1 = checkboxContainer.append("label");
+            label1.append("input")
+                .attr("type", "checkbox")
                 .attr("id", panelID + "-forceLayoutApply")
-                .attr("type", "checkbox");
-            controls.append("span")
-                .text("Show overlapping deputies ");
+                .attr("class", "forceLayoutCheckbox")
+                .each(function () { checkbox = d3.select(this); });
+            label1.append("span")
+                .text("Show overlapping deputies");
+
+            // Party alignment opacity checkbox
+            var label2 = checkboxContainer.append("label");
+            label2.append("input")
+                .attr("type", "checkbox")
+                .attr("id", panelID + "-alignmentOpacity")
+                .attr("class", "alignmentOpacityCheckbox")
+                .each(function () { alignmentCheckbox = d3.select(this); });
+            label2.append("span")
+                .text(language === PORTUGUESE ? "Mostrar opacidade por alinhamento partidário" : "Show party alignment opacity");
 
             chart.createScatterPlotChart(data, this);
 
@@ -59,15 +79,14 @@ function scatterPlotChart() {
     chart.reloadScatterPlotChart = function (data, panelID) {
         var htmlContent = $('#' + panelID + " .panel-body");
 
-        // Remove old svg
+        // Remove old checkbox container and svg
+        d3.select('#' + panelID + " .checkbox-container").remove();
         d3.select('#' + panelID + " .scatter-plot").remove();
 
         // reset globals
         isForceLayout = false;
+        showAlignmentOpacity = false;
         partyCountByOverlappedGroup = []
-
-        // reset checkbox
-        document.getElementById(panelID + "-forceLayoutApply").checked = false;
 
         chart.createScatterPlotChart(data, htmlContent[0]);
     };
@@ -214,6 +233,10 @@ function scatterPlotChart() {
             .attr("cx", function (d) { return x(d.scatterplot[1]); })
             .attr("cy", function (d) { return y(d.scatterplot[0]); })
             .style("fill", function (d) { return setDeputyFill(d); })
+            .style("fill-opacity", function (d) {
+                if (!showAlignmentOpacity) return 1.0; // Fully opaque when disabled
+                return getAlignmentOpacity(d.alignment);
+            })
             .on('mousedown', function (d) {
                 mouseClickDeputy(d);
             })
@@ -232,8 +255,19 @@ function scatterPlotChart() {
         function deputyPopOver(d) {
             var deputyTooltipEnglish;
             var deputyTooltipPortuguese;
-            deputyTooltipEnglish = '<strong>' + d.name + ' (' + d.party + '-' + d.district + ")</strong><br><em>Left-Click to select</em><br><em>Right-Click to create new visualizations</em>";
-            deputyTooltipPortuguese = '<strong>' + d.name + ' (' + d.party + '-' + d.district + ")</strong><br><em>Botão esquerdo para selecionar</em><br><em>Botão direito para criar novas vis.</em>";
+
+            // Convert alignment to percentage (0-1 → 0-100%)
+            var alignmentPercentage = d.alignment ? Math.round(d.alignment * 100) : 0;
+
+            deputyTooltipEnglish = '<strong>' + d.name + ' (' + d.party + '-' + d.district + ")</strong><br>" +
+                '<span style="color: #666;">Party Alignment: ' + alignmentPercentage + '%</span><br>' +
+                "<em>Left-Click to select</em><br>" +
+                "<em>Right-Click to create new visualizations</em>";
+
+            deputyTooltipPortuguese = '<strong>' + d.name + ' (' + d.party + '-' + d.district + ")</strong><br>" +
+                '<span style="color: #666;">Alinhamento Partidário: ' + alignmentPercentage + '%</span><br>' +
+                "<em>Botão esquerdo para selecionar</em><br>" +
+                "<em>Botão direito para criar novas vis.</em>";
 
             if (language === PORTUGUESE)
                 return deputyTooltipPortuguese;
@@ -276,6 +310,21 @@ function scatterPlotChart() {
                 deputies.each(resetPositions);
                 drawScatterPlot(nodes, panelToBeRedrawn, false);*/
             }
+        });
+
+        // Party alignment opacity toggle
+        d3.select("#" + panelID + "-alignmentOpacity").on("change", function () {
+            showAlignmentOpacity = alignmentCheckbox.node().checked;
+
+            // Update all node opacities with smooth transition
+            svg.selectAll('.node')
+                .transition()
+                .duration(500)
+                .style("fill-opacity", function (d) {
+                    if (!showAlignmentOpacity) return 1.0; // Fully opaque when disabled
+                    // Map alignment (0-1) to opacity range (0.4-1.0) for better visibility
+                    return d.alignment ? 0.4 + (d.alignment * 0.6) : 0.7;
+                });
         });
 
         function tick(e) {
@@ -470,6 +519,10 @@ function scatterPlotChart() {
         svg.selectAll(".deputiesNodesDots .node")
             .transition()
             .style("fill", function (d) { return setDeputyFill(d); })
+            .style("fill-opacity", function (d) {
+                if (!showAlignmentOpacity) return 1.0; // Fully opaque when disabled
+                return getAlignmentOpacity(d.alignment);
+            })
             .attr("class", function (d) { return (d.selected) ? "node selected" : (d.hovered) ? "node hovered" : "node"; })
             .attr("r", function (d) { return (d.hovered) ? nodeRadius * 2 : nodeRadius; });
 

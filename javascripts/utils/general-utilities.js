@@ -90,6 +90,16 @@ function popoverAttrFocus(htmlContent, placement) {
 }
 
 /**
+ * Calculate opacity based on party alignment value
+ * Maps alignment (0-1) to opacity range (0.2-1.0) for better visibility
+ * @param {number} alignment - Alignment value between 0 and 1
+ * @returns {number} Opacity value between 0.2 and 1.0 (or 0.7 if alignment is null/undefined)
+ */
+function getAlignmentOpacity(alignment) {
+    return alignment ? 0.2 + (alignment * 0.8) : 0.7;
+}
+
+/**
  * Initialize system
  */
 function initSystem() {
@@ -97,6 +107,9 @@ function initSystem() {
     loadDeputiesNodesByYear();
     loadRollCalls(function () {
         createNewChild(TIME_LINE, {});
+        //calculatePrecalc('year');
+        //calculatePrecalc('legislature');
+        //calculatePrecalc('president');
     });
 }
 

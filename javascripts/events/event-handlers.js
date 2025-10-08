@@ -137,6 +137,7 @@ function setUpScatterPlotData(filteredData, dimensionalReductionTechnique, type)
         if ((!dataRange.found && dimensionalReductionTechnique === "PCA") || dimensionalReductionTechnique !== "PCA") {
             var filteredDeputies = filterDeputies();
             var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
+            const deputiesAligment = calculateDeputiesAligment(matrixDeputiesPerRollCall, filteredDeputies);
 
             if (matrixDeputiesPerRollCall.length > 0 && matrixDeputiesPerRollCall[0].length > 0) {
                 if (dimensionalReductionTechnique === "MDS")
@@ -176,7 +177,7 @@ function setUpScatterPlotData(filteredData, dimensionalReductionTechnique, type)
                     else if (type === ROLLCALLS_HEATMAP)
                         createChart = createRollCallsHeatMap;
 
-                    state.setCurrentDeputies(createDeputyNodes(twoDimData.deputies, filteredDeputies));
+                    state.setCurrentDeputies(createDeputyNodes(twoDimData.deputies, filteredDeputies, deputiesAligment));
                     var currentDeputies = state.getCurrentDeputies();
                     scaleAdjustment().setGovernmentTo3rdQuadrant(d3.values(currentDeputies), filteredData[1]);
 
