@@ -10,7 +10,10 @@
 function updateRollCalls(panelId) {
     var selectedRollCalls = [];
     var hoveredRollCalls = [];
+    var tree = state.getTree();
     var node = tree.getNode(panelId, tree.traverseBF);
+    var rollCallsRates = state.getRollCallsRates();
+    var deputyNodes = state.getDeputyNodes();
 
     rollCallsRates[panelId].forEach(function (rollCall) {
         if (rollCall.selected) selectedRollCalls.push(rollCall);
@@ -37,9 +40,10 @@ function updateRollCalls(panelId) {
 
             // set the deputy votes
             rollCall.votes.forEach(function (deputyVote) {
-                for (var key in deputyNodes) {
-                    if (deputyNodes[key][deputyVote.deputyID])
-                        deputyNodes[key][deputyVote.deputyID].vote = deputyVote.vote;
+                var allDeputyNodes = state.getDeputyNodes();
+                for (var key in allDeputyNodes) {
+                    if (allDeputyNodes[key][deputyVote.deputyID])
+                        allDeputyNodes[key][deputyVote.deputyID].vote = deputyVote.vote;
                 }
             });
 
@@ -59,6 +63,8 @@ function updateRollCalls(panelId) {
 function setVotesForSelectedDeputies(panelID) {
     var selectedDeputies = [];
     var hoveredDeputies = [];
+    var deputyNodes = state.getDeputyNodes();
+    var rollCallsRates = state.getRollCallsRates();
 
     deputyNodes[panelID].forEach(function (deputy) {
         if (deputy.selected) selectedDeputies.push(deputy);
@@ -94,6 +100,7 @@ function setVotesForSelectedDeputies(panelID) {
  * @param {string} panelID - Panel ID
  */
 function updateDeputies(panelID) {
+    var tree = state.getTree();
     tree.traverseBF(function (value) {
         if (value.typeChart === ROLLCALLS_HEATMAP) {
             setVotesForSelectedDeputies(panelID);
@@ -107,6 +114,7 @@ function updateDeputies(panelID) {
  * Update all visualizations in the tree
  */
 function updateVisualizations() {
+    var tree = state.getTree();
     tree.traverseBF(function (n) {
         if (n.typeChart === SCATTER_PLOT ||
             n.typeChart === CHAMBER_INFOGRAPHIC ||
@@ -124,6 +132,7 @@ function updateVisualizations() {
  * @param {*} value - New value
  */
 function updateDeputyNodeInAllPeriods(deputyID, attr, value) {
+    var deputyNodes = state.getDeputyNodes();
     for (var key in deputyNodes) {
         var deputy = deputyNodes[key][deputyID];
         if (deputy !== undefined)
@@ -135,6 +144,9 @@ function updateDeputyNodeInAllPeriods(deputyID, attr, value) {
  * Reset all selections
  */
 function resetSelection() {
+    var deputyNodes = state.getDeputyNodes();
+    var rollCallsRates = state.getRollCallsRates();
+
     for (var key in deputyNodes) {
         for (var index in deputyNodes[key])
             deputyNodes[key][index].selected = true;
@@ -162,6 +174,7 @@ function resetSelection() {
  */
 function selectByStates() {
     var states = $('select[id="selStates"]').val();
+    var deputyNodes = state.getDeputyNodes();
 
     if (states !== null) {
         for (var key in deputyNodes) {

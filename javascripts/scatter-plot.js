@@ -151,6 +151,8 @@ function scatterPlotChart() {
         y.domain([yMin, yMax]);
 
         var zoom = d3.behavior.zoom()
+            .x(x)
+            .y(y)
             .scaleExtent([1, 30])
             .on("zoom", zoomed);
 
@@ -396,8 +398,10 @@ function scatterPlotChart() {
 
         // Highlight the selected circles.
         function brushmove() {
+            var SHIFTKEY = state.getShiftKey();
             if (SHIFTKEY) {
-                svg = svg.call(d3.behavior.zoom().on("zoom", null));
+                // Temporarily disable zoom during brushing
+                svg.on(".zoom", null);
                 var e = brush.extent();
                 console.log(e);
                 var deps = svg.selectAll(".node").filter(function (d) {
@@ -416,7 +420,8 @@ function scatterPlotChart() {
 
         // If the brush is empty, select all circles.
         function brushend() {
-            svg.call(d3.behavior.zoom().x(x).y(y).on("zoom", zoom));
+            // Re-enable zoom after brushing
+            svg.call(zoom);
             d3.event.target.clear();
             d3.select(this).call(d3.event.target);
             //console.log(d3.event.target);
@@ -481,6 +486,7 @@ function scatterPlotChart() {
     }
 
     chart.getClusters = function (k, data, id) {
+        console.log(data);
         //number of clusters, defaults to undefined
         clusterMaker.k(k);
 
@@ -496,11 +502,12 @@ function scatterPlotChart() {
         this.clusters.forEach(function (cluster, index) {
             clustersPoints.push({
                 "cluster": index, "points": cluster.points.map(function (t) {
-                    updateDeputyNodeInAllPeriods(t.deputyID, "virtualParty", index);
                     return t.location;
                 })
             });
         });
+
+        console.log(this.clusters);
 
         //updateHulls(hullSets, id);
         updateHullsTest(clustersPoints, id);
@@ -584,6 +591,8 @@ function scatterPlotChart() {
 
     function mouseClickDeputy(d) {
         d3.event.preventDefault();
+        var deputyNodes = state.getDeputyNodes();
+
         if (d3.event.shiftKey) {
             // using the shiftKey deselect the deputy
             updateDeputyNodeInAllPeriods(d.deputyID, "selected", false);
@@ -622,6 +631,7 @@ function scatterPlotChart() {
     }
 
     function mouseoutParty() {
+        var deputyNodes = state.getDeputyNodes();
         for (var key in deputyNodes) {
             for (var index in deputyNodes[key])
                 deputyNodes[key][index].hovered = false;
@@ -630,6 +640,7 @@ function scatterPlotChart() {
     }
 
     function clickParty(d) {
+        var deputyNodes = state.getDeputyNodes();
 
         /* Reset the search input */
         $('.searchDeputies').tagsinput('removeAll');
@@ -687,6 +698,7 @@ function scatterPlotChart() {
     }
 
     chart.selectDeputiesBySearch = function (deputies) {
+        var deputyNodes = state.getDeputyNodes();
         for (var key in deputyNodes) {
             for (var index in deputyNodes[key])
                 deputyNodes[key][index].selected = false;

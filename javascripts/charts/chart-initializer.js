@@ -75,8 +75,8 @@ function initializeChart(newID, chartObj) {
 function initializeScatterPlot(newID, chartObj) {
     var chart = scatterPlotChart();
 
-    deputyNodes[newID] = currentDeputies;
-    rollCallsRates[newID] = currentRollCalls;
+    state.addDeputyNode(newID, state.getCurrentDeputies());
+    state.addRollCallRate(newID, state.getCurrentRollCalls());
 
     addConfigMenu(newID, 'scatterplot', false);
     addClusteringMenu(newID);
@@ -153,8 +153,8 @@ function initializeTimelineCrop(newID, chartObj) {
 function initializeChamberInfographic(newID, chartObj) {
     var chart = chamberInfographic();
 
-    deputyNodes[newID] = currentDeputies;
-    rollCallsRates[newID] = currentRollCalls;
+    state.addDeputyNode(newID, state.getCurrentDeputies());
+    state.addRollCallRate(newID, state.getCurrentRollCalls());
 
     addConfigMenu(newID, 'chamberInfographic', false);
     addSearchDeputyMenu(newID, chartObj.data.deputies);
@@ -179,8 +179,8 @@ function initializeChamberInfographic(newID, chartObj) {
 function initializeRollCallsHeatmap(newID, chartObj, isStatic) {
     var chart = rollCallsHeatmap();
 
-    deputyNodes[newID] = currentDeputies;
-    rollCallsRates[newID] = currentRollCalls;
+    state.addDeputyNode(newID, state.getCurrentDeputies());
+    state.addRollCallRate(newID, state.getCurrentRollCalls());
     setVotesForSelectedDeputies(newID);
 
     addConfigMenu(newID, 'rollCallsHeatmap', false);
@@ -212,8 +212,8 @@ function initializeRollCallsHeatmap(newID, chartObj, isStatic) {
 function initializeDeputiesSimilarityForce(newID, chartObj) {
     var chart = similarityForce();
 
-    deputyNodes[newID] = currentDeputies;
-    rollCallsRates[newID] = currentRollCalls;
+    state.addDeputyNode(newID, state.getCurrentDeputies());
+    state.addRollCallRate(newID, state.getCurrentRollCalls());
 
     addConfigMenu(newID, 'similarity-force', false);
     addSearchDeputyMenu(newID, d3.values(chartObj.data.nodes));

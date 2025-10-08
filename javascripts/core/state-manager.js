@@ -121,24 +121,3 @@ var StateManager = (function () {
 // Export singleton instance as global for easy access
 var state = StateManager.getInstance();
 
-// Expose as global variables for backward compatibility with external dependencies
-var selectionOn = false;
-var deputiesArray = state.getDeputiesArray();
-var deputiesNodesByYear = state.getDeputiesNodesByYear();
-var arrayRollCalls = state.getArrayRollCalls();
-var deputyNodes = state.getDeputyNodes();
-var rollCallsRates = state.getRollCallsRates();
-var currentDeputies = state.getCurrentDeputies();
-var currentRollCalls = state.getCurrentRollCalls();
-var tree = state.getTree();
-var language = state.getLanguage();
-var SHIFTKEY = state.getShiftKey();
-var firstScatterPlot = state.isFirstScatterPlot();
-var firstBarChart = state.isFirstBarChart();
-var firstForceLayout = state.isFirstForceLayout();
-var firstTimelineCrop = state.isFirstTimelineCrop();
-var firstChamberInfographic = state.isFirstChamberInfographic();
-var firstRollCallHeatMap = state.isFirstRollCallHeatMap();
-var firstDeputiesSimilarity = state.isFirstDeputiesSimilarity();
-var firstThemesBubbleChart = state.isFirstThemesBubbleChart();
-

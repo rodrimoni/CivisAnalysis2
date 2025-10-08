@@ -265,6 +265,7 @@ function rollCallsHeatmap() {
             .orient("left");
 
         panelID = ($(htmlBody).parents('.panel')).attr('id');
+        var tree = state.getTree();
         var node = tree.getNode(panelID, tree.traverseBF);
         parentID = node.parent.data;
 
@@ -496,6 +497,7 @@ function rollCallsHeatmap() {
     };
 
     chart.selectRollCallBySearch = function (id) {
+        var rollCallsRates = state.getRollCallsRates();
         rollCallsRates[panelID].forEach(function (rc) {
             if (rc.rollCallID === id)
                 rc.selected = true;
@@ -507,6 +509,7 @@ function rollCallsHeatmap() {
     };
 
     chart.selectAllRollCalls = function (id) {
+        var rollCallsRates = state.getRollCallsRates();
         rollCallsRates[panelID].forEach(function (rc) {
             rc.selected = true;
         });
@@ -584,6 +587,7 @@ function rollCallsHeatmap() {
         var eltInput = $('#' + panelID + ' .searchRollCall.tt-input');
         // Reset the selected RollCall in filter
         eltInput.val('');
+        var rollCallsRates = state.getRollCallsRates();
         rollCallsRates[panelID].forEach(function (rc) {
             if (rc.rollCallID === d.rollCallID)
                 rc.selected = true;

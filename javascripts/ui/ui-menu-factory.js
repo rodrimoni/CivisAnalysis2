@@ -81,6 +81,7 @@ function addSearchRollCallMenu(newID, rollCalls) {
     var chart;
     elt.bind('typeahead:select', function (ev, suggestion) {
         console.log('Selection: ' + suggestion.rollCallID);
+        var tree = state.getTree();
         chart = tree.getNode(newID, tree.traverseBF).chart;
         chart.selectRollCallBySearch(suggestion.rollCallID);
     });
@@ -88,6 +89,7 @@ function addSearchRollCallMenu(newID, rollCalls) {
     var eltInput = $('#' + newID + ' .searchRollCall.tt-input');
     eltInput.on('keyup', function () {
         if ($(this).val() === "") {
+            var tree = state.getTree();
             chart = tree.getNode(newID, tree.traverseBF).chart;
             chart.selectAllRollCalls();
         }
@@ -150,11 +152,13 @@ function addFilterMotionTypeMenu(newID, rollCalls) {
 
     var chart;
     elt.on('itemAdded', function (event) {
+        var tree = state.getTree();
         chart = tree.getNode(newID, tree.traverseBF).chart;
         chart.selectRollCallsByFilter(newID);
     });
 
     elt.on('itemRemoved', function (event) {
+        var tree = state.getTree();
         chart = tree.getNode(newID, tree.traverseBF).chart;
         chart.selectRollCallsByFilter(newID);
     });
@@ -208,6 +212,7 @@ function addDatePickerTimeline() {
         var endDate = $(elt + ' input[name="end"]').datepicker('getDate');
         const period = [initialDate, endDate];
 
+        var tree = state.getTree();
         chart = tree.getNode("panel-1-1", tree.traverseBF).chart;
         chart.selectPeriodByDatePicker(period)
     });
@@ -254,6 +259,7 @@ function addFilterDateRollCallMenu(newID, rollCalls) {
     $(elt + ' input[name="end"]').datepicker('setDate', endDate);
 
     $(elt).on('changeDate', function (e) {
+        var tree = state.getTree();
         chart = tree.getNode(newID, tree.traverseBF).chart;
         chart.selectRollCallsByFilter(newID);
     });
@@ -323,6 +329,7 @@ function addPartySizeFilter(newID, chart) {
  * @param {string} newID - Panel ID
  */
 function addEditTitleInput(newID) {
+    var tree = state.getTree();
     var node = tree.getNode(newID, tree.traverseBF);
     var originalTitle = node.title;
     var newTitle = "";
@@ -440,6 +447,7 @@ function addSearchDeputyMenu(newID, deputies) {
         $(".tag.label.label-info.label-" + party).css({ "background-color": CONGRESS_DEFINE.getPartyColor(party) });
 
         var deputies = $(this).tagsinput('items');
+        var tree = state.getTree();
         chart = tree.getNode(newID, tree.traverseBF).chart;
         chart.selectDeputiesBySearch(deputies);
     });
@@ -450,6 +458,7 @@ function addSearchDeputyMenu(newID, deputies) {
         if (!Array.isArray(deputies) || !deputies.length)
             resetSelection();
         else {
+            var tree = state.getTree();
             chart = tree.getNode(newID, tree.traverseBF).chart;
             chart.selectDeputiesBySearch(deputies);
         }
@@ -518,11 +527,13 @@ function addThemeFilter(newID, rollCalls) {
 
     var chart;
     elt.on('itemAdded', function (event) {
+        var tree = state.getTree();
         chart = tree.getNode(newID, tree.traverseBF).chart;
         chart.selectRollCallsByFilter(newID);
     });
 
     elt.on('itemRemoved', function (event) {
+        var tree = state.getTree();
         chart = tree.getNode(newID, tree.traverseBF).chart;
         chart.selectRollCallsByFilter(newID);
     });
@@ -602,6 +613,7 @@ function addThemeSearchScatterPlot(newID, rollCalls) {
     });
 
     $('#' + newID + ' .reloadScatter').click(function () {
+        var tree = state.getTree();
         const { filteredData, dimensionalReductionTechnique } = tree.getNode(newID, tree.traverseBF).args;
         const subjects = elt.tagsinput('items').map(item => item.value);
         reloadScatterPlotData(filteredData, dimensionalReductionTechnique, newID, subjects);
@@ -625,6 +637,7 @@ function initializeSlider(id, chart) {
     $(slider).on("slideStop", function (slideEvt) {
         var panel = $(this).parents(".panel");
         var panelID = panel.attr("id");
+        var tree = state.getTree();
         var node = tree.getNode(panelID, tree.traverseBF);
 
         if (node.children.length > 0)
@@ -634,6 +647,8 @@ function initializeSlider(id, chart) {
         data = d3.select('#' + id + ' .deputiesNodesDots')
             .selectAll("circle")
             .data();
+
+        console.log(data);
 
         var spinner = new Spinner().spin();
         $("#" + panelID + " .modal").append(spinner.el);

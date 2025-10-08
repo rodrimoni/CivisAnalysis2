@@ -11,11 +11,14 @@
 function handleContextMenuScatterPlot(invokedOn, selectedMenu) {
     var panelID = invokedOn.parents(".panel").attr('id');
     var clusterID = invokedOn.attr('id').replace('cluster_id_', '');
+    var tree = state.getTree();
     var clusterData = tree.getNode(panelID, tree.traverseBF);
     var chartData;
 
     if (clusterData !== null)
         chartData = clusterData.chart;
+
+    console.log(chartData.clusters);
 
     var title = "", prettyTitle = "";
     var chartObj = {};
@@ -292,6 +295,7 @@ function reloadScatterPlotData(filteredData, dimensionalReductionTechnique, pane
     state.setCurrentDeputies([]);
     state.setCurrentRollCalls([]);
 
+    var tree = state.getTree();
     const chart = tree.getNode(panelID, tree.traverseBF).chart;
 
     updateDataforDateRange(filteredData, function () {
@@ -317,8 +321,8 @@ function reloadScatterPlotData(filteredData, dimensionalReductionTechnique, pane
                 var currentRollCalls = state.getCurrentRollCalls();
                 calcRollCallRate(currentRollCalls, currentDeputies);
 
-                deputyNodes[panelID] = currentDeputies;
-                rollCallsRates[panelID] = currentRollCalls;
+                state.addDeputyNode(panelID, currentDeputies);
+                state.addRollCallRate(panelID, currentRollCalls);
 
                 chart.reloadScatterPlotChart(currentDeputies, panelID);
 
@@ -419,6 +423,7 @@ function handleContextMenuDeputy(invokedOn, selectedMenu) {
         var deputies = [];
         $("#" + panelID + " .node.selected").each(function () {
             var deputyID = this.id.split('-')[4];
+            var deputiesNodesByYear = state.getDeputiesNodesByYear();
             deputies.push(deputiesNodesByYear[deputyID]);
         });
 
@@ -459,6 +464,8 @@ function handleContextMenuDeputy(invokedOn, selectedMenu) {
         var hoveredDeputies = [];
         var data = {};
 
+        var deputyNodes = state.getDeputyNodes();
+        var rollCallsRates = state.getRollCallsRates();
         deputyNodes[panelID].forEach(function (deputy) {
             if (deputy.selected) selectedDeputies.push(deputy);
         });
@@ -563,7 +570,8 @@ function checkPeriodTimeLineCrop(event, deputy) {
  */
 function enableBrushForAllScatterPlots() {
     if (d3.event.shiftKey) {
-        SHIFTKEY = true;
+        state.setShiftKey(true);
+        var tree = state.getTree();
         tree.traverseBF(function (n) {
             if (n.typeChart === SCATTER_PLOT)
                 n.chart.enableBrush();
@@ -576,7 +584,8 @@ function enableBrushForAllScatterPlots() {
  */
 function disableBrushForAllScatterPlots() {
     if (!d3.event.shiftKey) {
-        SHIFTKEY = false;
+        state.setShiftKey(false);
+        var tree = state.getTree();
         tree.traverseBF(function (n) {
             if (n.typeChart === SCATTER_PLOT)
                 n.chart.disableBrush();
@@ -589,6 +598,7 @@ function disableBrushForAllScatterPlots() {
  */
 function checkChildrenScatterPlot() {
     var panelID = $(this).parents(".panel").attr("id");
+    var tree = state.getTree();
     var node = tree.getNode(panelID, tree.traverseBF);
 
     if (node.children.length > 0)

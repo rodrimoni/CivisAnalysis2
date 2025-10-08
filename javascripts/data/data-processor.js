@@ -399,6 +399,8 @@ function setNewDateRange(period) {
  */
 function checkSelectedValue(id) {
     var selectValue = true;
+    var deputyNodes = state.getDeputyNodes();
+    var selectionOn = state.getSelectionOn();
     var deputyNodesLength = Object.keys(deputyNodes).length;
     var cont = 0;
 

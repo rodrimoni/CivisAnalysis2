@@ -9,6 +9,7 @@
  * @param {boolean} deleteThis - Whether to delete this panel
  */
 function removeWindow(panelID, deleteThis) {
+    var tree = state.getTree();
     var node = tree.getNode(panelID, tree.traverseBF);
     var parent = node.parent.data;
 
@@ -42,9 +43,12 @@ function removeWindow(panelID, deleteThis) {
  * @param {string} panelID - Panel ID
  */
 function removeDeputiesAndRollCalls(panelID) {
+    var deputyNodes = state.getDeputyNodes();
+    var rollCallsRates = state.getRollCallsRates();
+
     if (deputyNodes[panelID] !== undefined && rollCallsRates[panelID] !== undefined) {
-        delete deputyNodes[panelID];
-        delete rollCallsRates[panelID];
+        state.removeDeputyNode(panelID);
+        state.removeRollCallRate(panelID);
     }
 }
 
@@ -53,6 +57,7 @@ function removeDeputiesAndRollCalls(panelID) {
  * @param {Object} node - Tree node
  */
 function removeChildren(node) {
+    var tree = state.getTree();
     var children = node.children;
     var len = children.length;
     var i = 0;
@@ -143,6 +148,7 @@ function maximizeWindow(panelID) {
  */
 function createNewIcon(panelID) {
     var panelCenter = getCenter(panelID);
+    var tree = state.getTree()
     var node = tree.getNode(panelID, tree.traverseBF);
     var typeChart = node.typeChart;
     var iconHoverText = node.title;
@@ -189,6 +195,7 @@ function createNewChild(currentId, chartObj) {
     var newElem = "";
     var newID = "";
     var chart;
+    var tree = state.getTree();
 
     /* Creating the root timeline */
     if (currentId === TIME_LINE) {
@@ -208,6 +215,8 @@ function createNewChild(currentId, chartObj) {
             timelineWidth,
             timelineHeight
         );
+
+        const arrayRollCalls = state.getArrayRollCalls();
 
         timeline
             .data(arrayRollCalls)
@@ -301,24 +310,24 @@ function createNewChild(currentId, chartObj) {
         }
 
         // Tutorial triggers
-        if (node.typeChart === SCATTER_PLOT && firstScatterPlot) {
-            firstScatterPlot = false;
-        } else if (node.typeChart === CHAMBER_INFOGRAPHIC && firstChamberInfographic) {
-            firstChamberInfographic = false;
-        } else if (node.typeChart === DEPUTIES_SIMILARITY_FORCE && firstDeputiesSimilarity) {
-            firstDeputiesSimilarity = false;
-        } else if (node.typeChart === ROLLCALLS_HEATMAP && firstRollCallHeatMap) {
-            firstRollCallHeatMap = false;
-        } else if (node.typeChart === TIME_LINE_CROP && firstTimelineCrop) {
-            firstTimelineCrop = false;
+        if (node.typeChart === SCATTER_PLOT && state.isFirstScatterPlot()) {
+            state.setFirstScatterPlot(false);
+        } else if (node.typeChart === CHAMBER_INFOGRAPHIC && state.isFirstChamberInfographic()) {
+            state.setFirstChamberInfographic(false);
+        } else if (node.typeChart === DEPUTIES_SIMILARITY_FORCE && state.isFirstDeputiesSimilarity()) {
+            state.setFirstDeputiesSimilarity(false);
+        } else if (node.typeChart === ROLLCALLS_HEATMAP && state.isFirstRollCallHeatMap()) {
+            state.setFirstRollCallHeatMap(false);
+        } else if (node.typeChart === TIME_LINE_CROP && state.isFirstTimelineCrop()) {
+            state.setFirstTimelineCrop(false);
         }
-        else if (node.typeChart === THEMES_BUBBLE_CHART && firstThemesBubbleChart) {
-            firstThemesBubbleChart = false;
+        else if (node.typeChart === THEMES_BUBBLE_CHART && state.isFirstThemesBubbleChart()) {
+            state.setFirstThemesBubbleChart(false);
         }
 
         drawLine(currentId, newID);
 
-        if (language === PORTUGUESE) {
+        if (state.getLanguage() === PORTUGUESE) {
             translator.lang("br");
         }
     }
@@ -482,6 +491,7 @@ function updateSideBar() {
  * @returns {Array} Tree data
  */
 function getTree() {
+    var tree = state.getTree();
     tree.createJsonTree();
     return tree.getJsonTree();
 }
