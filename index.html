@@ -364,7 +364,7 @@
             <li><a tabindex="-1" id="rollcalls-heatmap">Create a Map of Roll Calls</a></li>
         </ul>
         <ul id="contextMenuDeputy" class="dropdown-menu" role="menu" style="display:none">
-            <li><a tabindex="-1" id="rollcalls-heatmap">Create a Map of Roll Calls</a></li>
+            <li><a tabindex="-1" id="static-rollcalls-heatmap">Create a Map of Roll Calls</a></li>
             <li><a class="btn disabled" style="text-align:left;" tabindex="-1"
                     id="time-line-crop-behavior-selection">Create a timeline with selected deputies</a></li>
         </ul>
@@ -510,6 +510,15 @@
         var activeBrush = true;
         d3.select(window)
             .on("keydown", function (event) {
+                // Only activate brush on Shift key
+                if (!d3.event || d3.event.keyCode !== 16) {
+                    return;
+                }
+                // Don't activate brush when typing in input fields or textareas
+                var target = d3.event.target || d3.event.srcElement;
+                if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+                    return;
+                }
                 if (!activeBrush) {
                     return;
                 }
@@ -517,6 +526,10 @@
                 activeBrush = false;
             })
             .on("keyup", function () {
+                // Only deactivate brush on Shift key release
+                if (!d3.event || d3.event.keyCode !== 16) {
+                    return;
+                }
                 activeBrush = true;
                 disableBrushForAllScatterPlots();
             });

@@ -433,7 +433,7 @@ function handleContextMenuDeputy(invokedOn, selectedMenu) {
 
         createNewChild(panelID, chartObj);
     }
-    else if (selectedMenu.context.id === 'rollcalls-heatmap') {
+    else if (selectedMenu.context.id === 'rollcalls-heatmap' || selectedMenu.context.id === 'static-rollcalls-heatmap') {
         var periodID = period.split("-");
         var id, periodData, subtitle, panelClass, firstYear, lastYear;
 

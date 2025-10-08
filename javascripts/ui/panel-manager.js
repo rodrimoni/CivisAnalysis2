@@ -260,7 +260,7 @@ function createNewChild(currentId, chartObj) {
         tree._root.title = "Timeline";
 
         $('#' + newID + ' .panel-title').append(getChartIconTitle(TIME_LINE));
-        $('#' + newID + ' .panel-title').append("<span>Timeline</span");
+        $('#' + newID + ' .panel-title').append("<span>Timeline</span>");
 
         addConfigMenu(newID, 'time-line', true);
         addDatePickerTimeline();

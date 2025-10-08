@@ -85,9 +85,13 @@ function initializeScatterPlot(newID, chartObj) {
     for (var key in chartObj.data) {
         deputies.push(chartObj.data[key])
     }
+
+    const parties = d3.map(d3.values(chartObj.data), function (d) { return d.party; }).keys()
+
     addSearchDeputyMenu(newID, deputies);
     addThemeSearchScatterPlot(newID, chartObj.args.rcs)
-    addPartySizeFilter(newID, chart);
+    addPartyConvexHullSelection(newID, parties);
+    //addPartySizeFilter(newID, chart);
     addEditTitleInput(newID);
 
     initializeSlider(newID, chart);

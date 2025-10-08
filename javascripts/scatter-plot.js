@@ -25,6 +25,9 @@ function scatterPlotChart() {
     var panelToBeRedrawn;
     var checkbox;
     var alignmentCheckbox;
+    var nodesData; // Store nodes data for hull calculations
+    var originalXDomain; // Store original x scale domain before zoom
+    var originalYDomain; // Store original y scale domain before zoom
 
     var dispatch = d3.dispatch('update');
     var div = d3.select(".toolTip");
@@ -50,7 +53,7 @@ function scatterPlotChart() {
                 .attr("class", "forceLayoutCheckbox")
                 .each(function () { checkbox = d3.select(this); });
             label1.append("span")
-                .text("Show overlapping deputies");
+                .text(language === PORTUGUESE ? "Mostrar deputados sobrepostos" : "Show overlapping deputies");
 
             // Party alignment opacity checkbox
             var label2 = checkboxContainer.append("label");
@@ -155,6 +158,7 @@ function scatterPlotChart() {
     }
 
     function drawScatterPlot(nodes, htmlContent) {
+        nodesData = nodes; // Store nodes for later use
         offSetBigCluster = 1.10;
         if (partyCountByOverlappedGroup.length > 20)
             offSetBigCluster = 1.35;
@@ -168,6 +172,10 @@ function scatterPlotChart() {
 
         x.domain([xMin, xMax]);
         y.domain([yMin, yMax]);
+
+        // Store original domains before zoom modifies them
+        originalXDomain = x.domain().slice(); // Create a copy
+        originalYDomain = y.domain().slice(); // Create a copy
 
         var zoom = d3.behavior.zoom()
             .x(x)
@@ -215,10 +223,19 @@ function scatterPlotChart() {
             .chargeDistance(20);
 
 
-        // Set initial positions
+        // Create scales with original domains for force layout calculations
+        var xOriginalForce = d3.scale.linear()
+            .domain(originalXDomain)
+            .range(x.range());
+
+        var yOriginalForce = d3.scale.linear()
+            .domain(originalYDomain)
+            .range(y.range());
+
+        // Set initial positions using original scales
         nodes.forEach(function (d) {
-            d.x = x(d.scatterplot[1]);
-            d.y = y(d.scatterplot[0]);
+            d.x = xOriginalForce(d.scatterplot[1]);
+            d.y = yOriginalForce(d.scatterplot[0]);
             d.radius = nodeRadius;
         });
 
@@ -304,8 +321,8 @@ function scatterPlotChart() {
                 force.stop();
                 svg.selectAll('.node')
                     .transition().duration(1000)
-                    .attr('cx', function (d) { return x(d.scatterplot[1]); })
-                    .attr('cy', function (d) { return y(d.scatterplot[0]); });
+                    .attr('cx', function (d) { return xOriginalForce(d.scatterplot[1]); })
+                    .attr('cy', function (d) { return yOriginalForce(d.scatterplot[0]); });
                 /*$(panelToBeRedrawn).find('svg').remove();
                 deputies.each(resetPositions);
                 drawScatterPlot(nodes, panelToBeRedrawn, false);*/
@@ -339,15 +356,15 @@ function scatterPlotChart() {
 
         function resetPositions() {
             return function (d) {
-                d.x = x(d.scatterplot[1]);
-                d.y = y(scatterplot[0]);
+                d.x = xOriginalForce(d.scatterplot[1]);
+                d.y = yOriginalForce(d.scatterplot[0]);
             }
         }
 
         function moveTowardDataPosition(alpha) {
             return function (d) {
-                d.x += (x(d.scatterplot[1]) - d.x) * 0.1 * alpha;
-                d.y += (y(d.scatterplot[0]) - d.y) * 0.1 * alpha;
+                d.x += (xOriginalForce(d.scatterplot[1]) - d.x) * 0.1 * alpha;
+                d.y += (yOriginalForce(d.scatterplot[0]) - d.y) * 0.1 * alpha;
             };
         }
 
@@ -567,9 +584,18 @@ function scatterPlotChart() {
     };
 
     function updateHullsTest(data, id) {
+        // Create temporary scales with original domains for hull calculation
+        var xOriginal = d3.scale.linear()
+            .domain(originalXDomain)
+            .range(x.range());
+
+        var yOriginal = d3.scale.linear()
+            .domain(originalYDomain)
+            .range(y.range());
+
         var groupPath = function (d) {
             return "M" +
-                d3.geom.hull(d.points.map(function (i) { return [x(i[1]), y(i[0])]; }))
+                d3.geom.hull(d.points.map(function (i) { return [xOriginal(i[1]), yOriginal(i[0])]; }))
                     .join("L")
                 + "Z";
         };
@@ -772,6 +798,79 @@ function scatterPlotChart() {
 
     chart.disableBrush = function () {
         svg.select(".brush").remove();
+    };
+
+    chart.showConvexHullOfParties = function (parties) {
+        if (!nodesData || !svg || !parties || parties.length === 0) {
+            console.warn("Cannot show convex hulls: missing data, svg, or parties");
+            return;
+        }
+
+        // Create temporary scales with original domains for hull calculation
+        var xOriginal = d3.scale.linear()
+            .domain(originalXDomain)
+            .range(x.range());
+
+        var yOriginal = d3.scale.linear()
+            .domain(originalYDomain)
+            .range(y.range());
+
+        // Prepare data for each party
+        var partyHullData = [];
+
+        parties.forEach(function (party) {
+            // Filter deputies by party
+            var partyDeputies = nodesData.filter(function (d) {
+                return d.party === party;
+            });
+
+            // Need at least 3 points to create a hull
+            if (partyDeputies.length >= 3) {
+                partyHullData.push({
+                    party: party,
+                    deputies: partyDeputies,
+                    color: CONGRESS_DEFINE.getPartyColor(party)
+                });
+            }
+        });
+
+        // Function to create hull path using ORIGINAL scales
+        var groupPath = function (d) {
+            var points = d.deputies.map(function (deputy) {
+                return [xOriginal(deputy.scatterplot[1]), yOriginal(deputy.scatterplot[0])];
+            });
+
+            var hull = d3.geom.hull(points);
+            return "M" + hull.join("L") + "Z";
+        };
+
+        var deputiesClusters = svg.select(".deputiesClusters");
+
+        // Remove existing party hulls
+        deputiesClusters.selectAll(".party-hull").remove();
+
+        // Draw hulls - use insert to place them at the beginning (bottom of z-order)
+        var hulls = deputiesClusters.selectAll(".party-hull")
+            .data(partyHullData)
+            .enter()
+            .insert("path", ":first-child")
+            .attr("class", "party-hull")
+            .attr("d", groupPath)
+            .style("fill", function (d) { return d.color; })
+            .style("fill-opacity", 0.5)
+            .style("stroke", function (d) { return d.color; })
+            .style("stroke-width", 2)
+            .style("stroke-linejoin", "round")
+            .style("pointer-events", "none"); // Allow mouse events to pass through to deputies
+
+        dispatch.update();
+        return hulls;
+    };
+
+    chart.hideConvexHulls = function () {
+        if (!svg) return;
+        svg.selectAll(".party-hull").remove();
+        dispatch.update();
     };
 
     return d3.rebind(chart, dispatch, 'on');
