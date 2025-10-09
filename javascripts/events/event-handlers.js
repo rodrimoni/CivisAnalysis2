@@ -18,8 +18,6 @@ function handleContextMenuScatterPlot(invokedOn, selectedMenu) {
     if (clusterData !== null)
         chartData = clusterData.chart;
 
-    console.log(chartData.clusters);
-
     var title = "", prettyTitle = "";
     var chartObj = {};
 
@@ -433,7 +431,7 @@ function handleContextMenuDeputy(invokedOn, selectedMenu) {
 
         createNewChild(panelID, chartObj);
     }
-    else if (selectedMenu.context.id === 'rollcalls-heatmap' || selectedMenu.context.id === 'static-rollcalls-heatmap') {
+    else if (selectedMenu.context.id === 'static-rollcalls-heatmap') {
         var periodID = period.split("-");
         var id, periodData, subtitle, panelClass, firstYear, lastYear;
 
@@ -604,5 +602,80 @@ function checkChildrenScatterPlot() {
 
     if (node.children.length > 0)
         alert("Caution! If you change the value of K the panel's children will be deleted.");
+}
+
+/**
+ * Handle context menu for party legend
+ * @param {Object} invokedOn - Element that invoked the menu
+ * @param {Object} selectedMenu - Selected menu item
+ */
+function handleContextMenuPartyLegend(invokedOn, selectedMenu) {
+    var panelID = invokedOn.parents(".panel").attr('id');
+    // Convert jQuery selection to D3 selection and get the bound datum (party name)
+    var party = d3.select(invokedOn[0]).datum();
+    var period = invokedOn.parents('.panel').data().typePeriod;
+
+    var title, prettyTitle, data = {};
+    var chartObj = {};
+
+    if (selectedMenu.context.id === 'party-metrics') {
+        var periodID = period.split("-");
+        var type, id, periodData, subtitle, panelClass, firstYear, lastYear;
+
+        if (periodID.length <= 2) {
+            type = periodID[0];
+            id = periodID[1];
+            if (type !== 'year') {
+                periodData = CONGRESS_DEFINE[type + "s"][id];
+                title = "<span><span class='trn'>Party Metrics</span>: " + party + " - <span class='trn'>" + periodData.name + "</span></span>";
+                prettyTitle = "Party Metrics: " + party + " - " + periodData.name;
+                subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " <span class='trn'>to</span> " + periodData.period[1].toLocaleDateString() + "</span>";
+                title += subtitle;
+            }
+            else {
+                title = "<span><span class='trn'>Party Metrics</span>: " + party + " - <span class='trn'>Year</span> " + id + "</span>";
+                prettyTitle = "Party Metrics: " + party + " - Year " + id;
+            }
+            panelClass = type + '-' + id;
+        }
+        else {
+            firstYear = periodID[1];
+            lastYear = periodID[2];
+            title = "<span><span class='trn'>Party Metrics</span>: " + party + " - " + firstYear + " <span class='trn'>to</span> " + lastYear + "</span>";
+            prettyTitle = "Party Metrics: " + party + " - " + firstYear + " to " + lastYear;
+            panelClass = type + "-" + firstYear + "-" + lastYear;
+        }
+
+        var data = {};
+
+        var deputyNodes = state.getDeputyNodes();
+        var rollCallsRates = state.getRollCallsRates();
+
+        var deputies = deputyNodes[panelID].filter(function (deputy) {
+            return deputy.party === party;
+        });
+
+        var rcs = rollCallsRates[panelID];
+
+        rcs.map(function (e) {
+            e.rollCallName = e.type + " " + e.number + " " + e.year;
+        });
+
+        console.log(rcs);
+
+        data.rcs = rcs;
+        data.deputies = deputies;
+        data.party = party;
+
+        chartObj = {
+            'chartID': PARTY_METRICS,
+            'data': data,
+            'title': title,
+            'prettyTitle': prettyTitle,
+            'panelClass': panelClass
+        };
+
+        createNewChild(panelID, chartObj);
+    }
 }
 

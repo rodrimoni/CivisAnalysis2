@@ -451,6 +451,15 @@ function scatterPlotChart() {
                 .attr("dy", ".45em")
                 .text(function (d) { return d });
 
+            // Add context menu to legend items
+            $("#" + panelID + " .legend")
+                .contextMenu({
+                    menuSelector: "#contextMenuPartyLegend",
+                    menuSelected: function (invokedOn, selectedMenu) {
+                        handleContextMenuPartyLegend(invokedOn, selectedMenu);
+                    }
+                });
+
         }
 
         var brushScatter;

@@ -30,6 +30,7 @@ const DEPUTIES_SIMILARITY_FORCE = 7;
 const STATIC_ROLLCALLS_HEATMAP = 8;
 const THEMES_BUBBLE_CHART = 9;
 const SMALL_MULTIPLES_CHART = 10;
+const PARTY_METRICS = 11;
 
 /* Bar Chart Types */
 const PARTIES_BAR_CHART = 1;
@@ -46,7 +47,9 @@ const typeChartToString = [
     "Map of Roll Calls",
     "Similarity Force",
     "Map of Roll Calls",
-    "Subjects"
+    "Subjects",
+    "Small Multiples",
+    "Party Metrics"
 ];
 
 /* Dimensional Reduction Techniques */

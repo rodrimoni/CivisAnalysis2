@@ -53,6 +53,10 @@ function initializeChart(newID, chartObj) {
             chart = initializeSmallMultiples(newID, chartObj);
             break;
 
+        case PARTY_METRICS:
+            chart = initializePartyMetrics(newID, chartObj);
+            break;
+
         default:
             break;
     }
@@ -255,6 +259,20 @@ function initializeThemesBubbleChart(newID, chartObj) {
 function initializeSmallMultiples(newID, chartObj) {
     var chart = smallMultiples();
     addConfigMenu(newID, 'line-chart', false);
+    addEditTitleInput(newID);
+    $('#' + newID).attr('data-type-period', chartObj.panelClass);
+    return chart;
+}
+
+/**
+ * Initialize Party Metrics Chart
+ * @param {string} newID - Panel ID
+ * @param {Object} chartObj - Chart configuration
+ * @returns {Object} Chart instance
+ */
+function initializePartyMetrics(newID, chartObj) {
+    var chart = partyMetrics();
+    addConfigMenu(newID, 'party-metrics', false);
     addEditTitleInput(newID);
     $('#' + newID).attr('data-type-period', chartObj.panelClass);
     return chart;
