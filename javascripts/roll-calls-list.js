@@ -175,7 +175,7 @@
 
             html += votersLabel + ": " + d.total + "<br>" +
                 yesLabel + ": " + d.yesCount + " | " + noLabel + ": " + d.noCount + "<br>" +
-                riceLabel + ": " + (d.rice * 100).toFixed(1) + "%";
+                riceLabel + ": " + d.rice.toFixed(3);
 
             div.style("left", d3.event.pageX + 10 + "px");
             div.style("top", d3.event.pageY - 25 + "px");

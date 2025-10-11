@@ -62,15 +62,10 @@ function chamberInfographic() {
             parties.forEach(function (d, i) { data.partiesMap[d.key].rank = i });
 
             data.deputies.sort(function (a, b) {
-                if (a.party !== b.party) {
-                    // Sort by party rank
-                    return data.partiesMap[a.party].rank - data.partiesMap[b.party].rank;
-                } else {
-                    // Within same party, sort by alignment (descending - higher alignment first)
-                    var alignmentA = a.alignment || 0;
-                    var alignmentB = b.alignment || 0;
-                    return alignmentB - alignmentA;
-                }
+                return (a.party !== b.party) ?
+                    (data.partiesMap[a.party].rank - data.partiesMap[b.party].rank)
+                    :
+                    ((b.scatterplot[1] + 1) - (a.scatterplot[1] + 1));
             });
 
             updateDeputies(data.deputies);

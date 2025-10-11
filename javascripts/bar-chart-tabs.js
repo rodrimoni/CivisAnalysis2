@@ -355,7 +355,7 @@
 
         var isEnglish = (typeof language !== 'undefined' && language === ENGLISH);
         var tabs = [
-            { id: 'themeRice', label: isEnglish ? 'Rice Index by Subject' : 'Índice Rice por Tema' },
+            { id: 'themeRice', label: isEnglish ? 'Cohesion by Subject' : 'Coesão por Tema' },
             { id: 'deputyAlignment', label: isEnglish ? 'Deputy Alignment' : 'Alinhamento de Deputados' }
         ];
 

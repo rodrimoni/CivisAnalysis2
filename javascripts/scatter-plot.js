@@ -25,15 +25,18 @@ function scatterPlotChart() {
     var panelToBeRedrawn;
     var checkbox;
     var alignmentCheckbox;
+    var envelopeCheckbox;
     var nodesData; // Store nodes data for hull calculations
     var originalXDomain; // Store original x scale domain before zoom
     var originalYDomain; // Store original y scale domain before zoom
+    var selectedPartiesForHulls = []; // Track which parties have hulls displayed
 
     var dispatch = d3.dispatch('update');
     var div = d3.select(".toolTip");
     var brush;
     var isForceLayout = false;
     var showAlignmentOpacity = false;
+    var showPartyEnvelope = false;
 
     function chart(selection) {
         selection.each(function (data) {
@@ -63,7 +66,17 @@ function scatterPlotChart() {
                 .attr("class", "alignmentOpacityCheckbox")
                 .each(function () { alignmentCheckbox = d3.select(this); });
             label2.append("span")
-                .text(language === PORTUGUESE ? "Mostrar opacidade por alinhamento partidário" : "Show party alignment opacity");
+                .text(language === PORTUGUESE ? "Mostrar alinhamento partidário" : "Show party alignment");
+
+            // Party envelope (hull) checkbox
+            var label3 = checkboxContainer.append("label");
+            label3.append("input")
+                .attr("type", "checkbox")
+                .attr("id", panelID + "-partyEnvelope")
+                .attr("class", "partyEnvelopeCheckbox")
+                .each(function () { envelopeCheckbox = d3.select(this); });
+            label3.append("span")
+                .text(language === PORTUGUESE ? "Mostrar envoltória dos partidos" : "Show party envelope");
 
             chart.createScatterPlotChart(data, this);
 
@@ -89,7 +102,9 @@ function scatterPlotChart() {
         // reset globals
         isForceLayout = false;
         showAlignmentOpacity = false;
-        partyCountByOverlappedGroup = []
+        showPartyEnvelope = false;
+        partyCountByOverlappedGroup = [];
+        selectedPartiesForHulls = []; // Reset hull selection
 
         chart.createScatterPlotChart(data, htmlContent[0]);
     };
@@ -342,6 +357,21 @@ function scatterPlotChart() {
                     // Map alignment (0-1) to opacity range (0.4-1.0) for better visibility
                     return d.alignment ? 0.4 + (d.alignment * 0.6) : 0.7;
                 });
+        });
+
+        // Party envelope (hull) toggle
+        d3.select("#" + panelID + "-partyEnvelope").on("change", function () {
+            showPartyEnvelope = envelopeCheckbox.node().checked;
+
+            if (showPartyEnvelope) {
+                // Show hulls for currently selected parties
+                if (selectedPartiesForHulls.length > 0) {
+                    chart.showConvexHullOfParties(selectedPartiesForHulls);
+                }
+            } else {
+                // Hide all hulls
+                chart.hideConvexHulls();
+            }
         });
 
         function tick(e) {
@@ -741,11 +771,15 @@ function scatterPlotChart() {
             deputies.forEach(function (d) {
                 updateDeputyNodeInAllPeriods(d.deputyID, "selected", false);
             });
+            // Remove party from hull selection
+            togglePartyHull(d, 'remove');
         } else
             if (d3.event.ctrlKey || d3.event.metaKey) {
                 deputies.forEach(function (d) {
                     updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
                 });
+                // Add party to hull selection (multi-select)
+                togglePartyHull(d, 'add');
             }
             else {
                 for (var key in deputyNodes) {
@@ -756,9 +790,58 @@ function scatterPlotChart() {
                 deputies.forEach(function (d) {
                     updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
                 });
+                // Select only this party's hull
+                togglePartyHull(d, 'single');
             }
 
         dispatch.update();
+    }
+
+    function togglePartyHull(party, mode) {
+        var index = selectedPartiesForHulls.indexOf(party);
+
+        if (mode === 'add') {
+            // Multi-select mode: add if not present
+            if (index === -1) {
+                selectedPartiesForHulls.push(party);
+            }
+        } else if (mode === 'remove') {
+            // Remove mode: remove if present
+            if (index > -1) {
+                selectedPartiesForHulls.splice(index, 1);
+            }
+        } else if (mode === 'single') {
+            // Single-select mode: replace with this party only
+            selectedPartiesForHulls = [party];
+        }
+
+        // Update hull visualization only if the checkbox is active
+        if (showPartyEnvelope) {
+            if (selectedPartiesForHulls.length > 0) {
+                chart.showConvexHullOfParties(selectedPartiesForHulls);
+            } else {
+                chart.hideConvexHulls();
+            }
+        }
+
+        // Always update visual indicators on legend
+        updateLegendHullIndicators();
+    }
+
+    function updateLegendHullIndicators() {
+        if (!svg) return;
+
+        svg.selectAll('.legend circle')
+            .style('stroke', function (d) {
+                return selectedPartiesForHulls.indexOf(d) > -1
+                    ? '#000'
+                    : 'none';
+            })
+            .style('stroke-width', function (d) {
+                return selectedPartiesForHulls.indexOf(d) > -1
+                    ? '3px'
+                    : '0';
+            });
     }
 
     function setDeputyFill(d) {
@@ -872,13 +955,25 @@ function scatterPlotChart() {
             .style("stroke-linejoin", "round")
             .style("pointer-events", "none"); // Allow mouse events to pass through to deputies
 
+        // Update visual indicators on legend
+        updateLegendHullIndicators();
+
         dispatch.update();
         return hulls;
     };
 
     chart.hideConvexHulls = function () {
         if (!svg) return;
+
+        // Clear internal state
+        selectedPartiesForHulls = [];
+
+        // Remove hulls from visualization
         svg.selectAll(".party-hull").remove();
+
+        // Update visual indicators on legend
+        updateLegendHullIndicators();
+
         dispatch.update();
     };
 

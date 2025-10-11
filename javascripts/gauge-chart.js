@@ -30,7 +30,7 @@
 
     /* UI Text Constants */
     const UI_TEXT = {
-        SUBTITLE_COHESION: "Party Cohesion",
+        SUBTITLE_COHESION: "Rice Index",
         INTERPRETATION: {
             VERY_HIGH: "Very High Cohesion",
             HIGH: "High Cohesion",
@@ -254,7 +254,7 @@
             .attr("text-anchor", "middle")
             .attr("font-size", TEXT_STYLES.LABEL.size)
             .attr("fill", TEXT_STYLES.LABEL.color)
-            .text(UI_TEXT.SUBTITLE_COHESION);
+            .text(`${UI_TEXT.SUBTITLE_COHESION}: ${value.toFixed(3)}`);
 
         // Display interpretation
         const interpretation = getInterpretation(value);

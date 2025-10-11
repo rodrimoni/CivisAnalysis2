@@ -94,7 +94,6 @@ function initializeScatterPlot(newID, chartObj) {
 
     addSearchDeputyMenu(newID, deputies);
     addThemeSearchScatterPlot(newID, chartObj.args.rcs)
-    addPartyConvexHullSelection(newID, parties);
     //addPartySizeFilter(newID, chart);
     addEditTitleInput(newID);
 
