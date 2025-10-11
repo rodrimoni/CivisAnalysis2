@@ -49,33 +49,33 @@ function scatterPlotChart() {
                 .attr("style", "margin-top:20px; margin-left: 20px; position: absolute");
 
             // Overlapping deputies checkbox
-            var label1 = checkboxContainer.append("label");
-            label1.append("input")
+            var overlappingDeputiesLabel = checkboxContainer.append("label");
+            overlappingDeputiesLabel.append("input")
                 .attr("type", "checkbox")
                 .attr("id", panelID + "-forceLayoutApply")
                 .attr("class", "forceLayoutCheckbox")
                 .each(function () { checkbox = d3.select(this); });
-            label1.append("span")
+            overlappingDeputiesLabel.append("span")
                 .text(language === PORTUGUESE ? "Mostrar deputados sobrepostos" : "Show overlapping deputies");
 
             // Party alignment opacity checkbox
-            var label2 = checkboxContainer.append("label");
-            label2.append("input")
+            var partyAlignmentLabel = checkboxContainer.append("label");
+            partyAlignmentLabel.append("input")
                 .attr("type", "checkbox")
                 .attr("id", panelID + "-alignmentOpacity")
                 .attr("class", "alignmentOpacityCheckbox")
                 .each(function () { alignmentCheckbox = d3.select(this); });
-            label2.append("span")
+            partyAlignmentLabel.append("span")
                 .text(language === PORTUGUESE ? "Mostrar alinhamento partidário" : "Show party alignment");
 
             // Party envelope (hull) checkbox
-            var label3 = checkboxContainer.append("label");
-            label3.append("input")
+            var partyEnvelopeLabel = checkboxContainer.append("label");
+            partyEnvelopeLabel.append("input")
                 .attr("type", "checkbox")
                 .attr("id", panelID + "-partyEnvelope")
                 .attr("class", "partyEnvelopeCheckbox")
                 .each(function () { envelopeCheckbox = d3.select(this); });
-            label3.append("span")
+            partyEnvelopeLabel.append("span")
                 .text(language === PORTUGUESE ? "Mostrar envoltória dos partidos" : "Show party envelope");
 
             chart.createScatterPlotChart(data, this);
@@ -369,8 +369,8 @@ function scatterPlotChart() {
                     chart.showConvexHullOfParties(selectedPartiesForHulls);
                 }
             } else {
-                // Hide all hulls
-                chart.hideConvexHulls();
+                // Hide all hulls but keep the party selection
+                svg.selectAll(".party-hull").remove();
             }
         });
 
