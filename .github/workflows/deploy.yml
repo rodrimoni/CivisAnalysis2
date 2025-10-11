@@ -33,17 +33,19 @@ jobs:
             fi
           done
 
-      - name: Deploy over SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
-        with:
-          server: ${{ secrets.SFTP_HOST }}
-          port: ${{ secrets.SFTP_PORT }}
-          username: ${{ secrets.SFTP_USERNAME }}
-          password: ${{ secrets.SFTP_PASSWORD }}
-          local_path: ./deploy
-          remote_path: ${{ secrets.SFTP_REMOTE_PATH }}
-          delete_remote_files: true
-          exclude: |
-            **/.git*
-            **/.DS_Store
+      - name: Install sshpass
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sshpass
+
+      - name: Deploy with rsync over SSH
+        env:
+          SSHPASS: ${{ secrets.SFTP_PASSWORD }}
+        run: |
+          sshpass -e rsync -avz --delete \
+            -e "ssh -o StrictHostKeyChecking=no -p ${{ secrets.SFTP_PORT }}" \
+            --exclude='.git*' \
+            --exclude='.DS_Store' \
+            ./deploy/ \
+            ${{ secrets.SFTP_USERNAME }}@${{ secrets.SFTP_HOST }}:${{ secrets.SFTP_REMOTE_PATH }}/
 
