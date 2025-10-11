@@ -10,6 +10,7 @@ on:
       - "images/**"
       - "fonts/**"
       - "data/**"
+  workflow_dispatch:
 
 concurrency:
   group: sftp-deploy
