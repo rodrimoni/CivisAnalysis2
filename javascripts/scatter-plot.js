@@ -24,23 +24,59 @@ function scatterPlotChart() {
     var panelID;
     var panelToBeRedrawn;
     var checkbox;
+    var alignmentCheckbox;
+    var envelopeCheckbox;
+    var nodesData; // Store nodes data for hull calculations
+    var originalXDomain; // Store original x scale domain before zoom
+    var originalYDomain; // Store original y scale domain before zoom
+    var selectedPartiesForHulls = []; // Track which parties have hulls displayed
 
     var dispatch = d3.dispatch('update');
     var div = d3.select(".toolTip");
     var brush;
     var isForceLayout = false;
+    var showAlignmentOpacity = false;
+    var showPartyEnvelope = false;
 
     function chart(selection) {
         selection.each(function (data) {
             panelID = ($(this).parents('.panel')).attr('id');
 
-            var controls = d3.select("#" + panelID).append("label")
-                .attr("class", "controls");
-            checkbox = controls.append("input")
+            // Add the checkbox container for controls
+            var checkboxContainer = d3.select(this)
+                .append("div")
+                .attr("class", "checkbox-container")
+                .attr("style", "margin-top:20px; margin-left: 20px; position: absolute");
+
+            // Overlapping deputies checkbox
+            var label1 = checkboxContainer.append("label");
+            label1.append("input")
+                .attr("type", "checkbox")
                 .attr("id", panelID + "-forceLayoutApply")
-                .attr("type", "checkbox");
-            controls.append("span")
-                .text("Show overlapping deputies ");
+                .attr("class", "forceLayoutCheckbox")
+                .each(function () { checkbox = d3.select(this); });
+            label1.append("span")
+                .text(language === PORTUGUESE ? "Mostrar deputados sobrepostos" : "Show overlapping deputies");
+
+            // Party alignment opacity checkbox
+            var label2 = checkboxContainer.append("label");
+            label2.append("input")
+                .attr("type", "checkbox")
+                .attr("id", panelID + "-alignmentOpacity")
+                .attr("class", "alignmentOpacityCheckbox")
+                .each(function () { alignmentCheckbox = d3.select(this); });
+            label2.append("span")
+                .text(language === PORTUGUESE ? "Mostrar alinhamento partidário" : "Show party alignment");
+
+            // Party envelope (hull) checkbox
+            var label3 = checkboxContainer.append("label");
+            label3.append("input")
+                .attr("type", "checkbox")
+                .attr("id", panelID + "-partyEnvelope")
+                .attr("class", "partyEnvelopeCheckbox")
+                .each(function () { envelopeCheckbox = d3.select(this); });
+            label3.append("span")
+                .text(language === PORTUGUESE ? "Mostrar envoltória dos partidos" : "Show party envelope");
 
             chart.createScatterPlotChart(data, this);
 
@@ -59,15 +95,16 @@ function scatterPlotChart() {
     chart.reloadScatterPlotChart = function (data, panelID) {
         var htmlContent = $('#' + panelID + " .panel-body");
 
-        // Remove old svg
+        // Remove old checkbox container and svg
+        d3.select('#' + panelID + " .checkbox-container").remove();
         d3.select('#' + panelID + " .scatter-plot").remove();
 
         // reset globals
         isForceLayout = false;
-        partyCountByOverlappedGroup = []
-
-        // reset checkbox
-        document.getElementById(panelID + "-forceLayoutApply").checked = false;
+        showAlignmentOpacity = false;
+        showPartyEnvelope = false;
+        partyCountByOverlappedGroup = [];
+        selectedPartiesForHulls = []; // Reset hull selection
 
         chart.createScatterPlotChart(data, htmlContent[0]);
     };
@@ -136,6 +173,7 @@ function scatterPlotChart() {
     }
 
     function drawScatterPlot(nodes, htmlContent) {
+        nodesData = nodes; // Store nodes for later use
         offSetBigCluster = 1.10;
         if (partyCountByOverlappedGroup.length > 20)
             offSetBigCluster = 1.35;
@@ -150,7 +188,13 @@ function scatterPlotChart() {
         x.domain([xMin, xMax]);
         y.domain([yMin, yMax]);
 
+        // Store original domains before zoom modifies them
+        originalXDomain = x.domain().slice(); // Create a copy
+        originalYDomain = y.domain().slice(); // Create a copy
+
         var zoom = d3.behavior.zoom()
+            .x(x)
+            .y(y)
             .scaleExtent([1, 30])
             .on("zoom", zoomed);
 
@@ -194,10 +238,19 @@ function scatterPlotChart() {
             .chargeDistance(20);
 
 
-        // Set initial positions
+        // Create scales with original domains for force layout calculations
+        var xOriginalForce = d3.scale.linear()
+            .domain(originalXDomain)
+            .range(x.range());
+
+        var yOriginalForce = d3.scale.linear()
+            .domain(originalYDomain)
+            .range(y.range());
+
+        // Set initial positions using original scales
         nodes.forEach(function (d) {
-            d.x = x(d.scatterplot[1]);
-            d.y = y(d.scatterplot[0]);
+            d.x = xOriginalForce(d.scatterplot[1]);
+            d.y = yOriginalForce(d.scatterplot[0]);
             d.radius = nodeRadius;
         });
 
@@ -212,6 +265,10 @@ function scatterPlotChart() {
             .attr("cx", function (d) { return x(d.scatterplot[1]); })
             .attr("cy", function (d) { return y(d.scatterplot[0]); })
             .style("fill", function (d) { return setDeputyFill(d); })
+            .style("fill-opacity", function (d) {
+                if (!showAlignmentOpacity) return 1.0; // Fully opaque when disabled
+                return getAlignmentOpacity(d.alignment);
+            })
             .on('mousedown', function (d) {
                 mouseClickDeputy(d);
             })
@@ -230,8 +287,19 @@ function scatterPlotChart() {
         function deputyPopOver(d) {
             var deputyTooltipEnglish;
             var deputyTooltipPortuguese;
-            deputyTooltipEnglish = '<strong>' + d.name + ' (' + d.party + '-' + d.district + ")</strong><br><em>Left-Click to select</em><br><em>Right-Click to create new visualizations</em>";
-            deputyTooltipPortuguese = '<strong>' + d.name + ' (' + d.party + '-' + d.district + ")</strong><br><em>Botão esquerdo para selecionar</em><br><em>Botão direito para criar novas vis.</em>";
+
+            // Convert alignment to percentage (0-1 → 0-100%)
+            var alignmentPercentage = d.alignment ? Math.round(d.alignment * 100) : 0;
+
+            deputyTooltipEnglish = '<strong>' + d.name + ' (' + d.party + '-' + d.district + ")</strong><br>" +
+                '<span style="color: #666;">Party Alignment: ' + alignmentPercentage + '%</span><br>' +
+                "<em>Left-Click to select</em><br>" +
+                "<em>Right-Click to create new visualizations</em>";
+
+            deputyTooltipPortuguese = '<strong>' + d.name + ' (' + d.party + '-' + d.district + ")</strong><br>" +
+                '<span style="color: #666;">Alinhamento Partidário: ' + alignmentPercentage + '%</span><br>' +
+                "<em>Botão esquerdo para selecionar</em><br>" +
+                "<em>Botão direito para criar novas vis.</em>";
 
             if (language === PORTUGUESE)
                 return deputyTooltipPortuguese;
@@ -268,11 +336,41 @@ function scatterPlotChart() {
                 force.stop();
                 svg.selectAll('.node')
                     .transition().duration(1000)
-                    .attr('cx', function (d) { return x(d.scatterplot[1]); })
-                    .attr('cy', function (d) { return y(d.scatterplot[0]); });
+                    .attr('cx', function (d) { return xOriginalForce(d.scatterplot[1]); })
+                    .attr('cy', function (d) { return yOriginalForce(d.scatterplot[0]); });
                 /*$(panelToBeRedrawn).find('svg').remove();
                 deputies.each(resetPositions);
                 drawScatterPlot(nodes, panelToBeRedrawn, false);*/
+            }
+        });
+
+        // Party alignment opacity toggle
+        d3.select("#" + panelID + "-alignmentOpacity").on("change", function () {
+            showAlignmentOpacity = alignmentCheckbox.node().checked;
+
+            // Update all node opacities with smooth transition
+            svg.selectAll('.node')
+                .transition()
+                .duration(500)
+                .style("fill-opacity", function (d) {
+                    if (!showAlignmentOpacity) return 1.0; // Fully opaque when disabled
+                    // Map alignment (0-1) to opacity range (0.4-1.0) for better visibility
+                    return d.alignment ? 0.4 + (d.alignment * 0.6) : 0.7;
+                });
+        });
+
+        // Party envelope (hull) toggle
+        d3.select("#" + panelID + "-partyEnvelope").on("change", function () {
+            showPartyEnvelope = envelopeCheckbox.node().checked;
+
+            if (showPartyEnvelope) {
+                // Show hulls for currently selected parties
+                if (selectedPartiesForHulls.length > 0) {
+                    chart.showConvexHullOfParties(selectedPartiesForHulls);
+                }
+            } else {
+                // Hide all hulls
+                chart.hideConvexHulls();
             }
         });
 
@@ -288,15 +386,15 @@ function scatterPlotChart() {
 
         function resetPositions() {
             return function (d) {
-                d.x = x(d.scatterplot[1]);
-                d.y = y(scatterplot[0]);
+                d.x = xOriginalForce(d.scatterplot[1]);
+                d.y = yOriginalForce(d.scatterplot[0]);
             }
         }
 
         function moveTowardDataPosition(alpha) {
             return function (d) {
-                d.x += (x(d.scatterplot[1]) - d.x) * 0.1 * alpha;
-                d.y += (y(d.scatterplot[0]) - d.y) * 0.1 * alpha;
+                d.x += (xOriginalForce(d.scatterplot[1]) - d.x) * 0.1 * alpha;
+                d.y += (yOriginalForce(d.scatterplot[0]) - d.y) * 0.1 * alpha;
             };
         }
 
@@ -383,6 +481,15 @@ function scatterPlotChart() {
                 .attr("dy", ".45em")
                 .text(function (d) { return d });
 
+            // Add context menu to legend items
+            $("#" + panelID + " .legend")
+                .contextMenu({
+                    menuSelector: "#contextMenuPartyLegend",
+                    menuSelected: function (invokedOn, selectedMenu) {
+                        handleContextMenuPartyLegend(invokedOn, selectedMenu);
+                    }
+                });
+
         }
 
         var brushScatter;
@@ -396,8 +503,10 @@ function scatterPlotChart() {
 
         // Highlight the selected circles.
         function brushmove() {
+            var SHIFTKEY = state.getShiftKey();
             if (SHIFTKEY) {
-                svg = svg.call(d3.behavior.zoom().on("zoom", null));
+                // Temporarily disable zoom during brushing
+                svg.on(".zoom", null);
                 var e = brush.extent();
                 console.log(e);
                 var deps = svg.selectAll(".node").filter(function (d) {
@@ -416,7 +525,8 @@ function scatterPlotChart() {
 
         // If the brush is empty, select all circles.
         function brushend() {
-            svg.call(d3.behavior.zoom().x(x).y(y).on("zoom", zoom));
+            // Re-enable zoom after brushing
+            svg.call(zoom);
             d3.event.target.clear();
             d3.select(this).call(d3.event.target);
             //console.log(d3.event.target);
@@ -465,6 +575,10 @@ function scatterPlotChart() {
         svg.selectAll(".deputiesNodesDots .node")
             .transition()
             .style("fill", function (d) { return setDeputyFill(d); })
+            .style("fill-opacity", function (d) {
+                if (!showAlignmentOpacity) return 1.0; // Fully opaque when disabled
+                return getAlignmentOpacity(d.alignment);
+            })
             .attr("class", function (d) { return (d.selected) ? "node selected" : (d.hovered) ? "node hovered" : "node"; })
             .attr("r", function (d) { return (d.hovered) ? nodeRadius * 2 : nodeRadius; });
 
@@ -481,6 +595,7 @@ function scatterPlotChart() {
     }
 
     chart.getClusters = function (k, data, id) {
+        console.log(data);
         //number of clusters, defaults to undefined
         clusterMaker.k(k);
 
@@ -496,20 +611,30 @@ function scatterPlotChart() {
         this.clusters.forEach(function (cluster, index) {
             clustersPoints.push({
                 "cluster": index, "points": cluster.points.map(function (t) {
-                    updateDeputyNodeInAllPeriods(t.deputyID, "virtualParty", index);
                     return t.location;
                 })
             });
         });
+
+        console.log(this.clusters);
 
         //updateHulls(hullSets, id);
         updateHullsTest(clustersPoints, id);
     };
 
     function updateHullsTest(data, id) {
+        // Create temporary scales with original domains for hull calculation
+        var xOriginal = d3.scale.linear()
+            .domain(originalXDomain)
+            .range(x.range());
+
+        var yOriginal = d3.scale.linear()
+            .domain(originalYDomain)
+            .range(y.range());
+
         var groupPath = function (d) {
             return "M" +
-                d3.geom.hull(d.points.map(function (i) { return [x(i[1]), y(i[0])]; }))
+                d3.geom.hull(d.points.map(function (i) { return [xOriginal(i[1]), yOriginal(i[0])]; }))
                     .join("L")
                 + "Z";
         };
@@ -584,6 +709,8 @@ function scatterPlotChart() {
 
     function mouseClickDeputy(d) {
         d3.event.preventDefault();
+        var deputyNodes = state.getDeputyNodes();
+
         if (d3.event.shiftKey) {
             // using the shiftKey deselect the deputy
             updateDeputyNodeInAllPeriods(d.deputyID, "selected", false);
@@ -622,6 +749,7 @@ function scatterPlotChart() {
     }
 
     function mouseoutParty() {
+        var deputyNodes = state.getDeputyNodes();
         for (var key in deputyNodes) {
             for (var index in deputyNodes[key])
                 deputyNodes[key][index].hovered = false;
@@ -630,6 +758,7 @@ function scatterPlotChart() {
     }
 
     function clickParty(d) {
+        var deputyNodes = state.getDeputyNodes();
 
         /* Reset the search input */
         $('.searchDeputies').tagsinput('removeAll');
@@ -642,11 +771,15 @@ function scatterPlotChart() {
             deputies.forEach(function (d) {
                 updateDeputyNodeInAllPeriods(d.deputyID, "selected", false);
             });
+            // Remove party from hull selection
+            togglePartyHull(d, 'remove');
         } else
             if (d3.event.ctrlKey || d3.event.metaKey) {
                 deputies.forEach(function (d) {
                     updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
                 });
+                // Add party to hull selection (multi-select)
+                togglePartyHull(d, 'add');
             }
             else {
                 for (var key in deputyNodes) {
@@ -657,9 +790,58 @@ function scatterPlotChart() {
                 deputies.forEach(function (d) {
                     updateDeputyNodeInAllPeriods(d.deputyID, "selected", true);
                 });
+                // Select only this party's hull
+                togglePartyHull(d, 'single');
             }
 
         dispatch.update();
+    }
+
+    function togglePartyHull(party, mode) {
+        var index = selectedPartiesForHulls.indexOf(party);
+
+        if (mode === 'add') {
+            // Multi-select mode: add if not present
+            if (index === -1) {
+                selectedPartiesForHulls.push(party);
+            }
+        } else if (mode === 'remove') {
+            // Remove mode: remove if present
+            if (index > -1) {
+                selectedPartiesForHulls.splice(index, 1);
+            }
+        } else if (mode === 'single') {
+            // Single-select mode: replace with this party only
+            selectedPartiesForHulls = [party];
+        }
+
+        // Update hull visualization only if the checkbox is active
+        if (showPartyEnvelope) {
+            if (selectedPartiesForHulls.length > 0) {
+                chart.showConvexHullOfParties(selectedPartiesForHulls);
+            } else {
+                chart.hideConvexHulls();
+            }
+        }
+
+        // Always update visual indicators on legend
+        updateLegendHullIndicators();
+    }
+
+    function updateLegendHullIndicators() {
+        if (!svg) return;
+
+        svg.selectAll('.legend circle')
+            .style('stroke', function (d) {
+                return selectedPartiesForHulls.indexOf(d) > -1
+                    ? '#000'
+                    : 'none';
+            })
+            .style('stroke-width', function (d) {
+                return selectedPartiesForHulls.indexOf(d) > -1
+                    ? '3px'
+                    : '0';
+            });
     }
 
     function setDeputyFill(d) {
@@ -687,6 +869,7 @@ function scatterPlotChart() {
     }
 
     chart.selectDeputiesBySearch = function (deputies) {
+        var deputyNodes = state.getDeputyNodes();
         for (var key in deputyNodes) {
             for (var index in deputyNodes[key])
                 deputyNodes[key][index].selected = false;
@@ -707,6 +890,91 @@ function scatterPlotChart() {
 
     chart.disableBrush = function () {
         svg.select(".brush").remove();
+    };
+
+    chart.showConvexHullOfParties = function (parties) {
+        if (!nodesData || !svg || !parties || parties.length === 0) {
+            console.warn("Cannot show convex hulls: missing data, svg, or parties");
+            return;
+        }
+
+        // Create temporary scales with original domains for hull calculation
+        var xOriginal = d3.scale.linear()
+            .domain(originalXDomain)
+            .range(x.range());
+
+        var yOriginal = d3.scale.linear()
+            .domain(originalYDomain)
+            .range(y.range());
+
+        // Prepare data for each party
+        var partyHullData = [];
+
+        parties.forEach(function (party) {
+            // Filter deputies by party
+            var partyDeputies = nodesData.filter(function (d) {
+                return d.party === party;
+            });
+
+            // Need at least 3 points to create a hull
+            if (partyDeputies.length >= 3) {
+                partyHullData.push({
+                    party: party,
+                    deputies: partyDeputies,
+                    color: CONGRESS_DEFINE.getPartyColor(party)
+                });
+            }
+        });
+
+        // Function to create hull path using ORIGINAL scales
+        var groupPath = function (d) {
+            var points = d.deputies.map(function (deputy) {
+                return [xOriginal(deputy.scatterplot[1]), yOriginal(deputy.scatterplot[0])];
+            });
+
+            var hull = d3.geom.hull(points);
+            return "M" + hull.join("L") + "Z";
+        };
+
+        var deputiesClusters = svg.select(".deputiesClusters");
+
+        // Remove existing party hulls
+        deputiesClusters.selectAll(".party-hull").remove();
+
+        // Draw hulls - use insert to place them at the beginning (bottom of z-order)
+        var hulls = deputiesClusters.selectAll(".party-hull")
+            .data(partyHullData)
+            .enter()
+            .insert("path", ":first-child")
+            .attr("class", "party-hull")
+            .attr("d", groupPath)
+            .style("fill", function (d) { return d.color; })
+            .style("fill-opacity", 0.5)
+            .style("stroke", function (d) { return d.color; })
+            .style("stroke-width", 2)
+            .style("stroke-linejoin", "round")
+            .style("pointer-events", "none"); // Allow mouse events to pass through to deputies
+
+        // Update visual indicators on legend
+        updateLegendHullIndicators();
+
+        dispatch.update();
+        return hulls;
+    };
+
+    chart.hideConvexHulls = function () {
+        if (!svg) return;
+
+        // Clear internal state
+        selectedPartiesForHulls = [];
+
+        // Remove hulls from visualization
+        svg.selectAll(".party-hull").remove();
+
+        // Update visual indicators on legend
+        updateLegendHullIndicators();
+
+        dispatch.update();
     };
 
     return d3.rebind(chart, dispatch, 'on');

@@ -58,6 +58,26 @@
     left: 80%;
 }
 
+/* Checkbox controls - used by scatter-plot and chamber-infographic */
+.checkbox-container {
+    display: flex;
+    column-gap: 10px;
+    row-gap: 0px;
+    flex-wrap: wrap;
+}
+
+.checkbox-container label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.checkbox-container input[type="checkbox"] {
+    margin-right: 8px;
+    cursor: pointer;
+}
+
 #collisiondetection {
     margin: 4px;
 }

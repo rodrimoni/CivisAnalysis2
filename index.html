@@ -95,11 +95,40 @@
     <!-- Small Multiples visualization -->
     <script src="javascripts/small-multiples-chart.js"></script>
 
-    <!-- Windows System View Functions -->
-    <script src="javascripts/windows-system.js"></script>
+    <!-- Party Metrics visualization modules -->
+    <script src="javascripts/gauge-chart.js"></script>
+    <script src="javascripts/roll-calls-list.js"></script>
+    <script src="javascripts/bar-chart-tabs.js"></script>
 
-    <!-- Windows System Controller Functions -->
-    <script src="javascripts/windows-system-controller.js"></script>
+    <!-- Party Metrics main coordinator -->
+    <script src="javascripts/party-metrics.js"></script>
+
+    <!-- ====== REFACTORED MODULAR ARCHITECTURE ====== -->
+    <!-- Core Modules -->
+    <script src="javascripts/core/constants.js"></script>
+    <script src="javascripts/core/state-manager.js"></script>
+
+    <!-- Data Modules -->
+    <script src="javascripts/data/data-loader.js"></script>
+    <script src="javascripts/data/data-processor.js"></script>
+
+    <!-- UI Modules -->
+    <script src="javascripts/ui/ui-utilities.js"></script>
+    <script src="javascripts/ui/ui-menu-factory.js"></script>
+    <script src="javascripts/ui/panel-manager.js"></script>
+
+    <!-- Chart Modules -->
+    <script src="javascripts/charts/chart-initializer.js"></script>
+    <script src="javascripts/charts/visualization-updater.js"></script>
+
+    <!-- Event Modules -->
+    <script src="javascripts/events/event-handlers.js"></script>
+
+    <!-- Utility Modules -->
+    <script src="javascripts/utils/general-utilities.js"></script>
+
+    <!-- ====== LEGACY FILES REMOVED ====== -->
+    <!-- windows-system.js and windows-system-controller.js are now fully replaced by modular architecture -->
 
     <!-- K-Means clusterization library -->
     <script src="javascripts/external/kmeans.js"></script>
@@ -343,9 +372,12 @@
             <li><a tabindex="-1" id="rollcalls-heatmap">Create a Map of Roll Calls</a></li>
         </ul>
         <ul id="contextMenuDeputy" class="dropdown-menu" role="menu" style="display:none">
-            <li><a tabindex="-1" id="rollcalls-heatmap">Create a Map of Roll Calls</a></li>
+            <li><a tabindex="-1" id="static-rollcalls-heatmap">Create a Map of Roll Calls</a></li>
             <li><a class="btn disabled" style="text-align:left;" tabindex="-1"
                     id="time-line-crop-behavior-selection">Create a timeline with selected deputies</a></li>
+        </ul>
+        <ul id="contextMenuPartyLegend" class="dropdown-menu" role="menu" style="display:none">
+            <li><a tabindex="-1" id="party-metrics">Show Party Metrics</a></li>
         </ul>
     </div>
 
@@ -489,6 +521,15 @@
         var activeBrush = true;
         d3.select(window)
             .on("keydown", function (event) {
+                // Only activate brush on Shift key
+                if (!d3.event || d3.event.keyCode !== 16) {
+                    return;
+                }
+                // Don't activate brush when typing in input fields or textareas
+                var target = d3.event.target || d3.event.srcElement;
+                if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+                    return;
+                }
                 if (!activeBrush) {
                     return;
                 }
@@ -496,6 +537,10 @@
                 activeBrush = false;
             })
             .on("keyup", function () {
+                // Only deactivate brush on Shift key release
+                if (!d3.event || d3.event.keyCode !== 16) {
+                    return;
+                }
                 activeBrush = true;
                 disableBrushForAllScatterPlots();
             });

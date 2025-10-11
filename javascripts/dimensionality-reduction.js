@@ -5,16 +5,16 @@
     matrix of singular values. To calculate the bidimensional deputies spectrum we multiply the two largest singular values found in S by the 
     left-singular vectors of U. 
 */
-function calcSVD(matrixDepXRollCall,endCalcCallback){
+function calcSVD(matrixDepXRollCall, endCalcCallback) {
     // -----------------------------------------------------------------------------------------------------------------
     // CALC the Singular Value Decomposition (SVD) ---------------------------------------------------------------------
-    console.log("calc SVD",matrixDepXRollCall);
+    console.log("calc SVD", matrixDepXRollCall);
 
     //!! Uncaught numeric.svd() Need more rows than columns
     //  if(rows < columns)->
     var transposeToSVD = (matrixDepXRollCall.length < matrixDepXRollCall[0].length);
 
-    if(transposeToSVD){
+    if (transposeToSVD) {
         //TRANSPOSE the table to fit the rowsXcolumns numeric.svd() requirement !!
         matrixDepXRollCall = numeric.transpose(matrixDepXRollCall)
     }
@@ -22,24 +22,25 @@ function calcSVD(matrixDepXRollCall,endCalcCallback){
     var svdDep = numeric.svd(matrixDepXRollCall);
     var eigenValues = numeric.sqrt(svdDep.S);
 
-    if(transposeToSVD){matrixDepXRollCall = numeric.transpose(matrixDepXRollCall)}
+    if (transposeToSVD) { matrixDepXRollCall = numeric.transpose(matrixDepXRollCall) }
 
     //Uncaught numeric.svd() Need more rows than columns  numeric.transpose()
-    if(transposeToSVD){
+    if (transposeToSVD) {
         // 2D reduction on Deputies
-        var data_deputies = svdDep.V.map(function(row) { return numeric.mul(row, eigenValues).splice(0, 2);});
+        var data_deputies = svdDep.V.map(function (row) { return numeric.mul(row, eigenValues).splice(0, 2); });
         // 2D reduction on Votings
-        var data_voting   = svdDep.U.map(function(row) { return numeric.mul(row, eigenValues).splice(0, 2);})
+        var data_voting = svdDep.U.map(function (row) { return numeric.mul(row, eigenValues).splice(0, 2); })
     } else {
         // 2D reduction on Deputies
-        var data_deputies = svdDep.U.map(function(row) { return numeric.mul(row, eigenValues).splice(0, 2);});
+        var data_deputies = svdDep.U.map(function (row) { return numeric.mul(row, eigenValues).splice(0, 2); });
         // 2D reduction on Votings
-        var data_voting   = svdDep.V.map(function(row) { return numeric.mul(row, eigenValues).splice(0, 2);})
+        var data_voting = svdDep.V.map(function (row) { return numeric.mul(row, eigenValues).splice(0, 2); })
     }
 
     console.log("CALC SVD- FINISHED!! => PLOT");
     // ----------------------------------------------------------------------------------------------------------------
-    var result = {deputies: data_deputies, voting: data_voting};
+    var result = { deputies: data_deputies, voting: data_voting };
+
     endCalcCallback(result);
 }
 
@@ -47,11 +48,11 @@ function calcSVD(matrixDepXRollCall,endCalcCallback){
     Vote values are defined as follows: 1 for Yes, -1 for No, and 0 when the deputy was absent, obstructed, or there is no data.
 */
 
-function calcTSNE(matrixDepXRollCall,endCalcCallback){
+function calcTSNE(matrixDepXRollCall, endCalcCallback) {
     // -----------------------------------------------------------------------------------------------------------------
     //console.log(tsneOpt)
     console.log('START TSNE');
-    var opt = {epsilon: 10, perplexity: 30, dim: 2, iterationSec :10};
+    var opt = { epsilon: 10, perplexity: 30, dim: 2, iterationSec: 10 };
 
     var T = new tsnejs.tSNE(opt); // create a tSNE instance
     T.initDataRaw(matrixDepXRollCall);
@@ -72,12 +73,12 @@ function calcTSNE(matrixDepXRollCall,endCalcCallback){
         //console.log("iteration X " + X.iter + ", cost: " + cost);
     }*/
 
-    var result = {deputies: []};
+    var result = { deputies: [] };
 
-    setTimeout(function(){
+    setTimeout(function () {
         clearInterval(intervalT);
         result.deputies = T.getSolution();
-    },opt.iterationSec*1000);
+    }, opt.iterationSec * 1000);
 
     /*setTimeout(function(){
         clearInterval(intervalX);
@@ -86,7 +87,7 @@ function calcTSNE(matrixDepXRollCall,endCalcCallback){
 
     setTimeout(function () {
         endCalcCallback(result);
-    },opt.iterationSec*1000+300);
+    }, opt.iterationSec * 1000 + 300);
 
     console.log("CALC TSNE- FINISHED!! => PLOT")
     // ----------------------------------------------------------------------------------------------------------------
@@ -108,10 +109,10 @@ function calcTSNE(matrixDepXRollCall,endCalcCallback){
     Now, X = Em*Am^2 , where Em is the matrix of m eigenvectors and Am is the diagonal matrix of m eigenvalues of B. 
     Source: (Wickelmaier, Florian. "An introduction to MDS." Sound Quality Research Unit, Aalborg University, Denmark (2003): 46)
 */
-function calcMDS(matrixDistancesDepXDep,endCalcCallback){
+function calcMDS(matrixDistancesDepXDep, endCalcCallback) {
     // -----------------------------------------------------------------------------------------------------------------
     // CALC the multidimensional dimensional scaling  (MDS) ------------------------------------------------------------
-    console.log("calc MDS",matrixDistancesDepXDep);
+    console.log("calc MDS", matrixDistancesDepXDep);
 
     var dimensions = 2;
 
@@ -125,7 +126,7 @@ function calcMDS(matrixDistancesDepXDep,endCalcCallback){
         totalMean = mean(rowMeans);
 
     for (var i = 0; i < M.length; ++i) {
-        for (var j =0; j < M[0].length; ++j) {
+        for (var j = 0; j < M[0].length; ++j) {
             M[i][j] += totalMean - rowMeans[i] - colMeans[j];
         }
     }
@@ -134,7 +135,7 @@ function calcMDS(matrixDistancesDepXDep,endCalcCallback){
     // points from it
     var ret = numeric.svd(M),
         eigenValues = numeric.sqrt(ret.S);
-    var data_deputies = ret.U.map(function(row) {
+    var data_deputies = ret.U.map(function (row) {
         return numeric.mul(row, eigenValues).splice(0, dimensions);
     });
 
@@ -143,22 +144,22 @@ function calcMDS(matrixDistancesDepXDep,endCalcCallback){
 
     console.log("CALC MDS- FINISHED!! => PLOT");
     // ----------------------------------------------------------------------------------------------------------------
-    var result = {deputies: data_deputies};
+    var result = { deputies: data_deputies };
     endCalcCallback(result);
 }
 
-function calcUMAP(matrixDepXRollCall, endCalcCallback){
+function calcUMAP(matrixDepXRollCall, endCalcCallback) {
     console.log("calc UMAP", matrixDepXRollCall);
     var myrng = new Math.seedrandom('hello.');
 
     const umap = new UMAP({
-        random: function(){return myrng();}
+        random: function () { return myrng(); }
     });
     const data_deputies = umap.fit(matrixDepXRollCall);
 
     console.log("CALC UMAP - FINISHED!! => PLOT");
-    var result = {deputies: data_deputies};
+    var result = { deputies: data_deputies };
     setTimeout(function () {
         endCalcCallback(result);
-    },1000);
+    }, 1000);
 }

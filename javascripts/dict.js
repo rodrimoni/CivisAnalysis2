@@ -199,6 +199,7 @@ function initDict() {
         $("#chamber-infographic").text(translator.get("Create a Chamber Infographic"));
         $("#deputies-similarity-force").text(translator.get("Create a Deputies Similarity Graph"));
         $("#rollcalls-heatmap").text(translator.get("Create a Map of Roll Calls"));
+        $("#static-rollcalls-heatmap").text(translator.get("Create a Map of Roll Calls"));
         $("#time-line-crop-behavior-selection").text(translator.get("Create a timeline with selected deputies"));
     }
 }

@@ -1,7 +1,7 @@
-function timeLineCrop(){
+function timeLineCrop() {
     var outerWidth = MAX_WIDTH,
         outerHeight = MAX_HEIGHT,
-        margin = {top: 30, right: 15, bottom: 30, left: 15},
+        margin = { top: 30, right: 15, bottom: 30, left: 15 },
         width = outerWidth - margin.left - margin.right,
         height = outerHeight - margin.top - margin.bottom;
 
@@ -25,7 +25,7 @@ function timeLineCrop(){
 
     function chart(selection) {
         selection.each(function (data) {
-            timelineDim.height = height-15 -rangeButtonsHeight;//*0.7;
+            timelineDim.height = height - 15 - rangeButtonsHeight;//*0.7;
 
             svg = d3.select(this)
                 .append("svg")
@@ -34,30 +34,30 @@ function timeLineCrop(){
                 .attr("viewBox", "0 0 " + outerWidth + " " + outerHeight)
                 .classed("timeline-crop", true);
 
-            appendGreyRangeButtons(data.period,0);
-            setPartiesTraces(10+rangeButtonsHeight+10);
+            appendGreyRangeButtons(data.period, 0);
+            setPartiesTraces(10 + rangeButtonsHeight + 10);
             drawDeputy(data.deputies);
         })
     }
 
-    function appendGreyRangeButtons(data, y ){
+    function appendGreyRangeButtons(data, y) {
         ranges = data;
-        years = $.map( d3.range(ranges[0].getFullYear(), ranges[1].getFullYear()),
-                            function(d){
-                                return {name:d, period:[new Date(d,0,1), new Date(d+1,0,1)] };
-                            });
+        years = $.map(d3.range(ranges[0].getFullYear(), ranges[1].getFullYear()),
+            function (d) {
+                return { name: d, period: [new Date(d, 0, 1), new Date(d + 1, 0, 1)] };
+            });
 
         x = d3.time.scale()
             .domain([ranges[0], ranges[1]])
-            .rangeRound([margin.left, width -margin.right]);
+            .rangeRound([margin.left, width - margin.right]);
 
-        var gRects = appendRangeButtons(years, y,'foreground years');
+        var gRects = appendRangeButtons(years, y, 'foreground years');
 
     }
 
-    function appendRangeButtons(years, y, fillClass){
+    function appendRangeButtons(years, y, fillClass) {
 
-        var gb = svg.append('g').attr('transform','translate('+margin.left+','+y+')');
+        var gb = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + y + ')');
 
         var gRects = gb.selectAll('g')
             .data(years)
@@ -66,22 +66,22 @@ function timeLineCrop(){
 
         gRects.append('rect')
             .attr({
-                height:rangeButtonsHeight,
-                y:3,
-                x:function (d) { return x(d.period[0])},
-                width:function (d) { return x(d.period[1]) - x(d.period[0])},
+                height: rangeButtonsHeight,
+                y: 3,
+                x: function (d) { return x(d.period[0]) },
+                width: function (d) { return x(d.period[1]) - x(d.period[0]) },
                 'class': fillClass,
                 stroke: 'white',
                 'stroke-width': 3
             });
 
         gRects.append('text')
-            .text( function(d){return d.name} )
+            .text(function (d) { return d.name })
             .attr({
-                y:25,
-                x:  function(d){return  x(d.period[0])+ (x(d.period[1]) - x(d.period[0]))/2   },
-                fill:"#fff",
-                'font-size': function(d) { return Math.log((x(d.period[1]) - x(d.period[0])) / this.getComputedTextLength()*9 )*5 + "px"; },
+                y: 25,
+                x: function (d) { return x(d.period[0]) + (x(d.period[1]) - x(d.period[0])) / 2 },
+                fill: "#fff",
+                'font-size': function (d) { return Math.log((x(d.period[1]) - x(d.period[0])) / this.getComputedTextLength() * 9) * 5 + "px"; },
                 //'font-size': 13,
             }).attr("text-anchor", "middle");
 
@@ -89,12 +89,12 @@ function timeLineCrop(){
     }
 
     function scaleX_middleOfBiennial(year) {
-        return x(new Date(year,12));
+        return x(new Date(year, 12));
     }
 
-    function setPartiesTraces(y){
+    function setPartiesTraces(y) {
         var traceMargin = 5;
-        var partyTraces = svg.append('g').attr({id:'partyTraces',transform:'translate('+margin.left+','+(y+traceMargin)+')'});
+        var partyTraces = svg.append('g').attr({ id: 'partyTraces', transform: 'translate(' + margin.left + ',' + (y + traceMargin) + ')' });
 
         // Add the traced (stroke-dasharray) lines from top to bottom
         var yearlyColumms = partyTraces.append('g');
@@ -103,110 +103,110 @@ function timeLineCrop(){
         console.log(firstYear);
         console.log(lastYear);
 
-        d3.range(firstYear,lastYear).forEach(function(year){
-                yearlyColumms.append('path').attr({
-                    d: 'M '+scaleX_middleOfBiennial(year)+' '+2+' V '+(timelineDim.height+10),
-                    stroke:'grey',
-                    'stroke-dasharray':"15,15"
-                })
+        d3.range(firstYear, lastYear).forEach(function (year) {
+            yearlyColumms.append('path').attr({
+                d: 'M ' + scaleX_middleOfBiennial(year) + ' ' + 2 + ' V ' + (timelineDim.height + 10),
+                stroke: 'grey',
+                'stroke-dasharray': "15,15"
+            })
         });
         yearlyColumms.append('path').attr({
-            d: 'M '+scaleX_middleOfBiennial(firstYear-1)+' '+timelineDim.height/2+' H '+scaleX_middleOfBiennial(lastYear),
-            stroke:'lightgrey',
-            'stroke-dasharray':"10,10"
+            d: 'M ' + scaleX_middleOfBiennial(firstYear - 1) + ' ' + timelineDim.height / 2 + ' H ' + scaleX_middleOfBiennial(lastYear),
+            stroke: 'lightgrey',
+            'stroke-dasharray': "10,10"
         });
 
         // governemnt X opposition
-        var gg = partyTraces.append('g').style('text-anchor','middle');
+        var gg = partyTraces.append('g').style('text-anchor', 'middle');
         gg.append('text')
             .text('YEARLY POLITICAL SPECTRA')
             .attr({
-                'class':"partiesLabel trn",
-                x:scaleX_middleOfBiennial(firstYear-1) +scaleX_middleOfBiennial(firstYear)/2 - 100,
-                y: timelineDim.height/2 +5
+                'class': "partiesLabel trn",
+                x: scaleX_middleOfBiennial(firstYear - 1) + scaleX_middleOfBiennial(firstYear) / 2 - 100,
+                y: timelineDim.height / 2 + 5
             });
-        
+
         gg.append('text')
-        .text('GOVERNMENT')
-        .attr({
-            x:scaleX_middleOfBiennial(firstYear-1) +scaleX_middleOfBiennial(firstYear)/2,
-            y: 10,
-            'text-anchor':'start',
-            'class':"partiesLabel trn"
-        });
+            .text('GOVERNMENT')
+            .attr({
+                x: scaleX_middleOfBiennial(firstYear - 1) + scaleX_middleOfBiennial(firstYear) / 2,
+                y: 10,
+                'text-anchor': 'start',
+                'class': "partiesLabel trn"
+            });
 
         gg.append('text')
             .text('OPPOSITION')
             .attr({
-                'class':"partiesLabel trn",
-                'text-anchor':'end',
-                x:scaleX_middleOfBiennial(firstYear-1) +scaleX_middleOfBiennial(firstYear)/2,
-                y: timelineDim.height -5
+                'class': "partiesLabel trn",
+                'text-anchor': 'end',
+                x: scaleX_middleOfBiennial(firstYear - 1) + scaleX_middleOfBiennial(firstYear) / 2,
+                y: timelineDim.height - 5
             });
 
-        partyTraces.append('g').attr('class','parties').attr({transform:'translate(0,'+traceMargin+')'});
-        partyTraces.append('g').attr('class','deputies').attr({transform:'translate(0,'+traceMargin+')'});
+        partyTraces.append('g').attr('class', 'parties').attr({ transform: 'translate(0,' + traceMargin + ')' });
+        partyTraces.append('g').attr('class', 'deputies').attr({ transform: 'translate(0,' + traceMargin + ')' });
         drawParties();
     }
 
-    function drawParties(){
-        calcPartiesStepsUncluttered(timelineDim.height,pixelPercentageToParties);
-        calcPartiesStepsCluttered(timelineDim.height,pixelPercentageToParties);
+    function drawParties() {
+        calcPartiesStepsUncluttered(timelineDim.height, pixelPercentageToParties);
+        calcPartiesStepsCluttered(timelineDim.height, pixelPercentageToParties);
         forceAlgorithmToAproximateTheUnclutteredPositionsToClutteredWithoutOcclusion(timelineDim.height);
 
         // CALC TRACES
         var parties = d3.entries(CONGRESS_DEFINE.partiesTraces1by1.traces);
 
-        parties.forEach( function(party){
+        parties.forEach(function (party) {
             var partyAtYear = party.value;
             party.traces = [];
-            d3.range(1991,2023,1).forEach(function(year) {
-                if( (partyAtYear[year] !== undefined) && (partyAtYear[year+1] !== undefined) ){
-                    party.traces.push({first:partyAtYear[year],second:partyAtYear[year+1],firstDate:year,secondDate:year+1});
+            d3.range(1991, 2023, 1).forEach(function (year) {
+                if ((partyAtYear[year] !== undefined) && (partyAtYear[year + 1] !== undefined)) {
+                    party.traces.push({ first: partyAtYear[year], second: partyAtYear[year + 1], firstDate: year, secondDate: year + 1 });
                 }
             });
         });
 
         var partiesG = svg.select('g.parties')
             .selectAll('.party')
-            .data( parties, function(d){ return d.key} );
+            .data(parties, function (d) { return d.key });
 
-        partiesG.enter().append('g').attr({'class':'party'})
-            .on('mouseover',function(d){ var p={}; p[d.key] = true; partiesMouseover(p); })
-            .on('mouseout',partiesMouseout);
+        partiesG.enter().append('g').attr({ 'class': 'party' })
+            .on('mouseover', function (d) { var p = {}; p[d.key] = true; partiesMouseover(p); })
+            .on('mouseout', partiesMouseout);
 
 
-        partiesG.exit().transition().attr('opacity',0).remove();
+        partiesG.exit().transition().attr('opacity', 0).remove();
 
         drawPartiesSteps(drawingType);
         drawPartiesTraces(drawingType);
     }
 
-    function calcPartiesStepsUncluttered(height,pixelPercentageToParties){
+    function calcPartiesStepsUncluttered(height, pixelPercentageToParties) {
         // ------------------------------------------------------------
         // get parties for each period (biennial)
         periods = {};
 
         // for each year starting from first year
-        for (var i = 1991; i < 2023; i++ ) {
+        for (var i = 1991; i < 2023; i++) {
             // for each period create an array of parties
-            periods[i] = { parties:[] };
-            for( party in CONGRESS_DEFINE.partiesTraces1by1.traces){
+            periods[i] = { parties: [] };
+            for (party in CONGRESS_DEFINE.partiesTraces1by1.traces) {
                 // if the party did not exist(undefined) - do not push in the party array
-                if(CONGRESS_DEFINE.partiesTraces1by1.traces[party][i] !== undefined){
+                if (CONGRESS_DEFINE.partiesTraces1by1.traces[party][i] !== undefined) {
                     CONGRESS_DEFINE.partiesTraces1by1.traces[party][i].party = party; //(garbage)
-                    periods[i].parties.push( CONGRESS_DEFINE.partiesTraces1by1.traces[party][i] );
+                    periods[i].parties.push(CONGRESS_DEFINE.partiesTraces1by1.traces[party][i]);
                 }
             }
         }
 
         // for each period
-        for( var period in periods){
+        for (var period in periods) {
             var partiesInPeriod = periods[period].parties;
 
             // sort parties by their 1D spectrum[1]
-            partiesInPeriod.sort(function(a, b) {
-                return (b.center[1]+1) - (a.center[1]+1);
+            partiesInPeriod.sort(function (a, b) {
+                return (b.center[1] + 1) - (a.center[1] + 1);
             });
 
             // calc the distance between adjacent parties in the 1D
@@ -216,24 +216,24 @@ function timeLineCrop(){
             // sum deputies
             var sumDeputies = 0;
 
-            for (var i = 0; i < partiesInPeriod.length-1; i++) {
+            for (var i = 0; i < partiesInPeriod.length - 1; i++) {
                 // distance in spectrum betwen party i and i+1
-                distances[i] = (partiesInPeriod[i].center[1]+1 - partiesInPeriod[i+1].center[1]+1)-2;
+                distances[i] = (partiesInPeriod[i].center[1] + 1 - partiesInPeriod[i + 1].center[1] + 1) - 2;
 
-                sumDistances+=distances[i];
-                sumDeputies+=partiesInPeriod[i].size;
+                sumDistances += distances[i];
+                sumDeputies += partiesInPeriod[i].size;
             }
-            sumDeputies+=partiesInPeriod[partiesInPeriod.length-1].size;
+            sumDeputies += partiesInPeriod[partiesInPeriod.length - 1].size;
             // save half of the spectrum to show the parties
-            var partiesPixels = (sumDeputies/513) * (pixelPercentageToParties * (height));
-            var pixelPerDeputy = ( partiesPixels / sumDeputies ); // the amount of pixel that each deputy represent ( - 513 deputies in the brazilian camber)
+            var partiesPixels = (sumDeputies / 513) * (pixelPercentageToParties * (height));
+            var pixelPerDeputy = (partiesPixels / sumDeputies); // the amount of pixel that each deputy represent ( - 513 deputies in the brazilian camber)
 
             // remant pixels for the distances between parties
             var remnantPixels = height - partiesPixels;
             // calc the factor in wich should be multiplied the distances to get the sum of pixels == remnantPixels
-            var distanceFactor = ( remnantPixels / sumDistances );
+            var distanceFactor = (remnantPixels / sumDistances);
             // sum(distancesInPixels) == factor*sumDistances == sum(distances[i]*factor)
-            var distancesInPixels = distances.map(function(dist){ return dist*distanceFactor });
+            var distancesInPixels = distances.map(function (dist) { return dist * distanceFactor });
 
             var pixelPosition = 0;
             // set the pixels positions
@@ -243,35 +243,35 @@ function timeLineCrop(){
                 party.uncluttered.x0 = pixelPosition;
                 party.uncluttered.height = (party.size * pixelPerDeputy);
 
-                pixelPosition += distancesInPixels[i] +party.uncluttered.height;
+                pixelPosition += distancesInPixels[i] + party.uncluttered.height;
             }
         }
     }
-    function calcPartiesStepsCluttered(height,pixelPercentageToParties){
+    function calcPartiesStepsCluttered(height, pixelPercentageToParties) {
         // ------------------------------------------------------------
         // get parties for each period (biennial)
         periods = {};
 
         // for each year starting from first year
-        for (var i = 1991; i < 2023; i++ ) {
+        for (var i = 1991; i < 2023; i++) {
             // for each period create an array of parties
-            periods[i] = { parties:[] };
-            for( party in CONGRESS_DEFINE.partiesTraces1by1.traces){
+            periods[i] = { parties: [] };
+            for (party in CONGRESS_DEFINE.partiesTraces1by1.traces) {
                 // if the party did not exist(undefined) - do not push in the party array
-                if(CONGRESS_DEFINE.partiesTraces1by1.traces[party][i] !== undefined){
+                if (CONGRESS_DEFINE.partiesTraces1by1.traces[party][i] !== undefined) {
                     CONGRESS_DEFINE.partiesTraces1by1.traces[party][i].party = party; //(garbage)
-                    periods[i].parties.push( CONGRESS_DEFINE.partiesTraces1by1.traces[party][i] );
+                    periods[i].parties.push(CONGRESS_DEFINE.partiesTraces1by1.traces[party][i]);
                 }
             }
         }
         // for each period
         // - we need to know the size (in pixels) of the extreme parties of the spectrum
         //   to place them inside the height
-        for( var period in periods){
+        for (var period in periods) {
             var partiesInPeriod = periods[period].parties;
             // sort parties by their 1D spectrum[1]
-            partiesInPeriod.sort(function(a, b) {
-                return (b.center[1]+1) - (a.center[1]+1);
+            partiesInPeriod.sort(function (a, b) {
+                return (b.center[1] + 1) - (a.center[1] + 1);
             });
 
             // sum deputies
@@ -279,11 +279,11 @@ function timeLineCrop(){
 
             for (var i = 0; i < partiesInPeriod.length; i++) {
                 //console.log(period, partiesInPeriod[i])
-                sumDeputies+=partiesInPeriod[i].size;
+                sumDeputies += partiesInPeriod[i].size;
             }
             // save half of the spectrum to show the parties
-            var partiesPixels = (sumDeputies/513) * (pixelPercentageToParties * (height));
-            pixelPerDeputy[period] = ( partiesPixels / sumDeputies ); // the amount of pixel that each deputy represent ( - 513 deputies in the brazilian camber)
+            var partiesPixels = (sumDeputies / 513) * (pixelPercentageToParties * (height));
+            pixelPerDeputy[period] = (partiesPixels / sumDeputies); // the amount of pixel that each deputy represent ( - 513 deputies in the brazilian camber)
             console.log(period);
             scaleParties[period] = d3.scale.linear()
                 .domain([
@@ -293,9 +293,9 @@ function timeLineCrop(){
                 ])
                 .range([
                     // the (width-height)/2 of first party in the spectrum
-                    partiesInPeriod[0].size/2 * pixelPerDeputy[period],
+                    partiesInPeriod[0].size / 2 * pixelPerDeputy[period],
                     // height + the (width-height)/2 of last party in the spectrum
-                    height - ( partiesInPeriod[partiesInPeriod.length-1].size/2 * pixelPerDeputy[period] )
+                    height - (partiesInPeriod[partiesInPeriod.length - 1].size / 2 * pixelPerDeputy[period])
                 ]);
 
             // set the pixels positions
@@ -303,7 +303,7 @@ function timeLineCrop(){
                 var party = partiesInPeriod[i];
                 party.cluttered = {};
 
-                party.cluttered.x0 = scaleParties[period](party.center[1]) - (party.size * pixelPerDeputy[period])/2;
+                party.cluttered.x0 = scaleParties[period](party.center[1]) - (party.size * pixelPerDeputy[period]) / 2;
                 party.cluttered.height = (party.size * pixelPerDeputy[period]);
 
                 //.attr("y", function (d) { return scaleYearExtents[d.key](d.value.center[1]) - d.value.size/2} )
@@ -313,61 +313,62 @@ function timeLineCrop(){
     }
 
     function forceAlgorithmToAproximateTheUnclutteredPositionsToClutteredWithoutOcclusion(timelineHeight) {
-        d3.range(1991,2023,1).forEach(function(year) {
+        d3.range(1991, 2023, 1).forEach(function (year) {
             var partiesInPeriod = [];
-            for(var party in CONGRESS_DEFINE.partiesTraces1by1.traces){
-                if(CONGRESS_DEFINE.partiesTraces1by1.traces[party][year])
+            for (var party in CONGRESS_DEFINE.partiesTraces1by1.traces) {
+                if (CONGRESS_DEFINE.partiesTraces1by1.traces[party][year])
                     partiesInPeriod.push(CONGRESS_DEFINE.partiesTraces1by1.traces[party][year]);
             }
             // d3.selectAll("rect.step.y"+year).data();
-            partiesInPeriod.sort(function(a,b) {
+            partiesInPeriod.sort(function (a, b) {
                 return a.uncluttered.x0 - b.uncluttered.x0;
             });
             var movement;
-            do{ // repeat this loop til no parties' movment
+            do { // repeat this loop til no parties' movment
                 movement = false;
-                partiesInPeriod.forEach( function(p,i){
+                partiesInPeriod.forEach(function (p, i) {
                     var idealPoint = p.cluttered.x0,
                         x0 = p.uncluttered.x0,
                         x1 = x0 + p.uncluttered.height,
                         movUp = idealPoint > x0;
 
-                    if(x0<1 || x1>timelineHeight || Math.abs(idealPoint-x0)<1) return;
-                    var newX0 = Math.max(0,x0 + (movUp? 1 : -1)),
-                        newX1 = Math.max(0,x1 + (movUp? 1 : -1)),
+                    if (x0 < 1 || x1 > timelineHeight || Math.abs(idealPoint - x0) < 1) return;
+                    var newX0 = Math.max(0, x0 + (movUp ? 1 : -1)),
+                        newX1 = Math.max(0, x1 + (movUp ? 1 : -1)),
                         colision = false;
 
-                    if(i!==(partiesInPeriod.length-1) && movUp && newX1 > partiesInPeriod[i+1].uncluttered.x0) colision = true;
-                    if(i!==0 && !movUp && newX0 < (partiesInPeriod[i-1].uncluttered.x0+partiesInPeriod[i-1].uncluttered.height)) colision = true;
+                    if (i !== (partiesInPeriod.length - 1) && movUp && newX1 > partiesInPeriod[i + 1].uncluttered.x0) colision = true;
+                    if (i !== 0 && !movUp && newX0 < (partiesInPeriod[i - 1].uncluttered.x0 + partiesInPeriod[i - 1].uncluttered.height)) colision = true;
 
-                    if(!colision) {
+                    if (!colision) {
                         p.uncluttered.x0 = newX0;
                         movement = true;
                     }
                 })
-            } while(movement);
+            } while (movement);
         });
     }
 
-    function drawDeputySteps()
-    {
+    function drawDeputySteps() {
         var steps = svg.selectAll('.deputies .deputy')
             .selectAll('.deputy-steps')
-            .data(function(d){ return [d.steps]; });
+            .data(function (d) { return [d.steps]; });
 
-        steps.enter().append('g').attr({'class':'deputy-steps'});
+        steps.enter().append('g').attr({ 'class': 'deputy-steps' });
 
-        var step = steps.selectAll('.deputy-step').data( function(d){return d; });
+        var step = steps.selectAll('.deputy-step').data(function (d) { return d; });
+
+        var deputiesArray = state.getDeputiesArray();
 
         step
             .enter()
             .append('path')
-            .attr('class',function(d) {
-                return 'deputy-step y'+d.year;
+            .attr('class', function (d) {
+                return 'deputy-step y' + d.year;
             })
-            .on('mouseover',function(d){
+            .on('mouseover', function (d) {
                 var associatedParty;
-                switch(d.party){
+                switch (d.party) {
                     case 'PPB': associatedParty = "PP";
                         break;
                     case 'PFL': associatedParty = "DEM";
@@ -381,13 +382,13 @@ function timeLineCrop(){
                     default: associatedParty = d.party;
                         break;
                 }
-                var p={}; p[d.deputyID] = true;
+                var p = {}; p[d.deputyID] = true;
                 p[associatedParty] = true;
                 deputiesMouseover(p);
             })
             .attr('d', function (d) {
-                return 'M ' + (scaleX_middleOfBiennial(Number.parseInt(d.year)) - partyStepWidth/2) + ' ' + d.x0 + ' L ' +
-                    (scaleX_middleOfBiennial(Number.parseInt(d.year)) + partyStepWidth/2)+ ' ' + d.x0;
+                return 'M ' + (scaleX_middleOfBiennial(Number.parseInt(d.year)) - partyStepWidth / 2) + ' ' + d.x0 + ' L ' +
+                    (scaleX_middleOfBiennial(Number.parseInt(d.year)) + partyStepWidth / 2) + ' ' + d.x0;
             })
             //.attr("x", function (d) { return scaleX_middleOfBiennial(Number.parseInt(d.year)) -partyStepWidth/2} )
             //.attr("y", function (d) { return d.x0 })
@@ -395,31 +396,30 @@ function timeLineCrop(){
             //.attr("width", partyStepWidth )
             .attr("stroke-width", 10)
             .attr("opacity", 1)
-            .style("stroke", function(d){ return CONGRESS_DEFINE.getPartyColor(d.party); } )
-            .on("mousemove", function(d){
-                div.style("left", d3.event.pageX+10+"px");
-                div.style("top", d3.event.pageY-25+"px");
+            .style("stroke", function (d) { return CONGRESS_DEFINE.getPartyColor(d.party); })
+            .on("mousemove", function (d) {
+                div.style("left", d3.event.pageX + 10 + "px");
+                div.style("top", d3.event.pageY - 25 + "px");
                 div.style("display", "inline-block");
                 div.html(deputiesArray[d.deputyID].name + " (" + d.party + "-" + deputiesArray[d.deputyID].district + ") ");
             })
-            .on("mouseout", function(){
+            .on("mouseout", function () {
                 partiesMouseout();
                 div.style("display", "none");
             });
 
     }
 
-    function drawDeputyTraces()
-    {
+    function drawDeputyTraces() {
         console.log("traces");
         var traces = svg.selectAll('.deputies .deputy')
             .selectAll('.deputy-traces')
-            .data( function(d){return [d.traces]});
+            .data(function (d) { return [d.traces] });
 
-        traces.enter().append('g').attr({'class':'deputy-traces'});
+        traces.enter().append('g').attr({ 'class': 'deputy-traces' });
 
         var trace = traces.selectAll('.deputy-trace')
-            .data( function(d){ return d; } );
+            .data(function (d) { return d; });
 
         var parties = [];
 
@@ -449,17 +449,17 @@ function timeLineCrop(){
 
         var path = enterData
             .append('path')
-            .classed('deputy-trace',true)
-            .attr("d", function(d){
-                return 'M ' + (scaleX_middleOfBiennial(Number.parseInt(d.firstDate)) + partyStepWidth/2) + ' ' + d.first.x0 + ' L ' +
-                    (scaleX_middleOfBiennial(Number.parseInt(d.secondDate)) - partyStepWidth/2)+ ' ' + d.second.x0;
+            .classed('deputy-trace', true)
+            .attr("d", function (d) {
+                return 'M ' + (scaleX_middleOfBiennial(Number.parseInt(d.firstDate)) + partyStepWidth / 2) + ' ' + d.first.x0 + ' L ' +
+                    (scaleX_middleOfBiennial(Number.parseInt(d.secondDate)) - partyStepWidth / 2) + ' ' + d.second.x0;
             })
-            .style("stroke", function(d){ return CONGRESS_DEFINE.getPartyColor(d.first.party); } )
+            .style("stroke", function (d) { return CONGRESS_DEFINE.getPartyColor(d.first.party); })
             .attr("stroke-width", 4)
             .attr("opacity", 0.5)
-            .on('mouseover',function(d){
+            .on('mouseover', function (d) {
                 var associatedParty;
-                switch(d.first.party){
+                switch (d.first.party) {
                     case 'PPB': associatedParty = "PP";
                         break;
                     case 'PFL': associatedParty = "DEM";
@@ -473,22 +473,22 @@ function timeLineCrop(){
                     default: associatedParty = d.first.party;
                         break;
                 }
-                var p={}; p[d.first.deputyID] = true;
+                var p = {}; p[d.first.deputyID] = true;
                 p[associatedParty] = true;
                 deputiesMouseover(p);
             })
-            .on("mouseout", function(){
+            .on("mouseout", function () {
                 partiesMouseout();
                 div.style("display", "none");
             });
 
         path
-            .attr("stroke-dasharray", function () { var length = this.getTotalLength(); return length + " " + length;})
-            .attr("stroke-dashoffset",function () { var length = this.getTotalLength(); return length;})
+            .attr("stroke-dasharray", function () { var length = this.getTotalLength(); return length + " " + length; })
+            .attr("stroke-dashoffset", function () { var length = this.getTotalLength(); return length; })
             .transition("createPath")
             .duration(800)
             .ease("linear")
-            .delay(function(d, i) { return i % numberOfPathsEachDeputy * 900; })
+            .delay(function (d, i) { return i % numberOfPathsEachDeputy * 900; })
             .attr("stroke-dashoffset", 0);
 
 
@@ -496,7 +496,7 @@ function timeLineCrop(){
         svg.selectAll('.deputy-trace').data().forEach(function (t) {
             var party;
             //TODO: Transform this in a function
-            switch(t.first.party){
+            switch (t.first.party) {
                 case 'PPB': party = "PP";
                     break;
                 case 'PFL': party = "DEM";
@@ -505,12 +505,12 @@ function timeLineCrop(){
                     break;
                 case 'PL': party = "PR";
                     break;
-                case 'PRONA':  party = "PR";
+                case 'PRONA': party = "PR";
                     break;
-                default:     party = t.first.party;
+                default: party = t.first.party;
                     break;
             }
-            if  (parties.indexOf(party) === -1){
+            if (parties.indexOf(party) === -1) {
                 parties.push(party);
             }
         });
@@ -527,62 +527,62 @@ function timeLineCrop(){
 
     }
 
-    function drawPartiesSteps(type){
+    function drawPartiesSteps(type) {
 
         var firstYear = ranges[0].getFullYear();
         var lastYear = ranges[1].getFullYear();
 
         var steps = svg.selectAll('.parties .party')
             .selectAll('.steps')
-            .data( function(d){return [d.value]});
+            .data(function (d) { return [d.value] });
 
-        steps.enter().append('g').attr({'class':'steps'});
+        steps.enter().append('g').attr({ 'class': 'steps' });
 
-        var step = steps.selectAll('.step').data( function(d){ return d3.entries(d).filter(function(e){return e.key >= firstYear && e.key <= lastYear}) } );
+        var step = steps.selectAll('.step').data(function (d) { return d3.entries(d).filter(function (e) { return e.key >= firstYear && e.key <= lastYear }) });
 
         step.enter()
-            .append('rect').attr('class','step')
-            .attr( popoverAttr(partyPopOver,'top') );
+            .append('rect').attr('class', 'step')
+            .attr(popoverAttr(partyPopOver, 'top'));
 
-        function partyPopOver( d ){
-            return '<h4>'+d.value.party+'</h4><em>'+((d.value.party)? CONGRESS_DEFINE.parties[d.value.party].name:'')+'</em>';
+        function partyPopOver(d) {
+            return '<h4>' + d.value.party + '</h4><em>' + ((d.value.party) ? CONGRESS_DEFINE.parties[d.value.party].name : '') + '</em>';
         }
         $('.timeline-crop .parties .party .steps .step').popover({ trigger: "hover" });
 
         step.transition(3000)
-            .attr('class',function(d) {
-                return 'step y'+d.key;
+            .attr('class', function (d) {
+                return 'step y' + d.key;
             })
-            .attr("x", function (d) { return scaleX_middleOfBiennial(Number.parseInt(d.key)) -partyStepWidth/2} )
+            .attr("x", function (d) { return scaleX_middleOfBiennial(Number.parseInt(d.key)) - partyStepWidth / 2 })
             .attr("y", function (d) { return d.value[type].x0 })
             .attr("height", function (d) { return d.value[type].height })
-            .attr("width", partyStepWidth )
-            .attr("opacity", 0.8 )
-            .style("fill", function(d){ return CONGRESS_DEFINE.getPartyColor(d.value.party); } )
+            .attr("width", partyStepWidth)
+            .attr("opacity", 0.8)
+            .style("fill", function (d) { return CONGRESS_DEFINE.getPartyColor(d.value.party); })
     }
 
-    function drawPartiesTraces(type){
+    function drawPartiesTraces(type) {
 
         var firstYear = ranges[0].getFullYear();
         var lastYear = ranges[1].getFullYear();
 
         var traces = svg.selectAll('.parties .party')
             .selectAll('.traces')
-            .data( function(d){return [d.traces]});
+            .data(function (d) { return [d.traces] });
 
-        traces.enter().append('g').attr({'class':'traces'});
+        traces.enter().append('g').attr({ 'class': 'traces' });
 
         var trace = traces.selectAll('.trace')
-            .data( function(d){ return d3.values(d).filter(function(e){return e.firstDate >= firstYear && e.secondDate <= lastYear}) } );
+            .data(function (d) { return d3.values(d).filter(function (e) { return e.firstDate >= firstYear && e.secondDate <= lastYear }) });
 
-        trace.enter().append('path').attr('class','trace');
+        trace.enter().append('path').attr('class', 'trace');
 
         trace.transition(3000)
-            .attr("d", function(d){ return drawPartyTrace(d,type)} )
-            .style("fill", function(d){ return CONGRESS_DEFINE.getPartyColor(d.first.party); } )
+            .attr("d", function (d) { return drawPartyTrace(d, type) })
+            .style("fill", function (d) { return CONGRESS_DEFINE.getPartyColor(d.first.party); })
             .attr("opacity", 0.3);
 
-        function drawPartyTrace(trace,type){
+        function drawPartyTrace(trace, type) {
 
             var lineFunction = d3.svg.line()
                 .x(function (d) { return d.x })
@@ -590,20 +590,20 @@ function timeLineCrop(){
                 .interpolate("linear");
 
             var dataPath = [];
-            dataPath.push({x:scaleX_middleOfBiennial(trace.firstDate)+partyStepWidth/2,y:trace.first[type].x0});
-            dataPath.push({x:scaleX_middleOfBiennial(trace.secondDate)-partyStepWidth/2,y:trace.second[type].x0});
-            dataPath.push({x:scaleX_middleOfBiennial(trace.secondDate)-partyStepWidth/2,y:trace.second[type].x0 + trace.second[type].height});
-            dataPath.push({x:scaleX_middleOfBiennial(trace.firstDate)+partyStepWidth/2,y:trace.first[type].x0 + trace.first[type].height});
+            dataPath.push({ x: scaleX_middleOfBiennial(trace.firstDate) + partyStepWidth / 2, y: trace.first[type].x0 });
+            dataPath.push({ x: scaleX_middleOfBiennial(trace.secondDate) - partyStepWidth / 2, y: trace.second[type].x0 });
+            dataPath.push({ x: scaleX_middleOfBiennial(trace.secondDate) - partyStepWidth / 2, y: trace.second[type].x0 + trace.second[type].height });
+            dataPath.push({ x: scaleX_middleOfBiennial(trace.firstDate) + partyStepWidth / 2, y: trace.first[type].x0 + trace.first[type].height });
 
-            return lineFunction( dataPath ) + "Z";
+            return lineFunction(dataPath) + "Z";
         }
     }
 
-    function deputiesMouseover (p){
-        if(p !== null){
+    function deputiesMouseover(p) {
+        if (p !== null) {
             svg.selectAll('.party').sort(function (party, b) { // select the parent and sort the path's
                 var associatedParty;
-                switch(p[party.key]){
+                switch (p[party.key]) {
                     case 'PPB': associatedParty = "PP";
                         break;
                     case 'PFL': associatedParty = "DEM";
@@ -614,17 +614,17 @@ function timeLineCrop(){
                         break;
                     case 'PRONA': associatedParty = "PR";
                         break;
-                    default:     associatedParty = p[party.key];
+                    default: associatedParty = p[party.key];
                         break;
                 }
-                if(p[associatedParty]!== undefined){
+                if (p[associatedParty] !== undefined) {
                     if (p[associatedParty]) return 1;  // --> party hovered to front
                     else return -1;
                 } else return -1;
             })
-                .transition().attr('opacity',function (party) { 
-                    return (p[party.key]!== undefined)? 1 : 0.2;
-            });
+                .transition().attr('opacity', function (party) {
+                    return (p[party.key] !== undefined) ? 1 : 0.2;
+                });
 
             svg.selectAll('.deputy-trace')
                 .transition()
@@ -641,23 +641,23 @@ function timeLineCrop(){
         }
     }
 
-    function partiesMouseover (p){
-        if(p !== null){
+    function partiesMouseover(p) {
+        if (p !== null) {
             svg.selectAll('.party').sort(function (party, b) { // select the parent and sort the path's
-                if(p[party.key]!== undefined){
+                if (p[party.key] !== undefined) {
                     if (p[party.key]) return 1;  // --> party hovered to front
                     else return -1;
                 } else return -1;
             })
-                .transition().attr('opacity',function (party) {
-                return (p[party.key]!== undefined)? 1 : 0.2;
-            });
+                .transition().attr('opacity', function (party) {
+                    return (p[party.key] !== undefined) ? 1 : 0.2;
+                });
 
             svg.selectAll('.deputy-trace')
-                    .transition()
+                .transition()
                 .attr('opacity', function (d) {
                     var party;
-                    switch(d.first.party){
+                    switch (d.first.party) {
                         case 'PPB': party = "PP";
                             break;
                         case 'PFL': party = "DEM";
@@ -668,7 +668,7 @@ function timeLineCrop(){
                             break;
                         case 'PRONA': party = "PR";
                             break;
-                        default:     party = d.first.party;
+                        default: party = d.first.party;
                             break;
                     }
                     return (p[party] !== undefined) ? 0.5 : 0.2;
@@ -678,7 +678,7 @@ function timeLineCrop(){
                 .transition()
                 .attr('opacity', function (d) {
                     var party;
-                    switch(d.party){
+                    switch (d.party) {
                         case 'PPB': party = "PP";
                             break;
                         case 'PFL': party = "DEM";
@@ -689,7 +689,7 @@ function timeLineCrop(){
                             break;
                         case 'PRONA': party = "PR";
                             break;
-                        default:     party = d.party;
+                        default: party = d.party;
                             break;
                     }
                     return (p[party] !== undefined) ? 1 : 0.2;
@@ -698,14 +698,14 @@ function timeLineCrop(){
         }
     }
 
-    function partiesMouseout () {
+    function partiesMouseout() {
         var deputiesSteps = svg.selectAll('.deputy-step').data();
         var parties = [];
 
         if (deputiesSteps.length > 0) {
             deputiesSteps.forEach(function (value) {
                 var party;
-                switch(value.party){
+                switch (value.party) {
                     case 'PPB': party = "PP";
                         break;
                     case 'PFL': party = "DEM";
@@ -716,10 +716,10 @@ function timeLineCrop(){
                         break;
                     case 'PRONA': party = "PR";
                         break;
-                    default:     party = value.party;
+                    default: party = value.party;
                         break;
                 }
-                if  (parties.indexOf(party) === -1){
+                if (parties.indexOf(party) === -1) {
                     parties.push(party);
                 }
             });
@@ -743,44 +743,43 @@ function timeLineCrop(){
                 .attr('opacity', 1);
         }
         else
-            svg.selectAll('.party').transition().attr('opacity',1);
+            svg.selectAll('.party').transition().attr('opacity', 1);
     }
 
-    function drawDeputy(deputies){
+    function drawDeputy(deputies) {
 
         var firstYear = ranges[0].getFullYear();
         var lastYear = ranges[1].getFullYear();
 
         var deputiesSteps = [];
 
-        deputies.forEach(function(d){
+        deputies.forEach(function (d) {
             d.steps = [];
-            for (var year = firstYear; year< lastYear; year++)
-            {
-                    d.nodes.forEach(function (value) {
-                        if (value.year === year) {
-                            var step = {};
-                            var lastDeputy = d.steps[d.steps.length-1];
-                            if (lastDeputy !== undefined){
-                                if (year - lastDeputy.year > 1){
-                                    console.log(lastDeputy);
-                                    step.deputyID = lastDeputy.deputyID;
-                                    step.x0 = lastDeputy.x0;
-                                    step.party = lastDeputy.party;
-                                    step.year = lastDeputy.year +1;
-                                    d.steps.push(step);
-                                }
+            for (var year = firstYear; year < lastYear; year++) {
+                d.nodes.forEach(function (value) {
+                    if (value.year === year) {
+                        var step = {};
+                        var lastDeputy = d.steps[d.steps.length - 1];
+                        if (lastDeputy !== undefined) {
+                            if (year - lastDeputy.year > 1) {
+                                console.log(lastDeputy);
+                                step.deputyID = lastDeputy.deputyID;
+                                step.x0 = lastDeputy.x0;
+                                step.party = lastDeputy.party;
+                                step.year = lastDeputy.year + 1;
+                                d.steps.push(step);
                             }
-                            step = {};
-                            //cluttered position - ideal position
-                            step.deputyID = d.deputyID;
-                            console.log(scaleParties);
-                            step.x0 = scaleParties[year](value.scatterplot[1]) - (pixelPerDeputy[year]) / 2;
-                            step.party = value.party;
-                            step.year = value.year;
-                            d.steps.push(step);
                         }
-                    });
+                        step = {};
+                        //cluttered position - ideal position
+                        step.deputyID = d.deputyID;
+                        console.log(scaleParties);
+                        step.x0 = scaleParties[year](value.scatterplot[1]) - (pixelPerDeputy[year]) / 2;
+                        step.party = value.party;
+                        step.year = value.year;
+                        d.steps.push(step);
+                    }
+                });
 
             }
         });
@@ -789,14 +788,14 @@ function timeLineCrop(){
 
         deputies.forEach(function (d) {
             d.traces = [];
-            d.steps.forEach(function (t,i) {
-                if (d.steps[i+1] !== undefined) {
-                    if (d.steps[i+1].year === d.steps[i].year + 1) {
+            d.steps.forEach(function (t, i) {
+                if (d.steps[i + 1] !== undefined) {
+                    if (d.steps[i + 1].year === d.steps[i].year + 1) {
                         var dep = {};
                         dep.first = d.steps[i];
                         dep.firstDate = d.steps[i].year;
-                        dep.second = d.steps[i+1];
-                        dep.secondDate = d.steps[i+1].year;
+                        dep.second = d.steps[i + 1];
+                        dep.secondDate = d.steps[i + 1].year;
                         d.traces.push(dep);
                     }
                 }
@@ -806,9 +805,9 @@ function timeLineCrop(){
 
         var deputiesG = svg.select('g.deputies')
             .selectAll('.deputy')
-            .data( deputies, function(d){ return d.deputyID} );
+            .data(deputies, function (d) { return d.deputyID });
 
-        deputiesG.enter().append('g').attr({'class':'deputy'});
+        deputiesG.enter().append('g').attr({ 'class': 'deputy' });
 
         drawDeputySteps();
         drawDeputyTraces();
