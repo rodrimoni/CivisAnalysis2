@@ -1,0 +1,49 @@
+name: Deploy static site via SFTP
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - "index.html"
+      - "stylesheets/**"
+      - "javascripts/**"
+      - "images/**"
+      - "fonts/**"
+      - "data/**"
+
+concurrency:
+  group: sftp-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare deploy folder
+        run: |
+          rm -rf deploy
+          mkdir -p deploy
+          cp -v index.html deploy/ || true
+          for d in stylesheets javascripts images fonts data; do
+            if [ -d "$d" ]; then
+              mkdir -p "deploy/$d"
+              rsync -a "$d"/ "deploy/$d"/
+            fi
+          done
+
+      - name: Deploy over SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          server: ${{ secrets.SFTP_HOST }}
+          port: ${{ secrets.SFTP_PORT }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          local_path: ./deploy
+          remote_path: ${{ secrets.SFTP_REMOTE_PATH }}
+          delete_remote_files: true
+          exclude: |
+            **/.git*
+            **/.DS_Store
+
