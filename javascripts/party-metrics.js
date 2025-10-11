@@ -93,7 +93,7 @@ function partyMetrics() {
         svg.selectAll("*").remove();
 
         // Render title and subtitle
-        renderTitle(party, displayRiceIndex, selectedTheme);
+        renderTitle(party, displayRiceIndex);
 
         // Layout: gauge + list on the left, bars on the right
         var contentTop = 90; // leave room for title/subtitle
