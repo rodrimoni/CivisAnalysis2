@@ -44,6 +44,8 @@
         var y0 = options.y;
         var w = options.w;
         var h = options.h;
+        var selectedTheme = options.selectedTheme;
+        var onThemeClick = options.onThemeClick;
 
         if (!data || !data.length) {
             var noDataText = (typeof language !== 'undefined' && language === ENGLISH)
@@ -117,7 +119,32 @@
                 var y = topPad + i * (barHeight + barGap);
                 return "translate(0," + y + ")";
             })
-            .style("cursor", "pointer");
+            .style("cursor", "pointer")
+            .on("click", function (d) {
+                if (onThemeClick) {
+                    onThemeClick(d.theme);
+                }
+            });
+
+        // Add selection highlight background
+        rows.append("rect")
+            .attr("class", "selection-bg")
+            .attr("x", -5)
+            .attr("y", -2)
+            .attr("height", barHeight + 4)
+            .attr("width", w + 10)
+            .attr("rx", 4)
+            .attr("ry", 4)
+            .style("fill", function (d) {
+                return (selectedTheme === d.theme) ? baseColor : "transparent";
+            })
+            .style("fill-opacity", 0.08)
+            .style("stroke", function (d) {
+                return (selectedTheme === d.theme) ? baseColor : "transparent";
+            })
+            .style("stroke-width", 2)
+            .style("stroke-opacity", 0.3)
+            .style("pointer-events", "none");
 
         // Labels
         rows.append("text")
@@ -420,7 +447,9 @@
                 x: 0,
                 y: chartY,
                 w: w,
-                h: chartH
+                h: chartH,
+                selectedTheme: options.selectedTheme,
+                onThemeClick: options.onThemeClick
             });
         } else {
             renderDeputyAlignmentBars(group, {

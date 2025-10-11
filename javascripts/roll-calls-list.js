@@ -20,6 +20,18 @@
     }
 
     /**
+     * Localize theme name
+     * @param {string} theme - Theme name
+     * @returns {string} Localized theme name
+     */
+    function localizedTheme(theme) {
+        if (typeof subjectsToEnglish !== 'undefined' && typeof language !== 'undefined' && language === ENGLISH && subjectsToEnglish[theme]) {
+            return subjectsToEnglish[theme];
+        }
+        return theme;
+    }
+
+    /**
      * Render a clean, compact list of the 10 roll calls with the lowest Rice Index
      * @param {Object} svgSelection - D3 selection where to append the list
      * @param {Object} options - Configuration options
@@ -29,6 +41,7 @@
      * @param {number} options.y - Y position
      * @param {number} options.w - Width
      * @param {number} options.h - Height
+     * @param {string} options.selectedTheme - Optional theme to filter by
      */
     function renderRollCallsList(svgSelection, options) {
         var party = options.party;
@@ -37,16 +50,35 @@
         var y0 = options.y;
         var w = Math.max(180, options.w);
         var h = Math.max(140, options.h);
+        var selectedTheme = options.selectedTheme;
 
-        var data = allData ? allData.slice(0, 10) : [];
+        // Filter by theme if selected
+        var filteredData = allData;
+        if (selectedTheme && allData) {
+            filteredData = allData.filter(function (d) {
+                return d.theme === selectedTheme;
+            });
+        }
+
+        var data = filteredData ? filteredData.slice(0, 10) : [];
         if (!data.length) return;
 
         var group = svgSelection.append("g").attr("transform", "translate(" + x0 + "," + y0 + ")");
 
-        // Section title
-        var titleText = (typeof language !== 'undefined' && language === ENGLISH)
-            ? "Least Cohesive Roll Calls"
-            : "Menor Coesão – 10 Itens";
+        // Section title - update based on filter
+        var titleText;
+        var isEnglish = (typeof language !== 'undefined' && language === ENGLISH);
+
+        if (selectedTheme) {
+            var themeName = localizedTheme(selectedTheme);
+            titleText = isEnglish
+                ? "Least Cohesive: " + themeName
+                : "Menor Coesão: " + themeName;
+        } else {
+            titleText = isEnglish
+                ? "Least Cohesive Roll Calls"
+                : "Menor Coesão – 10 Itens";
+        }
 
         group.append("text")
             .attr("x", 0)

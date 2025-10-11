@@ -39,10 +39,13 @@ function partyMetrics() {
     var panelID;
     var dispatch = d3.dispatch('update');
     var currentBarChartMode = 'themeRice'; // 'themeRice' or 'deputyAlignment'
+    var selectedTheme = null; // Currently selected theme for filtering
+    var currentData = null; // Store current data for re-rendering
 
     function chart(selection) {
         selection.each(function (data) {
             panelID = ($(this).parents('.panel')).attr('id');
+            currentData = data; // Store data for theme selection
 
             // Create main SVG container
             svg = d3.select(this)
@@ -75,11 +78,22 @@ function partyMetrics() {
         // Calculate all Rice Index data in a single pass
         const riceIndexData = calcRiceIndex(rcs, party);
 
+        // Calculate filtered Rice Index if theme is selected
+        let displayRiceIndex = riceIndexData.overall;
+        if (selectedTheme) {
+            // Filter roll calls by selected theme
+            const filteredRcs = rcs.filter(function (rc) {
+                return rc.theme === selectedTheme;
+            });
+            const filteredRiceData = calcRiceIndex(filteredRcs, party);
+            displayRiceIndex = filteredRiceData.overall;
+        }
+
         // Clear previous content
         svg.selectAll("*").remove();
 
         // Render title and subtitle
-        renderTitle(party, riceIndexData.overall);
+        renderTitle(party, displayRiceIndex, selectedTheme);
 
         // Layout: gauge + list on the left, bars on the right
         var contentTop = 90; // leave room for title/subtitle
@@ -91,11 +105,11 @@ function partyMetrics() {
         var gaugeHeight = Math.floor(contentHeight * 0.50);
         var listHeight = contentHeight - gaugeHeight - 20; // spacing between
 
-        if (riceIndexData.overall.riceAvg !== null) {
+        if (displayRiceIndex.riceAvg !== null) {
             // Render gauge using GaugeChart module
             GaugeChart.render(
                 svg,
-                riceIndexData.overall.riceAvg,
+                displayRiceIndex.riceAvg,
                 Math.floor(leftWidth / 2),
                 contentTop + Math.floor(gaugeHeight / 2),
                 leftWidth,
@@ -112,7 +126,8 @@ function partyMetrics() {
             x: 0,
             y: contentTop + gaugeHeight + 20,
             w: leftWidth,
-            h: listHeight
+            h: listHeight,
+            selectedTheme: selectedTheme // Pass selected theme for filtering
         });
 
         // Render right side bar chart with tabs using BarChartTabs module
@@ -125,8 +140,12 @@ function partyMetrics() {
             w: rightWidth,
             h: contentHeight,
             currentMode: currentBarChartMode,
+            selectedTheme: selectedTheme,
             onModeChange: function (mode) {
-                switchBarChartMode(mode, party, deputies, riceIndexData.byTheme, leftWidth + 20, contentTop, rightWidth, contentHeight);
+                switchBarChartMode(mode, party, deputies, riceIndexData.byTheme, riceIndexData.byRollCall, leftWidth + 20, contentTop, rightWidth, contentHeight, listHeight);
+            },
+            onThemeClick: function (theme) {
+                handleThemeClick(theme);
             }
         });
     }
@@ -260,7 +279,8 @@ function partyMetrics() {
                 rice: rice,
                 yesCount: S,
                 noCount: N,
-                total: total
+                total: total,
+                theme: theme // Store theme for filtering
             });
         });
 
@@ -311,9 +331,20 @@ function partyMetrics() {
     }
 
     /**
+     * Handle theme click - toggle selection and update visualization
+     */
+    function handleThemeClick(theme) {
+        // Toggle theme selection (click again to deselect)
+        selectedTheme = (selectedTheme === theme) ? null : theme;
+
+        // Re-render the entire visualization with the new selection
+        renderPartyMetrics(currentData);
+    }
+
+    /**
      * Switch between Theme Rice Index and Deputy Alignment views
      */
-    function switchBarChartMode(mode, party, deputies, riceData, x0, y0, w, h) {
+    function switchBarChartMode(mode, party, deputies, riceData, rollCallData, x0, y0, w, h, listHeight) {
         if (mode === currentBarChartMode) return;
 
         currentBarChartMode = mode;
@@ -331,8 +362,12 @@ function partyMetrics() {
             w: w,
             h: h,
             currentMode: currentBarChartMode,
+            selectedTheme: selectedTheme,
             onModeChange: function (newMode) {
-                switchBarChartMode(newMode, party, deputies, riceData, x0, y0, w, h);
+                switchBarChartMode(newMode, party, deputies, riceData, rollCallData, x0, y0, w, h, listHeight);
+            },
+            onThemeClick: function (theme) {
+                handleThemeClick(theme);
             }
         });
     }
