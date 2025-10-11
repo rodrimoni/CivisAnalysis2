@@ -44,7 +44,7 @@ jobs:
           SSHPASS: ${{ secrets.SFTP_PASSWORD }}
         run: |
           sshpass -e rsync -avz --delete \
-            -e "ssh -o StrictHostKeyChecking=no -p ${{ secrets.SFTP_PORT }}" \
+            -e "ssh -o StrictHostKeyChecking=no -o HostKeyAlgorithms=+ssh-rsa,ssh-dss -o PubkeyAcceptedKeyTypes=+ssh-rsa -p ${{ secrets.SFTP_PORT }}" \
             --exclude='.git*' \
             --exclude='.DS_Store' \
             ./deploy/ \
