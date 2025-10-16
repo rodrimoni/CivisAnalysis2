@@ -462,9 +462,6 @@
             removeWindow(id, true);
         });
 
-        /* Binding event to scatter plot settings buttons */
-        //windowSystem.on("click", ".btn-settings-scatterplot", checkChildrenScatterPlot);
-
         /* Binding event to minimized window */
         windowSystem.on("dblclick", ".minimized-icon", function (event) {
             var iconID = ($(this)).attr("id");
