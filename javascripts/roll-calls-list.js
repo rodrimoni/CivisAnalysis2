@@ -20,18 +20,6 @@
     }
 
     /**
-     * Localize theme name
-     * @param {string} theme - Theme name
-     * @returns {string} Localized theme name
-     */
-    function localizedTheme(theme) {
-        if (typeof subjectsToEnglish !== 'undefined' && typeof language !== 'undefined' && language === ENGLISH && subjectsToEnglish[theme]) {
-            return subjectsToEnglish[theme];
-        }
-        return theme;
-    }
-
-    /**
      * Render a clean, compact list of the 10 roll calls with the lowest Rice Index
      * @param {Object} svgSelection - D3 selection where to append the list
      * @param {Object} options - Configuration options
