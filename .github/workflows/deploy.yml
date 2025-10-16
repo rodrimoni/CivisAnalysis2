@@ -2,7 +2,7 @@ name: Deploy static site via SFTP
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     paths:
       - "index.html"
       - "stylesheets/**"
