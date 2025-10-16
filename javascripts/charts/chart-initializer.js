@@ -57,6 +57,10 @@ function initializeChart(newID, chartObj) {
             chart = initializePartyMetrics(newID, chartObj);
             break;
 
+        case PARTY_RICE_TIMELINE:
+            chart = initializePartyRiceTimeline(newID, chartObj);
+            break;
+
         default:
             break;
     }
@@ -272,6 +276,20 @@ function initializeSmallMultiples(newID, chartObj) {
 function initializePartyMetrics(newID, chartObj) {
     var chart = partyMetrics();
     addConfigMenu(newID, 'party-metrics', false);
+    addEditTitleInput(newID);
+    $('#' + newID).attr('data-type-period', chartObj.panelClass);
+    return chart;
+}
+
+/**
+ * Initialize Party Rice Timeline Chart
+ * @param {string} newID - Panel ID
+ * @param {Object} chartObj - Chart configuration
+ * @returns {Object} Chart instance
+ */
+function initializePartyRiceTimeline(newID, chartObj) {
+    var chart = partyRiceTimeline();
+    addConfigMenu(newID, 'party-rice-timeline', false);
     addEditTitleInput(newID);
     $('#' + newID).attr('data-type-period', chartObj.panelClass);
     return chart;

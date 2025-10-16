@@ -141,3 +141,17 @@ function initSystem() {
     }
 })(console)
 
+/**
+ * Localize theme name (shared utility)
+ * Mirrors logic used across modules to translate subject names to English
+ * when language is ENGLISH and mapping exists in subjectsToEnglish
+ * @param {string} theme - Theme name
+ * @returns {string} Localized theme string
+ */
+function localizedTheme(theme) {
+    if (typeof subjectsToEnglish !== 'undefined' && typeof language !== 'undefined' && language === ENGLISH && subjectsToEnglish[theme]) {
+        return subjectsToEnglish[theme];
+    }
+    return theme;
+}
+

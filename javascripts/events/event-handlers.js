@@ -661,14 +661,69 @@ function handleContextMenuPartyLegend(invokedOn, selectedMenu) {
             e.rollCallName = e.type + " " + e.number + " " + e.year;
         });
 
-        console.log(rcs);
-
         data.rcs = rcs;
         data.deputies = deputies;
         data.party = party;
 
         chartObj = {
             'chartID': PARTY_METRICS,
+            'data': data,
+            'title': title,
+            'prettyTitle': prettyTitle,
+            'panelClass': panelClass
+        };
+
+        createNewChild(panelID, chartObj);
+    }
+    else if (selectedMenu.context.id === 'party-rice-timeline') {
+        var periodID = period.split("-");
+        var type, id, periodData, subtitle, panelClass, firstYear, lastYear;
+
+        if (periodID.length <= 2) {
+            type = periodID[0];
+            id = periodID[1];
+            if (type !== 'year') {
+                periodData = CONGRESS_DEFINE[type + "s"][id];
+                title = "<span><span class='trn'>Rice Index Timeline</span>: " + party + " - <span class='trn'>" + periodData.name + "</span></span>";
+                prettyTitle = "Rice Index Timeline: " + party + " - " + periodData.name;
+                subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " <span class='trn'>to</span> " + periodData.period[1].toLocaleDateString() + "</span>";
+                title += subtitle;
+            }
+            else {
+                title = "<span><span class='trn'>Rice Index Timeline</span>: " + party + " - <span class='trn'>Year</span> " + id + "</span>";
+                prettyTitle = "Rice Index Timeline: " + party + " - Year " + id;
+            }
+            panelClass = type + '-' + id;
+        }
+        else {
+            firstYear = periodID[1];
+            lastYear = periodID[2];
+            title = "<span><span class='trn'>Rice Index Timeline</span>: " + party + " - " + firstYear + " <span class='trn'>to</span> " + lastYear + "</span>";
+            prettyTitle = "Rice Index Timeline: " + party + " - " + firstYear + " to " + lastYear;
+            panelClass = type + "-" + firstYear + "-" + lastYear;
+        }
+
+        var data = {};
+
+        var deputyNodes = state.getDeputyNodes();
+        var rollCallsRates = state.getRollCallsRates();
+
+        var deputies = deputyNodes[panelID].filter(function (deputy) {
+            return deputy.party === party;
+        });
+
+        var rcs = rollCallsRates[panelID];
+
+        rcs.map(function (e) {
+            e.rollCallName = e.type + " " + e.number + " " + e.year;
+        });
+
+        data.rcs = rcs;
+        data.deputies = deputies;
+        data.party = party;
+
+        chartObj = {
+            'chartID': PARTY_RICE_TIMELINE,
             'data': data,
             'title': title,
             'prettyTitle': prettyTitle,

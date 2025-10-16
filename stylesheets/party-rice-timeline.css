@@ -1,0 +1,257 @@
+/**
+ * Party Rice Timeline Visualization Styles
+ * Enhances the Focus + Context pattern with Apple-level polish
+ */
+
+/* ========================================
+   Focus + Context Views
+   ======================================== */
+
+.party-rice-timeline .focus,
+.party-rice-timeline .context {
+    shape-rendering: geometricPrecision;
+}
+
+/* Focus view enhancements */
+.party-rice-timeline .focus .area {
+    transition: opacity 0.3s ease;
+}
+
+.party-rice-timeline .focus .line {
+    transition: stroke-width 0.3s ease;
+}
+
+/* ========================================
+   Brush Styling (Apple-inspired)
+   ======================================== */
+
+.party-rice-timeline .brush .extent {
+    stroke: currentColor;
+    fill-opacity: 0.2;
+    shape-rendering: crispEdges;
+    cursor: move;
+}
+
+.party-rice-timeline .brush .resize rect {
+    fill: currentColor;
+    opacity: 0.8;
+    rx: 3px;
+    transition: opacity 0.2s ease;
+}
+
+.party-rice-timeline .brush .resize rect:hover {
+    opacity: 1;
+}
+
+.party-rice-timeline .brush .background {
+    fill: transparent;
+    cursor: crosshair;
+}
+
+/* Brush resize lines */
+.party-rice-timeline .brush .resize line {
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+
+/* ========================================
+   Data Points
+   ======================================== */
+
+.party-rice-timeline .data-point {
+    transition: all 0.15s ease-out;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+.party-rice-timeline .data-point:hover {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* ========================================
+   Grid and Axes
+   ======================================== */
+
+.party-rice-timeline .grid-line-horizontal {
+    shape-rendering: crispEdges;
+}
+
+.party-rice-timeline .axis path,
+.party-rice-timeline .axis line {
+    fill: none;
+    shape-rendering: crispEdges;
+}
+
+.party-rice-timeline .axis text {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ========================================
+   Statistics Overlay
+   ======================================== */
+
+.party-rice-timeline .mean-line {
+    shape-rendering: crispEdges;
+}
+
+.party-rice-timeline .mean-label-group rect {
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.1));
+}
+
+.party-rice-timeline .mean-label-group text {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ========================================
+   Context View
+   ======================================== */
+
+.party-rice-timeline .context-area,
+.party-rice-timeline .context-line {
+    pointer-events: none;
+}
+
+/* ========================================
+   Low Value Annotations
+   ======================================== */
+
+.party-rice-timeline .low-value-annotations {
+    pointer-events: all;
+}
+
+.party-rice-timeline .annotation-pole {
+    shape-rendering: crispEdges;
+}
+
+.party-rice-timeline .annotation-marker {
+    transition: all 0.15s ease-out;
+    filter: drop-shadow(0 1px 3px rgba(211, 47, 47, 0.3));
+}
+
+
+
+.party-rice-timeline .annotation-flag {
+    transition: transform 0.15s ease-out;
+    transform-origin: center center;
+    /* avoid reflowing x/y when scaling */
+    transform-box: fill-box;
+    /* base transform sizing on element's own box */
+}
+
+
+
+.party-rice-timeline .annotation-flag rect {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+    transition: all 0.15s ease-out;
+}
+
+
+
+.party-rice-timeline .annotation-flag text {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ========================================
+   Interactive States
+   ======================================== */
+
+.party-rice-timeline .context:hover .context-line {
+    opacity: 0.9 !important;
+    transition: opacity 0.2s ease;
+}
+
+.party-rice-timeline .context:active {
+    cursor: grabbing;
+}
+
+/* ========================================
+   Tooltips (if using external tooltip)
+   ======================================== */
+
+.toolTip {
+    pointer-events: none;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ========================================
+   Responsive Adjustments
+   ======================================== */
+
+@media (max-width: 768px) {
+    .party-rice-timeline .axis text {
+        font-size: 10px !important;
+    }
+
+    .party-rice-timeline .brush .resize rect {
+        width: 8px !important;
+    }
+}
+
+/* ========================================
+   Animation & Transitions
+   ======================================== */
+
+.party-rice-timeline .focus>* {
+    transition: opacity 0.3s ease;
+}
+
+/* Smooth brush dragging */
+.party-rice-timeline .brush.dragging .extent {
+    fill-opacity: 0.3;
+}
+
+/* ========================================
+   Accessibility
+   ======================================== */
+
+.party-rice-timeline:focus-within {
+    outline: 2px solid #007AFF;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .party-rice-timeline .grid-line-horizontal {
+        stroke: #000 !important;
+        stroke-width: 1px !important;
+    }
+
+    .party-rice-timeline .brush .extent {
+        fill-opacity: 0.4;
+        stroke-width: 2px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .party-rice-timeline * {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* ========================================
+   Print Styles
+   ======================================== */
+
+@media print {
+    .party-rice-timeline .brush {
+        display: none;
+    }
+
+    .party-rice-timeline {
+        background: white;
+    }
+}
