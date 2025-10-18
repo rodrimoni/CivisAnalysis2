@@ -306,13 +306,14 @@ function reloadScatterPlotData(filteredData, dimensionalReductionTechnique, pane
 
         var filteredDeputies = filterDeputies();
         var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
+        const deputiesAligment = calculateDeputiesAligment(matrixDeputiesPerRollCall, filteredDeputies);
 
         if (matrixDeputiesPerRollCall.length > 0 && matrixDeputiesPerRollCall[0].length > 0) {
             if (dimensionalReductionTechnique === "MDS")
                 matrixDistanceDeputies = createMatrixDistanceDeputies(matrixDeputiesPerRollCall);
 
             function calcCallback(twoDimData) {
-                state.setCurrentDeputies(createDeputyNodes(twoDimData.deputies, filteredDeputies));
+                state.setCurrentDeputies(createDeputyNodes(twoDimData.deputies, filteredDeputies, deputiesAligment));
                 var currentDeputies = state.getCurrentDeputies();
                 scaleAdjustment().setGovernmentTo3rdQuadrant(d3.values(currentDeputies), filteredData[1]);
 
