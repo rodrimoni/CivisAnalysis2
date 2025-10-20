@@ -42,7 +42,7 @@ function chamberInfographic() {
                 .attr("class", "alignmentOpacityCheckbox")
                 .each(function () { alignmentCheckbox = d3.select(this); });
             label.append("span")
-                .text(language === PORTUGUESE ? "Mostrar opacidade por alinhamento partidário" : "Show party alignment opacity");
+                .text(language === PORTUGUESE ? "Mostrar o alinhamento partidário" : "Show party alignment");
 
             svg = d3.select(this)
                 .append("svg")

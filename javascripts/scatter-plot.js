@@ -76,7 +76,7 @@ function scatterPlotChart() {
                 .attr("class", "partyEnvelopeCheckbox")
                 .each(function () { envelopeCheckbox = d3.select(this); });
             partyEnvelopeLabel.append("span")
-                .text(language === PORTUGUESE ? "Mostrar envoltória dos partidos" : "Show party envelope");
+                .text(language === PORTUGUESE ? 'Mostrar a área de distribuição dos partidos' : 'Show party distribution area');
 
             chart.createScatterPlotChart(data, this);
 
