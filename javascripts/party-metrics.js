@@ -207,7 +207,7 @@ function partyMetrics() {
      * @param {number} type - Calculation type (RICE_INDEX_CLASSIC or RICE_INDEX_BRAZIL)
      * @returns {Object} { overall, byTheme, byRollCall }
      */
-    function calcRiceIndex(rcs, party, type = RICE_INDEX_BRAZIL) {
+    function calcRiceIndex(rcs, party, type = RICE_INDEX_CLASSIC) {
         if (!rcs || !rcs.length) {
             return {
                 overall: { party, riceAvg: null, totalRollCalls: 0, totalVotesCounted: 0, calculationType: type === RICE_INDEX_CLASSIC ? 'CLASSIC' : 'BRAZIL' },
