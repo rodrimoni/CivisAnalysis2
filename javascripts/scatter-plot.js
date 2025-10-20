@@ -95,8 +95,7 @@ function scatterPlotChart() {
     chart.reloadScatterPlotChart = function (data, panelID) {
         var htmlContent = $('#' + panelID + " .panel-body");
 
-        // Remove old checkbox container and svg
-        d3.select('#' + panelID + " .checkbox-container").remove();
+        // Remove old svg
         d3.select('#' + panelID + " .scatter-plot").remove();
 
         // reset globals
