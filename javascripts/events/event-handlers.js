@@ -685,22 +685,22 @@ function handleContextMenuPartyLegend(invokedOn, selectedMenu) {
             id = periodID[1];
             if (type !== 'year') {
                 periodData = CONGRESS_DEFINE[type + "s"][id];
-                title = "<span><span class='trn'>Rice Index Timeline</span>: " + party + " - <span class='trn'>" + periodData.name + "</span></span>";
-                prettyTitle = "Rice Index Timeline: " + party + " - " + periodData.name;
+                title = "<span><span class='trn'>Cohesion Timeline</span>: " + party + " - <span class='trn'>" + periodData.name + "</span></span>";
+                prettyTitle = "Cohesion Timeline: " + party + " - " + periodData.name;
                 subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " <span class='trn'>to</span> " + periodData.period[1].toLocaleDateString() + "</span>";
                 title += subtitle;
             }
             else {
-                title = "<span><span class='trn'>Rice Index Timeline</span>: " + party + " - <span class='trn'>Year</span> " + id + "</span>";
-                prettyTitle = "Rice Index Timeline: " + party + " - Year " + id;
+                title = "<span><span class='trn'>Cohesion Timeline</span>: " + party + " - <span class='trn'>Year</span> " + id + "</span>";
+                prettyTitle = "Cohesion Timeline: " + party + " - Year " + id;
             }
             panelClass = type + '-' + id;
         }
         else {
             firstYear = periodID[1];
             lastYear = periodID[2];
-            title = "<span><span class='trn'>Rice Index Timeline</span>: " + party + " - " + firstYear + " <span class='trn'>to</span> " + lastYear + "</span>";
-            prettyTitle = "Rice Index Timeline: " + party + " - " + firstYear + " to " + lastYear;
+            title = "<span><span class='trn'>Cohesion Timeline</span>: " + party + " - " + firstYear + " <span class='trn'>to</span> " + lastYear + "</span>";
+            prettyTitle = "Cohesion Timeline: " + party + " - " + firstYear + " to " + lastYear;
             panelClass = type + "-" + firstYear + "-" + lastYear;
         }
 

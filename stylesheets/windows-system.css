@@ -220,6 +220,15 @@ a:active {
     z-index: 9998;
 }
 
+/* Ensure context menus render above tooltips */
+#contextMenuScatterPlot,
+#contextMenuTimeline,
+#contextMenuDeputy,
+#contextMenuPartyLegend {
+    position: absolute;
+    z-index: 10001;
+}
+
 /* Start by setting display:none to make this hidden.
    Then we position it in relation to the viewport window
    with position:fixed. Width, height, top and left speak

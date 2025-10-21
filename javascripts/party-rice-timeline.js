@@ -736,7 +736,7 @@ function partyRiceTimeline() {
      * @param {number} deputiesCount - Total number of deputies in the party
      * @returns {Array} Array of monthly data with Rice Index and participation
      */
-    function calculateMonthlyRiceIndex(rcs, party, deputiesCount) {
+    function calculateMonthlyRiceIndex(rcs, party, deputiesCount, type = RICE_CALC_CLASSIC) {
         if (!rcs || !rcs.length) return [];
 
         // Group roll calls by month
@@ -764,18 +764,21 @@ function partyRiceTimeline() {
                 return v.party === party;
             });
 
-            // Use Brazil method (Yes/No/Obstruction)
-            const validVotes = partyVotes.filter(function (v) {
-                return v.vote === 'Sim' || v.vote === 'Não' || v.vote === 'Obstrução';
-            });
-
-            const yesCount = validVotes.filter(function (v) {
-                return v.vote === 'Sim';
-            }).length;
-
-            const noCount = validVotes.filter(function (v) {
-                return v.vote === 'Não' || v.vote === 'Obstrução';
-            }).length;
+            // Support Classic (Yes/No) and Brazil (Yes/No/Obstruction) methods
+            var validVotes, yesCount, noCount;
+            if (type === RICE_CALC_CLASSIC) {
+                validVotes = partyVotes.filter(function (v) {
+                    return v.vote === 'Sim' || v.vote === 'Não';
+                });
+                yesCount = validVotes.filter(function (v) { return v.vote === 'Sim'; }).length;
+                noCount = validVotes.filter(function (v) { return v.vote === 'Não'; }).length;
+            } else {
+                validVotes = partyVotes.filter(function (v) {
+                    return v.vote === 'Sim' || v.vote === 'Não' || v.vote === 'Obstrução';
+                });
+                yesCount = validVotes.filter(function (v) { return v.vote === 'Sim'; }).length;
+                noCount = validVotes.filter(function (v) { return v.vote === 'Não' || v.vote === 'Obstrução'; }).length;
+            }
 
             const total = yesCount + noCount;
 
@@ -846,7 +849,7 @@ function partyRiceTimeline() {
             .attr("font-size", "24px")
             .attr("font-weight", "bold")
             .attr("fill", partyColor)
-            .text(party + " - Rice Index Over Time");
+            .text(party + " - Cohesion Over Time");
 
         // Subtitle with metadata
         const totalMonths = monthlyData.length;
@@ -863,7 +866,7 @@ function partyRiceTimeline() {
             .attr("text-anchor", "middle")
             .attr("font-size", "12px")
             .attr("fill", "#666")
-            .text(totalMonths + " months | " + totalRollCalls + " roll calls | Weighted Mean Rice Index: " + meanRice.toFixed(3));
+            .text(totalMonths + " months | " + totalRollCalls + " roll calls | Rice Index: " + meanRice.toFixed(3));
 
         // Add participation shading legend
         svg.append("text")
@@ -886,7 +889,7 @@ function partyRiceTimeline() {
             .attr("text-anchor", "middle")
             .attr("font-size", "16px")
             .attr("fill", "#999")
-            .text("Insufficient data to display Rice Index timeline");
+            .text("Insufficient data to display Cohesion timeline");
     }
 
     /**

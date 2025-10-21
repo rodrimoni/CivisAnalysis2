@@ -51,14 +51,9 @@ function themesBubbleChart() {
         bubbles.append("circle")
             .attr("r", d => d.r)
             .attr("fill", d => CONGRESS_DEFINE.subjectsToColor[d.data.category])
-            .each(function (d) {
-                const attrs = popoverAttr(themePopOver(d), 'top');
-                Object.entries(attrs).forEach(([key, value]) => {
-                    d3.select(this).attr(key, value);
-                });
-            });
-
-        $('.bubble-chart circle').popover({ trigger: "hover" });
+            .on('mouseover', function (d) { showToolTip(renderThemeTooltipHtml(d)); })
+            .on('mousemove', function () { moveToolTip(); })
+            .on('mouseout', function () { hideToolTip(); });
 
         // Add a label.
         const text = bubbles.filter(d => d.r > 60)
@@ -86,17 +81,16 @@ function themesBubbleChart() {
 
     }
 
-    function themePopOver(d) {
-        var subjectTooltipEnglish;
-        var subjectTooltipPortuguese;
-        subjectTooltipEnglish = '<strong>' + subjectsToEnglish[d.data.category] + ' (' + d.data.frequency + ")" //+ "</strong><br><em>Left-Click to select</em>";
-        subjectTooltipPortuguese = '<strong>' + d.data.category + ' (' + d.data.frequency + ")" //+ "</strong><br><em>Botão esquerdo para selecionar</em>";
-
-        if (language === PORTUGUESE)
-            return subjectTooltipPortuguese;
-        else
-            return subjectTooltipEnglish;
+    function renderThemeTooltipHtml(d) {
+        var title = (language === PORTUGUESE) ? d.data.category : subjectsToEnglish[d.data.category];
+        return '<div style="min-width: 160px;">' +
+            '<div style="font-size:14px;font-weight:700;color:#333;">' + title + ' (' + d.data.frequency + ')</div>' +
+            '</div>';
     }
+
+    function showToolTip(html) { var div = d3.select(".toolTip"); if (div.empty()) return; div.transition().duration(0); div.style("left", d3v4.event.pageX + 15 + "px"); div.style("top", d3v4.event.pageY - 10 + "px"); div.style("display", "inline-block").style("opacity", 1); div.html(html); }
+    function moveToolTip() { var div = d3.select(".toolTip"); if (div.empty()) return; div.style("left", d3v4.event.pageX + 15 + "px"); div.style("top", d3v4.event.pageY - 10 + "px"); }
+    function hideToolTip() { var div = d3.select(".toolTip"); if (div.empty()) return; div.transition().duration(0); div.style("display", "none").style("opacity", 1); }
 
 
     return d3.rebind(chart, dispatch, 'on');

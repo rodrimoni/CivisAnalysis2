@@ -16,6 +16,27 @@ function chamberInfographic() {
     var partiesMap;
 
     var svg;
+    var div = d3.select(".toolTip");
+
+    // Shared tooltip helpers (Apple-style tooltip using .toolTip)
+    function showToolTip(html) {
+        if (div.empty()) return;
+        div.transition().duration(0);
+        div.style("left", d3.event.pageX + 15 + "px");
+        div.style("top", d3.event.pageY - 10 + "px");
+        div.style("display", "inline-block").style("opacity", 1);
+        div.html(html);
+    }
+    function moveToolTip() {
+        if (div.empty()) return;
+        div.style("left", d3.event.pageX + 15 + "px");
+        div.style("top", d3.event.pageY - 10 + "px");
+    }
+    function hideToolTip() {
+        if (div.empty()) return;
+        div.transition().duration(0);
+        div.style("display", "none").style("opacity", 1);
+    }
 
     var panelID;
 
@@ -42,7 +63,7 @@ function chamberInfographic() {
                 .attr("class", "alignmentOpacityCheckbox")
                 .each(function () { alignmentCheckbox = d3.select(this); });
             label.append("span")
-                .text(language === PORTUGUESE ? "Mostrar opacidade por alinhamento partidário" : "Show party alignment opacity");
+                .text(language === PORTUGUESE ? "Mostrar o alinhamento partidário" : "Show party alignment");
 
             svg = d3.select(this)
                 .append("svg")
@@ -123,28 +144,33 @@ function chamberInfographic() {
                 cx: function (d, i) { return radiusWidth - (radiusWidth - 7 - i % circlePerAngle * radius * 2.3) * calcAngleY(calcAngle(i)); },
                 class: function (d) { return (d.selected) ? "node selected" : ((d.hovered) ? "node hovered" : "node"); }
             })
-            .attr(popoverAttr(renderDeputyTooltip, 'top'));
+            .on("mouseover", function (d) {
+                mouseoverDeputy(d);
+                showToolTip(renderDeputyTooltipHtml(d));
+            })
+            .on("mousemove", function () { moveToolTip(); })
+            .on("mouseout", function (d) {
+                hideToolTip();
+                mouseoutDeputy(d);
+            });
 
-        function renderDeputyTooltip(d) {
-            // Convert alignment to percentage (0-1 → 0-100%)
+        function renderDeputyTooltipHtml(d) {
             var alignmentPercentage = d.alignment ? Math.round(d.alignment * 100) : 0;
-
-            var deputyTooltipEnglish = '<strong>' + d.name + ' (' + d.party + '-' + d.district + ")</strong><br>" +
-                '<span style="color: #666;">Party Alignment: ' + alignmentPercentage + '%</span><br>' +
-                "<em>Left-Click to select</em><br>" +
-                "<em>Right-Click to create new visualizations</em>";
-
-            var deputyTooltipPortuguese = '<strong>' + d.name + ' (' + d.party + '-' + d.district + ")</strong><br>" +
-                '<span style="color: #666;">Alinhamento Partidário: ' + alignmentPercentage + '%</span><br>' +
-                "<em>Botão esquerdo para selecionar</em><br>" +
-                "<em>Botão direito para criar novas vis.</em>";
-
-            if (language === PORTUGUESE)
-                return deputyTooltipPortuguese;
-            else
-                return deputyTooltipEnglish;
+            var color = CONGRESS_DEFINE.getPartyColor(d.party);
+            var en = '<div style="min-width: 180px;">' +
+                '<div style="font-size:14px;font-weight:600;color:' + color + ';margin-bottom:4px;">' + d.name + ' (' + d.party + '-' + d.district + ')</div>' +
+                '<div style="font-size:13px;color:#666;">Party Alignment: <span style="font-weight:600;color:' + color + ';">' + alignmentPercentage + '%</span></div>' +
+                '<div style="margin-top:6px;font-size:11px;color:#666;"><em>Left-Click to select</em><br><em>Right-Click to create new visualizations</em></div>' +
+                '</div>';
+            var pt = '<div style="min-width: 180px;">' +
+                '<div style="font-size:14px;font-weight:600;color:' + color + ';margin-bottom:4px;">' + d.name + ' (' + d.party + '-' + d.district + ')</div>' +
+                '<div style="font-size:13px;color:#666;">Alinhamento Partidário: <span style="font-weight:600;color:' + color + ';">' + alignmentPercentage + '%</span></div>' +
+                '<div style="margin-top:6px;font-size:11px;color:#666;"><em>Botão esquerdo para selecionar</em><br><em>Botão direito para criar novas vis.</em></div>' +
+                '</div>';
+            return (language === PORTUGUESE) ? pt : en;
         }
-        $('.chamber-infographic .infographic-deputies .node').popover({ trigger: "hover" });
+
+
 
         circles
             .attr({ r: 4 })
@@ -193,14 +219,14 @@ function chamberInfographic() {
                 id: function (d) { return d.data.key },
                 cursor: 'pointer'
             })
-            .on("mouseover", mouseoverParty)
-            .on("mouseout", mouseoutParty)
-            .on("click", clickParty)
-            .attr(popoverAttr(renderPartyTooltip, 'top'));
+            .on("mouseover", function (d) { mouseoverParty(d); showToolTip(renderPartyTooltipHtml(d)); })
+            .on("mousemove", function () { moveToolTip(); })
+            .on("mouseout", function () { hideToolTip(); mouseoutParty(); })
+            .on("click", clickParty);
 
         arcs.exit().remove();
 
-        $('.chamber-infographic .infographic-parties .arc').popover({ trigger: "hover" });
+
 
         var paths = arcs.selectAll('path.main')
             .data(function (d) { return [d] });
@@ -251,17 +277,19 @@ function chamberInfographic() {
             .attr("transform", function (d) { return "translate(" + arc.centroid(d) + ")"; });
     }
 
-    function renderPartyTooltip(party) {
-        var tip = language === ENGLISH ? "Click to select" : "Clique para selecionar"
-        var selected = language === ENGLISH ? "selected" : "selecionado"
-        party = party.data;
-        var selectedRate =
-            (party.value.selected === party.value.size) ?
-                party.value.size + ' Deputies'
-                :
-                (((party.value.selected / party.value.size) * 100).toFixed(1) + "% " + selected + " (" + party.value.selected + '/' + party.value.size) + ')';
-
-        return party.key + "<br/><em>" + selectedRate + "</em><br/><em>" + tip + "</em>"
+    function renderPartyTooltipHtml(d) {
+        var party = d.data;
+        var tip = language === ENGLISH ? "Left-Click to select" : "Botão esquerdo para selecionar";
+        var selectedWord = language === ENGLISH ? "selected" : "selecionado";
+        var color = CONGRESS_DEFINE.getPartyColor(party.key);
+        var selectedRate = (party.value.selected === party.value.size) ?
+            (party.value.size + (language === ENGLISH ? ' Deputies' : ' Deputados')) :
+            (((party.value.selected / party.value.size) * 100).toFixed(1) + "% " + selectedWord + " (" + party.value.selected + '/' + party.value.size + ")");
+        return '<div style="min-width:160px;">' +
+            '<div style="font-size:14px;font-weight:700;color:' + color + ';margin-bottom:2px;">' + party.key + '</div>' +
+            '<div style="font-size:12px;color:#666;">' + selectedRate + '</div>' +
+            '<div style="margin-top:6px;font-size:11px;color:#666;"><em>' + tip + '</em></div>' +
+            '</div>';
     }
 
     // mouse OVER circle deputy
@@ -314,8 +342,6 @@ function chamberInfographic() {
             updateDeputyNodeInAllPeriods(d.deputyID, "hovered", true);
         });
 
-        // update popover
-        d3.select(this).attr(popoverAttr(renderPartyTooltip));
         // update vis
         dispatch.update();
     }

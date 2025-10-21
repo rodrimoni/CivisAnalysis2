@@ -92,17 +92,20 @@
         var xScale = d3.scale.linear().domain([0, maxValue]).range([0, barAreaW]);
         var baseColor = CONGRESS_DEFINE.getPartyColor(party);
 
-        // Axis
+        // Fixed bottom axis (pinned, not scrolling)
         var axis = d3.svg.axis()
             .scale(xScale)
             .tickValues([0, 0.2, 0.4, 0.6, 0.8, 1])
             .tickFormat(function (v) { return (v * 100).toFixed(0) + "%"; })
-            .tickSize(-actualContentHeight)
+            .tickSize(0)
             .orient("bottom");
 
-        var axisGroup = contentGroup.append("g")
-            .attr("class", "axisHorizontal")
-            .attr("transform", "translate(" + (labelW + labelGap) + "," + (topPad + data.length * (barHeight + barGap) + 6) + ")")
+        // Remove previous fixed axis if present
+        group.selectAll(".fixed-bottom-axis").remove();
+
+        var axisGroup = group.append("g")
+            .attr("class", "axisHorizontal fixed-bottom-axis")
+            .attr("transform", "translate(" + (x0 + labelW + labelGap) + "," + (y0 + h - bottomPad) + ")")
             .call(axis);
 
         axisGroup.selectAll("path").style("fill", "none");
@@ -125,6 +128,17 @@
                     onThemeClick(d.theme);
                 }
             });
+
+        // Expand interactive area to entire row (label + bar)
+        rows.append("rect")
+            .attr("class", "hit-area")
+            .attr("x", -5)
+            .attr("y", -2)
+            .attr("height", barHeight + 4)
+            .attr("width", w + 10)
+            .style("fill", "transparent")
+            .style("pointer-events", "all")
+            .style("cursor", "pointer");
 
         // Add selection highlight background
         rows.append("rect")
@@ -188,7 +202,7 @@
             div.style("top", d3.event.pageY - 25 + "px");
             div.style("display", "inline-block");
             var label = localizedTheme(d.theme);
-            var html = label + "<br>" + (d.rice * 100).toFixed(1) + "%";
+            var html = "<strong>" + label + "</strong><br> Cohesion: " + (d.rice * 100).toFixed(1) + "%";
             div.html(html);
         }).on("mouseout", function () { div.style("display", "none"); });
     }
@@ -205,6 +219,7 @@
         var y0 = options.y;
         var w = options.w;
         var h = options.h;
+        var sortOrder = (options.sortOrder === 'asc') ? 'asc' : 'desc';
 
         // Calculate deputy alignment data
         var data = [];
@@ -220,9 +235,16 @@
             });
         }
 
-        // Sort by alignment descending and take top 20
-        data.sort(function (a, b) { return b.alignment - a.alignment; });
-        data = data.slice(0, 20);
+        // Sort by alignment based on selected order; tie-break by name respecting order
+        data.sort(function (a, b) {
+            if (a.alignment === b.alignment) {
+                var nameA = (a.name || '').toString();
+                var nameB = (b.name || '').toString();
+                var cmp = nameA.localeCompare(nameB);
+                return (sortOrder === 'asc') ? cmp : -cmp;
+            }
+            return (sortOrder === 'asc') ? (a.alignment - b.alignment) : (b.alignment - a.alignment);
+        });
 
         if (!data || !data.length) {
             var noDataText = (typeof language !== 'undefined' && language === ENGLISH)
@@ -238,20 +260,44 @@
             return;
         }
 
-        var contentGroup = group.append("g")
-            .attr("transform", "translate(" + x0 + "," + y0 + ")");
+        // Create a scrollable container using foreignObject to keep a window of ~20 deputies
+        var axisHeight = 26; // reserve space for fixed bottom axis
+        var fo = group.append("foreignObject")
+            .attr("x", x0)
+            .attr("y", y0)
+            .attr("width", w)
+            .attr("height", Math.max(0, h - axisHeight));
+
+        var scrollDiv = fo.append("xhtml:div")
+            .style("width", w + "px")
+            .style("height", Math.max(0, h - axisHeight) + "px")
+            .style("overflow-y", "auto")
+            .style("-webkit-overflow-scrolling", "touch");
 
         // Scales
         var maxValue = 1;
         var topPad = 8;
-        var bottomPad = 20;
-        var innerH = h - topPad - bottomPad;
+        var bottomPad = 4; // tighter internal bottom padding; axis is outside
+        var innerH = Math.max(0, (h - axisHeight) - topPad - bottomPad);
 
-        var barHeight = Math.min(24, Math.floor(innerH / data.length) - 3);
-        var barGap = Math.max(2, Math.floor((innerH - barHeight * data.length) / Math.max(1, data.length - 1)));
+        // Keep bar sizing based on a window of up to 20 items
+        var visibleCount = Math.min(20, data.length);
+        var barHeight = Math.min(24, Math.floor(innerH / visibleCount) - 3);
+        var barGap = Math.max(2, Math.floor((innerH - barHeight * visibleCount) / Math.max(1, visibleCount - 1)));
         if (barGap > 14) barGap = 14;
 
+        // Total height considering all rows (used for grid/axis and inner SVG sizing)
         var actualContentHeight = data.length * barHeight + Math.max(0, (data.length - 1)) * barGap;
+
+        // Inner SVG sized tightly to content height; the outer div scrolls
+        var innerSvgHeight = topPad + (data.length * (barHeight + barGap)) - barGap + bottomPad;
+        var innerSvg = scrollDiv.append("svg")
+            .attr("xmlns", "http://www.w3.org/2000/svg")
+            .attr("width", w)
+            .attr("height", innerSvgHeight);
+
+        var contentGroup = innerSvg.append("g")
+            .attr("transform", "translate(0,0)");
 
         var approxCharW = 7.5;
         var labelGap = 8;
@@ -267,21 +313,22 @@
         var xScale = d3.scale.linear().domain([0, maxValue]).range([0, barAreaW]);
         var baseColor = CONGRESS_DEFINE.getPartyColor(party);
 
-        // Axis
-        var axis = d3.svg.axis()
+        // Fixed bottom axis (pinned at bottom of visible window)
+        group.selectAll(".fixed-bottom-axis").remove();
+        var fixedAxis = d3.svg.axis()
             .scale(xScale)
             .tickValues([0, 0.2, 0.4, 0.6, 0.8, 1])
             .tickFormat(function (v) { return (v * 100).toFixed(0) + "%"; })
-            .tickSize(-actualContentHeight)
+            .tickSize(0)
             .orient("bottom");
 
-        var axisGroup = contentGroup.append("g")
-            .attr("class", "axisHorizontal")
-            .attr("transform", "translate(" + (labelW + labelGap) + "," + (topPad + data.length * (barHeight + barGap) + 6) + ")")
-            .call(axis);
+        var fixedAxisGroup = group.append("g")
+            .attr("class", "axisHorizontal fixed-bottom-axis")
+            .attr("transform", "translate(" + (x0 + labelW + labelGap) + "," + (y0 + h - 4) + ")")
+            .call(fixedAxis);
 
-        axisGroup.selectAll("path").style("fill", "none");
-        axisGroup.selectAll(".tick line")
+        fixedAxisGroup.selectAll("path").style("fill", "none");
+        fixedAxisGroup.selectAll(".tick line")
             .style("stroke-width", 1)
             .style("stroke", "rgba(0, 0, 0, 0.2)");
 
@@ -294,6 +341,17 @@
                 var y = topPad + i * (barHeight + barGap);
                 return "translate(0," + y + ")";
             })
+            .style("cursor", "pointer");
+
+        // Expand interactive area to entire row (label + bar); tooltip only, no click needed
+        rows.append("rect")
+            .attr("class", "hit-area")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("height", barHeight)
+            .attr("width", w)
+            .style("fill", "transparent")
+            .style("pointer-events", "all")
             .style("cursor", "pointer");
 
         // Labels
@@ -335,10 +393,8 @@
         var div = d3.select(".toolTip");
         rows.on("mousemove", function (d) {
             var isEnglish = (typeof language !== 'undefined' && language === ENGLISH);
-            var partyLabel = isEnglish ? "Party" : "Partido";
             var alignmentLabel = isEnglish ? "Alignment" : "Alinhamento";
-            var html = d.name + "<br>" +
-                partyLabel + ": " + d.party + "<br>" +
+            var html = "<strong>" + d.name + "</strong><br>" +
                 alignmentLabel + ": " + (d.alignment * 100).toFixed(1) + "%";
             div.style("left", d3.event.pageX + 10 + "px");
             div.style("top", d3.event.pageY - 25 + "px");
@@ -371,13 +427,16 @@
         var h = Math.max(120, options.h);
         var currentMode = options.currentMode || 'themeRice';
         var onModeChange = options.onModeChange;
+        var sortOrder = 'desc';
 
         var group = svgSelection.append("g")
             .attr("class", "right-bar-chart-container")
             .attr("transform", "translate(" + x0 + "," + y0 + ")");
 
-        // Create tabs
+        // Create tabs (80%) + right controls area (20%)
         var tabHeight = 35;
+        var tabsAreaW = Math.floor(w * 0.8);
+        var controlsAreaW = Math.max(0, w - tabsAreaW);
         var tabGroup = group.append("g").attr("class", "bar-chart-tabs");
 
         var isEnglish = (typeof language !== 'undefined' && language === ENGLISH);
@@ -386,7 +445,7 @@
             { id: 'deputyAlignment', label: isEnglish ? 'Deputy Alignment' : 'Alinhamento de Deputados' }
         ];
 
-        var tabWidth = Math.floor(w / tabs.length) - 4;
+        var tabWidth = Math.floor(tabsAreaW / tabs.length) - 4;
 
         tabs.forEach(function (tab, i) {
             var isActive = tab.id === currentMode;
@@ -422,8 +481,7 @@
                         onModeChange(mode);
                     }
                 });
-
-            // Tab label
+            // Tab label centered
             tabGroup.append("text")
                 .attr("x", tabX + tabWidth / 2)
                 .attr("y", (tabHeight - 5) / 2)
@@ -436,12 +494,104 @@
                 .text(tab.label);
         });
 
+        // Right-side controls area (20% width). Show sort toggle only when Deputy tab is active
+        var controlsGroup = group.append('g')
+            .attr('class', 'bar-chart-controls')
+            .attr('transform', 'translate(' + tabsAreaW + ',0)');
+
+        if (currentMode === 'deputyAlignment' && controlsAreaW > 0) {
+            var toggleW = Math.min(120, Math.max(70, controlsAreaW - 8));
+            var toggleH = 24;
+            var knobW = Math.floor(toggleW / 2);
+            var toggleX = Math.max(0, controlsAreaW - toggleW - 4);
+            var toggleY = Math.max(1, ((tabHeight - 5) - toggleH) / 2);
+            var isEnglishCtrl = (typeof language !== 'undefined' && language === ENGLISH);
+            var sortAscLabel = isEnglishCtrl ? 'Asc' : 'Asc';
+            var sortDescLabel = isEnglishCtrl ? 'Desc' : 'Desc';
+
+            var sortToggle = controlsGroup.append('g')
+                .attr('class', 'deputy-sort-toggle')
+                .attr('transform', 'translate(' + toggleX + ',' + toggleY + ')')
+                .style('cursor', 'pointer');
+
+            // Background pill
+            sortToggle.append('rect')
+                .attr('x', 0)
+                .attr('y', 0)
+                .attr('width', toggleW)
+                .attr('height', toggleH)
+                .attr('rx', toggleH / 2)
+                .attr('ry', toggleH / 2)
+                .style('fill', '#f2f2f7')
+                .style('stroke', '#d1d1d6')
+                .style('stroke-width', 1);
+
+            var knob = sortToggle.append('rect')
+                .attr('class', 'knob')
+                .attr('x', sortOrder === 'desc' ? 0 : knobW)
+                .attr('y', 0)
+                .attr('width', knobW)
+                .attr('height', toggleH)
+                .attr('rx', toggleH / 2)
+                .attr('ry', toggleH / 2)
+                .style('fill', '#ffffff')
+                .style('stroke', '#c7c7cc')
+                .style('stroke-width', 1);
+
+            // Left label: Desc
+            sortToggle.append('text')
+                .attr('class', 'desc-label')
+                .attr('x', knobW / 2)
+                .attr('y', Math.floor(toggleH / 2))
+                .attr('dy', '.35em')
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '11px')
+                .text(sortDescLabel)
+                .style('fill', sortOrder === 'desc' ? '#000' : '#6c6c70')
+                .style('pointer-events', 'none');
+
+            // Right label: Asc
+            sortToggle.append('text')
+                .attr('class', 'asc-label')
+                .attr('x', knobW + knobW / 2)
+                .attr('y', Math.floor(toggleH / 2))
+                .attr('dy', '.35em')
+                .attr('text-anchor', 'middle')
+                .attr('font-size', '11px')
+                .text(sortAscLabel)
+                .style('fill', sortOrder === 'asc' ? '#000' : '#6c6c70')
+                .style('pointer-events', 'none');
+
+            sortToggle.on('click', function () {
+                sortOrder = (sortOrder === 'asc') ? 'desc' : 'asc';
+                knob.transition().duration(160).attr('x', sortOrder === 'desc' ? 0 : knobW);
+                sortToggle.select('.asc-label').style('fill', sortOrder === 'asc' ? '#000' : '#6c6c70');
+                sortToggle.select('.desc-label').style('fill', sortOrder === 'desc' ? '#000' : '#6c6c70');
+
+                // Re-render content only
+                group.selectAll('.bar-chart-content').remove();
+                var contentGroup = group.append('g').attr('class', 'bar-chart-content');
+                renderDeputyAlignmentBars(contentGroup, {
+                    party: party,
+                    deputies: deputies,
+                    x: 0,
+                    y: tabHeight + 5,
+                    w: w,
+                    h: h - (tabHeight + 5),
+                    sortOrder: sortOrder
+                });
+            });
+        }
+
         // Render the appropriate chart below tabs
         var chartY = tabHeight + 5;
         var chartH = h - chartY;
 
+        // Content container to allow selective re-rendering
+        var contentGroup = group.append('g').attr('class', 'bar-chart-content');
+
         if (currentMode === 'themeRice') {
-            renderThemesRiceBars(group, {
+            renderThemesRiceBars(contentGroup, {
                 party: party,
                 data: riceData,
                 x: 0,
@@ -452,13 +602,14 @@
                 onThemeClick: options.onThemeClick
             });
         } else {
-            renderDeputyAlignmentBars(group, {
+            renderDeputyAlignmentBars(contentGroup, {
                 party: party,
                 deputies: deputies,
                 x: 0,
                 y: chartY,
                 w: w,
-                h: chartH
+                h: chartH,
+                sortOrder: sortOrder
             });
         }
     }

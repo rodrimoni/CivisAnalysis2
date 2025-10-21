@@ -384,7 +384,7 @@
         </ul>
         <ul id="contextMenuPartyLegend" class="dropdown-menu" role="menu" style="display:none">
             <li><a tabindex="-1" id="party-metrics">Show Party Metrics</a></li>
-            <li><a tabindex="-1" id="party-rice-timeline">Show Rice Index Timeline</a></li>
+            <li><a tabindex="-1" id="party-rice-timeline">Show Cohesion Timeline</a></li>
         </ul>
     </div>
 
@@ -497,12 +497,6 @@
         });
 
         windowSystem.on('click', '#statesBtn', selectByStates);
-
-        $("#openNavBtn").attr(popoverAttr(function () {
-            return "Click to open Treeview"
-        }, 'right'));
-
-        $('#openNavBtn').popover({ trigger: "hover" });
 
         windowSystem.on('click', '#pt-br', function () {
             language = PORTUGUESE;

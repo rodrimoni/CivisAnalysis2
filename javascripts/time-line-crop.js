@@ -366,6 +366,7 @@ function timeLineCrop() {
             .attr('class', function (d) {
                 return 'deputy-step y' + d.year;
             })
+            .style('cursor', 'pointer')
             .on('mouseover', function (d) {
                 var associatedParty;
                 switch (d.party) {
@@ -450,6 +451,7 @@ function timeLineCrop() {
         var path = enterData
             .append('path')
             .classed('deputy-trace', true)
+            .style('cursor', 'pointer')
             .attr("d", function (d) {
                 return 'M ' + (scaleX_middleOfBiennial(Number.parseInt(d.firstDate)) + partyStepWidth / 2) + ' ' + d.first.x0 + ' L ' +
                     (scaleX_middleOfBiennial(Number.parseInt(d.secondDate)) - partyStepWidth / 2) + ' ' + d.second.x0;
@@ -542,12 +544,20 @@ function timeLineCrop() {
 
         step.enter()
             .append('rect').attr('class', 'step')
-            .attr(popoverAttr(partyPopOver, 'top'));
+            .style('cursor', 'pointer')
+            .on('mouseover', function (d) { showToolTip(renderPartyStepTooltipHtml(d)); })
+            .on('mousemove', function () { moveToolTip(); })
+            .on('mouseout', function () { hideToolTip(); });
 
-        function partyPopOver(d) {
-            return '<h4>' + d.value.party + '</h4><em>' + ((d.value.party) ? CONGRESS_DEFINE.parties[d.value.party].name : '') + '</em>';
+        function renderPartyStepTooltipHtml(d) {
+            var party = d.value.party;
+            var color = CONGRESS_DEFINE.getPartyColor(party);
+            var name = (party && CONGRESS_DEFINE.parties[party]) ? CONGRESS_DEFINE.parties[party].name : '';
+            return '<div style="min-width: 160px;">' +
+                '<div style="font-size:14px;font-weight:700;color:' + color + ';margin-bottom:2px;">' + party + '</div>' +
+                '<div style="font-size:12px;color:#666;">' + name + '</div>' +
+                '</div>';
         }
-        $('.timeline-crop .parties .party .steps .step').popover({ trigger: "hover" });
 
         step.transition(3000)
             .attr('class', function (d) {
@@ -557,7 +567,7 @@ function timeLineCrop() {
             .attr("y", function (d) { return d.value[type].x0 })
             .attr("height", function (d) { return d.value[type].height })
             .attr("width", partyStepWidth)
-            .attr("opacity", 0.8)
+            .attr("opacity", 1)
             .style("fill", function (d) { return CONGRESS_DEFINE.getPartyColor(d.value.party); })
     }
 
@@ -813,6 +823,9 @@ function timeLineCrop() {
         drawDeputyTraces();
     };
 
+    function showToolTip(html) { if (div.empty()) return; div.transition().duration(0); div.style("left", d3.event.pageX + 15 + "px"); div.style("top", d3.event.pageY - 10 + "px"); div.style("display", "inline-block").style("opacity", 1); div.html(html); }
+    function moveToolTip() { if (div.empty()) return; div.style("left", d3.event.pageX + 15 + "px"); div.style("top", d3.event.pageY - 10 + "px"); }
+    function hideToolTip() { if (div.empty()) return; div.transition().duration(0); div.style("display", "none").style("opacity", 1); }
     return chart;
 
 }
