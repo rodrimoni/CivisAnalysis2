@@ -91,28 +91,26 @@ function similarityForce() {
             .on('mouseup', function () {
                 $('.searchDeputies').tagsinput('removeAll')
             })
-            .on("mouseover",
-                mouseoverDeputy
-            )
-            .on("mouseout", function (d) {
-                div.style("display", "none");
-                mouseoutDeputy(d);
-            });
+            .on("mouseover", function (d) { mouseoverDeputy(d); showToolTip(renderDeputyTooltipHtml(d)); })
+            .on("mousemove", function () { moveToolTip(); })
+            .on("mouseout", function (d) { hideToolTip(); mouseoutDeputy(d); });
 
-        d3.select(hmtlContent)
-            .selectAll('circle.node')
-            .attr(popoverAttr(deputyPopOver, 'top'))
-
-        function deputyPopOver(d) {
-            var deputyTooltipEnglish = '<strong>' + d.name + ' (' + d.party + '-' + d.district + ")</strong><br><em>Left-Click to select</em><br><em>Right-Click to create new visualizations</em>";
-            var deputyTooltipPortuguese = '<strong>' + d.name + ' (' + d.party + '-' + d.district + ")</strong><br><em>Botão esquerdo para selecionar</em><br><em>Botão direito para criar novas vis.</em>";
-            if (language === PORTUGUESE)
-                return deputyTooltipPortuguese;
-            else
-                return deputyTooltipEnglish;
+        function renderDeputyTooltipHtml(d) {
+            var color = CONGRESS_DEFINE.getPartyColor(d.party);
+            var en = '<div style="min-width: 180px;">' +
+                '<div style="font-size:14px;font-weight:600;color:' + color + ';margin-bottom:4px;">' + d.name + ' (' + d.party + '-' + d.district + ')</div>' +
+                '<div style="margin-top:6px;font-size:11px;color:#666;\"><em>Left-Click to select</em><br><em>Right-Click to create new visualizations</em></div>' +
+                '</div>';
+            var pt = '<div style="min-width: 180px;">' +
+                '<div style="font-size:14px;font-weight:600;color:' + color + ';margin-bottom:4px;">' + d.name + ' (' + d.party + '-' + d.district + ')</div>' +
+                '<div style="margin-top:6px;font-size:11px;color:#666;\"><em>Botão esquerdo para selecionar</em><br><em>Botão direito para criar novas vis.</em></div>' +
+                '</div>';
+            return (language === PORTUGUESE) ? pt : en;
         }
 
-        $('.similarity-force circle.node').popover({ trigger: "hover" });
+        function showToolTip(html) { if (div.empty()) return; div.transition().duration(0); div.style("left", d3v4.event.pageX + 15 + "px"); div.style("top", d3v4.event.pageY - 10 + "px"); div.style("display", "inline-block").style("opacity", 1); div.html(html); }
+        function moveToolTip() { if (div.empty()) return; div.style("left", d3v4.event.pageX + 15 + "px"); div.style("top", d3v4.event.pageY - 10 + "px"); }
+        function hideToolTip() { if (div.empty()) return; div.transition().duration(0); div.style("display", "none").style("opacity", 1); }
 
         simulation.on("tick", function () {
             link.attr("x1", function (d) { return d.source.x; })

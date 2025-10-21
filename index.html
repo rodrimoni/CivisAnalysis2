@@ -498,11 +498,19 @@
 
         windowSystem.on('click', '#statesBtn', selectByStates);
 
-        $("#openNavBtn").attr(popoverAttr(function () {
-            return "Click to open Treeview"
-        }, 'right'));
-
-        $('#openNavBtn').popover({ trigger: "hover" });
+        $("#openNavBtn").on('mouseover', function () {
+            var div = d3.select('.toolTip');
+            if (div.empty()) return;
+            div.transition().duration(0);
+            div.style('left', d3.event.pageX + 15 + 'px');
+            div.style('top', d3.event.pageY - 10 + 'px');
+            div.style('display', 'inline-block').style('opacity', 1);
+            div.html('<div style="font-size:12px;">Click to open Treeview</div>');
+        }).on('mousemove', function () {
+            var div = d3.select('.toolTip'); if (div.empty()) return; div.style('left', d3.event.pageX + 15 + 'px'); div.style('top', d3.event.pageY - 10 + 'px');
+        }).on('mouseout', function () {
+            var div = d3.select('.toolTip'); if (div.empty()) return; div.transition().duration(0); div.style('display', 'none').style('opacity', 1);
+        });
 
         windowSystem.on('click', '#pt-br', function () {
             language = PORTUGUESE;

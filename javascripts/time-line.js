@@ -494,12 +494,20 @@ d3.chart.timeline = function () {
 
         step.enter()
             .append('rect').attr('class', 'step')
-            .attr(popoverAttr(partyPopOver, 'top'));
+            .style('cursor', 'pointer')
+            .on('mouseover', function (d) { showToolTip(renderPartyStepTooltipHtml(d)); })
+            .on('mousemove', function () { moveToolTip(); })
+            .on('mouseout', function () { hideToolTip(); });
 
-        function partyPopOver(d) {
-            return '<h4>' + d.value.party + '</h4><em>' + ((d.value.party) ? CONGRESS_DEFINE.parties[d.value.party].name : '') + '</em>';
+        function renderPartyStepTooltipHtml(d) {
+            var party = d.value.party;
+            var color = CONGRESS_DEFINE.getPartyColor(party);
+            var name = (party && CONGRESS_DEFINE.parties[party]) ? CONGRESS_DEFINE.parties[party].name : '';
+            return '<div style="min-width: 160px;">' +
+                '<div style="font-size:14px;font-weight:700;color:' + color + ';margin-bottom:2px;">' + party + '</div>' +
+                '<div style="font-size:12px;color:#666;">' + name + '</div>' +
+                '</div>';
         }
-        $('.timeline .parties .party .steps .step').popover({ trigger: "hover" });
 
         step.transition(3000)
             .attr('class', function (d) {
@@ -730,7 +738,10 @@ d3.chart.timeline = function () {
             .enter()
             .append('g')
             .attr('class', 'election')
-            .attr(popoverAttr(electionPopover));
+            .style('cursor', 'pointer')
+            .on('mouseover', function (d) { showToolTip(electionPopoverHtml(d)); })
+            .on('mousemove', function () { moveToolTip(); })
+            .on('mouseout', function () { hideToolTip(); });
 
         allianceIcons.selectAll('.glyphicon')
             .data(function (d) { return [d] })
@@ -767,13 +778,12 @@ d3.chart.timeline = function () {
             .text('elections');
 
 
-        function electionPopover(d) {
-            var text = language === ENGLISH ? "Brazilian Presidential Election of " : "Eleições para presidente do Brasil "
-            var html = '<h4>' + text + d.name + '</h4>';
-            return html;
+        function electionPopoverHtml(d) {
+            var text = language === ENGLISH ? "Brazilian Presidential Election of " : "Eleições para presidente do Brasil ";
+            return '<div style="min-width: 180px;">' +
+                '<div style="font-size:14px;font-weight:700;color:#333;">' + text + d.name + '</div>' +
+                '</div>';
         }
-        // // POPOVER!
-        $('.timeline g.election').popover({ trigger: "hover" });
 
         // set on/off alliance
         allianceIcons.on('click', function (d) {
@@ -861,6 +871,9 @@ d3.chart.timeline = function () {
         });
     }
 
+    function showToolTip(html) { var div = d3.select(".toolTip"); if (div.empty()) return; div.transition().duration(0); div.style("left", d3.event.pageX + 15 + "px"); div.style("top", d3.event.pageY - 10 + "px"); div.style("display", "inline-block").style("opacity", 1); div.html(html); }
+    function moveToolTip() { var div = d3.select(".toolTip"); if (div.empty()) return; div.style("left", d3.event.pageX + 15 + "px"); div.style("top", d3.event.pageY - 10 + "px"); }
+    function hideToolTip() { var div = d3.select(".toolTip"); if (div.empty()) return; div.transition().duration(0); div.style("display", "none").style("opacity", 1); }
     //return d3.rebind(chart, brush, "on");
     return d3.rebind(chart, dispatch, "on");
 };

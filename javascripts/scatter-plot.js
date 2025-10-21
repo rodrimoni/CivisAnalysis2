@@ -1,3 +1,8 @@
+/* Rice Index Calculation Types */
+const RICE_TYPE_CLASSIC = 0;  // Only considers Yes/No
+const RICE_TYPE_BRAZIL = 1;   // Considers Yes/No/Obstruction
+
+
 function scatterPlotChart() {
     var margin = { top: 30, right: 350, bottom: 20, left: 50 },
         outerWidth = MAX_WIDTH,
@@ -257,7 +262,6 @@ function scatterPlotChart() {
             .data(nodes)
             .enter()
             .append("circle")
-            .attr(popoverAttr(deputyPopOver, 'top'))
             .attr("class", function (d) { return (d.selected) ? "node selected" : ((d.hovered) ? "node hovered" : "node"); })
             .attr("r", function (d) { return (d.hovered) ? nodeRadius * 2 : nodeRadius; })
             .attr("id", function (d) { return panelID + "_deputy-id-" + d.deputyID; })
@@ -274,39 +278,62 @@ function scatterPlotChart() {
             .on('mouseup', function () {
                 $('.searchDeputies').tagsinput('removeAll');
             })
-            .on("mouseover",
-                //mouseOverDeputy(d.deputyID, this);
-                mouseoverDeputy
-            )
+            .on("mouseover", function (d) {
+                mouseoverDeputy(d);
+                showToolTip(renderDeputyTooltipHtml(d));
+            })
+            .on("mousemove", function () {
+                moveToolTip();
+            })
             .on("mouseout", function (d) {
-                div.style("display", "none");
+                hideToolTip();
                 mouseoutDeputy(d);
             });
 
-        function deputyPopOver(d) {
-            var deputyTooltipEnglish;
-            var deputyTooltipPortuguese;
-
-            // Convert alignment to percentage (0-1 → 0-100%)
+        function renderDeputyTooltipHtml(d) {
             var alignmentPercentage = d.alignment ? Math.round(d.alignment * 100) : 0;
+            var color = CONGRESS_DEFINE.getPartyColor(d.party);
+            var english =
+                '<div style="min-width: 180px;">' +
+                '<div style="font-size: 14px; font-weight: 600; color: ' + color + '; margin-bottom: 4px;">' + d.name + ' (' + d.party + '-' + d.district + ')</div>' +
+                '<div style="font-size: 13px; color: #666;">Party Alignment: <span style="font-weight:600; color:' + color + ';">' + alignmentPercentage + '%</span></div>' +
+                '<div style="margin-top:6px; font-size: 11px; color: #666;">' +
+                '<em>Left-Click to select</em><br><em>Right-Click to create new visualizations</em>' +
+                '</div>' +
+                '</div>';
 
-            deputyTooltipEnglish = '<strong>' + d.name + ' (' + d.party + '-' + d.district + ")</strong><br>" +
-                '<span style="color: #666;">Party Alignment: ' + alignmentPercentage + '%</span><br>' +
-                "<em>Left-Click to select</em><br>" +
-                "<em>Right-Click to create new visualizations</em>";
+            var portuguese =
+                '<div style="min-width: 180px;">' +
+                '<div style="font-size: 14px; font-weight: 600; color: ' + color + '; margin-bottom: 4px;">' + d.name + ' (' + d.party + '-' + d.district + ')</div>' +
+                '<div style="font-size: 13px; color: #666;">Alinhamento Partidário: <span style="font-weight:600; color:' + color + ';">' + alignmentPercentage + '%</span></div>' +
+                '<div style="margin-top:6px; font-size: 11px; color: #666;">' +
+                '<em>Botão esquerdo para selecionar</em><br><em>Botão direito para criar novas vis.</em>' +
+                '</div>' +
+                '</div>';
 
-            deputyTooltipPortuguese = '<strong>' + d.name + ' (' + d.party + '-' + d.district + ")</strong><br>" +
-                '<span style="color: #666;">Alinhamento Partidário: ' + alignmentPercentage + '%</span><br>' +
-                "<em>Botão esquerdo para selecionar</em><br>" +
-                "<em>Botão direito para criar novas vis.</em>";
-
-            if (language === PORTUGUESE)
-                return deputyTooltipPortuguese;
-            else
-                return deputyTooltipEnglish;
+            return (typeof language !== 'undefined' && language === PORTUGUESE) ? portuguese : english;
         }
 
-        $('.scatter-plot circle.node').popover({ trigger: "hover" });
+        function showToolTip(html) {
+            if (div.empty()) return;
+            div.transition().duration(0);
+            div.style("left", d3.event.pageX + 15 + "px");
+            div.style("top", d3.event.pageY - 10 + "px");
+            div.style("display", "inline-block").style("opacity", 1);
+            div.html(html);
+        }
+
+        function moveToolTip() {
+            if (div.empty()) return;
+            div.style("left", d3.event.pageX + 15 + "px");
+            div.style("top", d3.event.pageY - 10 + "px");
+        }
+
+        function hideToolTip() {
+            if (div.empty()) return;
+            div.transition().duration(0);
+            div.style("display", "none").style("opacity", 1);
+        }
 
         $("#" + panelID + " .node")
             .contextMenu({
@@ -464,8 +491,9 @@ function scatterPlotChart() {
                     .on('click', function (d) {
                         clickParty(d);
                     })
-                    .on('mouseover', mouseoverParty)
-                    .on('mouseout', mouseoutParty);
+                    .on('mouseover', legendMouseover)
+                    .on('mousemove', function () { moveToolTip(); })
+                    .on('mouseout', legendMouseout);
 
             enterLegend
                 .attr("transform", function (d, i) { if (i % 2 === 0) return "translate(0," + i * 30 + ")"; else return "translate(150," + (i - 1) * 30 + ")"; });
@@ -480,6 +508,77 @@ function scatterPlotChart() {
                 .attr("dy", ".45em")
                 .text(function (d) { return d });
 
+            function computeRiceIndexPercentForParty(rcs, party, type) {
+                if (!rcs || !rcs.length) return null;
+
+                var weightedSum = 0;
+                var totalVotes = 0;
+
+                rcs.forEach(function (rc) {
+                    if (!rc || !rc.votes) return;
+                    var partyVotes = rc.votes.filter(function (v) { return v.party === party; });
+
+                    var S = 0, N = 0, total = 0;
+                    if (type === RICE_TYPE_BRAZIL) {
+                        var validVotesBR = partyVotes.filter(function (v) { return v.vote === 'Sim' || v.vote === 'Não' || v.vote === 'Obstrução'; });
+                        validVotesBR.forEach(function (v) { if (v.vote === 'Sim') S++; else if (v.vote === 'Não' || v.vote === 'Obstrução') N++; });
+                        total = S + N;
+                    } else {
+                        var validVotesCL = partyVotes.filter(function (v) { return v.vote === 'Sim' || v.vote === 'Não'; });
+                        validVotesCL.forEach(function (v) { if (v.vote === 'Sim') S++; else if (v.vote === 'Não') N++; });
+                        total = S + N;
+                    }
+
+                    if (total === 0) return;
+                    var rice = Math.abs(S - N) / total;
+                    weightedSum += rice * total;
+                    totalVotes += total;
+                });
+
+                if (totalVotes === 0) return null;
+                return Math.round((weightedSum / totalVotes) * 100);
+            }
+
+            // Precompute Classic Rice Index (Cohesion) once per party
+            var partyCohesionByParty = {};
+            var rcsForCohesion = (typeof state !== 'undefined' && state.getCurrentRollCalls) ? state.getCurrentRollCalls() : null;
+            var partyKeys = d3.map(data, function (d) { return d.party; }).keys();
+            partyKeys.forEach(function (party) {
+                partyCohesionByParty[party] = computeRiceIndexPercentForParty(rcsForCohesion, party, RICE_TYPE_CLASSIC);
+            });
+
+            function renderPartyLegendTooltipHtml(party) {
+                var ricePercent = (partyCohesionByParty && partyCohesionByParty.hasOwnProperty(party)) ? partyCohesionByParty[party] : null;
+
+                var english =
+                    '<div style="min-width: 160px;">' +
+                    '<div style="font-size: 14px; font-weight: 700; color: ' + CONGRESS_DEFINE.getPartyColor(party) + '; margin-bottom: 2px;">' + party + '</div>' +
+                    '<div style="font-size: 13px; color: #666;">Cohesion: <span style="font-weight:600; color:#333;">' + (ricePercent !== null ? ricePercent + '%' : '—') + '</span></div>' +
+                    '<div style="margin-top:6px; font-size: 11px; color: #666;">' +
+                    '<em>Left-Click to select</em><br><em>Right-Click to create new visualizations</em>' +
+                    '</div>' +
+                    '</div>';
+
+                var portuguese =
+                    '<div style="min-width: 160px;">' +
+                    '<div style="font-size: 14px; font-weight: 700; color: ' + CONGRESS_DEFINE.getPartyColor(party) + '; margin-bottom: 2px;">' + party + '</div>' +
+                    '<div style="font-size: 13px; color: #666;">Coesão: <span style="font-weight:600; color:#333;">' + (ricePercent !== null ? ricePercent + '%' : '—') + '</span></div>' +
+                    '<div style="margin-top:6px; font-size: 11px; color: #666;">' +
+                    '<em>Botão esquerdo para selecionar</em><br><em>Botão direito para criar novas vis.</em>' +
+                    '</div>' +
+                    '</div>';
+
+                return (typeof language !== 'undefined' && language === PORTUGUESE) ? portuguese : english;
+            }
+
+            function legendMouseover(party) {
+                mouseoverParty(party);
+                showToolTip(renderPartyLegendTooltipHtml(party));
+            }
+            function legendMouseout() {
+                hideToolTip();
+                mouseoutParty();
+            }
             // Add context menu to legend items
             $("#" + panelID + " .legend")
                 .contextMenu({
