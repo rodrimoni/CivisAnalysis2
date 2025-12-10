@@ -7,13 +7,9 @@
  * Load deputies data from JSON file
  */
 function loadDeputies() {
-    var deputiesArray = state.getDeputiesArray();
     d3.json('data/deputies.json', function (a_deputiesArray) {
-        a_deputiesArray.forEach(function (deputy, i) {
-            deputy.deputyID = i;
-            deputiesArray.push(deputy)
-        });
-        console.log(deputiesArray);
+        state.setDeputiesArray(a_deputiesArray);
+        console.log(state.getDeputiesArray());
     });
 }
 

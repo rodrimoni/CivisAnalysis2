@@ -114,9 +114,39 @@ d3.chart.timeline = function () {
             i = -1,
             n = groups.length,
             d;
+
+        var minGap = 1; // minimum gap between months in pixels
+        var monthsPerYear = 12;
+
+        // Cache year block widths and start positions to avoid recalculating
+        var yearBlockWidths = {};
+        var yearStartPositions = {};
+
         while (++i < n) {
             d = groups[i];
-            path.push("M", x(d.key), ",", histogramHeight, "V", y(d.value), "h9V", histogramHeight);
+            var monthDate = new Date(d.key);
+            var year = monthDate.getFullYear();
+            var month = monthDate.getMonth();
+
+            // Calculate year block width and start position if not cached
+            if (!yearBlockWidths[year]) {
+                var yearStartX = x(new Date(year, 0, 1));
+                var yearEndX = x(new Date(year + 1, 0, 1));
+                yearStartPositions[year] = yearStartX;
+                yearBlockWidths[year] = yearEndX - yearStartX;
+            }
+
+            var yearBlockWidth = yearBlockWidths[year];
+            var yearStartX = yearStartPositions[year];
+            var barWidth = Math.max(1, (yearBlockWidth - (minGap * (monthsPerYear - 1))) / monthsPerYear);
+
+            // Calculate position within the year block
+            var monthPositionInYear = month;
+            var monthX = yearStartX + (monthPositionInYear * (barWidth + minGap)) + (barWidth / 2);
+
+            // Draw bar centered at monthX
+            var barStartX = monthX - (barWidth / 2);
+            path.push("M", barStartX, ",", histogramHeight, "V", y(d.value), "h", barWidth, "V", histogramHeight);
         }
         return path.join("");
     }
@@ -204,8 +234,8 @@ d3.chart.timeline = function () {
         data.forEach(function (d) { datetimeList.push(d.datetime) });
         var dateCF = crossfilter(datetimeList);
         dimension = dateCF.dimension(function (d) { return d });
-        group = dimension.group(d3.time.week);
-        round = d3.time.week.round;
+        group = dimension.group(d3.time.month);
+        round = d3.time.month.round;
 
         chart.x(d3.time.scale()
             .domain([new Date(CONGRESS_DEFINE.startingYear, 0, 1), new Date(CONGRESS_DEFINE.endingYear + 1, 0, 1)])
@@ -214,7 +244,7 @@ d3.chart.timeline = function () {
 
         y.domain([0, group.top(1)[0].value]);
 
-        // MAX RollCalls/week LINE --------------------------------------------
+        // MAX RollCalls/month LINE --------------------------------------------
         g.append('path')
             .attr('pointer', 'none')
             .attr('stroke-dasharray', '5,5,5')
@@ -227,9 +257,9 @@ d3.chart.timeline = function () {
             y: y(group.top(1)[0].value) - 2,
             'fill': 'grey',
             'font-size': 11
-        }).text('max RollCalls/week:' + group.top(1)[0].value)
+        }).text('max RollCalls/month:' + group.top(1)[0].value)
             .attr({ 'id': 'maxRollCallsWeek' });
-        // MAX RollCalls/week LINE ===========================================
+        // MAX RollCalls/month LINE ===========================================
 
 
         g.selectAll(".bar")

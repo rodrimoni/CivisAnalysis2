@@ -83,6 +83,7 @@ var StateManager = (function () {
             setShiftKey: function (value) { state.SHIFTKEY = value; },
             setCurrentDeputies: function (value) { state.currentDeputies = value; },
             setCurrentRollCalls: function (value) { state.currentRollCalls = value; },
+            setDeputiesArray: function (value) { state.deputiesArray = value; },
 
             // First time flag setters
             setFirstScatterPlot: function (value) { state.firstScatterPlot = value; },

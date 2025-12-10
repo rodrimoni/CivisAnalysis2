@@ -107,9 +107,13 @@ function initSystem() {
     loadDeputiesNodesByYear();
     loadRollCalls(function () {
         createNewChild(TIME_LINE, {});
+        // This functions are used to update data in System, keep commented.
+        //createTraces1by1();
         //calculatePrecalc('year');
         //calculatePrecalc('legislature');
         //calculatePrecalc('president');
+        //calcExtentValuesByYear();
+        //loadScatterPlotDataByYear();
     });
 }
 
@@ -155,3 +159,84 @@ function localizedTheme(theme) {
     return theme;
 }
 
+function calcThePartyTracesByYear(periodOfYears) {
+    var startYear = CONGRESS_DEFINE.startingYear, endYear = CONGRESS_DEFINE.endingYear;
+
+    function calcOneYearRecursive(year) {
+        console.log('calcThePartyTracesByYear ' + year);
+        if (year > endYear) {
+            partyTrace['DEM'] = mergeObjects(partyTrace['PFL'], partyTrace['DEM']);
+            partyTrace['União'] = mergeObjects(partyTrace['DEM'], partyTrace['União']);
+            partyTrace['PR'] = mergeObjects(partyTrace['PL'], partyTrace['PR']);
+            partyTrace['PP'] = mergeObjects(partyTrace['PPB'], partyTrace['PP']);
+            partyTrace['Podemos'] = mergeObjects(partyTrace['PTN'], partyTrace['Podemos']);
+            partyTrace['MDB'] = mergeObjects(partyTrace['PMDB'], partyTrace['MDB']);
+            partyTrace['CIDADANIA'] = mergeObjects(partyTrace['PPS'], partyTrace['CIDADANIA']);
+
+            delete partyTrace['DEM'];
+            delete partyTrace['PFL'];
+            delete partyTrace['PL'];
+            delete partyTrace['PPB'];
+            delete partyTrace['PTN'];
+            delete partyTrace['PMDB'];
+            delete partyTrace['PPS'];
+            //delete partyTrace['PPR']; // ??
+            //delete partyTrace['PDS']; // ??
+            //delete PTN -> PODEMOS?
+
+            var saveTrace = {
+                "extents": yearPartyExtent,
+                "traces": partyTrace
+            };
+
+            console.log(JSON.stringify(saveTrace));
+            return;
+        }
+
+        var period = [];
+        period[0] = new Date(year, 0, 1);
+        period[1] = new Date(year + periodOfYears, 0, 1);
+
+        console.log(period);
+
+        updateDataforDateRange(period, function () {
+            var filteredDeputies = filterDeputies();
+            var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
+
+            // var SVDdata = calcSVD(filteredDeputies,rollCallInTheDateRange);
+            calcSVD(matrixDeputiesPerRollCall, function (SVDdata) {
+                // Deputies array
+                deputyNodes = createDeputyNodes(SVDdata.deputies, filteredDeputies);
+
+                scaleAdjustment().setGovernmentTo3rdQuadrant(d3.values(deputyNodes), period[1]);
+
+                // store parties trace
+                var parties = calcPartiesSizeAndCenter(d3.values(deputyNodes));
+                // $.each(parties, function(party){
+                // 	if(filter[party] === undefined) { delete parties[party] }
+                // });
+
+                //console.log(parties)
+                $.each(parties, function (party) {
+                    if (partyTrace[party] === undefined) partyTrace[party] = {};
+
+                    partyTrace[party][year] = {};
+                    partyTrace[party][year].center = this.center;
+                    partyTrace[party][year].size = this.size;
+
+                });
+                yearPartyExtent[year] = d3.extent(d3.entries(parties), function (d) { return d.value.center[1] });
+
+                calcOneYearRecursive(year + periodOfYears);
+            })
+        })
+
+    }
+
+    calcOneYearRecursive(startYear);
+
+}
+
+function createTraces1by1() {
+    calcThePartyTracesByYear(1); // calc by two years
+}
