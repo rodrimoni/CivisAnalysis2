@@ -164,7 +164,7 @@ function loadMotion(type, number, year, defer) {
             }
 
             // assign motion theme to roll call
-            rollCall.theme = !!motion?.theme?.length ? motion?.theme[0] : undefined;
+            rollCall.theme = Array.isArray(motion?.theme) ? motion.theme[0] : motion?.theme;
 
             // create the Date obj
             rollCall.datetime = new Date(rollCall.datetime);
