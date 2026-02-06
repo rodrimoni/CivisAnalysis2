@@ -433,15 +433,17 @@ function chamberInfographic() {
 
         var paths = svg.selectAll('path.main');
 
-        paths.style("fill", function (d) {
-            if (d.data.value.rate != null) {
-                if (d.data.value.rate === "noVotes")
-                    return 'grey';
-                else return CONGRESS_DEFINE.votingColor(d.data.value.rate)
-            } else {
-                return CONGRESS_DEFINE.getPartyColor(d.data.key)
-            }
-        });
+        paths.transition()
+            .duration(300)
+            .style("fill", function (d) {
+                if (d.data.value.rate != null) {
+                    if (d.data.value.rate === "noVotes")
+                        return 'grey';
+                    else return CONGRESS_DEFINE.votingColor(d.data.value.rate)
+                } else {
+                    return CONGRESS_DEFINE.getPartyColor(d.data.key)
+                }
+            });
     };
 
     chart.updateParties = function (rollCall) {

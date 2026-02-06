@@ -21,12 +21,17 @@ function updateRollCalls(panelId) {
     });
 
     if ((selectedRollCalls.length === rollCallsRates[panelId].length) && (hoveredRollCalls.length === 0)) {
-        // reset deputies
-        deputyNodes[panelId].forEach(function (deputy) { deputy.rate = null; deputy.vote = null; });
-
-        if (node.typeChart === CHAMBER_INFOGRAPHIC) {
-            node.chart.resetParties();
+        // reset deputies in ALL panels (votes are set across all panels on hover)
+        for (var key in deputyNodes) {
+            deputyNodes[key].forEach(function (deputy) { deputy.rate = null; deputy.vote = null; });
         }
+
+        // Reset party arcs in all chamber infographics
+        tree.traverseBF(function (n) {
+            if (n.typeChart === CHAMBER_INFOGRAPHIC) {
+                n.chart.resetParties();
+            }
+        });
     }
     else {
         // ONLY ONE ROLL CALL SELECTED || HOVER
@@ -47,9 +52,12 @@ function updateRollCalls(panelId) {
                 }
             });
 
-            if (node.typeChart === CHAMBER_INFOGRAPHIC) {
-                node.chart.updateParties(rollCall);
-            }
+            // Update party arcs in all chamber infographics
+            tree.traverseBF(function (n) {
+                if (n.typeChart === CHAMBER_INFOGRAPHIC) {
+                    n.chart.updateParties(rollCall);
+                }
+            });
         }
     }
 
@@ -78,7 +86,7 @@ function setVotesForSelectedDeputies(panelID) {
     });
 
     // show the votes of one deputy
-    if ((hoveredDeputies.length === 1) || (selectedDeputies.length === 1)) {
+    if ((hoveredDeputies.length === 1) || (selectedDeputies.length === 1 && hoveredDeputies.length === 0)) {
         // get the deputy id
         var deputy = (hoveredDeputies.length === 1) ? hoveredDeputies[0] : selectedDeputies[0];
         // set the deputy vote for each rollCall
@@ -90,6 +98,9 @@ function setVotesForSelectedDeputies(panelID) {
                 }
             })
         });
+    } else if (hoveredDeputies.length > 1) {
+        // multiple deputies hovered (e.g., hovering a party) - show aggregated rate
+        calcRollCallRate(rollCallsRates[panelID], hoveredDeputies);
     } else {
         calcRollCallRate(rollCallsRates[panelID], selectedDeputies);
     }
