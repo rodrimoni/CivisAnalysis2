@@ -386,7 +386,8 @@ function rollCallsHeatmap() {
                     htmlContent += "<strong><span class='trn'>Amendment</span></strong>:  " + motions[d.type + d.number + d.year].amendment.trim() + "<br><br>";
                     const theme = motions[d.type + d.number + d.year]?.theme
                     if (!!theme && theme.length) {
-                        const subject = language === PORTUGUESE ? theme[0].trim() : subjectsToEnglish[theme[0].trim()]; // Pode ter mais de um tema, pegar sempre o primeiro
+                        const themeKey = Array.isArray(theme) ? theme[0].trim() : theme.trim();
+                        const subject = language === PORTUGUESE ? themeKey : subjectsToEnglish[themeKey];
                         htmlContent += "<strong><span class='trn'>Subject</span></strong>:  " + subject + "<br><br>";
                     }
                     if (d.summary !== "")
