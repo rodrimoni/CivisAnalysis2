@@ -237,5 +237,6 @@ const subjectsToEnglish = {
     "Estrutura Fundiária": "Land Structure",
     "Turismo": "Tourism",
     "Direito e Defesa do Consumidor": "Consumer Rights and Protection",
-    "Direito e Justiça": "Law and Justice"
+    "Direito e Justiça": "Law and Justice",
+    "Direito Constitucional": "Constitutional Law"
 }
