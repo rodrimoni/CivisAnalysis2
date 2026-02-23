@@ -37,9 +37,11 @@ function updateRollCalls(panelId) {
         // ONLY ONE ROLL CALL SELECTED || HOVER
         if ((hoveredRollCalls.length === 1) || (selectedRollCalls.length === 1)) {
 
-            deputyNodes[panelId].forEach(function (deputy) {
-                deputy.vote = 'null';
-            });
+            for (var key in deputyNodes) {
+                deputyNodes[key].forEach(function (deputy) {
+                    deputy.vote = 'null';
+                });
+            }
 
             var rollCall = (hoveredRollCalls.length === 1) ? hoveredRollCalls[0] : selectedRollCalls[0];
 
