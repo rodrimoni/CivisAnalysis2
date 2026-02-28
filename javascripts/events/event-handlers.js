@@ -482,6 +482,65 @@ function handleContextMenuDeputy(invokedOn, selectedMenu) {
         chartObj = { 'chartID': STATIC_ROLLCALLS_HEATMAP, 'data': data, 'title': title, 'prettyTitle': prettyTitle, 'panelClass': panelClass };
         createNewChild(panelID, chartObj);
     }
+    else if (selectedMenu.context.id === 'cohesion-timeline-deputies-selection') {
+        var periodID = period.split("-");
+        var type, id, periodData, subtitle, panelClass, firstYear, lastYear;
+
+        if (periodID.length <= 2) {
+            type = periodID[0];
+            id = periodID[1];
+            if (type !== 'year') {
+                periodData = CONGRESS_DEFINE[type + "s"][id];
+                title = "<span><span class='trn'>Deputies Cohesion Timeline</span>: <span class='trn'>" + periodData.name + "</span></span>";
+                prettyTitle = "Deputies Cohesion Timeline: " + periodData.name;
+                subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " <span class='trn'>to</span> " + periodData.period[1].toLocaleDateString() + "</span>";
+                title += subtitle;
+            }
+            else {
+                title = "<span><span class='trn'>Deputies Cohesion Timeline</span>: <span class='trn'>Year</span> " + id + "</span>";
+                prettyTitle = "Deputies Cohesion Timeline: Year " + id;
+            }
+            panelClass = type + '-' + id;
+        }
+        else {
+            type = periodID[0];
+            firstYear = periodID[1];
+            lastYear = periodID[2];
+            title = "<span><span class='trn'>Deputies Cohesion Timeline</span>: " + firstYear + " <span class='trn'>to</span> " + lastYear + "</span>";
+            prettyTitle = "Deputies Cohesion Timeline: " + firstYear + " to " + lastYear;
+            panelClass = type + "-" + firstYear + "-" + lastYear;
+        }
+
+        var deputyNodes = state.getDeputyNodes();
+        var rollCallsRates = state.getRollCallsRates();
+
+        var selectedDeputies = deputyNodes[panelID].filter(function (deputy) {
+            return deputy.selected;
+        });
+
+        var deputyIDs = selectedDeputies.map(function (d) { return d.deputyID; });
+
+        var rcs = rollCallsRates[panelID];
+        rcs.map(function (e) {
+            e.rollCallName = e.type + " " + e.number + " " + e.year;
+        });
+
+        var data = {};
+        data.rcs = rcs;
+        data.deputies = selectedDeputies;
+        data.deputyIDs = deputyIDs;
+        data.isDeputyMode = true;
+
+        chartObj = {
+            'chartID': PARTY_RICE_TIMELINE,
+            'data': data,
+            'title': title,
+            'prettyTitle': prettyTitle,
+            'panelClass': panelClass
+        };
+
+        createNewChild(panelID, chartObj);
+    }
 }
 
 /**
@@ -536,6 +595,7 @@ function handleButtonThemes(panelID, data, chartID) {
 function checkPeriodTimeLineCrop(event, deputy) {
     var panelID = deputy.id.split("_")[0];
     var contextMenuTimeLineCropSelection = $("#time-line-crop-behavior-selection");
+    var contextMenuCohesionTimeline = $("#cohesion-timeline-deputies-selection");
 
     if (event.which === 3) {
         var period = $("#" + panelID).data().typePeriod;
@@ -558,9 +618,18 @@ function checkPeriodTimeLineCrop(event, deputy) {
                 else
                     contextMenuTimeLineCropSelection.removeClass("disabled");
             }
+
+            // Cohesion timeline: enable only when >= 2 deputies are selected
+            var selectedCount = $("#" + panelID + " .node.selected").length;
+            if (selectedCount >= 2) {
+                contextMenuCohesionTimeline.removeClass("disabled");
+            } else {
+                contextMenuCohesionTimeline.addClass("disabled");
+            }
         }
         else {
             contextMenuTimeLineCropSelection.addClass("disabled");
+            contextMenuCohesionTimeline.addClass("disabled");
         }
     }
 }
@@ -677,6 +746,23 @@ function handleContextMenuPartyLegend(invokedOn, selectedMenu) {
         createNewChild(panelID, chartObj);
     }
     else if (selectedMenu.context.id === 'party-rice-timeline') {
+        // Retrieve multi-party selection from the parent chart
+        var tree = state.getTree();
+        var parentNode = tree.getNode(panelID, tree.traverseBF);
+        var parentChart = (parentNode && parentNode.chart) ? parentNode.chart : null;
+        var selectedParties = (parentChart && typeof parentChart.getSelectedPartiesForHulls === 'function')
+            ? parentChart.getSelectedPartiesForHulls()
+            : [];
+
+        // If right-clicked party isn't in selection, or < 2 parties, fallback to single party
+        if (selectedParties.length < 2 || selectedParties.indexOf(party) === -1) {
+            selectedParties = [party];
+        }
+
+        var partiesLabel = selectedParties.length > 1
+            ? ''
+            : party;
+
         var periodID = period.split("-");
         var type, id, periodData, subtitle, panelClass, firstYear, lastYear;
 
@@ -685,22 +771,22 @@ function handleContextMenuPartyLegend(invokedOn, selectedMenu) {
             id = periodID[1];
             if (type !== 'year') {
                 periodData = CONGRESS_DEFINE[type + "s"][id];
-                title = "<span><span class='trn'>Cohesion Timeline</span>: " + party + " - <span class='trn'>" + periodData.name + "</span></span>";
-                prettyTitle = "Cohesion Timeline: " + party + " - " + periodData.name;
+                title = "<span><span class='trn'>Cohesion Timeline</span>: " + partiesLabel + " - <span class='trn'>" + periodData.name + "</span></span>";
+                prettyTitle = "Cohesion Timeline: " + partiesLabel + " - " + periodData.name;
                 subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " <span class='trn'>to</span> " + periodData.period[1].toLocaleDateString() + "</span>";
                 title += subtitle;
             }
             else {
-                title = "<span><span class='trn'>Cohesion Timeline</span>: " + party + " - <span class='trn'>Year</span> " + id + "</span>";
-                prettyTitle = "Cohesion Timeline: " + party + " - Year " + id;
+                title = "<span><span class='trn'>Cohesion Timeline</span>: " + partiesLabel + " - <span class='trn'>Year</span> " + id + "</span>";
+                prettyTitle = "Cohesion Timeline: " + partiesLabel + " - Year " + id;
             }
             panelClass = type + '-' + id;
         }
         else {
             firstYear = periodID[1];
             lastYear = periodID[2];
-            title = "<span><span class='trn'>Cohesion Timeline</span>: " + party + " - " + firstYear + " <span class='trn'>to</span> " + lastYear + "</span>";
-            prettyTitle = "Cohesion Timeline: " + party + " - " + firstYear + " to " + lastYear;
+            title = "<span><span class='trn'>Cohesion Timeline</span>: " + partiesLabel + " - " + firstYear + " <span class='trn'>to</span> " + lastYear + "</span>";
+            prettyTitle = "Cohesion Timeline: " + partiesLabel + " - " + firstYear + " to " + lastYear;
             panelClass = type + "-" + firstYear + "-" + lastYear;
         }
 
@@ -710,7 +796,7 @@ function handleContextMenuPartyLegend(invokedOn, selectedMenu) {
         var rollCallsRates = state.getRollCallsRates();
 
         var deputies = deputyNodes[panelID].filter(function (deputy) {
-            return deputy.party === party;
+            return selectedParties.indexOf(deputy.party) > -1;
         });
 
         var rcs = rollCallsRates[panelID];
@@ -722,6 +808,7 @@ function handleContextMenuPartyLegend(invokedOn, selectedMenu) {
         data.rcs = rcs;
         data.deputies = deputies;
         data.party = party;
+        data.parties = selectedParties;
 
         chartObj = {
             'chartID': PARTY_RICE_TIMELINE,
@@ -734,4 +821,3 @@ function handleContextMenuPartyLegend(invokedOn, selectedMenu) {
         createNewChild(panelID, chartObj);
     }
 }
-
