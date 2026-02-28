@@ -36,6 +36,9 @@ function partyRiceTimeline() {
     var brushGroup;              // <-- keep a reference so dblclick can reset correctly
     var currentData;
     var currentPartyColor;
+    var timeGrouping = 'month';  // 'month' or 'year'
+    var originalData;            // preserve original data for toggle re-render
+    var isMultiParty = false;    // true when showing coalition of multiple parties
 
     /**
      * Main chart function
@@ -71,13 +74,23 @@ function partyRiceTimeline() {
      * @param {Object} data - Data containing party information and roll calls
      */
     function renderTimeline(data) {
-        const { party, rcs, deputies } = data;
+        // Preserve original data for toggle re-render
+        originalData = data;
+
+        var parties = data.parties || (data.party ? [data.party] : []);
+        var party = data.party || (parties.length > 0 ? parties[0] : '');
+        var isDeputyMode = !!data.isDeputyMode;
+        var deputyIDs = data.deputyIDs || [];
+        isMultiParty = parties.length > 1 || isDeputyMode;
+        const { rcs, deputies } = data;
 
         // Get max deputies count for participation calculation
         const deputiesCount = deputies ? deputies.length : 0;
 
-        // Calculate Rice Index by month
-        const monthlyData = calculateMonthlyRiceIndex(rcs, party, deputiesCount);
+        // Calculate Rice Index by month or year based on toggle
+        const monthlyData = timeGrouping === 'year'
+            ? calculateYearlyRiceIndex(rcs, parties, deputiesCount, undefined, isDeputyMode ? deputyIDs : undefined)
+            : calculateMonthlyRiceIndex(rcs, parties, deputiesCount, undefined, isDeputyMode ? deputyIDs : undefined);
 
         if (!monthlyData || monthlyData.length === 0) {
             renderNoDataMessage();
@@ -86,13 +99,17 @@ function partyRiceTimeline() {
 
         // Store data for brush updates
         currentData = monthlyData;
-        currentPartyColor = CONGRESS_DEFINE.getPartyColor(party);
+        currentPartyColor = isDeputyMode ? '#4a5568' : (isMultiParty ? '#4a5568' : CONGRESS_DEFINE.getPartyColor(party));
 
         // Clear previous content
         svg.selectAll("*").remove();
 
         // Render title
-        renderTitle(party, currentPartyColor, monthlyData);
+        if (isDeputyMode) {
+            renderDeputyTitle(deputies, monthlyData);
+        } else {
+            renderTitle(parties, currentPartyColor, monthlyData);
+        }
 
         // Calculate full data extent
         const fullExtent = d3.extent(monthlyData, function (d) { return d.monthStart; });
@@ -657,10 +674,15 @@ function partyRiceTimeline() {
         // Cancel any ongoing hide transitions
         tooltip.transition().duration(0);
 
-        // Format month name and year
-        const monthNames = ["January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"];
-        const monthYear = monthNames[d.monthStart.getMonth()] + " " + d.monthStart.getFullYear();
+        // Format period label based on grouping
+        var monthYear;
+        if (timeGrouping === 'year') {
+            monthYear = "" + d.monthStart.getFullYear();
+        } else {
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+            monthYear = monthNames[d.monthStart.getMonth()] + " " + d.monthStart.getFullYear();
+        }
 
         const ricePercentage = (d.riceIndex * 100).toFixed(1);
 
@@ -732,11 +754,12 @@ function partyRiceTimeline() {
     /**
      * Calculate weighted Rice Index by month
      * @param {Array} rcs - Roll calls array
-     * @param {string} party - Party name
+     * @param {string|Array} parties - Party name or array of party names
      * @param {number} deputiesCount - Total number of deputies in the party
      * @returns {Array} Array of monthly data with Rice Index and participation
      */
-    function calculateMonthlyRiceIndex(rcs, party, deputiesCount, type = RICE_CALC_CLASSIC) {
+    function calculateMonthlyRiceIndex(rcs, parties, deputiesCount, type = RICE_CALC_CLASSIC, deputyIDs) {
+        var partiesArr = Array.isArray(parties) ? parties : [parties];
         if (!rcs || !rcs.length) return [];
 
         // Group roll calls by month
@@ -760,9 +783,9 @@ function partyRiceTimeline() {
             }
 
             // Calculate Rice Index for this roll call
-            const partyVotes = rc.votes.filter(function (v) {
-                return v.party === party;
-            });
+            const partyVotes = deputyIDs && deputyIDs.length > 0
+                ? rc.votes.filter(function (v) { return deputyIDs.indexOf(v.deputyID) > -1; })
+                : rc.votes.filter(function (v) { return partiesArr.indexOf(v.party) > -1; });
 
             // Support Classic (Yes/No) and Brazil (Yes/No/Obstruction) methods
             var validVotes, yesCount, noCount;
@@ -835,48 +858,460 @@ function partyRiceTimeline() {
     }
 
     /**
+     * Get the start of the year (January 1st) for a given date
+     * @param {Date} date - Input date
+     * @returns {Date} Start of the year
+     */
+    function getYearStart(date) {
+        const d = new Date(date);
+        return new Date(d.getFullYear(), 0, 1);
+    }
+
+    /**
+     * Calculate weighted Rice Index by year
+     * Same logic as calculateMonthlyRiceIndex but grouped by year
+     * @param {Array} rcs - Roll calls array
+     * @param {string|Array} parties - Party name or array of party names
+     * @param {number} deputiesCount - Total number of deputies in the party
+     * @returns {Array} Array of yearly data with Rice Index and participation
+     */
+    function calculateYearlyRiceIndex(rcs, parties, deputiesCount, type, deputyIDs) {
+        var partiesArr = Array.isArray(parties) ? parties : [parties];
+        if (type === undefined) type = RICE_CALC_CLASSIC;
+        if (!rcs || !rcs.length) return [];
+
+        const yearMap = new Map();
+
+        rcs.forEach(function (rc) {
+            if (!rc || !rc.votes || !rc.datetime) return;
+
+            const date = new Date(rc.datetime);
+            const yearStart = getYearStart(date);
+            const yearKey = yearStart.toISOString();
+
+            if (!yearMap.has(yearKey)) {
+                yearMap.set(yearKey, {
+                    monthStart: yearStart, // keep field name for compatibility
+                    rollCalls: [],
+                    weightedSum: 0,
+                    totalVotes: 0
+                });
+            }
+
+            const partyVotes = deputyIDs && deputyIDs.length > 0
+                ? rc.votes.filter(function (v) { return deputyIDs.indexOf(v.deputyID) > -1; })
+                : rc.votes.filter(function (v) { return partiesArr.indexOf(v.party) > -1; });
+
+            var validVotes, yesCount, noCount;
+            if (type === RICE_CALC_CLASSIC) {
+                validVotes = partyVotes.filter(function (v) {
+                    return v.vote === 'Sim' || v.vote === 'Não';
+                });
+                yesCount = validVotes.filter(function (v) { return v.vote === 'Sim'; }).length;
+                noCount = validVotes.filter(function (v) { return v.vote === 'Não'; }).length;
+            } else {
+                validVotes = partyVotes.filter(function (v) {
+                    return v.vote === 'Sim' || v.vote === 'Não' || v.vote === 'Obstrução';
+                });
+                yesCount = validVotes.filter(function (v) { return v.vote === 'Sim'; }).length;
+                noCount = validVotes.filter(function (v) { return v.vote === 'Não' || v.vote === 'Obstrução'; }).length;
+            }
+
+            const total = yesCount + noCount;
+
+            if (total > 0) {
+                const rice = Math.abs(yesCount - noCount) / total;
+                const yearData = yearMap.get(yearKey);
+                yearData.weightedSum += rice * total;
+                yearData.totalVotes += total;
+                yearData.rollCalls.push({
+                    rc: rc,
+                    rice: rice,
+                    votes: total
+                });
+            }
+        });
+
+        const yearlyData = [];
+        yearMap.forEach(function (yearData) {
+            if (yearData.totalVotes > 0) {
+                const maxPossibleVotes = yearData.rollCalls.length * deputiesCount;
+                const participationRate = maxPossibleVotes > 0
+                    ? yearData.totalVotes / maxPossibleVotes
+                    : 0;
+
+                yearlyData.push({
+                    monthStart: yearData.monthStart, // keep field name for compatibility
+                    riceIndex: yearData.weightedSum / yearData.totalVotes,
+                    rollCallCount: yearData.rollCalls.length,
+                    totalVotes: yearData.totalVotes,
+                    participation: participationRate,
+                    rollCalls: yearData.rollCalls
+                });
+            }
+        });
+
+        yearlyData.sort(function (a, b) {
+            return a.monthStart - b.monthStart;
+        });
+
+        return yearlyData;
+    }
+
+    /**
      * Render title
-     * @param {string} party - Party name
+     * @param {string|Array} parties - Party name or array of party names
      * @param {string} partyColor - Party color
      * @param {Array} monthlyData - Monthly data
      */
-    function renderTitle(party, partyColor, monthlyData) {
-        // Party name
-        svg.append("text")
-            .attr("x", width / 2)
-            .attr("y", -55)
-            .attr("text-anchor", "middle")
-            .attr("font-size", "24px")
-            .attr("font-weight", "bold")
-            .attr("fill", partyColor)
-            .text(party + " - Cohesion Over Time");
+    function renderTitle(parties, partyColor, monthlyData) {
+        var partiesArr = Array.isArray(parties) ? parties : [parties];
+        var isMultiParty = partiesArr.length > 1;
 
-        // Subtitle with metadata
-        const totalMonths = monthlyData.length;
+        // Subtitle metadata (shared by both modes)
+        const totalPeriods = monthlyData.length;
         const totalRollCalls = d3.sum(monthlyData, function (d) { return d.rollCallCount; });
-
-        // Weighted mean (weighted by total votes per month)
         const totalVotesAll = d3.sum(monthlyData, function (d) { return d.totalVotes; });
         const weightedSumAll = d3.sum(monthlyData, function (d) { return d.riceIndex * d.totalVotes; });
         const meanRice = totalVotesAll > 0 ? weightedSumAll / totalVotesAll : 0;
 
+        var isEnglish = (typeof language !== 'undefined' && language === ENGLISH);
+        const periodLabel = timeGrouping === 'year'
+            ? totalPeriods + (isEnglish ? " years" : " anos")
+            : totalPeriods + (isEnglish ? " months" : " meses");
+
+        if (isMultiParty) {
+            // Line 1: Coalition title
+            svg.append("text")
+                .attr("x", width / 2)
+                .attr("y", -58)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "24px")
+                .attr("font-weight", "bold")
+                .attr("fill", "#4a5568")
+                .text(isEnglish ? "Coalition Cohesion Over Time" : "Coesão da Coalizão ao Longo do Tempo");
+
+            // Line 2: Party names with individual colors
+            var partyNamesText = svg.append("text")
+                .attr("x", width / 2)
+                .attr("y", -36)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "13px");
+
+            partiesArr.forEach(function (p, i) {
+                if (i > 0) {
+                    partyNamesText.append("tspan")
+                        .attr("fill", "#999")
+                        .text(" · ");
+                }
+                partyNamesText.append("tspan")
+                    .attr("fill", CONGRESS_DEFINE.getPartyColor(p))
+                    .attr("font-weight", "600")
+                    .text(p);
+            });
+
+            // Line 3: Stats (same pattern as single party)
+            svg.append("text")
+                .attr("x", width / 2)
+                .attr("y", -20)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "12px")
+                .attr("fill", "#666")
+                .text(periodLabel + " | " + partiesArr.length + (isEnglish ? " parties" : " partidos") + " | " + totalRollCalls + " roll calls | Rice Index: " + meanRice.toFixed(3));
+
+            // Participation shading legend
+            svg.append("text")
+                .attr("x", width / 2)
+                .attr("y", -4)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "10px")
+                .attr("fill", "#999")
+                .attr("font-style", "italic")
+                .text("Background shading indicates participation rate — darker = higher participation");
+
+        } else {
+            // Single party mode (original behavior)
+            var party = partiesArr[0];
+            svg.append("text")
+                .attr("x", width / 2)
+                .attr("y", -55)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "24px")
+                .attr("font-weight", "bold")
+                .attr("fill", partyColor)
+                .text(party + " - Cohesion Over Time");
+
+            svg.append("text")
+                .attr("x", width / 2)
+                .attr("y", -32)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "12px")
+                .attr("fill", "#666")
+                .text(periodLabel + " | " + totalRollCalls + " roll calls | Rice Index: " + meanRice.toFixed(3));
+
+            // Add participation shading legend
+            svg.append("text")
+                .attr("x", width / 2)
+                .attr("y", -12)
+                .attr("text-anchor", "middle")
+                .attr("font-size", "10px")
+                .attr("fill", "#999")
+                .attr("font-style", "italic")
+                .text("Background shading indicates participation rate — darker = higher participation");
+        }
+
+        renderTimeToggle(monthlyData);
+    }
+
+    /**
+     * Render title for deputy mode
+     * @param {Array} deputies - Selected deputies
+     * @param {Array} monthlyData - Monthly data for stats
+     */
+    function renderDeputyTitle(deputies, monthlyData) {
+        var isEnglish = (typeof language !== 'undefined' && language === ENGLISH);
+
+        // Stats
+        var totalPeriods = monthlyData.length;
+        var totalRollCalls = d3.sum(monthlyData, function (d) { return d.rollCallCount; });
+        var totalVotesAll = d3.sum(monthlyData, function (d) { return d.totalVotes; });
+        var weightedSumAll = d3.sum(monthlyData, function (d) { return d.riceIndex * d.totalVotes; });
+        var meanRice = totalVotesAll > 0 ? weightedSumAll / totalVotesAll : 0;
+        var periodLabel = timeGrouping === 'year'
+            ? totalPeriods + (isEnglish ? " years" : " anos")
+            : totalPeriods + (isEnglish ? " months" : " meses");
+
+        // Line 1: Title
         svg.append("text")
             .attr("x", width / 2)
-            .attr("y", -32)
+            .attr("y", -58)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "24px")
+            .attr("font-weight", "bold")
+            .attr("fill", "#4a5568")
+            .text(isEnglish ? "Deputies Cohesion Over Time" : "Coesão dos Deputados ao Longo do Tempo");
+
+        // Line 2: Stats (same pattern as single party)
+        svg.append("text")
+            .attr("x", width / 2)
+            .attr("y", -36)
             .attr("text-anchor", "middle")
             .attr("font-size", "12px")
             .attr("fill", "#666")
-            .text(totalMonths + " months | " + totalRollCalls + " roll calls | Rice Index: " + meanRice.toFixed(3));
+            .text(periodLabel + " | " + deputies.length + (isEnglish ? " deputies" : " deputados") + " | " + totalRollCalls + " roll calls | Rice Index: " + meanRice.toFixed(3));
 
-        // Add participation shading legend
+        // Participation shading legend
         svg.append("text")
             .attr("x", width / 2)
-            .attr("y", -12)
+            .attr("y", -20)
             .attr("text-anchor", "middle")
             .attr("font-size", "10px")
             .attr("fill", "#999")
             .attr("font-style", "italic")
             .text("Background shading indicates participation rate — darker = higher participation");
+
+        // Clickable drawer toggle for deputy list
+        var drawerOpen = false;
+        var drawerGroup = null;
+
+        var toggleText = svg.append("text")
+            .attr("x", width / 2)
+            .attr("y", -4)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "11px")
+            .attr("fill", "#4a5568")
+            .style("cursor", "pointer")
+            .text("▶ " + deputies.length + (isEnglish ? " deputies selected" : " deputados selecionados"));
+
+        toggleText.on("click", function () {
+            if (drawerOpen) {
+                // Close drawer
+                if (drawerGroup) drawerGroup.remove();
+                drawerGroup = null;
+                toggleText.text("▶ " + deputies.length + (isEnglish ? " deputies selected" : " deputados selecionados"));
+                drawerOpen = false;
+            } else {
+                // Open drawer
+                toggleText.text("▼ " + deputies.length + (isEnglish ? " deputies selected" : " deputados selecionados"));
+
+                var drawerX = width / 2 - 200;
+                var drawerY = 4;
+                var drawerW = 400;
+                var drawerH = Math.min(120, Math.ceil(deputies.length / 3) * 28 + 16);
+
+                drawerGroup = svg.append("g")
+                    .attr("class", "deputy-drawer")
+                    .attr("transform", "translate(" + drawerX + "," + drawerY + ")");
+
+                // Background with shadow
+                drawerGroup.append("rect")
+                    .attr("width", drawerW)
+                    .attr("height", drawerH)
+                    .attr("rx", 6)
+                    .attr("ry", 6)
+                    .style("fill", "#ffffff")
+                    .style("stroke", "#e2e8f0")
+                    .style("stroke-width", 1)
+                    .style("filter", "drop-shadow(0 2px 4px rgba(0,0,0,0.1))");
+
+                // Use foreignObject for scrollable pill layout
+                var fo = drawerGroup.append("foreignObject")
+                    .attr("x", 8)
+                    .attr("y", 8)
+                    .attr("width", drawerW - 16)
+                    .attr("height", drawerH - 16);
+
+                var div = fo.append("xhtml:div")
+                    .style("display", "flex")
+                    .style("flex-wrap", "wrap")
+                    .style("gap", "4px")
+                    .style("max-height", (drawerH - 16) + "px")
+                    .style("overflow-y", "auto")
+                    .style("font-family", "system-ui, -apple-system, sans-serif");
+
+                deputies.forEach(function (d) {
+                    var partyColor = CONGRESS_DEFINE.getPartyColor(d.party);
+                    div.append("xhtml:span")
+                        .style("display", "inline-block")
+                        .style("padding", "2px 8px")
+                        .style("border-radius", "12px")
+                        .style("background-color", hexToRgba(partyColor, 0.15))
+                        .style("border", "1px solid " + hexToRgba(partyColor, 0.4))
+                        .style("font-size", "10px")
+                        .style("color", "#2d3748")
+                        .style("white-space", "nowrap")
+                        .text(d.name + " (" + d.party + ")");
+                });
+
+                drawerOpen = true;
+            }
+        });
+
+        renderTimeToggle(monthlyData);
+    }
+
+    /**
+     * Convert hex color to rgba
+     * @param {string} hex - Hex color string
+     * @param {number} alpha - Alpha value (0-1)
+     * @returns {string} rgba color string
+     */
+    function hexToRgba(hex, alpha) {
+        if (!hex) return "rgba(128,128,128," + alpha + ")";
+        hex = hex.replace('#', '');
+        if (hex.length === 3) {
+            hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+        }
+        var r = parseInt(hex.substring(0, 2), 16);
+        var g = parseInt(hex.substring(2, 4), 16);
+        var b = parseInt(hex.substring(4, 6), 16);
+        return "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
+    }
+
+    /**
+     * Render Month/Year toggle switch
+     * @param {Array} monthlyData - Monthly data to determine year span
+     */
+    function renderTimeToggle(monthlyData) {
+        var isEnglish = (typeof language !== 'undefined' && language === ENGLISH);
+
+        // Determine if year grouping is possible (need data spanning 2+ distinct years)
+        var firstYear = monthlyData[0].monthStart.getFullYear();
+        var lastYear = monthlyData[monthlyData.length - 1].monthStart.getFullYear();
+        var yearDisabled = (firstYear === lastYear);
+
+        // If year toggle is disabled and currently set to year, force back to month
+        if (yearDisabled && timeGrouping === 'year') {
+            timeGrouping = 'month';
+        }
+
+        var monthLabel = isEnglish ? "Month" : "Mês";
+        var yearLabel = isEnglish ? "Year" : "Ano";
+        var toggleW = 110;
+        var toggleH = 24;
+        var knobW = Math.floor(toggleW / 2);
+        var toggleX = width - toggleW;
+        var toggleY = -50;
+
+        var timeToggle = svg.append("g")
+            .attr("class", "time-grouping-toggle")
+            .attr("transform", "translate(" + toggleX + "," + toggleY + ")")
+            .style("cursor", yearDisabled ? "default" : "pointer");
+
+        // Background pill
+        timeToggle.append("rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", toggleW)
+            .attr("height", toggleH)
+            .attr("rx", toggleH / 2)
+            .attr("ry", toggleH / 2)
+            .style("fill", "#f2f2f7")
+            .style("stroke", "#d1d1d6")
+            .style("stroke-width", 1);
+
+        // Knob
+        var knob = timeToggle.append("rect")
+            .attr("class", "knob")
+            .attr("x", timeGrouping === 'month' ? 0 : knobW)
+            .attr("y", 0)
+            .attr("width", knobW)
+            .attr("height", toggleH)
+            .attr("rx", toggleH / 2)
+            .attr("ry", toggleH / 2)
+            .style("fill", "#ffffff")
+            .style("stroke", "#c7c7cc")
+            .style("stroke-width", 1);
+
+        // Left label: Mês / Month
+        timeToggle.append("text")
+            .attr("class", "month-label")
+            .attr("x", knobW / 2)
+            .attr("y", Math.floor(toggleH / 2))
+            .attr("dy", ".35em")
+            .attr("text-anchor", "middle")
+            .attr("font-size", "11px")
+            .text(monthLabel)
+            .style("fill", timeGrouping === 'month' ? "#000" : "#6c6c70")
+            .style("font-weight", timeGrouping === 'month' ? "600" : "400")
+            .style("pointer-events", "none");
+
+        // Right label: Ano / Year
+        timeToggle.append("text")
+            .attr("class", "year-label")
+            .attr("x", knobW + knobW / 2)
+            .attr("y", Math.floor(toggleH / 2))
+            .attr("dy", ".35em")
+            .attr("text-anchor", "middle")
+            .attr("font-size", "11px")
+            .text(yearLabel)
+            .style("fill", yearDisabled ? "#c7c7cc" : (timeGrouping === 'year' ? "#000" : "#6c6c70"))
+            .style("font-weight", timeGrouping === 'year' ? "600" : "400")
+            .style("pointer-events", "none");
+
+        // Click handler (disabled when only 1 year of data)
+        if (!yearDisabled) {
+            timeToggle.on("click", function () {
+                timeGrouping = (timeGrouping === 'month') ? 'year' : 'month';
+
+                // Animate knob
+                knob.transition().duration(160)
+                    .attr("x", timeGrouping === 'month' ? 0 : knobW);
+
+                // Update label colors
+                timeToggle.select(".month-label")
+                    .style("fill", timeGrouping === 'month' ? "#000" : "#6c6c70")
+                    .style("font-weight", timeGrouping === 'month' ? "600" : "400");
+                timeToggle.select(".year-label")
+                    .style("fill", timeGrouping === 'year' ? "#000" : "#6c6c70")
+                    .style("font-weight", timeGrouping === 'year' ? "600" : "400");
+
+                // Re-render with new grouping
+                if (originalData) {
+                    renderTimeline(originalData);
+                }
+            });
+        }
     }
 
     /**
@@ -902,17 +1337,27 @@ function partyRiceTimeline() {
         // Cancel any ongoing hide transitions to prevent race conditions
         tooltip.transition().duration(0);
 
-        // Format month name and year
-        const monthNames = ["January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"];
-        const monthYear = monthNames[d.monthStart.getMonth()] + " " + d.monthStart.getFullYear();
+        // Format period label based on grouping
+        var monthYear;
+        if (timeGrouping === 'year') {
+            monthYear = "" + d.monthStart.getFullYear();
+        } else {
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+            monthYear = monthNames[d.monthStart.getMonth()] + " " + d.monthStart.getFullYear();
+        }
 
         const ricePercentage = (d.riceIndex * 100).toFixed(1);
         const participationPercentage = (d.participation * 100).toFixed(1);
 
+        var coalitionLabel = isMultiParty
+            ? "<div style='font-size: 11px; color: #999; margin-bottom: 2px;'>" + (originalData && originalData.isDeputyMode ? "Deputies" : "Coalition") + "</div>"
+            : "";
+
         const html =
             "<div style='min-width: 180px;'>" +
             "<div style='padding-bottom: 8px; margin-bottom: 8px; border-bottom: 2px solid " + color + ";'>" +
+            coalitionLabel +
             "<div style='font-size: 14px; font-weight: 600; color: " + color + "; margin-bottom: 2px;'>" + monthYear + "</div>" +
             "</div>" +
             "<div style='font-size: 13px; line-height: 1.6;'>" +

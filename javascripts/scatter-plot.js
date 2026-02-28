@@ -1075,5 +1075,9 @@ function scatterPlotChart() {
         dispatch.update();
     };
 
+    chart.getSelectedPartiesForHulls = function () {
+        return selectedPartiesForHulls.slice();
+    };
+
     return d3.rebind(chart, dispatch, 'on');
 }
