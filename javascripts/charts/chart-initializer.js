@@ -61,6 +61,10 @@ function initializeChart(newID, chartObj) {
             chart = initializePartyRiceTimeline(newID, chartObj);
             break;
 
+        case COHESION_COMPARISON:
+            chart = initializeCohesionComparison(newID, chartObj);
+            break;
+
         default:
             break;
     }
@@ -290,6 +294,20 @@ function initializePartyMetrics(newID, chartObj) {
 function initializePartyRiceTimeline(newID, chartObj) {
     var chart = partyRiceTimeline();
     addConfigMenu(newID, 'party-rice-timeline', false);
+    addEditTitleInput(newID);
+    $('#' + newID).attr('data-type-period', chartObj.panelClass);
+    return chart;
+}
+
+/**
+ * Initialize Cohesion Comparison Chart
+ * @param {string} newID - Panel ID
+ * @param {Object} chartObj - Chart configuration
+ * @returns {Object} Chart instance
+ */
+function initializeCohesionComparison(newID, chartObj) {
+    var chart = cohesionComparison();
+    addConfigMenu(newID, 'cohesion-comparison', false);
     addEditTitleInput(newID);
     $('#' + newID).attr('data-type-period', chartObj.panelClass);
     return chart;

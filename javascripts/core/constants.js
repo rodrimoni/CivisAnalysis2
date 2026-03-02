@@ -32,6 +32,7 @@ const THEMES_BUBBLE_CHART = 9;
 const SMALL_MULTIPLES_CHART = 10;
 const PARTY_METRICS = 11;
 const PARTY_RICE_TIMELINE = 12;
+const COHESION_COMPARISON = 13;
 
 /* Bar Chart Types */
 const PARTIES_BAR_CHART = 1;
@@ -51,7 +52,8 @@ const typeChartToString = [
     "Subjects",
     "Small Multiples",
     "Party Metrics",
-    "Party Rice Timeline"
+    "Party Rice Timeline",
+    "Cohesion Comparison"
 ];
 
 /* Dimensional Reduction Techniques */

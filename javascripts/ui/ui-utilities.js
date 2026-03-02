@@ -135,6 +135,8 @@ function getChartIcon(typeChart) {
         icon += "icon-bar-chart";
     else if (typeChart === PARTY_RICE_TIMELINE)
         icon += "icon-line-chart";
+    else if (typeChart === COHESION_COMPARISON)
+        icon += "icon-line-chart";
 
     return icon;
 }
