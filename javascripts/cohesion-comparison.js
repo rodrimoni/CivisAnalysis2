@@ -62,6 +62,16 @@ function cohesionComparison() {
         return "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
     }
 
+    function getNextAvailablePaletteIndex() {
+        var usedDasharrays = seriesList.map(function (s) { return s.dasharray; });
+        for (var i = 0; i < SERIES_PALETTE.length; i++) {
+            if (usedDasharrays.indexOf(SERIES_PALETTE[i].pattern) === -1) {
+                return i;
+            }
+        }
+        return seriesList.length % SERIES_PALETTE.length;
+    }
+
     function getSeriesStyle(index, singleParty) {
         var palette = SERIES_PALETTE[index] || SERIES_PALETTE[0];
         var color = palette.color;
@@ -530,7 +540,7 @@ function cohesionComparison() {
         // State for the editor
         var editorState = {
             name: '',
-            color: SERIES_PALETTE[seriesList.length] ? SERIES_PALETTE[seriesList.length].color : SERIES_PALETTE[0].color,
+            color: SERIES_PALETTE[getNextAvailablePaletteIndex()].color,
             activeTab: 'parties',
             selectedParties: [],
             selectedDeputies: [],
@@ -810,7 +820,7 @@ function cohesionComparison() {
                         var autoColor = CONGRESS_DEFINE.getPartyColor(editorState.selectedParties[0]);
                         if (autoColor) editorState.color = autoColor;
                     } else {
-                        var paletteColor = SERIES_PALETTE[seriesList.length] ? SERIES_PALETTE[seriesList.length].color : SERIES_PALETTE[0].color;
+                        var paletteColor = SERIES_PALETTE[getNextAvailablePaletteIndex()].color;
                         editorState.color = paletteColor;
                     }
                     // Rebuild the whole form to update chips + members + button state
@@ -1087,7 +1097,7 @@ function cohesionComparison() {
         var monthlyData = calculateMonthlyRiceIndex(rcs, [], deputyIDs.length, RICE_CALC_CLASSIC, deputyIDs);
         var yearlyData = calculateYearlyRiceIndex(rcs, [], deputyIDs.length, RICE_CALC_CLASSIC, deputyIDs);
 
-        var style = getSeriesStyle(seriesList.length, singleParty);
+        var style = getSeriesStyle(getNextAvailablePaletteIndex(), singleParty);
         if (editorState.color) {
             style.color = editorState.color;
         }
