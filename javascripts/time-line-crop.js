@@ -160,7 +160,7 @@ function timeLineCrop() {
         parties.forEach(function (party) {
             var partyAtYear = party.value;
             party.traces = [];
-            d3.range(1991, 2023, 1).forEach(function (year) {
+            d3.range(ranges[0].getFullYear(), ranges[1].getFullYear(), 1).forEach(function (year) {
                 if ((partyAtYear[year] !== undefined) && (partyAtYear[year + 1] !== undefined)) {
                     party.traces.push({ first: partyAtYear[year], second: partyAtYear[year + 1], firstDate: year, secondDate: year + 1 });
                 }
@@ -188,7 +188,7 @@ function timeLineCrop() {
         periods = {};
 
         // for each year starting from first year
-        for (var i = 1991; i < 2023; i++) {
+        for (var i = ranges[0].getFullYear(); i < ranges[1].getFullYear(); i++) {
             // for each period create an array of parties
             periods[i] = { parties: [] };
             for (party in CONGRESS_DEFINE.partiesTraces1by1.traces) {
@@ -253,7 +253,7 @@ function timeLineCrop() {
         periods = {};
 
         // for each year starting from first year
-        for (var i = 1991; i < 2023; i++) {
+        for (var i = ranges[0].getFullYear(); i < ranges[1].getFullYear(); i++) {
             // for each period create an array of parties
             periods[i] = { parties: [] };
             for (party in CONGRESS_DEFINE.partiesTraces1by1.traces) {
@@ -313,7 +313,7 @@ function timeLineCrop() {
     }
 
     function forceAlgorithmToAproximateTheUnclutteredPositionsToClutteredWithoutOcclusion(timelineHeight) {
-        d3.range(1991, 2023, 1).forEach(function (year) {
+        d3.range(ranges[0].getFullYear(), ranges[1].getFullYear(), 1).forEach(function (year) {
             var partiesInPeriod = [];
             for (var party in CONGRESS_DEFINE.partiesTraces1by1.traces) {
                 if (CONGRESS_DEFINE.partiesTraces1by1.traces[party][year])
@@ -376,9 +376,9 @@ function timeLineCrop() {
                         break;
                     case 'PMDB': associatedParty = "MDB";
                         break;
-                    case 'PL': associatedParty = "PR";
+                    case 'PR': associatedParty = "PL";
                         break;
-                    case 'PRONA': associatedParty = "PR";
+                    case 'PRONA': associatedParty = "PL";
                         break;
                     default: associatedParty = d.party;
                         break;
@@ -431,9 +431,9 @@ function timeLineCrop() {
                     break;
                 case 'PFL': party = "DEM";
                     break;
-                case 'PL': party = "PR";
+                case 'PR': party = "PL";
                     break;
-                case 'PRONA':  party = "PR";
+                case 'PRONA':  party = "PL";
                     break;
                 default:     party = t.first.party;
                     break;
@@ -468,9 +468,9 @@ function timeLineCrop() {
                         break;
                     case 'PMDB': associatedParty = "MDB";
                         break;
-                    case 'PL': associatedParty = "PR";
+                    case 'PR': associatedParty = "PL";
                         break;
-                    case 'PRONA': associatedParty = "PR";
+                    case 'PRONA': associatedParty = "PL";
                         break;
                     default: associatedParty = d.first.party;
                         break;
@@ -505,9 +505,9 @@ function timeLineCrop() {
                     break;
                 case 'PMDB': party = "MDB";
                     break;
-                case 'PL': party = "PR";
+                case 'PR': party = "PL";
                     break;
-                case 'PRONA': party = "PR";
+                case 'PRONA': party = "PL";
                     break;
                 default: party = t.first.party;
                     break;
@@ -620,9 +620,9 @@ function timeLineCrop() {
                         break;
                     case 'PMDB': associatedParty = "MDB";
                         break;
-                    case 'PL': associatedParty = "PR";
+                    case 'PR': associatedParty = "PL";
                         break;
-                    case 'PRONA': associatedParty = "PR";
+                    case 'PRONA': associatedParty = "PL";
                         break;
                     default: associatedParty = p[party.key];
                         break;
@@ -674,9 +674,9 @@ function timeLineCrop() {
                             break;
                         case 'PMDB': party = "MDB";
                             break;
-                        case 'PL': party = "PR";
+                        case 'PR': party = "PL";
                             break;
-                        case 'PRONA': party = "PR";
+                        case 'PRONA': party = "PL";
                             break;
                         default: party = d.first.party;
                             break;
@@ -695,9 +695,9 @@ function timeLineCrop() {
                             break;
                         case 'PMDB': party = "MDB";
                             break;
-                        case 'PL': party = "PR";
+                        case 'PR': party = "PL";
                             break;
-                        case 'PRONA': party = "PR";
+                        case 'PRONA': party = "PL";
                             break;
                         default: party = d.party;
                             break;
@@ -722,9 +722,9 @@ function timeLineCrop() {
                         break;
                     case 'PMDB': party = "MDB";
                         break;
-                    case 'PL': party = "PR";
+                    case 'PR': party = "PL";
                         break;
-                    case 'PRONA': party = "PR";
+                    case 'PRONA': party = "PL";
                         break;
                     default: party = value.party;
                         break;

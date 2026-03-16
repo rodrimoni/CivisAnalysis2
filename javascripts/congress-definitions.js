@@ -9,7 +9,7 @@ var CONGRESS_DEFINE = {
     // renamed parties
     // PFL ==> DEM
     // PPB ==> PP
-    // PL + PRONA ==> PR
+    // PR + PRONA ==> PL
     legislatures: [
         { name: '49th Legislature', regimeParty: 'PFL', period: [new Date(1991, 1, 1), new Date(1995, 0, 31)] },
         { name: '50th Legislature', regimeParty: 'PFL', period: [new Date(1995, 1, 1), new Date(1999, 0, 31)] },
@@ -260,7 +260,7 @@ var CONGRESS_DEFINE = {
         "DEM": "LightCoral", "PFL": "LightCoral", "União": "LightCoral", // PFL ==> DEM ===> União
         "PSDB": "#1f77b4",
         "PP": "#EF31BB", "PPB": "#EF31BB", // PPB ==> PP
-        "PL": "#ffbb78", "PR": "#ffbb78",   // PL + PRONA ==> PR
+        "PL": "#ffbb78", "PR": "#ffbb78",   // PR + PRONA ==> PL
         "MDB": "#393b79", "PMDB": "#393b79", // MDB => PMDB => MDB
         "PT": "#d62728",
         "PDT": "#E70641", "PSB": "LightGreen",

@@ -227,6 +227,7 @@
             deputies.forEach(function (deputy) {
                 if (deputy.alignment !== undefined && deputy.alignment !== null) {
                     data.push({
+                        deputyID: deputy.deputyID,
                         name: deputy.name,
                         party: deputy.party,
                         alignment: deputy.alignment
@@ -343,7 +344,7 @@
             })
             .style("cursor", "pointer");
 
-        // Expand interactive area to entire row (label + bar); tooltip only, no click needed
+        // Expand interactive area to entire row (label + bar)
         rows.append("rect")
             .attr("class", "hit-area")
             .attr("x", 0)
@@ -389,9 +390,16 @@
             .style("fill", "#555")
             .style("pointer-events", "none");
 
-        // Tooltip
+        // Tooltip + cross-view hover
         var div = d3.select(".toolTip");
-        rows.on("mousemove", function (d) {
+
+        rows.on("mouseover", function (d) {
+            if (typeof updateDeputyNodeInAllPeriods === 'function') {
+                updateDeputyNodeInAllPeriods(d.deputyID, "hovered", true);
+                updateVisualizations();
+            }
+        })
+        .on("mousemove", function (d) {
             var isEnglish = (typeof language !== 'undefined' && language === ENGLISH);
             var alignmentLabel = isEnglish ? "Alignment" : "Alinhamento";
             var html = "<strong>" + d.name + "</strong><br>" +
@@ -400,7 +408,14 @@
             div.style("top", d3.event.pageY - 25 + "px");
             div.style("display", "inline-block");
             div.html(html);
-        }).on("mouseout", function () { div.style("display", "none"); });
+        })
+        .on("mouseout", function (d) {
+            div.style("display", "none");
+            if (typeof updateDeputyNodeInAllPeriods === 'function') {
+                updateDeputyNodeInAllPeriods(d.deputyID, "hovered", false);
+                updateVisualizations();
+            }
+        });
     }
 
     /**

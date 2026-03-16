@@ -484,7 +484,7 @@ function handleContextMenuDeputy(invokedOn, selectedMenu) {
             type = periodID[0];
             firstYear = periodID[1];
             lastYear = periodID[2];
-            title = + "</span>" + firstYear + " <span class='trn'>to</span> " + lastYear + "</span>";
+            title = "<span>" + firstYear + " <span class='trn'>to</span> " + lastYear + "</span>";
             prettyTitle = firstYear + " to " + lastYear
             panelClass = type + "-" + firstYear + "-" + lastYear;
             data.period = [new Date(firstYear, 0, 1), new Date(lastYear, 0, 1)];

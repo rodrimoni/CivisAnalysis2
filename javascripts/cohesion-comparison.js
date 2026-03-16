@@ -367,15 +367,42 @@ function cohesionComparison() {
                 .style("gap", "6px")
                 .style("cursor", "default");
 
-            // Line sample using inline SVG to support dash patterns
-            item.append("xhtml:span")
+            // Line sample with hidden color picker overlay
+            var swatchWrapper = item.append("xhtml:span")
                 .style("display", "inline-flex")
                 .style("align-items", "center")
                 .style("flex-shrink", "0")
+                .style("position", "relative")
+                .style("cursor", "pointer");
+
+            swatchWrapper.append("xhtml:span")
+                .style("display", "inline-flex")
+                .style("align-items", "center")
                 .html('<svg width="24" height="6" xmlns="http://www.w3.org/2000/svg">' +
                     '<line x1="0" y1="3" x2="24" y2="3" stroke="' + series.color + '"' +
                     ' stroke-width="' + series.strokeWidth + '"' + dashSvg +
                     ' stroke-linecap="round"/></svg>');
+
+            // Hidden color picker over the swatch
+            (function (s) {
+                var legendColorInput = swatchWrapper.append("xhtml:input")
+                    .attr("type", "color")
+                    .attr("value", s.color)
+                    .style("position", "absolute")
+                    .style("top", "0")
+                    .style("left", "0")
+                    .style("width", "100%")
+                    .style("height", "100%")
+                    .style("opacity", "0")
+                    .style("cursor", "pointer");
+
+                enableInputEvents(legendColorInput);
+
+                legendColorInput.on("input", function () {
+                    s.color = this.value;
+                    renderChart();
+                });
+            })(series);
 
             // Label
             item.append("xhtml:span")
@@ -503,6 +530,7 @@ function cohesionComparison() {
         // State for the editor
         var editorState = {
             name: '',
+            color: SERIES_PALETTE[seriesList.length] ? SERIES_PALETTE[seriesList.length].color : SERIES_PALETTE[0].color,
             activeTab: 'parties',
             selectedParties: [],
             selectedDeputies: [],
@@ -543,11 +571,16 @@ function cohesionComparison() {
             .style("margin-bottom", "4px")
             .text(isEnglish ? "Group Name:" : "Nome do Grupo:");
 
-        var nameInput = nameRow.append("xhtml:input")
+        var nameInputRow = nameRow.append("xhtml:div")
+            .style("display", "flex")
+            .style("gap", "8px")
+            .style("align-items", "center");
+
+        var nameInput = nameInputRow.append("xhtml:input")
             .attr("type", "text")
             .attr("placeholder", isEnglish ? "e.g. Government Base" : "ex. Base do Governo")
             .attr("value", editorState.name)
-            .style("width", "100%")
+            .style("flex", "1")
             .style("padding", "6px 10px")
             .style("border", "1px solid #d1d5db")
             .style("border-radius", "6px")
@@ -559,6 +592,25 @@ function cohesionComparison() {
 
         nameInput.on("input", function () {
             editorState.name = this.value;
+        });
+
+        // Color picker
+        var colorInput = nameInputRow.append("xhtml:input")
+            .attr("type", "color")
+            .attr("value", editorState.color)
+            .attr("title", isEnglish ? "Group color" : "Cor do grupo")
+            .style("width", "32px")
+            .style("height", "32px")
+            .style("padding", "0")
+            .style("border", "1px solid #d1d5db")
+            .style("border-radius", "6px")
+            .style("cursor", "pointer")
+            .style("flex-shrink", "0");
+
+        enableInputEvents(colorInput);
+
+        colorInput.on("input", function () {
+            editorState.color = this.value;
         });
 
         // Tabs
@@ -751,6 +803,14 @@ function cohesionComparison() {
                         editorState.selectedParties.splice(idx, 1);
                     } else {
                         editorState.selectedParties.push(party);
+                    }
+                    // Auto-update color based on selection
+                    if (editorState.selectedParties.length === 1 && editorState.selectedDeputies.length === 0) {
+                        var autoColor = CONGRESS_DEFINE.getPartyColor(editorState.selectedParties[0]);
+                        if (autoColor) editorState.color = autoColor;
+                    } else {
+                        var paletteColor = SERIES_PALETTE[seriesList.length] ? SERIES_PALETTE[seriesList.length].color : SERIES_PALETTE[0].color;
+                        editorState.color = paletteColor;
                     }
                     // Rebuild the whole form to update chips + members + button state
                     buildEditorContent(editorState.mainContainer, editorState);
@@ -1025,6 +1085,9 @@ function cohesionComparison() {
         var yearlyData = calculateYearlyRiceIndex(rcs, [], deputyIDs.length, RICE_CALC_CLASSIC, deputyIDs);
 
         var style = getSeriesStyle(seriesList.length, singleParty);
+        if (editorState.color) {
+            style.color = editorState.color;
+        }
 
         var series = {
             id: 'series-' + Date.now(),
@@ -1045,15 +1108,6 @@ function cohesionComparison() {
 
     function removeSeries(seriesId) {
         seriesList = seriesList.filter(function (s) { return s.id !== seriesId; });
-
-        // Reassign colors/patterns based on new positions
-        seriesList.forEach(function (s, i) {
-            var style = getSeriesStyle(i, s.singleParty);
-            s.color = style.color;
-            s.dasharray = style.dasharray;
-            s.strokeWidth = style.strokeWidth;
-        });
-
         focusedSeriesId = null;
         renderChart();
     }
