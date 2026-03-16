@@ -376,7 +376,6 @@ function partyMetrics() {
      * Update the visualization
      */
     chart.update = function () {
-        // TODO: Implement update logic
         dispatch.update();
     };
 

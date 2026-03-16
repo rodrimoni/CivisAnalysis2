@@ -167,7 +167,7 @@ function calcThePartyTracesByYear(periodOfYears) {
         if (year > endYear) {
             partyTrace['DEM'] = mergeObjects(partyTrace['PFL'], partyTrace['DEM']);
             partyTrace['União'] = mergeObjects(partyTrace['DEM'], partyTrace['União']);
-            partyTrace['PR'] = mergeObjects(partyTrace['PL'], partyTrace['PR']);
+            partyTrace['PL'] = mergeObjects(partyTrace['PR'], partyTrace['PL']);
             partyTrace['PP'] = mergeObjects(partyTrace['PPB'], partyTrace['PP']);
             partyTrace['Podemos'] = mergeObjects(partyTrace['PTN'], partyTrace['Podemos']);
             partyTrace['MDB'] = mergeObjects(partyTrace['PMDB'], partyTrace['MDB']);
@@ -175,7 +175,7 @@ function calcThePartyTracesByYear(periodOfYears) {
 
             delete partyTrace['DEM'];
             delete partyTrace['PFL'];
-            delete partyTrace['PL'];
+            delete partyTrace['PR'];
             delete partyTrace['PPB'];
             delete partyTrace['PTN'];
             delete partyTrace['PMDB'];
