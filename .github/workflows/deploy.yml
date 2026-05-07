@@ -58,7 +58,7 @@ jobs:
             User ${SFTP_USERNAME}
             HostKeyAlgorithms +ssh-rsa
             PubkeyAcceptedKeyTypes +ssh-rsa
-            PreferredAuthentications password
+            PreferredAuthentications password,keyboard-interactive
             PubkeyAuthentication no
             StrictHostKeyChecking no
             UserKnownHostsFile /dev/null
@@ -69,20 +69,39 @@ jobs:
             User ${SFTP_USERNAME}
             HostKeyAlgorithms +ssh-rsa
             PubkeyAcceptedKeyTypes +ssh-rsa
-            PreferredAuthentications password
+            PreferredAuthentications password,keyboard-interactive
             PubkeyAuthentication no
             StrictHostKeyChecking no
             UserKnownHostsFile /dev/null
-            ProxyCommand sshpass -e ssh -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedKeyTypes=+ssh-rsa -o PreferredAuthentications=password -o PubkeyAuthentication=no -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -W %h:%p jumphost
+            ProxyCommand sshpass -e ssh -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedKeyTypes=+ssh-rsa -o PreferredAuthentications=password,keyboard-interactive -o PubkeyAuthentication=no -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -W %h:%p jumphost
           EOF
           chmod 600 ~/.ssh/config
+
+      - name: Debug — auth into jumphost only
+        env:
+          SSHPASS: ${{ secrets.SFTP_PASSWORD }}
+        continue-on-error: true
+        run: |
+          echo "=== Testing jumphost auth (verbose) ==="
+          sshpass -e ssh -v jumphost 'echo "✓ Jumphost auth OK; whoami=$(whoami); hostname=$(hostname)"' 2>&1 | sed 's/${{ secrets.SFTP_PASSWORD }}/[REDACTED]/g' || true
+          echo
+          echo "=== Test password length (sanity check, no actual chars printed) ==="
+          echo "SSHPASS length: ${#SSHPASS}"
+
+      - name: Debug — auth into deploy-target through jumphost
+        env:
+          SSHPASS: ${{ secrets.SFTP_PASSWORD }}
+        continue-on-error: true
+        run: |
+          echo "=== Testing full chain (verbose) ==="
+          sshpass -e ssh -v deploy-target 'echo "✓ deploy-target auth OK; whoami=$(whoami); hostname=$(hostname)"' 2>&1 | sed 's/${{ secrets.SFTP_PASSWORD }}/[REDACTED]/g' || true
 
       - name: Deploy with rsync over SSH (via jumphost)
         env:
           SSHPASS: ${{ secrets.SFTP_PASSWORD }}
         run: |
           sshpass -e rsync -avz --delete \
-            -e "ssh" \
+            -e "ssh -v" \
             --exclude='.git*' \
             --exclude='.DS_Store' \
             ./deploy/ \
