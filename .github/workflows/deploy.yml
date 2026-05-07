@@ -39,20 +39,52 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y sshpass
 
+      - name: Setup SSH config (jumphost + target)
+        env:
+          SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
+          JUMPHOST: ${{ secrets.JUMPHOST }}
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_PORT: ${{ secrets.SFTP_PORT }}
+        run: |
+          # Runs on the GitHub Actions runner (ephemeral Ubuntu VM).
+          # Each Host block sets options PER HOP — necessary because
+          # `-J` / ProxyJump on the command line does NOT propagate
+          # algorithm options to the jumphost connection.
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          cat > ~/.ssh/config <<EOF
+          Host jumphost
+            Hostname ${JUMPHOST}
+            User ${SFTP_USERNAME}
+            HostKeyAlgorithms +ssh-rsa
+            PubkeyAcceptedKeyTypes +ssh-rsa
+            PreferredAuthentications password
+            PubkeyAuthentication no
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+
+          Host deploy-target
+            Hostname ${SFTP_HOST}
+            Port ${SFTP_PORT}
+            User ${SFTP_USERNAME}
+            HostKeyAlgorithms +ssh-rsa
+            PubkeyAcceptedKeyTypes +ssh-rsa
+            PreferredAuthentications password
+            PubkeyAuthentication no
+            StrictHostKeyChecking no
+            UserKnownHostsFile /dev/null
+            ProxyCommand sshpass -e ssh -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedKeyTypes=+ssh-rsa -o PreferredAuthentications=password -o PubkeyAuthentication=no -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -W %h:%p jumphost
+          EOF
+          chmod 600 ~/.ssh/config
+
       - name: Deploy with rsync over SSH (via jumphost)
         env:
           SSHPASS: ${{ secrets.SFTP_PASSWORD }}
         run: |
           sshpass -e rsync -avz --delete \
-            -e "ssh -o StrictHostKeyChecking=no \
-                    -o HostKeyAlgorithms=+ssh-rsa \
-                    -o PubkeyAcceptedKeyTypes=+ssh-rsa \
-                    -o PreferredAuthentications=password \
-                    -o PubkeyAuthentication=no \
-                    -J ${{ secrets.SFTP_USERNAME }}@${{ secrets.JUMPHOST }} \
-                    -p ${{ secrets.SFTP_PORT }}" \
+            -e "ssh" \
             --exclude='.git*' \
             --exclude='.DS_Store' \
             ./deploy/ \
-            ${{ secrets.SFTP_USERNAME }}@${{ secrets.SFTP_HOST }}:${{ secrets.SFTP_REMOTE_PATH }}/
+            deploy-target:${{ secrets.SFTP_REMOTE_PATH }}/
 
