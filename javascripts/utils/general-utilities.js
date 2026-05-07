@@ -107,13 +107,6 @@ function initSystem() {
     loadDeputiesNodesByYear();
     loadRollCalls(function () {
         createNewChild(TIME_LINE, {});
-        // This functions are used to update data in System, keep commented.
-        //createTraces1by1();
-        //calculatePrecalc('year');
-        //calculatePrecalc('legislature');
-        //calculatePrecalc('president');
-        //calcExtentValuesByYear();
-        //loadScatterPlotDataByYear();
     });
 }
 

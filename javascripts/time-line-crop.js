@@ -288,8 +288,8 @@ function timeLineCrop() {
             scaleParties[period] = d3.scale.linear()
                 .domain([
                     // the the political spectrum domain of the period
-                    CONGRESS_DEFINE.timelineCropExtent[period][1],
-                    CONGRESS_DEFINE.timelineCropExtent[period][0]
+                    TIMELINE_CROP_EXTENT[period][1],
+                    TIMELINE_CROP_EXTENT[period][0]
                 ])
                 .range([
                     // the (width-height)/2 of first party in the spectrum
