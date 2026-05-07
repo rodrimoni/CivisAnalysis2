@@ -163,3 +163,61 @@ function calcUMAP(matrixDepXRollCall, endCalcCallback) {
         endCalcCallback(result);
     }, 1000);
 }
+
+/**
+ * Calculate W-NOMINATE ideal points from vote matrix.
+ * Converts PCA encoding (1/-1/0) to W-NOMINATE encoding (1/6/9),
+ * runs the algorithm, and returns positions in the same format as calcSVD.
+ *
+ * @param {number[][]} matrixDepXRollCall - N x M matrix (1=yes, -1=no, 0=absent)
+ * @param {Function} endCalcCallback - Callback receiving { deputies: number[][], voting: null }
+ */
+function calcWNominate(matrixDepXRollCall, endCalcCallback) {
+    console.log("calc W-NOMINATE", matrixDepXRollCall.length, "x", matrixDepXRollCall[0].length);
+
+    var N = matrixDepXRollCall.length;
+    var M = matrixDepXRollCall[0].length;
+
+    // Convert PCA encoding to W-NOMINATE encoding: 1->1, -1->6, 0->9
+    var wMatrix = [];
+    for (var i = 0; i < N; i++) {
+        var row = [];
+        for (var j = 0; j < M; j++) {
+            if (matrixDepXRollCall[i][j] === 1) row.push(1);
+            else if (matrixDepXRollCall[i][j] === -1) row.push(6);
+            else row.push(9);
+        }
+        wMatrix.push(row);
+    }
+
+    var result = wNominateModule.wNominate(wMatrix, {
+        maxIter: 100,
+        onProgress: function (iter, logLik, correctClass) {
+            var language = state.getLanguage();
+            var text = language === ENGLISH
+                ? "Generating W-NOMINATE... iteration " + iter
+                : "Gerando W-NOMINATE... iteração " + iter;
+            $('#loading #msg').text(text);
+        }
+    });
+
+    console.log("W-NOMINATE FINISHED - correct: " + result.fits.correctClass + "%");
+
+    // Map back: result.legIndices tells which rows in wMatrix were kept
+    var data_deputies = [];
+    var legMap = {};
+    for (var fi = 0; fi < result.legIndices.length; fi++) {
+        legMap[result.legIndices[fi]] = fi;
+    }
+
+    for (var i = 0; i < N; i++) {
+        if (legMap[i] !== undefined) {
+            var leg = result.legislators[legMap[i]];
+            data_deputies.push([leg.coord1D, leg.coord2D]);
+        } else {
+            data_deputies.push([0, 0]);
+        }
+    }
+
+    endCalcCallback({ deputies: data_deputies, voting: null });
+}

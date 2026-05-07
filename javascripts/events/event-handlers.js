@@ -132,7 +132,8 @@ function setUpScatterPlotData(filteredData, dimensionalReductionTechnique, type)
     $('#loading').css('visibility', 'visible');
 
     updateDataforDateRange(filteredData, function () {
-        if ((!dataRange.found && dimensionalReductionTechnique === "PCA") || dimensionalReductionTechnique !== "PCA") {
+        var hasPrecalc = dimensionalReductionTechnique === "PCA" || dimensionalReductionTechnique === "W-NOMINATE";
+        if ((!dataRange.found && hasPrecalc) || !hasPrecalc) {
             var filteredDeputies = filterDeputies();
             var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
             const deputiesAligment = calculateDeputiesAligment(matrixDeputiesPerRollCall, filteredDeputies);
@@ -243,6 +244,13 @@ function setUpScatterPlotData(filteredData, dimensionalReductionTechnique, type)
                     $('#loading #msg').text(text);
                     calcUMAP(matrixDeputiesPerRollCall, calcCallback);
                 }
+                else if (dimensionalReductionTechnique === "W-NOMINATE") {
+                    var text = language === ENGLISH ? "Generating Political Spectra by W-NOMINATE" : "Gerando Espectro Político por W-NOMINATE";
+                    $('#loading #msg').text(text);
+                    setTimeout(function () {
+                        calcWNominate(matrixDeputiesPerRollCall, calcCallback);
+                    }, 10);
+                }
             }
         }
         else {
@@ -275,6 +283,10 @@ function setUpScatterPlotData(filteredData, dimensionalReductionTechnique, type)
 
             if (dimensionalReductionTechnique === "PCA") {
                 loadNodes(dataRange.type, dataRange.id, createChart);
+                $('#loading').css('visibility', 'hidden');
+            }
+            else if (dimensionalReductionTechnique === "W-NOMINATE") {
+                loadNodes(dataRange.type, dataRange.id, createChart, "W-NOMINATE");
                 $('#loading').css('visibility', 'hidden');
             }
         }
@@ -377,6 +389,8 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData) {
         setUpScatterPlotData(filteredData, "t-SNE", SCATTER_PLOT);
     else if (selectedMenu.context.id === 'scatter-plot-umap')
         setUpScatterPlotData(filteredData, "UMAP", SCATTER_PLOT);
+    else if (selectedMenu.context.id === 'scatter-plot-w-nominate')
+        setUpScatterPlotData(filteredData, "W-NOMINATE", SCATTER_PLOT);
     else if (selectedMenu.context.id === 'deputies-similarity-force')
         setUpScatterPlotData(filteredData, "MDS", DEPUTIES_SIMILARITY_FORCE);
     else if (selectedMenu.context.id === 'rollcalls-heatmap')

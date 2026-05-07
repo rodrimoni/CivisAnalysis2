@@ -49,11 +49,15 @@ function loadRollCalls(callback) {
  * @param {string|number} selectedTime - The specific time period
  * @param {Function} callback - Callback function to execute after loading
  */
-function loadNodes(type, selectedTime, callback) {
+function loadNodes(type, selectedTime, callback, technique) {
     var deputiesArray = state.getDeputiesArray();
     var currentDeputies = state.getCurrentDeputies();
 
-    d3.json('data/precalc/' + type + '.' + selectedTime + '.json', function (precalc) {
+    var basePath = 'data/precalc/pca/';
+    if (technique === 'W-NOMINATE') {
+        basePath = 'data/precalc/w-nominate/';
+    }
+    d3.json(basePath + type + '.' + selectedTime + '.json', function (precalc) {
         // SET THE precalc DEPUTIES to their constant object in the app
         precalc.deputyNodes.forEach(function (precalcDeputy) {
             var deputy = deputiesArray[precalcDeputy.deputyID], depObj = {};

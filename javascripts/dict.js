@@ -27,6 +27,12 @@ function initDict() {
         "Create a Political Spectrum of Deputies - Technique: t-SNE": {
             br: "Criar um Espectro Político de Deputados - Técnica: t-SNE"
         },
+        "Create a Political Spectrum of Deputies - Technique: UMAP": {
+            br: "Criar um Espectro Político de Deputados - Técnica: UMAP"
+        },
+        "Create a Political Spectrum of Deputies - Technique: W-NOMINATE": {
+            br: "Criar um Espectro Político de Deputados - Técnica: W-NOMINATE"
+        },
         "Create a Chamber Infographic": {
             br: "Criar um Infográfico da Câmara"
         },
@@ -196,6 +202,8 @@ function initDict() {
         $("#scatter-plot-pca").text(translator.get("Create a Political Spectrum of Deputies - Technique: PCA"));
         $("#scatter-plot-mds").text(translator.get("Create a Political Spectrum of Deputies - Technique: MDS"));
         $("#scatter-plot-tsne").text(translator.get("Create a Political Spectrum of Deputies - Technique: t-SNE"));
+        $("#scatter-plot-umap").text(translator.get("Create a Political Spectrum of Deputies - Technique: UMAP"));
+        $("#scatter-plot-w-nominate").text(translator.get("Create a Political Spectrum of Deputies - Technique: W-NOMINATE"));
         $("#chamber-infographic").text(translator.get("Create a Chamber Infographic"));
         $("#deputies-similarity-force").text(translator.get("Create a Deputies Similarity Graph"));
         $("#rollcalls-heatmap").text(translator.get("Create a Map of Roll Calls"));
