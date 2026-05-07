@@ -34,11 +34,6 @@ jobs:
             fi
           done
 
-      - name: Install sshpass
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y sshpass
-
       - name: Setup SSH config (jumphost + target)
         env:
           SFTP_USERNAME: ${{ secrets.SFTP_USERNAME }}
@@ -73,37 +68,41 @@ jobs:
             PubkeyAuthentication no
             StrictHostKeyChecking no
             UserKnownHostsFile /dev/null
-            ProxyCommand sshpass -e ssh -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedKeyTypes=+ssh-rsa -o PreferredAuthentications=password,keyboard-interactive -o PubkeyAuthentication=no -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -W %h:%p jumphost
+            ProxyCommand ssh -o HostKeyAlgorithms=+ssh-rsa -o PubkeyAcceptedKeyTypes=+ssh-rsa -o PreferredAuthentications=password,keyboard-interactive -o PubkeyAuthentication=no -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -W %h:%p jumphost
           EOF
           chmod 600 ~/.ssh/config
 
-      - name: Debug — auth into jumphost only
+      - name: Setup SSH_ASKPASS helper
         env:
-          SSHPASS: ${{ secrets.SFTP_PASSWORD }}
-        continue-on-error: true
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
         run: |
-          echo "=== Testing jumphost auth (verbose) ==="
-          sshpass -e ssh -v jumphost 'echo "✓ Jumphost auth OK; whoami=$(whoami); hostname=$(hostname)"' 2>&1 | sed 's/${{ secrets.SFTP_PASSWORD }}/[REDACTED]/g' || true
-          echo
-          echo "=== Test password length (sanity check, no actual chars printed) ==="
-          echo "SSHPASS length: ${#SSHPASS}"
-
-      - name: Debug — auth into deploy-target through jumphost
-        env:
-          SSHPASS: ${{ secrets.SFTP_PASSWORD }}
-        continue-on-error: true
-        run: |
-          echo "=== Testing full chain (verbose) ==="
-          sshpass -e ssh -v deploy-target 'echo "✓ deploy-target auth OK; whoami=$(whoami); hostname=$(hostname)"' 2>&1 | sed 's/${{ secrets.SFTP_PASSWORD }}/[REDACTED]/g' || true
+          # SSH_ASKPASS is the standard OpenSSH mechanism for non-interactive
+          # password input. Unlike sshpass, it works in nested ssh contexts
+          # (e.g., as ProxyCommand) because it doesn't depend on a controlling
+          # tty being available.
+          mkdir -p "$HOME/.ssh-helpers"
+          # The askpass script reads the password from a file (not env var)
+          # so it can run inside subprocesses where env may differ.
+          umask 077
+          printf '%s' "$SFTP_PASSWORD" > "$HOME/.ssh-helpers/passfile"
+          cat > "$HOME/.ssh-helpers/askpass.sh" <<'EOF'
+          #!/bin/bash
+          cat "$HOME/.ssh-helpers/passfile"
+          EOF
+          chmod 700 "$HOME/.ssh-helpers/askpass.sh"
 
       - name: Deploy with rsync over SSH (via jumphost)
         env:
-          SSHPASS: ${{ secrets.SFTP_PASSWORD }}
+          SSH_ASKPASS: /home/runner/.ssh-helpers/askpass.sh
+          SSH_ASKPASS_REQUIRE: force
+          DISPLAY: ":0"
         run: |
-          sshpass -e rsync -avz --delete \
-            -e "ssh -v" \
+          # setsid detaches from the controlling tty so SSH_ASKPASS is used
+          # for all password prompts (both outer ssh to deploy-target and
+          # inner ssh in ProxyCommand to jumphost).
+          setsid -w rsync -avz --delete \
+            -e "ssh" \
             --exclude='.git*' \
             --exclude='.DS_Store' \
             ./deploy/ \
             deploy-target:${{ secrets.SFTP_REMOTE_PATH }}/
-
