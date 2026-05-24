@@ -365,6 +365,13 @@ function reloadScatterPlotData(filteredData, dimensionalReductionTechnique, pane
                 $('#loading #msg').text(text);
                 calcUMAP(matrixDeputiesPerRollCall, calcCallback);
             }
+            else if (dimensionalReductionTechnique === "W-NOMINATE") {
+                var text = language === ENGLISH ? "Generating Political Spectra by W-NOMINATE" : "Gerando Espectro Político por W-NOMINATE";
+                $('#loading #msg').text(text);
+                setTimeout(function () {
+                    calcWNominate(matrixDeputiesPerRollCall, calcCallback);
+                }, 10);
+            }
         }
     });
 }
