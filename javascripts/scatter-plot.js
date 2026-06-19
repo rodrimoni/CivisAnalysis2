@@ -709,7 +709,7 @@ function scatterPlotChart() {
         this.clusters.forEach(function (cluster, index) {
             clustersPoints.push({
                 "cluster": index, "points": cluster.points.map(function (t) {
-                    return t.location;
+                    return { location: t.location, deputyID: t.deputyID };
                 })
             });
         });
@@ -730,9 +730,26 @@ function scatterPlotChart() {
             .domain(originalYDomain)
             .range(y.range());
 
+        // When "show overlapping" (force layout) is active, deputies are rendered at the
+        // jittered positions stored in d.x / d.y. Build a lookup so the hull wraps those
+        // displayed positions instead of the original (un-jittered) scatterplot coordinates.
+        var nodeById = {};
+        if (isForceLayout && nodesData) {
+            nodesData.forEach(function (n) { nodeById[n.deputyID] = n; });
+        }
+
+        var hullPoint = function (p) {
+            if (isForceLayout) {
+                var node = nodeById[p.deputyID];
+                if (node && typeof node.x === "number" && typeof node.y === "number")
+                    return [node.x, node.y];
+            }
+            return [xOriginal(p.location[1]), yOriginal(p.location[0])];
+        };
+
         var groupPath = function (d) {
             return "M" +
-                d3.geom.hull(d.points.map(function (i) { return [xOriginal(i[1]), yOriginal(i[0])]; }))
+                d3.geom.hull(d.points.map(hullPoint))
                     .join("L")
                 + "Z";
         };
