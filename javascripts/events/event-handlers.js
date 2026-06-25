@@ -378,6 +378,16 @@ function reloadScatterPlotData(filteredData, dimensionalReductionTechnique, pane
                 }, 10);
             }
         }
+        else {
+            // Filter combination produced no roll calls / no deputies to reduce.
+            // The loading overlay is otherwise only hidden inside calcCallback, so
+            // hide it here and tell the user why the spectrum did not update.
+            $('#loading').css('visibility', 'hidden');
+            var emptyMsg = language === ENGLISH
+                ? "No roll calls match the selected filters for this period. The spectrum was not updated."
+                : "Nenhuma votação corresponde aos filtros selecionados neste período. O espectro não foi atualizado.";
+            alert(emptyMsg);
+        }
     });
 }
 
