@@ -99,6 +99,46 @@ function addSearchRollCallMenu(newID, rollCalls) {
 }
 
 /**
+ * Standard "filter" tagsinput: the full option list is shown on focus
+ * (minLength 0, no practical cap) and selections become multi-select tags.
+ * The caller owns the DOM <input> and the apply wiring (itemAdded/itemRemoved
+ * handlers or a reload button); this only sets up the shared typeahead engine.
+ * @param {Object} elt - jQuery <input> element to turn into a tagsinput
+ * @param {Array<string>} optionValues - option labels (already localized)
+ * @param {string} datasetName - typeahead dataset name
+ * @returns {Object} the same jQuery element, for chaining
+ */
+function setupFilterTagsinput(elt, optionValues, datasetName) {
+    var options = optionValues.slice().sort();
+    var engine = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        local: d3.entries(options),
+        identify: function (obj) { return obj.value; }
+    });
+    engine.initialize();
+    elt.tagsinput({
+        itemValue: 'key',
+        itemText: 'value',
+        typeaheadjs: [{
+            hint: false,
+            highlight: true,
+            minLength: 0
+        },
+        {
+            name: datasetName,
+            displayKey: 'value',
+            limit: 100,
+            source: function (q, sync) {
+                if (q === '') sync(engine.get(options));
+                else engine.search(q, sync);
+            }
+        }]
+    });
+    return elt;
+}
+
+/**
  * Add filter motion type menu
  * @param {string} newID - Panel ID
  * @param {Array} rollCalls - Roll calls data
@@ -112,43 +152,8 @@ function addFilterMotionTypeMenu(newID, rollCalls) {
             'placeholder="' + placeholder + ' (e.g. PL, PEC, etc.)"/> </li>');
 
     var rollCallsTypes = d3.map(rollCalls, function (d) { return d.type; }).keys();
-    var defaultOptions = rollCallsTypes.sort();
-    rollCallsTypes = d3.entries(rollCallsTypes);
-
-    var rollCallsTypes = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        local: rollCallsTypes,
-        identify: function (obj) { return obj.value; }
-    });
-
-    rollCallsTypes.initialize();
-
-    function values(q, sync) {
-        if (q === '') {
-            sync(rollCallsTypes.get(defaultOptions));
-        }
-        else {
-            rollCallsTypes.search(q, sync);
-        }
-    }
-
     var elt = $('#' + newID + ' .filterMotions');
-    elt.tagsinput({
-        itemValue: 'key',
-        itemText: 'value',
-        typeaheadjs: [{
-            hint: false,
-            highlight: true,
-            minLength: 0
-        },
-        {
-            name: 'rollCallsTypes',
-            displayKey: 'value',
-            limit: 10,
-            source: values
-        }]
-    });
+    setupFilterTagsinput(elt, rollCallsTypes, 'rollCallsTypes');
 
     var chart;
     elt.on('itemAdded', function (event) {
@@ -185,41 +190,8 @@ function addFilterMotionTypePartyMetrics(newID, rollCalls) {
             'placeholder="' + placeholder + ' (e.g. PL, PEC, etc.)"/> </li>');
 
     var rollCallsTypes = d3.map(rollCalls, function (d) { return d.type; }).keys();
-    var defaultOptions = rollCallsTypes.sort();
-
-    var typesBloodhound = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        local: d3.entries(rollCallsTypes),
-        identify: function (obj) { return obj.value; }
-    });
-
-    typesBloodhound.initialize();
-
-    function values(q, sync) {
-        if (q === '') {
-            sync(typesBloodhound.get(defaultOptions));
-        } else {
-            typesBloodhound.search(q, sync);
-        }
-    }
-
     var elt = $('#' + newID + ' .filterMotions');
-    elt.tagsinput({
-        itemValue: 'key',
-        itemText: 'value',
-        typeaheadjs: [{
-            hint: false,
-            highlight: true,
-            minLength: 0
-        },
-        {
-            name: 'partyMetricsTypes',
-            displayKey: 'value',
-            limit: 100,
-            source: values
-        }]
-    });
+    setupFilterTagsinput(elt, rollCallsTypes, 'partyMetricsTypes');
 
     function applyTypeFilter() {
         var tree = state.getTree();
@@ -556,42 +528,8 @@ function addThemeFilter(newID, rollCalls) {
     var rollCallsThemes = d3.map(rollCalls, function (d) {
         return language === ENGLISH ? subjectsToEnglish[d.theme] : d.theme
     }).keys();
-    var defaultOptions = rollCallsThemes.sort();
-    rollCallsThemes = d3.entries(rollCallsThemes);
-
-    var rollCallsThemes = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        local: rollCallsThemes,
-        identify: function (obj) { return obj.value; }
-    });
-
-    rollCallsThemes.initialize();
-
-    function values(q, sync) {
-        if (q === '') {
-            sync(rollCallsThemes.get(defaultOptions));
-        }
-        else {
-            rollCallsThemes.search(q, sync);
-        }
-    }
-
     var elt = $('#' + newID + ' .filterSubjectMotions');
-    elt.tagsinput({
-        itemValue: 'key',
-        itemText: 'value',
-        typeaheadjs: [{
-            hint: false,
-            highlight: true,
-        },
-        {
-            name: 'rollCallsThemes',
-            displayKey: 'value',
-            limit: 10,
-            source: values
-        }]
-    });
+    setupFilterTagsinput(elt, rollCallsThemes, 'rollCallsThemes');
 
     var chart;
     elt.on('itemAdded', function (event) {
@@ -645,69 +583,17 @@ function addScatterPlotFilters(newID, rollCalls) {
 
     $('#' + newID + ' .reloadScatter').popover();
 
-    // --- Subjects typeahead (full period list on focus) ---
+    // --- Subjects typeahead (full option list shown on focus) ---
     var rollCallsThemes = d3.map(rollCalls, function (d) {
         return language === ENGLISH ? subjectsToEnglish[d.theme] : d.theme;
     }).keys();
-    var defaultThemes = rollCallsThemes.sort();
-    var themesBloodhound = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        local: d3.entries(rollCallsThemes),
-        identify: function (obj) { return obj.value; }
-    });
-    themesBloodhound.initialize();
-    function themeValues(q, sync) {
-        if (q === '') sync(themesBloodhound.get(defaultThemes));
-        else themesBloodhound.search(q, sync);
-    }
     var themeElt = $('#' + newID + ' .filterSubjectMotions');
-    themeElt.tagsinput({
-        itemValue: 'key',
-        itemText: 'value',
-        typeaheadjs: [{
-            hint: false,
-            highlight: true,
-            minLength: 0
-        },
-        {
-            name: 'rollCallsThemes',
-            displayKey: 'value',
-            limit: 100,
-            source: themeValues
-        }]
-    });
+    setupFilterTagsinput(themeElt, rollCallsThemes, 'rollCallsThemes');
 
-    // --- Motion types typeahead (full period list on focus) ---
+    // --- Motion types typeahead (full option list shown on focus) ---
     var rollCallsTypes = d3.map(rollCalls, function (d) { return d.type; }).keys();
-    var defaultTypes = rollCallsTypes.sort();
-    var typesBloodhound = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        local: d3.entries(rollCallsTypes),
-        identify: function (obj) { return obj.value; }
-    });
-    typesBloodhound.initialize();
-    function typeValues(q, sync) {
-        if (q === '') sync(typesBloodhound.get(defaultTypes));
-        else typesBloodhound.search(q, sync);
-    }
     var typeElt = $('#' + newID + ' .filterMotions');
-    typeElt.tagsinput({
-        itemValue: 'key',
-        itemText: 'value',
-        typeaheadjs: [{
-            hint: false,
-            highlight: true,
-            minLength: 0
-        },
-        {
-            name: 'rollCallsTypes',
-            displayKey: 'value',
-            limit: 100,
-            source: typeValues
-        }]
-    });
+    setupFilterTagsinput(typeElt, rollCallsTypes, 'rollCallsTypes');
 
     $("#" + newID + " .bootstrap-tagsinput").click(function (e) {
         e.stopPropagation();
