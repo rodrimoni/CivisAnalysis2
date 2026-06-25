@@ -101,7 +101,7 @@ function initializeScatterPlot(newID, chartObj) {
     const parties = d3.map(d3.values(chartObj.data), function (d) { return d.party; }).keys()
 
     addSearchDeputyMenu(newID, deputies);
-    addThemeSearchScatterPlot(newID, chartObj.args.rcs)
+    addScatterPlotFilters(newID, chartObj.args.rcs)
     //addPartySizeFilter(newID, chart);
     addEditTitleInput(newID);
 

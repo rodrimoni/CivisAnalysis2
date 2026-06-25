@@ -300,7 +300,7 @@ function setUpScatterPlotData(filteredData, dimensionalReductionTechnique, type)
  * @param {string} panelID - Panel ID
  * @param {Array} subjects - Selected subjects
  */
-function reloadScatterPlotData(filteredData, dimensionalReductionTechnique, panelID, subjects) {
+function reloadScatterPlotData(filteredData, dimensionalReductionTechnique, panelID, subjects, types) {
     $('#loading').css('visibility', 'visible');
 
     state.setCurrentDeputies([]);
@@ -314,6 +314,11 @@ function reloadScatterPlotData(filteredData, dimensionalReductionTechnique, pane
             rollCallInTheDateRange = rollCallInTheDateRange.filter(rollCall => {
                 const theme = language === ENGLISH ? subjectsToEnglish[rollCall.theme] : rollCall.theme;
                 return subjects.includes(theme)
+            });
+
+        if (types && types.length)
+            rollCallInTheDateRange = rollCallInTheDateRange.filter(rollCall => {
+                return types.includes(rollCall.type)
             });
 
         var filteredDeputies = filterDeputies();
