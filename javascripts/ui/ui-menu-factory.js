@@ -169,6 +169,74 @@ function addFilterMotionTypeMenu(newID, rollCalls) {
 }
 
 /**
+ * Add motion-type filter for the Party Metrics panel.
+ * Same tagsinput + typeahead pattern as addFilterMotionTypeMenu, but routes the
+ * selection to chart.setMotionTypeFilter so the whole panel recalculates.
+ * Empty selection = all types. Options are derived from the period's roll calls.
+ * @param {string} newID - Panel ID
+ * @param {Array} rollCalls - Roll calls data for the period
+ */
+function addFilterMotionTypePartyMetrics(newID, rollCalls) {
+    var placeholder = language === ENGLISH ? "Type motion type to filter" : "Digite tipos de votações para filtrar";
+    $("#" + newID + " .panel-settings")
+        .append('<li role="presentation" class="dropdown-header"><span class="trn">Select motion types</span></li>')
+        .append('<li><input type="text" ' +
+            'class="form-control typeahead filterMotions" ' +
+            'placeholder="' + placeholder + ' (e.g. PL, PEC, etc.)"/> </li>');
+
+    var rollCallsTypes = d3.map(rollCalls, function (d) { return d.type; }).keys();
+    var defaultOptions = rollCallsTypes.sort();
+
+    var typesBloodhound = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        local: d3.entries(rollCallsTypes),
+        identify: function (obj) { return obj.value; }
+    });
+
+    typesBloodhound.initialize();
+
+    function values(q, sync) {
+        if (q === '') {
+            sync(typesBloodhound.get(defaultOptions));
+        } else {
+            typesBloodhound.search(q, sync);
+        }
+    }
+
+    var elt = $('#' + newID + ' .filterMotions');
+    elt.tagsinput({
+        itemValue: 'key',
+        itemText: 'value',
+        typeaheadjs: [{
+            hint: false,
+            highlight: true,
+            minLength: 0
+        },
+        {
+            name: 'partyMetricsTypes',
+            displayKey: 'value',
+            limit: 100,
+            source: values
+        }]
+    });
+
+    function applyTypeFilter() {
+        var tree = state.getTree();
+        var chart = tree.getNode(newID, tree.traverseBF).chart;
+        var types = elt.tagsinput('items').map(function (item) { return item.value; });
+        chart.setMotionTypeFilter(types);
+    }
+
+    elt.on('itemAdded', applyTypeFilter);
+    elt.on('itemRemoved', applyTypeFilter);
+
+    $("#" + newID + " .bootstrap-tagsinput").click(function (e) {
+        e.stopPropagation();
+    });
+}
+
+/**
  * Add date picker for timeline
  */
 function addDatePickerTimeline() {

@@ -280,6 +280,7 @@ function initializeSmallMultiples(newID, chartObj) {
 function initializePartyMetrics(newID, chartObj) {
     var chart = partyMetrics();
     addConfigMenu(newID, 'party-metrics', false);
+    addFilterMotionTypePartyMetrics(newID, chartObj.data.rcs);
     addEditTitleInput(newID);
     $('#' + newID).attr('data-type-period', chartObj.panelClass);
     return chart;
