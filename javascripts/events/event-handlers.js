@@ -300,7 +300,7 @@ function setUpScatterPlotData(filteredData, dimensionalReductionTechnique, type)
  * @param {string} panelID - Panel ID
  * @param {Array} subjects - Selected subjects
  */
-function reloadScatterPlotData(filteredData, dimensionalReductionTechnique, panelID, subjects) {
+function reloadScatterPlotData(filteredData, dimensionalReductionTechnique, panelID, subjects, types) {
     $('#loading').css('visibility', 'visible');
 
     state.setCurrentDeputies([]);
@@ -314,6 +314,11 @@ function reloadScatterPlotData(filteredData, dimensionalReductionTechnique, pane
             rollCallInTheDateRange = rollCallInTheDateRange.filter(rollCall => {
                 const theme = language === ENGLISH ? subjectsToEnglish[rollCall.theme] : rollCall.theme;
                 return subjects.includes(theme)
+            });
+
+        if (types && types.length)
+            rollCallInTheDateRange = rollCallInTheDateRange.filter(rollCall => {
+                return types.includes(rollCall.type)
             });
 
         var filteredDeputies = filterDeputies();
@@ -372,6 +377,16 @@ function reloadScatterPlotData(filteredData, dimensionalReductionTechnique, pane
                     calcWNominate(matrixDeputiesPerRollCall, calcCallback);
                 }, 10);
             }
+        }
+        else {
+            // Filter combination produced no roll calls / no deputies to reduce.
+            // The loading overlay is otherwise only hidden inside calcCallback, so
+            // hide it here and tell the user why the spectrum did not update.
+            $('#loading').css('visibility', 'hidden');
+            var emptyMsg = language === ENGLISH
+                ? "No roll calls match the selected filters for this period. The spectrum was not updated."
+                : "Nenhuma votação corresponde aos filtros selecionados neste período. O espectro não foi atualizado.";
+            alert(emptyMsg);
         }
     });
 }

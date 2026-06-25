@@ -40,6 +40,7 @@ function partyMetrics() {
     var dispatch = d3.dispatch('update');
     var currentBarChartMode = 'themeRice'; // 'themeRice' or 'deputyAlignment'
     var selectedTheme = null; // Currently selected theme for filtering
+    var selectedTypes = []; // Currently selected motion types for filtering (empty = all)
     var currentData = null; // Store current data for re-rendering
 
     function chart(selection) {
@@ -75,14 +76,19 @@ function partyMetrics() {
     function renderPartyMetrics(data) {
         const { party, deputies, rcs } = data;
 
+        // Filter roll calls by selected motion types (empty selection = all types)
+        const rcsByType = selectedTypes.length
+            ? rcs.filter(function (rc) { return selectedTypes.indexOf(rc.type) > -1; })
+            : rcs;
+
         // Calculate all Rice Index data in a single pass
-        const riceIndexData = calcRiceIndex(rcs, party);
+        const riceIndexData = calcRiceIndex(rcsByType, party);
 
         // Calculate filtered Rice Index if theme is selected
         let displayRiceIndex = riceIndexData.overall;
         if (selectedTheme) {
-            // Filter roll calls by selected theme
-            const filteredRcs = rcs.filter(function (rc) {
+            // Filter (already type-filtered) roll calls by selected theme
+            const filteredRcs = rcsByType.filter(function (rc) {
                 return rc.theme === selectedTheme;
             });
             const filteredRiceData = calcRiceIndex(filteredRcs, party);
@@ -371,6 +377,16 @@ function partyMetrics() {
             }
         });
     }
+
+    /**
+     * Set the motion-type filter and re-render the whole panel.
+     * @param {Array<string>} types - Selected motion types (empty = all)
+     */
+    chart.setMotionTypeFilter = function (types) {
+        selectedTypes = types || [];
+        if (currentData) renderPartyMetrics(currentData);
+        return chart;
+    };
 
     /**
      * Update the visualization

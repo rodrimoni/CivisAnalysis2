@@ -97,3 +97,11 @@ span.twitter-typeahead {
 .input-group.input-group-lg span.twitter-typeahead .tt-dropdown-menu {
     top: 46px !important;
 }
+
+/* Bound the typeahead dropdown so the full subject/type list scrolls
+   instead of overflowing the panel-settings menu. */
+span.twitter-typeahead .tt-menu,
+span.twitter-typeahead .tt-dropdown-menu {
+    max-height: 240px;
+    overflow-y: auto;
+}

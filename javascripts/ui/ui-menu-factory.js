@@ -99,6 +99,46 @@ function addSearchRollCallMenu(newID, rollCalls) {
 }
 
 /**
+ * Standard "filter" tagsinput: the full option list is shown on focus
+ * (minLength 0, no practical cap) and selections become multi-select tags.
+ * The caller owns the DOM <input> and the apply wiring (itemAdded/itemRemoved
+ * handlers or a reload button); this only sets up the shared typeahead engine.
+ * @param {Object} elt - jQuery <input> element to turn into a tagsinput
+ * @param {Array<string>} optionValues - option labels (already localized)
+ * @param {string} datasetName - typeahead dataset name
+ * @returns {Object} the same jQuery element, for chaining
+ */
+function setupFilterTagsinput(elt, optionValues, datasetName) {
+    var options = optionValues.slice().sort();
+    var engine = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        local: d3.entries(options),
+        identify: function (obj) { return obj.value; }
+    });
+    engine.initialize();
+    elt.tagsinput({
+        itemValue: 'key',
+        itemText: 'value',
+        typeaheadjs: [{
+            hint: false,
+            highlight: true,
+            minLength: 0
+        },
+        {
+            name: datasetName,
+            displayKey: 'value',
+            limit: 100,
+            source: function (q, sync) {
+                if (q === '') sync(engine.get(options));
+                else engine.search(q, sync);
+            }
+        }]
+    });
+    return elt;
+}
+
+/**
  * Add filter motion type menu
  * @param {string} newID - Panel ID
  * @param {Array} rollCalls - Roll calls data
@@ -112,43 +152,8 @@ function addFilterMotionTypeMenu(newID, rollCalls) {
             'placeholder="' + placeholder + ' (e.g. PL, PEC, etc.)"/> </li>');
 
     var rollCallsTypes = d3.map(rollCalls, function (d) { return d.type; }).keys();
-    var defaultOptions = rollCallsTypes.sort();
-    rollCallsTypes = d3.entries(rollCallsTypes);
-
-    var rollCallsTypes = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        local: rollCallsTypes,
-        identify: function (obj) { return obj.value; }
-    });
-
-    rollCallsTypes.initialize();
-
-    function values(q, sync) {
-        if (q === '') {
-            sync(rollCallsTypes.get(defaultOptions));
-        }
-        else {
-            rollCallsTypes.search(q, sync);
-        }
-    }
-
     var elt = $('#' + newID + ' .filterMotions');
-    elt.tagsinput({
-        itemValue: 'key',
-        itemText: 'value',
-        typeaheadjs: [{
-            hint: false,
-            highlight: true,
-            minLength: 0
-        },
-        {
-            name: 'rollCallsTypes',
-            displayKey: 'value',
-            limit: 10,
-            source: values
-        }]
-    });
+    setupFilterTagsinput(elt, rollCallsTypes, 'rollCallsTypes');
 
     var chart;
     elt.on('itemAdded', function (event) {
@@ -162,6 +167,41 @@ function addFilterMotionTypeMenu(newID, rollCalls) {
         chart = tree.getNode(newID, tree.traverseBF).chart;
         chart.selectRollCallsByFilter(newID);
     });
+
+    $("#" + newID + " .bootstrap-tagsinput").click(function (e) {
+        e.stopPropagation();
+    });
+}
+
+/**
+ * Add motion-type filter for the Party Metrics panel.
+ * Same tagsinput + typeahead pattern as addFilterMotionTypeMenu, but routes the
+ * selection to chart.setMotionTypeFilter so the whole panel recalculates.
+ * Empty selection = all types. Options are derived from the period's roll calls.
+ * @param {string} newID - Panel ID
+ * @param {Array} rollCalls - Roll calls data for the period
+ */
+function addFilterMotionTypePartyMetrics(newID, rollCalls) {
+    var placeholder = language === ENGLISH ? "Type motion type to filter" : "Digite tipos de votações para filtrar";
+    $("#" + newID + " .panel-settings")
+        .append('<li role="presentation" class="dropdown-header"><span class="trn">Select motion types</span></li>')
+        .append('<li><input type="text" ' +
+            'class="form-control typeahead filterMotions" ' +
+            'placeholder="' + placeholder + ' (e.g. PL, PEC, etc.)"/> </li>');
+
+    var rollCallsTypes = d3.map(rollCalls, function (d) { return d.type; }).keys();
+    var elt = $('#' + newID + ' .filterMotions');
+    setupFilterTagsinput(elt, rollCallsTypes, 'partyMetricsTypes');
+
+    function applyTypeFilter() {
+        var tree = state.getTree();
+        var chart = tree.getNode(newID, tree.traverseBF).chart;
+        var types = elt.tagsinput('items').map(function (item) { return item.value; });
+        chart.setMotionTypeFilter(types);
+    }
+
+    elt.on('itemAdded', applyTypeFilter);
+    elt.on('itemRemoved', applyTypeFilter);
 
     $("#" + newID + " .bootstrap-tagsinput").click(function (e) {
         e.stopPropagation();
@@ -488,42 +528,8 @@ function addThemeFilter(newID, rollCalls) {
     var rollCallsThemes = d3.map(rollCalls, function (d) {
         return language === ENGLISH ? subjectsToEnglish[d.theme] : d.theme
     }).keys();
-    var defaultOptions = rollCallsThemes.sort();
-    rollCallsThemes = d3.entries(rollCallsThemes);
-
-    var rollCallsThemes = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        local: rollCallsThemes,
-        identify: function (obj) { return obj.value; }
-    });
-
-    rollCallsThemes.initialize();
-
-    function values(q, sync) {
-        if (q === '') {
-            sync(rollCallsThemes.get(defaultOptions));
-        }
-        else {
-            rollCallsThemes.search(q, sync);
-        }
-    }
-
     var elt = $('#' + newID + ' .filterSubjectMotions');
-    elt.tagsinput({
-        itemValue: 'key',
-        itemText: 'value',
-        typeaheadjs: [{
-            hint: false,
-            highlight: true,
-        },
-        {
-            name: 'rollCallsThemes',
-            displayKey: 'value',
-            limit: 10,
-            source: values
-        }]
-    });
+    setupFilterTagsinput(elt, rollCallsThemes, 'rollCallsThemes');
 
     var chart;
     elt.on('itemAdded', function (event) {
@@ -544,21 +550,30 @@ function addThemeFilter(newID, rollCalls) {
 }
 
 /**
- * Add theme search for scatter plot
+ * Add subject + motion-type filters for the scatter plot.
+ * Both reuse the standard tagsinput + typeahead pattern and feed the shared
+ * Reload button, applied as an intersection (subject AND type). Empty = no
+ * filter. Options are derived from the period's roll calls; the full list is
+ * shown on focus (minLength 0, no result cap).
  * @param {string} newID - Panel ID
- * @param {Array} rollCalls - Roll calls data
+ * @param {Array} rollCalls - Roll calls data for the period
  */
-function addThemeSearchScatterPlot(newID, rollCalls) {
-    var placeholder = language === ENGLISH
+function addScatterPlotFilters(newID, rollCalls) {
+    var subjectPlaceholder = language === ENGLISH
         ? "Type subject to select (e.g. Health, Education, etc)"
-        : "Digite temas de votações para filtrar (e.g. Saúde, Educação, Economia, etc)"
+        : "Digite temas de votações para filtrar (e.g. Saúde, Educação, Economia, etc)";
+    var typePlaceholder = language === ENGLISH
+        ? "Type motion type to filter"
+        : "Digite tipos de votações para filtrar";
 
-    const popoverContent = 'Reload scatterplot with subjects';
+    const popoverContent = 'Reload scatterplot with subjects and types';
 
     $("#" + newID + " .panel-settings")
         .append('<li role="presentation" class="dropdown-header"><span class="trn">Select Subjects</span></li>')
-        .append('<li><div class="row" style="width: 100%;">' +
-            '<div class="col-xs-11"><input type="text" class="form-control typeahead filterSubjectMotions" placeholder="' + placeholder + '"/></div>' +
+        .append('<li><input type="text" class="form-control typeahead filterSubjectMotions" placeholder="' + subjectPlaceholder + '"/></li>')
+        .append('<li role="presentation" class="dropdown-header"><span class="trn">Select motion types</span></li>')
+        .append('<li><div class="row" style="width: 100%; margin: 0;">' +
+            '<div class="col-xs-11" style="padding-left: 0;"><input type="text" class="form-control typeahead filterMotions" placeholder="' + typePlaceholder + ' (e.g. PL, PEC, etc.)"/></div>' +
             '<div class="col-xs-1" style="padding-left: 0;">' +
             '<button class="btn btn-primary reloadScatter" style="padding:12px; display: flex; align-items: center; justify-content: center;" ' +
             'data-container="body" data-content="' + popoverContent + '" data-html="true" rel="popover" ' +
@@ -568,45 +583,17 @@ function addThemeSearchScatterPlot(newID, rollCalls) {
 
     $('#' + newID + ' .reloadScatter').popover();
 
+    // --- Subjects typeahead (full option list shown on focus) ---
     var rollCallsThemes = d3.map(rollCalls, function (d) {
-        return language === ENGLISH ? subjectsToEnglish[d.theme] : d.theme
+        return language === ENGLISH ? subjectsToEnglish[d.theme] : d.theme;
     }).keys();
-    var defaultOptions = rollCallsThemes.sort();
-    rollCallsThemes = d3.entries(rollCallsThemes);
+    var themeElt = $('#' + newID + ' .filterSubjectMotions');
+    setupFilterTagsinput(themeElt, rollCallsThemes, 'rollCallsThemes');
 
-    var rollCallsThemes = new Bloodhound({
-        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
-        queryTokenizer: Bloodhound.tokenizers.whitespace,
-        local: rollCallsThemes,
-        identify: function (obj) { return obj.value; }
-    });
-
-    rollCallsThemes.initialize();
-
-    function values(q, sync) {
-        if (q === '') {
-            sync(rollCallsThemes.get(defaultOptions));
-        }
-        else {
-            rollCallsThemes.search(q, sync);
-        }
-    }
-
-    var elt = $('#' + newID + ' .filterSubjectMotions');
-    elt.tagsinput({
-        itemValue: 'key',
-        itemText: 'value',
-        typeaheadjs: [{
-            hint: false,
-            highlight: true,
-        },
-        {
-            name: 'rollCallsThemes',
-            displayKey: 'value',
-            limit: 10,
-            source: values
-        }]
-    });
+    // --- Motion types typeahead (full option list shown on focus) ---
+    var rollCallsTypes = d3.map(rollCalls, function (d) { return d.type; }).keys();
+    var typeElt = $('#' + newID + ' .filterMotions');
+    setupFilterTagsinput(typeElt, rollCallsTypes, 'rollCallsTypes');
 
     $("#" + newID + " .bootstrap-tagsinput").click(function (e) {
         e.stopPropagation();
@@ -615,8 +602,9 @@ function addThemeSearchScatterPlot(newID, rollCalls) {
     $('#' + newID + ' .reloadScatter').click(function () {
         var tree = state.getTree();
         const { filteredData, dimensionalReductionTechnique } = tree.getNode(newID, tree.traverseBF).args;
-        const subjects = elt.tagsinput('items').map(item => item.value);
-        reloadScatterPlotData(filteredData, dimensionalReductionTechnique, newID, subjects);
+        const subjects = themeElt.tagsinput('items').map(item => item.value);
+        const types = typeElt.tagsinput('items').map(item => item.value);
+        reloadScatterPlotData(filteredData, dimensionalReductionTechnique, newID, subjects, types);
     });
 }
 
