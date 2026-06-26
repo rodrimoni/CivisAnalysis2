@@ -280,7 +280,7 @@ function initializeSmallMultiples(newID, chartObj) {
 function initializePartyMetrics(newID, chartObj) {
     var chart = partyMetrics();
     addConfigMenu(newID, 'party-metrics', false);
-    addFilterMotionTypePartyMetrics(newID, chartObj.data.rcs);
+    addFilterMotionTypeChart(newID, chartObj.data.rcs, 'partyMetricsTypes');
     addEditTitleInput(newID);
     $('#' + newID).attr('data-type-period', chartObj.panelClass);
     return chart;
@@ -295,6 +295,7 @@ function initializePartyMetrics(newID, chartObj) {
 function initializePartyRiceTimeline(newID, chartObj) {
     var chart = partyRiceTimeline();
     addConfigMenu(newID, 'party-rice-timeline', false);
+    addFilterMotionTypeChart(newID, chartObj.data.rcs, 'partyRiceTimelineTypes');
     addEditTitleInput(newID);
     $('#' + newID).attr('data-type-period', chartObj.panelClass);
     return chart;
@@ -309,6 +310,7 @@ function initializePartyRiceTimeline(newID, chartObj) {
 function initializeCohesionComparison(newID, chartObj) {
     var chart = cohesionComparison();
     addConfigMenu(newID, 'cohesion-comparison', false);
+    addFilterMotionTypeChart(newID, chartObj.data.rcs, 'cohesionComparisonTypes');
     addEditTitleInput(newID);
     $('#' + newID).attr('data-type-period', chartObj.panelClass);
     return chart;
