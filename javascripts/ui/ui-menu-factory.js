@@ -174,14 +174,16 @@ function addFilterMotionTypeMenu(newID, rollCalls) {
 }
 
 /**
- * Add motion-type filter for the Party Metrics panel.
- * Same tagsinput + typeahead pattern as addFilterMotionTypeMenu, but routes the
- * selection to chart.setMotionTypeFilter so the whole panel recalculates.
- * Empty selection = all types. Options are derived from the period's roll calls.
+ * Add a motion-type filter to a panel whose chart exposes setMotionTypeFilter.
+ * Tagsinput + typeahead pattern that routes the selection to
+ * chart.setMotionTypeFilter so the whole panel recalculates. Empty selection =
+ * all types. Options are derived from the period's roll calls. Shared by the
+ * Party Metrics and Cohesion Comparison panels (distinguished by datasetName).
  * @param {string} newID - Panel ID
  * @param {Array} rollCalls - Roll calls data for the period
+ * @param {string} datasetName - Unique typeahead dataset name for this panel
  */
-function addFilterMotionTypePartyMetrics(newID, rollCalls) {
+function addFilterMotionTypeChart(newID, rollCalls, datasetName) {
     var placeholder = language === ENGLISH ? "Type motion type to filter" : "Digite tipos de votações para filtrar";
     $("#" + newID + " .panel-settings")
         .append('<li role="presentation" class="dropdown-header"><span class="trn">Select motion types</span></li>')
@@ -191,7 +193,7 @@ function addFilterMotionTypePartyMetrics(newID, rollCalls) {
 
     var rollCallsTypes = d3.map(rollCalls, function (d) { return d.type; }).keys();
     var elt = $('#' + newID + ' .filterMotions');
-    setupFilterTagsinput(elt, rollCallsTypes, 'partyMetricsTypes');
+    setupFilterTagsinput(elt, rollCallsTypes, datasetName);
 
     function applyTypeFilter() {
         var tree = state.getTree();

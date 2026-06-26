@@ -29,6 +29,29 @@ function getYearStart(date) {
 }
 
 /**
+ * Count the distinct deputies who cast a vote under any of the given parties
+ * across the roll calls. Used as the participation denominator for party-based
+ * Rice calculations so that different views (Party Rice Timeline and Cohesion
+ * Comparison) agree by computing the "party size" from the same vote data.
+ * @param {Array} rcs - Roll calls array
+ * @param {string|Array} parties - Party name or array of party names
+ * @returns {number} Number of distinct deputies seen voting for those parties
+ */
+function countPartyDeputies(rcs, parties) {
+    var partiesArr = Array.isArray(parties) ? parties : [parties];
+    var ids = {};
+    if (rcs) {
+        rcs.forEach(function (rc) {
+            if (!rc || !rc.votes) return;
+            rc.votes.forEach(function (v) {
+                if (partiesArr.indexOf(v.party) > -1) ids[v.deputyID] = true;
+            });
+        });
+    }
+    return Object.keys(ids).length;
+}
+
+/**
  * Calculate weighted Rice Index by month
  * @param {Array} rcs - Roll calls array
  * @param {string|Array} parties - Party name or array of party names

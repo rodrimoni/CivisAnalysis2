@@ -35,6 +35,7 @@ function partyRiceTimeline() {
     var timeGrouping = 'month';  // 'month' or 'year'
     var originalData;            // preserve original data for toggle re-render
     var isMultiParty = false;    // true when showing coalition of multiple parties
+    var selectedTypes = [];      // selected motion types for filtering (empty = all)
 
     /**
      * Main chart function
@@ -78,10 +79,20 @@ function partyRiceTimeline() {
         var isDeputyMode = !!data.isDeputyMode;
         var deputyIDs = data.deputyIDs || [];
         isMultiParty = parties.length > 1 || isDeputyMode;
-        const { rcs, deputies } = data;
+        const { deputies } = data;
 
-        // Get max deputies count for participation calculation
-        const deputiesCount = deputies ? deputies.length : 0;
+        // Filter roll calls by selected motion types (empty selection = all types)
+        const rcs = selectedTypes.length
+            ? data.rcs.filter(function (rc) { return selectedTypes.indexOf(rc.type) > -1; })
+            : data.rcs;
+
+        // Participation denominator ("party size"):
+        // - deputy mode: the explicitly selected deputies
+        // - party mode: distinct deputies seen voting under these parties, derived
+        //   from the vote data so the Cohesion Comparison panel computes the same value
+        const deputiesCount = isDeputyMode
+            ? deputyIDs.length
+            : countPartyDeputies(rcs, parties);
 
         // Calculate Rice Index by month or year based on toggle
         const monthlyData = timeGrouping === 'year'
@@ -1197,6 +1208,16 @@ function partyRiceTimeline() {
      */
     chart.update = function () {
         dispatch.update();
+        return chart;
+    };
+
+    /**
+     * Set the motion-type filter and re-render the timeline.
+     * @param {Array<string>} types - Selected motion types (empty = all)
+     */
+    chart.setMotionTypeFilter = function (types) {
+        selectedTypes = types || [];
+        if (originalData) renderTimeline(originalData);
         return chart;
     };
 

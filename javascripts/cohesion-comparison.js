@@ -37,6 +37,7 @@ function cohesionComparison() {
     var brush;
     var brushGroup;
     var chartData = null;     // original data passed from event handler
+    var selectedTypes = [];   // selected motion types for filtering (empty = all)
 
     // Series palette
     var SERIES_PALETTE = [
@@ -111,6 +112,17 @@ function cohesionComparison() {
         return getMonthNames()[d.monthStart.getMonth()] + " " + d.monthStart.getFullYear();
     }
 
+    /**
+     * Roll calls for the period, narrowed to the selected motion types.
+     * Empty selection = all types.
+     */
+    function getFilteredRcs() {
+        var rcs = chartData ? chartData.rcs : [];
+        return selectedTypes.length
+            ? rcs.filter(function (rc) { return selectedTypes.indexOf(rc.type) > -1; })
+            : rcs;
+    }
+
     // ─── Main chart function ────────────────────────────────────────
 
     function chart(selection) {
@@ -147,6 +159,10 @@ function cohesionComparison() {
 
         svg.selectAll("*").remove();
 
+        // Recalculate all series first so the title counts (months / roll calls)
+        // reflect the current motion-type filter, not the previous render.
+        recalculateAllSeries();
+
         renderTitle();
         renderToolbar();
 
@@ -155,9 +171,6 @@ function cohesionComparison() {
             renderEmptyState();
             return;
         }
-
-        // Recalculate data for all series
-        recalculateAllSeries();
 
         // Get combined extent across all series
         var allData = [];
@@ -1053,7 +1066,7 @@ function cohesionComparison() {
         if (seriesList.length >= MAX_SERIES) return;
 
         var deputies = chartData ? chartData.deputies : [];
-        var rcs = chartData ? chartData.rcs : [];
+        var rcs = getFilteredRcs();
 
         // Collect deputy IDs
         var deputyIDs = [];
@@ -1093,14 +1106,16 @@ function cohesionComparison() {
             }
         }
 
-        // Calculate data
-        var monthlyData = calculateMonthlyRiceIndex(rcs, [], deputyIDs.length, RICE_CALC_CLASSIC, deputyIDs);
-        var yearlyData = calculateYearlyRiceIndex(rcs, [], deputyIDs.length, RICE_CALC_CLASSIC, deputyIDs);
-
         var style = getSeriesStyle(getNextAvailablePaletteIndex(), singleParty);
         if (editorState.color) {
             style.color = editorState.color;
         }
+
+        // Series built only from party chips (no hand-picked deputies) are
+        // calculated by the vote's own party label (parties[]), matching the
+        // Party Rice Timeline. Series that include individual deputies fall back
+        // to the fixed deputyID set (the only option for arbitrary virtual groups).
+        var useParty = (editorState.selectedDeputies.length === 0 && editorState.selectedParties.length > 0);
 
         var series = {
             id: 'series-' + Date.now(),
@@ -1109,11 +1124,17 @@ function cohesionComparison() {
             dasharray: style.dasharray,
             strokeWidth: style.strokeWidth,
             singleParty: singleParty,
+            useParty: useParty,
+            parties: editorState.selectedParties.slice(),
             deputyIDs: deputyIDs,
             deputies: deputyObjects,
-            monthlyData: monthlyData,
-            yearlyData: yearlyData
+            monthlyData: [],
+            yearlyData: []
         };
+
+        var computed = computeSeriesData(series, rcs);
+        series.monthlyData = computed.monthlyData;
+        series.yearlyData = computed.yearlyData;
 
         seriesList.push(series);
         renderChart();
@@ -1125,11 +1146,31 @@ function cohesionComparison() {
         renderChart();
     }
 
+    /**
+     * Compute a series' monthly/yearly Rice data from the given roll calls.
+     * Party-chip-only series use per-vote party attribution (matching the Party
+     * Rice Timeline); series with hand-picked deputies use the fixed deputyID set.
+     */
+    function computeSeriesData(series, rcs) {
+        if (series.useParty) {
+            var count = countPartyDeputies(rcs, series.parties);
+            return {
+                monthlyData: calculateMonthlyRiceIndex(rcs, series.parties, count, RICE_CALC_CLASSIC),
+                yearlyData: calculateYearlyRiceIndex(rcs, series.parties, count, RICE_CALC_CLASSIC)
+            };
+        }
+        return {
+            monthlyData: calculateMonthlyRiceIndex(rcs, [], series.deputyIDs.length, RICE_CALC_CLASSIC, series.deputyIDs),
+            yearlyData: calculateYearlyRiceIndex(rcs, [], series.deputyIDs.length, RICE_CALC_CLASSIC, series.deputyIDs)
+        };
+    }
+
     function recalculateAllSeries() {
-        var rcs = chartData ? chartData.rcs : [];
+        var rcs = getFilteredRcs();
         seriesList.forEach(function (s) {
-            s.monthlyData = calculateMonthlyRiceIndex(rcs, [], s.deputyIDs.length, RICE_CALC_CLASSIC, s.deputyIDs);
-            s.yearlyData = calculateYearlyRiceIndex(rcs, [], s.deputyIDs.length, RICE_CALC_CLASSIC, s.deputyIDs);
+            var computed = computeSeriesData(s, rcs);
+            s.monthlyData = computed.monthlyData;
+            s.yearlyData = computed.yearlyData;
         });
     }
 
@@ -1777,6 +1818,17 @@ function cohesionComparison() {
 
     chart.update = function () {
         dispatch.update();
+        return chart;
+    };
+
+    /**
+     * Set the motion-type filter and recompute every series.
+     * @param {Array<string>} types - Selected motion types (empty = all)
+     */
+    chart.setMotionTypeFilter = function (types) {
+        selectedTypes = types || [];
+        savedBrushExtent = null; // data domain changes; refit the brush/zoom
+        if (svg) renderChart();
         return chart;
     };
 
