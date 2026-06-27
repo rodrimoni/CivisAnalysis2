@@ -134,24 +134,25 @@ function cohesionByTheme() {
     function renderChart() {
         if (!svg) return;
         svg.selectAll("*").remove();
-        svgRoot.attr("viewBox", "0 0 " + outerWidth + " " + outerHeight);
         svg.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         renderToolbar();
 
         if (!referenceGroup || comparisonGroups.length === 0) {
+            svgRoot.attr("viewBox", "0 0 " + outerWidth + " " + outerHeight);
             renderEmptyState();
             return;
         }
 
-        // Placeholder until small multiples are added (Task 5)
-        svg.append("text")
-            .attr("x", width / 2)
-            .attr("y", height / 2)
-            .attr("text-anchor", "middle")
-            .attr("font-size", "14px")
-            .attr("fill", "#64748b")
-            .text(comparisonGroups.length + " comparison group(s) vs " + referenceGroup.label);
+        var themeData = computeThemeData();
+        if (themeData.length === 0) {
+            svgRoot.attr("viewBox", "0 0 " + outerWidth + " " + outerHeight);
+            renderEmptyState(true);
+            return;
+        }
+
+        var totalHeight = renderSmallMultiples(themeData);
+        svgRoot.attr("viewBox", "0 0 " + outerWidth + " " + Math.max(outerHeight, totalHeight));
     }
 
     // ─── Toolbar (reference + comparison chips) ─────────────────────
@@ -227,6 +228,156 @@ function cohesionByTheme() {
             .style("cursor", "pointer").style("white-space", "nowrap")
             .text(label)
             .on("click", onClick);
+    }
+
+    // ─── Per-theme computation ──────────────────────────────────────
+    function themeDisplayName(theme) {
+        return (isEnglish() && typeof subjectsToEnglish !== 'undefined' && subjectsToEnglish[theme])
+            ? subjectsToEnglish[theme]
+            : theme;
+    }
+
+    function groupSpec(group) {
+        return { parties: (group && group.parties) || [], deputyIDs: (group && group.deputyIDs) || [] };
+    }
+
+    function unionSpec(a, b) {
+        var parties = a.parties.slice();
+        b.parties.forEach(function (p) { if (parties.indexOf(p) === -1) parties.push(p); });
+        var deputyIDs = a.deputyIDs.slice();
+        b.deputyIDs.forEach(function (id) { if (deputyIDs.indexOf(id) === -1) deputyIDs.push(id); });
+        return { parties: parties, deputyIDs: deputyIDs };
+    }
+
+    function computeThemeData() {
+        var rcs = getFilteredRcs();
+        var rawThemes = d3.map(rcs, function (d) { return d.theme; }).keys();
+        var refSpec = groupSpec(referenceGroup);
+
+        var result = [];
+        rawThemes.forEach(function (theme) {
+            var display = themeDisplayName(theme);
+            if (selectedThemes.length && selectedThemes.indexOf(display) === -1) return;
+
+            var rcsT = rcs.filter(function (rc) { return rc.theme === theme; });
+            var baseline = calcGroupRiceForRcs(rcsT, refSpec, RICE_CALC_CLASSIC);
+
+            var bars = comparisonGroups.map(function (c) {
+                var u = unionSpec(refSpec, groupSpec(c));
+                var r = calcGroupRiceForRcs(rcsT, u, RICE_CALC_CLASSIC);
+                return {
+                    label: c.label, color: c.color,
+                    rice: r.rice, rollCallCount: r.rollCallCount, totalVotes: r.totalVotes
+                };
+            });
+
+            result.push({
+                theme: display, rawTheme: theme,
+                baseline: baseline.rice, baselineCount: baseline.rollCallCount,
+                bars: bars
+            });
+        });
+
+        result.sort(function (a, b) { return b.baseline - a.baseline; });
+        return result;
+    }
+
+    function truncate(s, n) {
+        if (!s) return '';
+        return s.length > n ? s.slice(0, n - 1) + '…' : s;
+    }
+
+    // ─── Small multiples render ─────────────────────────────────────
+    function renderSmallMultiples(themeData) {
+        var cols = Math.max(1, Math.min(3, Math.floor(width / 320)));
+        var cellW = width / cols;
+        var headerH = 34;
+        var barRowH = 24;
+        var cellPadV = 16;
+        var nBars = comparisonGroups.length;
+        var cellH = headerH + nBars * barRowH + cellPadV;
+        var rows = Math.ceil(themeData.length / cols);
+
+        var labelW = 64;   // left label column inside a cell
+        var valueW = 34;   // right value column inside a cell
+        var barX = labelW + 8;
+        var barW = cellW - labelW - valueW - 16;
+        var xScale = d3.scale.linear().domain([0, 1]).range([0, barW]);
+
+        var cells = svg.selectAll(".theme-cell")
+            .data(themeData)
+            .enter().append("g")
+            .attr("class", "theme-cell")
+            .attr("transform", function (d, i) {
+                var cx = (i % cols) * cellW;
+                var cy = Math.floor(i / cols) * cellH;
+                return "translate(" + cx + "," + cy + ")";
+            });
+
+        cells.append("text")
+            .attr("x", 4).attr("y", 16)
+            .style("font-size", "13px").style("font-weight", "700").style("fill", "#1e293b")
+            .text(function (d) { return truncate(d.theme, 30); })
+            .append("svg:title").text(function (d) { return d.theme; });
+
+        cells.append("text")
+            .attr("x", 4).attr("y", 29)
+            .style("font-size", "10px").style("fill", "#94a3b8")
+            .text(function (d) {
+                return d.baselineCount + (isEnglish() ? " roll calls" : " votações");
+            });
+
+        cells.each(function (cell) {
+            var g = d3.select(this);
+
+            cell.bars.forEach(function (bar, j) {
+                var y = headerH + j * barRowH;
+
+                g.append("text")
+                    .attr("x", 4).attr("y", y + barRowH / 2 + 3)
+                    .style("font-size", "10px").style("fill", "#374151")
+                    .text(truncate(bar.label, 9))
+                    .append("svg:title").text(bar.label);
+
+                g.append("rect")
+                    .attr("x", barX).attr("y", y + 3)
+                    .attr("width", barW).attr("height", barRowH - 10)
+                    .attr("fill", "#f1f5f9");
+
+                var rect = g.append("rect")
+                    .attr("x", barX).attr("y", y + 3)
+                    .attr("width", Math.max(0, xScale(bar.rice || 0)))
+                    .attr("height", barRowH - 10)
+                    .attr("rx", 2)
+                    .attr("fill", bar.color || "#2563eb");
+
+                rect.append("svg:title").text(
+                    bar.label + " — Rice " + (bar.rice || 0).toFixed(3) +
+                    " | " + bar.rollCallCount + (isEnglish() ? " roll calls | " : " votações | ") +
+                    bar.totalVotes + (isEnglish() ? " votes" : " votos"));
+
+                g.append("text")
+                    .attr("x", barX + barW + 4).attr("y", y + barRowH / 2 + 3)
+                    .style("font-size", "10px").style("fill", "#475569")
+                    .text((bar.rice || 0).toFixed(2));
+            });
+
+            // Baseline (reference internal Rice) — dashed vertical line over the bar rows
+            var baseX = barX + xScale(cell.baseline);
+            g.append("line")
+                .attr("x1", baseX).attr("x2", baseX)
+                .attr("y1", headerH - 4).attr("y2", headerH + nBars * barRowH - 4)
+                .attr("stroke", "#475569").attr("stroke-width", 1)
+                .attr("stroke-dasharray", "3,3");
+
+            g.append("text")
+                .attr("x", baseX).attr("y", headerH - 7)
+                .attr("text-anchor", "middle")
+                .style("font-size", "9px").style("fill", "#475569")
+                .text("ref " + cell.baseline.toFixed(2));
+        });
+
+        return margin.top + rows * cellH + margin.bottom;
     }
 
     function renderEmptyState(noData) {
