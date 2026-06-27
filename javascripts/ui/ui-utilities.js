@@ -137,6 +137,8 @@ function getChartIcon(typeChart) {
         icon += "icon-line-chart";
     else if (typeChart === COHESION_COMPARISON)
         icon += "icon-line-chart";
+    else if (typeChart === COHESION_BY_THEME)
+        icon += "icon-bar-chart";
 
     return icon;
 }

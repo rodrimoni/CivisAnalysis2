@@ -419,6 +419,8 @@ function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData) {
         setUpScatterPlotData(filteredData, "PCA", ROLLCALLS_HEATMAP);
     else if (selectedMenu.context.id === 'cohesion-comparison')
         setUpCohesionComparison(filteredData);
+    else if (selectedMenu.context.id === 'cohesion-by-theme')
+        setUpCohesionByTheme(filteredData);
 }
 
 /**
@@ -478,6 +480,72 @@ function setUpCohesionComparison(filteredData) {
 
         var chartObj = {
             'chartID': COHESION_COMPARISON,
+            'data': data,
+            'title': title,
+            'prettyTitle': prettyTitle,
+            'panelClass': panelClass
+        };
+
+        $('#loading').css('visibility', 'hidden');
+        createNewChild('panel-1-1', chartObj);
+    });
+}
+
+/**
+ * Set up Cohesion by Theme chart from timeline selection
+ * @param {Array} filteredData - Date range [startDate, endDate]
+ */
+function setUpCohesionByTheme(filteredData) {
+    var dataRange = setNewDateRange(filteredData);
+    var title, prettyTitle, panelClass;
+
+    $('#loading').css('visibility', 'visible');
+
+    updateDataforDateRange(filteredData, function () {
+        var deputies = [];
+        for (var key in deputiesInTheDateRange) {
+            if (deputiesInTheDateRange.hasOwnProperty(key)) {
+                var dep = deputiesInTheDateRange[key];
+                dep.deputyID = parseInt(key);
+                deputies.push(dep);
+            }
+        }
+
+        var rcs = rollCallInTheDateRange || [];
+        rcs.forEach(function (e) {
+            if (!e.rollCallName) {
+                e.rollCallName = e.type + " " + e.number + " " + e.year;
+            }
+        });
+
+        if (dataRange.found) {
+            if (dataRange.type !== "year") {
+                var periodData = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id];
+                title = "<span><span class='trn'>Cohesion by Theme</span>: <span class='trn'>" + periodData.name + "</span></span>";
+                prettyTitle = "Cohesion by Theme: " + periodData.name;
+                var subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
+                title += subtitle;
+            } else {
+                title = "<span><span class='trn'>Cohesion by Theme</span>: <span class='trn'>Year</span> " + dataRange.id + "</span>";
+                prettyTitle = "Cohesion by Theme: Year " + dataRange.id;
+            }
+            panelClass = dataRange.type + '-' + dataRange.id;
+        } else {
+            title = "<span><span class='trn'>Cohesion by Theme</span>: " + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
+            prettyTitle = "Cohesion by Theme: " + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString();
+            panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear();
+        }
+
+        var data = {
+            period: filteredData,
+            rcs: rcs,
+            deputies: deputies,
+            referenceGroup: null,
+            comparisonGroups: []
+        };
+
+        var chartObj = {
+            'chartID': COHESION_BY_THEME,
             'data': data,
             'title': title,
             'prettyTitle': prettyTitle,
