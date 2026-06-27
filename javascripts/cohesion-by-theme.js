@@ -13,11 +13,11 @@ function cohesionByTheme() {
     // Layout
     var outerWidth = 1080,
         outerHeight = 780,
-        margin = { top: 96, right: 20, bottom: 20, left: 20 },
+        margin = { top: 28, right: 16, bottom: 16, left: 16 },
         width = outerWidth - margin.left - margin.right,
         height = outerHeight - margin.top - margin.bottom;
 
-    var svgRoot, svg, panelID;
+    var svgRoot, svg, panelID, toolbarEl, gridEl, resizeTimer;
     var dispatch = d3.dispatch('update');
 
     // State
@@ -32,6 +32,75 @@ function cohesionByTheme() {
         '#7c3aed', '#0891b2', '#db2777', '#65a30d'];
 
     function isEnglish() { return (typeof language !== 'undefined' && language === ENGLISH); }
+
+    // System tooltip — reuses the shared frosted-glass ".toolTip" element
+    // (index.html) styled in windows-system.css, matching every other chart.
+    var tooltip = d3.select(".toolTip");
+
+    function showToolTip(html) {
+        if (tooltip.empty()) return;
+        tooltip.transition().duration(0);
+        tooltip.style("left", (d3.event.pageX + 15) + "px");
+        tooltip.style("top", (d3.event.pageY - 10) + "px");
+        tooltip.style("display", "inline-block").style("opacity", 1);
+        tooltip.html(html);
+    }
+
+    function moveToolTip() {
+        if (tooltip.empty()) return;
+        tooltip.style("left", (d3.event.pageX + 15) + "px");
+        tooltip.style("top", (d3.event.pageY - 10) + "px");
+    }
+
+    function hideToolTip() {
+        if (tooltip.empty()) return;
+        tooltip.transition().duration(0);
+        tooltip.style("display", "none").style("opacity", 1);
+    }
+
+    // Each bar is the Rice cohesion of the union (reference ∪ this comparison
+    // group); the tooltip makes that explicit and shows the reference's own
+    // (baseline) cohesion for context.
+    function barTooltipHtml(themeName, bar, refLabel, baseline, refColor) {
+        var eng = isEnglish();
+        var rColor = refColor || '#1e293b';
+        var cColor = bar.color || '#2563eb';
+        var rice = bar.rice || 0;
+
+        return "<div style='min-width: 220px; max-width: 340px;'>" +
+            "<div style='padding-bottom: 4px; margin-bottom: 8px;'>" +
+            "<div style='font-size: 14px; font-weight: 600; color: #1e293b;'>" + themeName + "</div>" +
+            "</div>" +
+            "<div style='margin-bottom: 4px;'>" +
+            "<div style='display:flex; align-items:center; gap:6px; padding-bottom:4px; margin-bottom:4px; border-bottom: 2px solid " + cColor + ";'>" +
+            "<span style='font-weight:600; font-size:13px;'>" +
+            "<span style='color:" + rColor + ";'>" + refLabel + "</span>" +
+            "<span style='color:#94a3b8; font-weight:400;'> + </span>" +
+            "<span style='color:" + cColor + ";'>" + bar.label + "</span>" +
+            "</span>" +
+            "</div>" +
+            "<div style='font-size: 13px; line-height: 1.6;'>" +
+            "<div style='margin-bottom: 4px;'>" +
+            "<span style='color: #666; font-weight: 500;'>" + (eng ? 'Bloc cohesion:' : 'Coesão do bloco:') + "</span> " +
+            "<span style='font-weight: 600; color: " + cColor + "; font-size: 15px;'>" + (rice * 100).toFixed(1) + "%</span>" +
+            "<span style='color: #999; font-size: 11px; margin-left: 4px;'>(" + rice.toFixed(3) + ")</span>" +
+            "</div>" +
+            "<div style='margin-bottom: 4px; color: #666;'>" +
+            "<span style='font-weight: 500;'>" + (eng ? 'Reference alone:' : 'Só a referência:') + "</span> " +
+            "<span style='font-weight: 600; color: " + rColor + ";'>" + ((baseline || 0) * 100).toFixed(1) + "%</span>" +
+            "</div>" +
+            "<div style='margin-bottom: 4px; color: #666;'>" +
+            "<span style='font-weight: 500;'>" + (eng ? 'Roll Calls:' : 'Votações:') + "</span> " +
+            "<span style='color: #333;'>" + bar.rollCallCount + "</span>" +
+            "</div>" +
+            "<div style='color: #666;'>" +
+            "<span style='font-weight: 500;'>" + (eng ? 'Total Votes:' : 'Total de votos:') + "</span> " +
+            "<span style='color: #333;'>" + bar.totalVotes + "</span>" +
+            "</div>" +
+            "</div>" +
+            "</div>" +
+            "</div>";
+    }
 
     function nextPaletteColor() {
         var used = comparisonGroups.map(function (g) { return g.color; });
@@ -78,6 +147,7 @@ function cohesionByTheme() {
     }
 
     function openEditor(role) {
+        if (gridEl) gridEl.node().scrollTop = 0;
         openGroupEditor({
             svg: svg,
             layout: { width: width, margin: margin, outerWidth: outerWidth, outerHeight: outerHeight },
@@ -110,65 +180,109 @@ function cohesionByTheme() {
     // ─── Main chart function ────────────────────────────────────────
     function chart(selection) {
         selection.each(function (data) {
+            var container = this;
             panelID = ($(this).parents('.panel')).attr('id');
             chartData = data;
             referenceGroup = data.referenceGroup || null;
             comparisonGroups = data.comparisonGroups || [];
 
-            svgRoot = d3.select(this)
-                .append("svg")
+            // Panel body becomes a fixed-height flex column: a sticky toolbar on
+            // top and a scrollable, full-width grid below.
+            var root = d3.select(container)
+                .style("display", "flex")
+                .style("flex-direction", "column");
+
+            toolbarEl = root.append("div")
+                .attr("class", "cbt-toolbar")
+                .style("flex", "0 0 auto")
+                .style("padding", "8px 12px")
+                .style("border-bottom", "1px solid #e2e8f0")
+                .style("background", "#ffffff")
+                .style("font-family", "system-ui, -apple-system, sans-serif");
+
+            gridEl = root.append("div")
+                .attr("class", "cbt-grid")
+                .style("flex", "1 1 auto")
+                .style("min-height", "0")
+                .style("overflow-y", "auto")
+                .style("overflow-x", "hidden")
+                .style("position", "relative");
+
+            svgRoot = gridEl.append("svg")
                 .attr("width", "100%")
-                .attr("height", "100%")
                 .attr("preserveAspectRatio", "xMinYMin meet")
-                .attr("viewBox", "0 0 " + outerWidth + " " + outerHeight)
                 .classed("cohesion-by-theme", true);
 
             svg = svgRoot.append("svg:g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            // Reflow on panel resize (skip while the group editor overlay is open).
+            $(container).on("resize", function () {
+                if (resizeTimer) clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function () {
+                    if (svg && svg.select(".group-editor-overlay").empty()) renderChart();
+                }, 120);
+            });
 
             renderChart();
         });
     }
 
     // ─── Render orchestrator ────────────────────────────────────────
+    function gridSize() {
+        var node = gridEl && gridEl.node() ? gridEl.node() : null;
+        return {
+            w: node && node.clientWidth > 0 ? node.clientWidth : 800,
+            h: node && node.clientHeight > 0 ? node.clientHeight : 600
+        };
+    }
+
+    // Size the grid SVG to fill the available width. Height grows with content; the
+    // grid container scrolls vertically when content is taller than the panel.
+    function sizeGrid(availW, pixelHeight) {
+        outerWidth = availW;
+        outerHeight = pixelHeight;
+        width = availW - margin.left - margin.right;
+        height = pixelHeight - margin.top - margin.bottom;
+        svgRoot
+            .attr("height", pixelHeight + "px")
+            .attr("viewBox", "0 0 " + availW + " " + pixelHeight);
+        svg.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    }
+
     function renderChart() {
         if (!svg) return;
         svg.selectAll("*").remove();
-        svg.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
+        hideToolTip();
         renderToolbar();
 
+        var size = gridSize();
+
         if (!referenceGroup || comparisonGroups.length === 0) {
-            svgRoot.attr("viewBox", "0 0 " + outerWidth + " " + outerHeight);
+            sizeGrid(size.w, size.h);
             renderEmptyState();
             return;
         }
 
         var themeData = computeThemeData();
         if (themeData.length === 0) {
-            svgRoot.attr("viewBox", "0 0 " + outerWidth + " " + outerHeight);
+            sizeGrid(size.w, size.h);
             renderEmptyState(true);
             return;
         }
 
-        var totalHeight = renderSmallMultiples(themeData);
-        svgRoot.attr("viewBox", "0 0 " + outerWidth + " " + Math.max(outerHeight, totalHeight));
+        renderSmallMultiples(themeData, size.w, size.h);
     }
 
     // ─── Toolbar (reference + comparison chips) ─────────────────────
     function renderToolbar() {
-        var fo = svg.append("foreignObject")
-            .attr("x", 0)
-            .attr("y", -(margin.top - 12))
-            .attr("width", width)
-            .attr("height", margin.top - 20);
+        toolbarEl.selectAll("*").remove();
 
-        var bar = fo.append("xhtml:div")
+        var bar = toolbarEl.append("div")
             .style("display", "flex").style("flex-wrap", "wrap").style("align-items", "center")
-            .style("gap", "8px 14px").style("width", "100%")
-            .style("font-family", "system-ui, -apple-system, sans-serif");
+            .style("gap", "8px 14px").style("width", "100%");
 
-        bar.append("xhtml:span")
+        bar.append("span")
             .style("font-size", "12px").style("font-weight", "700").style("color", "#1e293b")
             .text(isEnglish() ? "Reference:" : "Referência:");
 
@@ -180,7 +294,7 @@ function cohesionByTheme() {
             });
         }
 
-        bar.append("xhtml:span")
+        bar.append("span")
             .style("font-size", "12px").style("font-weight", "700").style("color", "#1e293b")
             .style("margin-left", "12px")
             .text(isEnglish() ? "Compare:" : "Comparar:");
@@ -197,20 +311,20 @@ function cohesionByTheme() {
     }
 
     function appendGroupChip(bar, group, role, index) {
-        var chip = bar.append("xhtml:span")
+        var chip = bar.append("span")
             .style("display", "inline-flex").style("align-items", "center").style("gap", "6px")
             .style("padding", "3px 8px").style("border-radius", "12px")
             .style("background", "#f8fafc").style("border", "1px solid " + (group.color || '#cbd5e1'));
 
-        chip.append("xhtml:span")
+        chip.append("span")
             .style("width", "10px").style("height", "10px").style("border-radius", "50%")
             .style("background", group.color || '#2563eb').style("flex-shrink", "0");
 
-        chip.append("xhtml:span")
+        chip.append("span")
             .style("font-size", "12px").style("color", "#374151").style("white-space", "nowrap")
             .text(group.label);
 
-        chip.append("xhtml:span")
+        chip.append("span")
             .style("cursor", "pointer").style("color", "#94a3b8").style("font-size", "13px").style("line-height", "1")
             .text("×")
             .on("click", function () {
@@ -221,7 +335,7 @@ function cohesionByTheme() {
     }
 
     function appendAddButton(bar, label, onClick) {
-        bar.append("xhtml:div")
+        bar.append("div")
             .style("display", "inline-flex").style("align-items", "center").style("justify-content", "center")
             .style("padding", "3px 12px").style("background", "#2563eb").style("color", "#ffffff")
             .style("font-size", "12px").style("font-weight", "600").style("border-radius", "12px")
@@ -288,15 +402,25 @@ function cohesionByTheme() {
     }
 
     // ─── Small multiples render ─────────────────────────────────────
-    function renderSmallMultiples(themeData) {
-        var cols = Math.max(1, Math.min(3, Math.floor(width / 320)));
-        var cellW = width / cols;
+    function renderSmallMultiples(themeData, availW, availH) {
+        var MIN_CELL = 300;
         var headerH = 34;
         var barRowH = 24;
         var cellPadV = 16;
         var nBars = comparisonGroups.length;
         var cellH = headerH + nBars * barRowH + cellPadV;
+
+        // Columns fill the available width and depend on the panel width, not on the
+        // number of comparison groups — so the layout stays stable as groups change.
+        var inner = availW - margin.left - margin.right;
+        var cols = Math.max(1, Math.min(6, Math.floor(inner / MIN_CELL)));
+        if (cols > themeData.length) cols = Math.max(1, themeData.length);
+        var cellW = Math.floor(inner / cols);
         var rows = Math.ceil(themeData.length / cols);
+
+        // Fill width; the grid container scrolls when content is taller than the panel.
+        var contentOuterH = margin.top + rows * cellH + margin.bottom;
+        sizeGrid(availW, Math.max(availH, contentOuterH));
 
         var labelW = 64;   // left label column inside a cell
         var valueW = 34;   // right value column inside a cell
@@ -333,28 +457,39 @@ function cohesionByTheme() {
             cell.bars.forEach(function (bar, j) {
                 var y = headerH + j * barRowH;
 
+                var showBarTip = (function (theme, b, refLabel, baseline, refColor) {
+                    return function () { showToolTip(barTooltipHtml(theme, b, refLabel, baseline, refColor)); };
+                })(cell.theme, bar, referenceGroup ? referenceGroup.label : '', cell.baseline,
+                    referenceGroup ? referenceGroup.color : '#1e293b');
+
                 g.append("text")
                     .attr("x", 4).attr("y", y + barRowH / 2 + 3)
                     .style("font-size", "10px").style("fill", "#374151")
+                    .style("cursor", "default")
                     .text(truncate(bar.label, 9))
-                    .append("svg:title").text(bar.label);
+                    .on("mouseover", showBarTip)
+                    .on("mousemove", moveToolTip)
+                    .on("mouseout", hideToolTip);
 
                 g.append("rect")
                     .attr("x", barX).attr("y", y + 3)
                     .attr("width", barW).attr("height", barRowH - 10)
-                    .attr("fill", "#f1f5f9");
+                    .attr("fill", "#f1f5f9")
+                    .style("cursor", "default")
+                    .on("mouseover", showBarTip)
+                    .on("mousemove", moveToolTip)
+                    .on("mouseout", hideToolTip);
 
-                var rect = g.append("rect")
+                g.append("rect")
                     .attr("x", barX).attr("y", y + 3)
                     .attr("width", Math.max(0, xScale(bar.rice || 0)))
                     .attr("height", barRowH - 10)
                     .attr("rx", 2)
-                    .attr("fill", bar.color || "#2563eb");
-
-                rect.append("svg:title").text(
-                    bar.label + " — Rice " + (bar.rice || 0).toFixed(3) +
-                    " | " + bar.rollCallCount + (isEnglish() ? " roll calls | " : " votações | ") +
-                    bar.totalVotes + (isEnglish() ? " votes" : " votos"));
+                    .attr("fill", bar.color || "#2563eb")
+                    .style("cursor", "default")
+                    .on("mouseover", showBarTip)
+                    .on("mousemove", moveToolTip)
+                    .on("mouseout", hideToolTip);
 
                 g.append("text")
                     .attr("x", barX + barW + 4).attr("y", y + barRowH / 2 + 3)
@@ -377,8 +512,6 @@ function cohesionByTheme() {
                 .style("font-size", "9px").style("fill", "#475569")
                 .text("ref " + baseline.toFixed(2));
         });
-
-        return margin.top + rows * cellH + margin.bottom;
     }
 
     function renderEmptyState(noData) {
