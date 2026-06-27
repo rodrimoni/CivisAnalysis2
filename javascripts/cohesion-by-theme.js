@@ -301,7 +301,7 @@ function cohesionByTheme() {
         var labelW = 64;   // left label column inside a cell
         var valueW = 34;   // right value column inside a cell
         var barX = labelW + 8;
-        var barW = cellW - labelW - valueW - 16;
+        var barW = Math.max(0, cellW - labelW - valueW - 16);
         var xScale = d3.scale.linear().domain([0, 1]).range([0, barW]);
 
         var cells = svg.selectAll(".theme-cell")
@@ -363,7 +363,8 @@ function cohesionByTheme() {
             });
 
             // Baseline (reference internal Rice) — dashed vertical line over the bar rows
-            var baseX = barX + xScale(cell.baseline);
+            var baseline = cell.baseline || 0;
+            var baseX = barX + xScale(baseline);
             g.append("line")
                 .attr("x1", baseX).attr("x2", baseX)
                 .attr("y1", headerH - 4).attr("y2", headerH + nBars * barRowH - 4)
@@ -374,7 +375,7 @@ function cohesionByTheme() {
                 .attr("x", baseX).attr("y", headerH - 7)
                 .attr("text-anchor", "middle")
                 .style("font-size", "9px").style("fill", "#475569")
-                .text("ref " + cell.baseline.toFixed(2));
+                .text("ref " + baseline.toFixed(2));
         });
 
         return margin.top + rows * cellH + margin.bottom;
