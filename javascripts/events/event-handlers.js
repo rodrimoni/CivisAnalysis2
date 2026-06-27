@@ -492,7 +492,7 @@ function setUpCohesionComparison(filteredData) {
 }
 
 /**
- * Set up Cohesion by Theme chart from timeline selection
+ * Set up Cohesion by Subject chart from timeline selection
  * @param {Array} filteredData - Date range [startDate, endDate]
  */
 function setUpCohesionByTheme(filteredData) {
@@ -521,18 +521,18 @@ function setUpCohesionByTheme(filteredData) {
         if (dataRange.found) {
             if (dataRange.type !== "year") {
                 var periodData = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id];
-                title = "<span><span class='trn'>Cohesion by Theme</span>: <span class='trn'>" + periodData.name + "</span></span>";
-                prettyTitle = "Cohesion by Theme: " + periodData.name;
+                title = "<span><span class='trn'>Cohesion by Subject</span>: <span class='trn'>" + periodData.name + "</span></span>";
+                prettyTitle = "Cohesion by Subject: " + periodData.name;
                 var subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
                 title += subtitle;
             } else {
-                title = "<span><span class='trn'>Cohesion by Theme</span>: <span class='trn'>Year</span> " + dataRange.id + "</span>";
-                prettyTitle = "Cohesion by Theme: Year " + dataRange.id;
+                title = "<span><span class='trn'>Cohesion by Subject</span>: <span class='trn'>Year</span> " + dataRange.id + "</span>";
+                prettyTitle = "Cohesion by Subject: Year " + dataRange.id;
             }
             panelClass = dataRange.type + '-' + dataRange.id;
         } else {
-            title = "<span><span class='trn'>Cohesion by Theme</span>: " + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
-            prettyTitle = "Cohesion by Theme: " + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString();
+            title = "<span><span class='trn'>Cohesion by Subject</span>: " + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
+            prettyTitle = "Cohesion by Subject: " + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString();
             panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear();
         }
 
