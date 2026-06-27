@@ -324,6 +324,7 @@ function initializeCohesionByTheme(newID, chartObj) {
     var chart = cohesionByTheme();
     addConfigMenu(newID, 'cohesion-by-theme', false);
     addFilterMotionTypeChart(newID, chartObj.data.rcs, 'cohesionByThemeTypes');
+    addThemeShownFilter(newID, chartObj.data.rcs, 'cohesionByThemeThemes');
     addEditTitleInput(newID);
     $('#' + newID).attr('data-type-period', chartObj.panelClass);
     return chart;
