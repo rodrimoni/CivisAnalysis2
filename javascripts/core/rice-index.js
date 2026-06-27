@@ -242,3 +242,65 @@ function calculateYearlyRiceIndex(rcs, parties, deputiesCount, type, deputyIDs) 
 
     return yearlyData;
 }
+
+/**
+ * Aggregate weighted Rice Index for an arbitrary group over a set of roll calls.
+ * Unlike calculateMonthlyRiceIndex/calculateYearlyRiceIndex, this does NOT group
+ * by time — it returns a single value for the whole `rcs` set. Used by the
+ * Cohesion by Theme chart for per-theme cohesion of a group and of unions of
+ * groups.
+ *
+ * Membership is a union predicate so reference ∪ comparison works:
+ * a vote counts if its party is in group.parties OR its deputyID is in
+ * group.deputyIDs (each vote counted at most once).
+ *
+ * The per-roll-call formula is IDENTICAL to calculateMonthlyRiceIndex
+ * (|yes-no|/(yes+no), weighted by total votes) — keep them in sync.
+ *
+ * @param {Array} rcs - Roll calls array (each with .votes [{vote, party, deputyID}])
+ * @param {{parties: Array<string>, deputyIDs: Array<number>}} group - Membership spec
+ * @param {number} type - RICE_CALC_CLASSIC (default) or RICE_CALC_BRAZIL
+ * @returns {{rice: number, rollCallCount: number, totalVotes: number}}
+ */
+function calcGroupRiceForRcs(rcs, group, type) {
+    if (type === undefined) type = RICE_CALC_CLASSIC;
+    var parties = (group && group.parties) || [];
+    var deputyIDs = (group && group.deputyIDs) || [];
+
+    var weightedSum = 0;
+    var totalVotes = 0;
+    var rollCallCount = 0;
+
+    if (!rcs || !rcs.length) return { rice: 0, rollCallCount: 0, totalVotes: 0 };
+
+    rcs.forEach(function (rc) {
+        if (!rc || !rc.votes) return;
+
+        var memberVotes = rc.votes.filter(function (v) {
+            return parties.indexOf(v.party) > -1 || deputyIDs.indexOf(v.deputyID) > -1;
+        });
+
+        var yesCount, noCount;
+        if (type === RICE_CALC_CLASSIC) {
+            yesCount = memberVotes.filter(function (v) { return v.vote === 'Sim'; }).length;
+            noCount = memberVotes.filter(function (v) { return v.vote === 'Não'; }).length;
+        } else {
+            yesCount = memberVotes.filter(function (v) { return v.vote === 'Sim'; }).length;
+            noCount = memberVotes.filter(function (v) { return v.vote === 'Não' || v.vote === 'Obstrução'; }).length;
+        }
+
+        var total = yesCount + noCount;
+        if (total > 0) {
+            var rice = Math.abs(yesCount - noCount) / total;
+            weightedSum += rice * total;
+            totalVotes += total;
+            rollCallCount++;
+        }
+    });
+
+    return {
+        rice: totalVotes > 0 ? weightedSum / totalVotes : 0,
+        rollCallCount: rollCallCount,
+        totalVotes: totalVotes
+    };
+}

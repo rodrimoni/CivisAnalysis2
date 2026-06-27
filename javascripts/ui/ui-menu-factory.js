@@ -211,6 +211,47 @@ function addFilterMotionTypeChart(newID, rollCalls, datasetName) {
 }
 
 /**
+ * Add a "subjects to show" filter for panels whose chart exposes setThemeFilter.
+ * Tagsinput + typeahead that routes the selection to chart.setThemeFilter so the
+ * panel shows only the selected themes. Empty selection = all themes. Theme
+ * options are localized via subjectsToEnglish (matching the displayed names).
+ * @param {string} newID - Panel ID
+ * @param {Array} rollCalls - Roll calls data for the period
+ * @param {string} datasetName - Unique typeahead dataset name for this panel
+ */
+function addThemeShownFilter(newID, rollCalls, datasetName) {
+    var placeholder = language === ENGLISH
+        ? "Type subject to show (e.g. Health, Education)"
+        : "Digite temas para mostrar (ex. Saúde, Educação)";
+    $("#" + newID + " .panel-settings")
+        .append('<li role="presentation" class="dropdown-header"><span class="trn">Select subjects to show</span></li>')
+        .append('<li><input type="text" class="form-control typeahead filterThemesShown" placeholder="' + placeholder + '"/></li>');
+
+    var themes = d3.map(rollCalls, function (d) {
+        return language === ENGLISH && typeof subjectsToEnglish !== 'undefined' && subjectsToEnglish[d.theme]
+            ? subjectsToEnglish[d.theme]
+            : d.theme;
+    }).keys();
+
+    var elt = $('#' + newID + ' .filterThemesShown');
+    setupFilterTagsinput(elt, themes, datasetName);
+
+    function applyThemeFilter() {
+        var tree = state.getTree();
+        var chart = tree.getNode(newID, tree.traverseBF).chart;
+        var selected = elt.tagsinput('items').map(function (item) { return item.value; });
+        chart.setThemeFilter(selected);
+    }
+
+    elt.on('itemAdded', applyThemeFilter);
+    elt.on('itemRemoved', applyThemeFilter);
+
+    $("#" + newID + " .bootstrap-tagsinput").click(function (e) {
+        e.stopPropagation();
+    });
+}
+
+/**
  * Add date picker for timeline
  */
 function addDatePickerTimeline() {
