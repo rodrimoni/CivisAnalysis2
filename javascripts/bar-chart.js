@@ -166,7 +166,10 @@ function barChart(typeChart) {
                 .attr("stroke", "#555").attr("stroke-width", 1.5).attr("stroke-dasharray", "5,4");
             refG.append("text")
                 .attr("class", "reference-label")
-                .attr("fill", "#555").attr("font-size", "20px").attr("dy", "-6");
+                .attr("dy", "-8")
+                // inline styles: the .bar-chart text CSS rule would otherwise
+                // win over SVG presentation attributes and force 30px.
+                .style("fill", "#555").style("font", "22px sans-serif");
 
             // Measure every label once so the plot geometry stays stable when
             // filtering or switching views (no axis jumping between renders).
