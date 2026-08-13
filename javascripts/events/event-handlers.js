@@ -397,6 +397,27 @@ function reloadScatterPlotData(filteredData, dimensionalReductionTechnique, pane
  * @param {Object} selectedMenu - Selected menu item
  * @param {Array} filteredData - Filtered data
  */
+/**
+ * Handle the Map of Roll Calls grid context menu: spawn a derived subject view
+ * over the map's currently filtered slice.
+ * @param {Object} invokedOn - Element the menu was invoked on
+ * @param {Object} selectedMenu - Selected menu item
+ */
+function handleContextMenuRollCallsHeatmap(invokedOn, selectedMenu) {
+    var panelID = invokedOn.parents(".panel").attr('id');
+    var tree = state.getTree();
+    var node = tree.getNode(panelID, tree.traverseBF);
+    if (!node || !node.chart || typeof node.chart.spawnSubjectView !== 'function') return;
+
+    var kinds = {
+        'heatmap-subjects-histogram': 'bar',
+        'heatmap-subjects-proportion': 'bubble',
+        'heatmap-subjects-trends': 'line'
+    };
+    var kind = kinds[selectedMenu.context.id];
+    if (kind) node.chart.spawnSubjectView(kind);
+}
+
 function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData) {
     var panelID = invokedOn.parents(".panel").attr('id');
 

@@ -236,6 +236,9 @@ function initDict() {
         },
         "Subject:": {
             br: "Tema:"
+        },
+        "Create visualization": {
+            br: "Criar visualização"
         }
     }
 

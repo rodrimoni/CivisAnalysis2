@@ -46,6 +46,30 @@ function addClusteringMenu(newID) {
  * @param {Array} rollCalls - Roll calls data
  * @returns {Object} Bloodhound search instance
  */
+/**
+ * Add the derived subject views to a Map of Roll Calls panel menu.
+ * Sits in the same menu as the filters that scope it, so "filter, then create"
+ * reads as one flow. Each item IS the action — no intermediate selection.
+ * @param {string} newID - Panel ID
+ * @param {Object} chart - The rollCallsHeatmap chart instance
+ */
+function addSubjectViewsMenu(newID, chart) {
+    $("#" + newID + " .panel-settings")
+        .append('<li role="presentation" class="dropdown-header"><span class="trn">Create visualization</span></li>')
+        .append('<li><a tabindex="-1" class="subject-view-item" data-kind="bar" href="#">' +
+            '<span style="display:inline-block;width:22px;">▤</span>' + t("Histogram") + '</a></li>')
+        .append('<li><a tabindex="-1" class="subject-view-item" data-kind="bubble" href="#">' +
+            '<span style="display:inline-block;width:22px;">⬤</span>' + t("Proportion") + '</a></li>')
+        .append('<li><a tabindex="-1" class="subject-view-item" data-kind="line" href="#">' +
+            '<span style="display:inline-block;width:22px;">📈</span>' + t("Trends") + '</a></li>');
+
+    $("#" + newID + " .subject-view-item").on("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        chart.spawnSubjectView($(this).data("kind"));
+    });
+}
+
 function addSearchRollCallMenu(newID, rollCalls) {
     var placeholder = language === ENGLISH ? "Type a Roll Call Identifier" : "Digite o identificador de uma votação"
     $("#" + newID + " .panel-settings")

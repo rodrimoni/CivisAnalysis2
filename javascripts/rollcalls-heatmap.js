@@ -36,109 +36,21 @@ function rollCallsHeatmap() {
     var subjectPreview = null;              // transient (hover)
     var subjectLock = null;                 // { theme, ownerPanelID } (click)
 
+    // Bound datum, kept so the subject views can be spawned from outside
+    // chart(selection) — i.e. from the panel menu and the context menu.
+    var heatMapData = null;
+
     function chart(selection) {
         selection.each(function (data) {
             // filter empty, all rollCalls
             chart.heatMapDeputies(data.deputies);
             var rcs = groupRollCallsByMonth(data.rcs, { motionTypeFilter: [], motionThemeFilter: [], dateFilter: [undefined, undefined] });
 
-            const controls = d3.select(this)
-                .append("div")
-                .classed("heat-map-controls", true)
-
-            // One control whose menu items ARE the actions: one click instead of
-            // two, and no dead intermediate "Select..." state.
-            const menuWrap = controls.append("div")
-                .attr("class", "subject-menu-wrap")
-                .style("position", "absolute").style("left", "60%");
-
-            const menuBtn = menuWrap.append("button")
-                .attr("id", "showRollCallsTheme")
-                .style("font-size", "13px").style("padding", "4px 11px")
-                .style("border", "1px solid #ccc").style("border-radius", "4px")
-                .style("background", "#fff").style("cursor", "pointer")
-                .on("mouseover", function () { d3.select(this).style("background", "#f0f4f9"); })
-                .on("mouseout", function () { d3.select(this).style("background", "#fff"); })
-                .on("click", function () {
-                    d3.event.stopPropagation();
-                    const isOpen = menu.style("display") === "block";
-                    menu.style("display", isOpen ? "none" : "block");
-                });
-
-            const menu = menuWrap.append("div")
-                .attr("class", "subject-menu")
-                .style("display", "none")
-                .style("position", "absolute").style("z-index", 200)
-                .style("background", "#fff").style("border", "1px solid #ccc")
-                .style("border-radius", "4px").style("min-width", "190px")
-                .style("box-shadow", "0 2px 6px rgba(0,0,0,.15)");
-
-            [
-                { kind: 'bar', icon: '▤', label: t("Histogram") },
-                { kind: 'bubble', icon: '⬤', label: t("Proportion") },
-                { kind: 'line', icon: '📈', label: t("Trends") }
-            ].forEach(function (opt) {
-                menu.append("div")
-                    .style("padding", "7px 12px").style("cursor", "pointer")
-                    .style("white-space", "nowrap")
-                    .html('<span style="display:inline-block;width:22px;">' + opt.icon + '</span>' + opt.label)
-                    .on("mouseover", function () { d3.select(this).style("background", "#f0f4f9"); })
-                    .on("mouseout", function () { d3.select(this).style("background", "#fff"); })
-                    .on("click", function () {
-                        d3.event.stopPropagation();
-                        menu.style("display", "none");
-                        spawnSubjectView(opt.kind);
-                    });
-            });
-
-            // Close the menu when clicking anywhere else in the panel.
-            d3.select(this).on("click.subjectMenu", function () { menu.style("display", "none"); });
-
-            // The button states the slice the child will inherit, so the filter
-            // inheritance is visible instead of implicit.
-            function refreshMenuLabel() {
-                var suffix = "";
-                try {
-                    var f = getFilters(panelID);
-                    var bits = [];
-                    if (f.motionTypeFilter.length) bits.push(f.motionTypeFilter.join(", "));
-                    if (f.motionThemeFilter.length) bits.push(f.motionThemeFilter.length + " " + t("Subjects").toLowerCase());
-                    if (f.dateFilter[0] && f.dateFilter[1]) {
-                        bits.push(f.dateFilter[0].getFullYear() + "–" + f.dateFilter[1].getFullYear());
-                    }
-                    if (bits.length) suffix = " (" + bits.join(" · ") + ")";
-                } catch (e) {
-                    // panelID/filter widgets not ready yet — plain label is fine.
-                }
-                menuBtn.text("+ " + t("Subjects") + suffix + " ▾");
-            }
-
-            function spawnSubjectView(kind) {
-                // Inherit the map's active filters (proposition type / theme / date) at spawn time.
-                var filter = getFilters(panelID);
-                var filteredRcs = filterMotions(data.rcs, filter);
-                var chartData, chartID;
-
-                if (kind === 'bubble') {
-                    chartData = calculateThemesOcurrency(filteredRcs);
-                    chartID = THEMES_BUBBLE_CHART;
-                } else if (kind === 'bar') {
-                    chartData = calculateThemesOcurrency(filteredRcs);
-                    chartID = BAR_CHART;
-                } else {
-                    chartData = calculateSmallMultiplesData(filteredRcs);
-                    chartID = SMALL_MULTIPLES_CHART;
-                }
-
-                handleButtonThemes(panelID, chartData, chartID);
-            }
+            // The subject views are spawned from the panel's settings menu and
+            // from the grid's context menu — the chart area stays uncluttered.
+            heatMapData = data;
 
             chart.drawRollCallsHeatMap(rcs, this);
-
-            // panelID is assigned inside drawRollCallsHeatMap, so label the
-            // button after it and refresh on hover as filters change.
-            refreshMenuLabel();
-            menuWrap.on("mouseenter", refreshMenuLabel);
         });
     }
 
@@ -512,6 +424,16 @@ function rollCallsHeatmap() {
             .attr("y", height + gridSize);
 
         legend.exit().remove();*/
+
+        // Right-clicking anywhere on the grid offers the derived subject views.
+        // Scope matches the action: this map -> views about this map.
+        $("#" + panelID + " .rollcalls-heatmap")
+            .contextMenu({
+                menuSelector: "#contextMenuRollCallsHeatmap",
+                menuSelected: function (invokedOn, selectedMenu) {
+                    handleContextMenuRollCallsHeatmap(invokedOn, selectedMenu);
+                }
+            });
     };
 
     chart.update = function () {
@@ -555,32 +477,31 @@ function rollCallsHeatmap() {
         return classes;
     }
 
-    function renderSubjectChip() {
-        var host = d3.select("#" + panelID + " .heat-map-controls");
-        if (host.empty()) return;
-        host.selectAll(".subject-chip").remove();
-        if (!subjectLock) return;
+    /**
+     * Spawn a derived subject view over the map's currently filtered slice.
+     * @param {string} kind - 'bar' | 'bubble' | 'line'
+     */
+    chart.spawnSubjectView = function (kind) {
+        if (!heatMapData) return;
 
-        var label = language === ENGLISH
-            ? (subjectsToEnglish[subjectLock.theme] || subjectLock.theme)
-            : subjectLock.theme;
+        // Inherit the map's active filters (proposition type / theme / date).
+        var filter = getFilters(panelID);
+        var filteredRcs = filterMotions(heatMapData.rcs, filter);
+        var chartData, chartID;
 
-        var chip = host.append("div")
-            .attr("class", "subject-chip")
-            .style("position", "absolute").style("left", "0px").style("top", "2px")
-            .style("display", "inline-flex").style("align-items", "center").style("gap", "6px")
-            .style("padding", "2px 8px").style("border-radius", "10px")
-            .style("background", "#e8eef7").style("border", "1px solid #b9cbe4")
-            .style("font-size", "12px");
+        if (kind === 'bubble') {
+            chartData = calculateThemesOcurrency(filteredRcs);
+            chartID = THEMES_BUBBLE_CHART;
+        } else if (kind === 'bar') {
+            chartData = calculateThemesOcurrency(filteredRcs);
+            chartID = BAR_CHART;
+        } else {
+            chartData = calculateSmallMultiplesData(filteredRcs);
+            chartID = SMALL_MULTIPLES_CHART;
+        }
 
-        chip.append("span").text(t("Subject:") + " " + label);
-        chip.append("span").text("✕")
-            .style("cursor", "pointer").style("font-weight", "bold")
-            .on("click", function () {
-                d3.event.stopPropagation();
-                chart.clearSubjectFocus();
-            });
-    }
+        handleButtonThemes(panelID, chartData, chartID);
+    };
 
     chart.setSubjectPreview = function (theme) {
         subjectPreview = theme;
@@ -591,7 +512,6 @@ function rollCallsHeatmap() {
         if (subjectLock && subjectLock.theme === theme) subjectLock = null;
         else subjectLock = { theme: theme, ownerPanelID: ownerPanelID };
         dispatch.update();
-        renderSubjectChip();
         return subjectLock ? subjectLock.theme : null;
     };
 
@@ -601,7 +521,6 @@ function rollCallsHeatmap() {
         subjectPreview = null;
         subjectLock = null;
         dispatch.update();
-        renderSubjectChip();
     };
 
     chart.selectAllRollCalls = function (id) {
