@@ -250,9 +250,10 @@ function barChart(typeChart) {
                 return arr;
             }
 
-            function render() {
-                // Fit the viewBox height to the panel's real aspect ratio so the
-                // chart fills the vertical space instead of letterboxing.
+            function render(animate) {
+                // Layout reflows (resize) must snap; only data/view changes animate.
+                var dur = (animate === false) ? 0 : DURATION;
+
                 // Match the viewBox aspect to the SVG's ACTUAL rendered box, so
                 // the drawing fills it exactly — no letterbox band, no overflow.
                 // Flex already decided that box; we only mirror it.
@@ -292,7 +293,7 @@ function barChart(typeChart) {
                 if (rateMode) xAxis.tickFormat(d3.format(".0%"));
 
                 gridG.attr("transform", "translate(" + (marginX + labelWidth) + "," + axisY + ")")
-                    .transition().duration(DURATION)
+                    .transition().duration(dur)
                     .call(xAxis);
 
                 function barY(d, i) { return topMargin + i * (barHeight + barPadding) + barPadding; }
@@ -311,21 +312,21 @@ function barChart(typeChart) {
                 entering.append("rect").attr("class", "seg-rejected");
                 entering.append("text").attr("class", "value").style("pointer-events", "none");
 
-                bar.exit().transition().duration(DURATION).style("opacity", 0).remove();
+                bar.exit().transition().duration(dur).style("opacity", 0).remove();
 
-                bar.transition().duration(DURATION)
+                bar.transition().duration(dur)
                     .style("opacity", barOpacity)
                     .attr("transform", function (d, i) { return "translate(" + marginX + "," + barY(d, i) + ")"; });
 
                 bar.select("text.label")
                     .attr("dy", ".35em")
                     .text(function (d) { return getCategoryLabel(d.category); })
-                    .transition().duration(DURATION)
+                    .transition().duration(dur)
                     .attr("y", barHeight / 2);
 
                 bar.select("rect.seg-approved")
                     .attr("fill", isThemes ? APPROVED_COLOR : function (d) { return getCategoryColor(d.category); })
-                    .transition().duration(DURATION)
+                    .transition().duration(dur)
                     .attr("x", labelWidth)
                     .attr("height", barHeight)
                     .attr("width", function (d) {
@@ -335,7 +336,7 @@ function barChart(typeChart) {
 
                 bar.select("rect.seg-rejected")
                     .attr("fill", REJECTED_COLOR)
-                    .transition().duration(DURATION)
+                    .transition().duration(dur)
                     .attr("height", barHeight)
                     .attr("x", function (d) {
                         var start = scale(rateMode ? d.rate : d.approved);
@@ -355,22 +356,22 @@ function barChart(typeChart) {
                         if (rateMode) return Math.round(d.rate * 100) + "%   n=" + d.frequency;
                         return d.frequency;
                     })
-                    .transition().duration(DURATION)
+                    .transition().duration(dur)
                     .attr("y", barHeight / 2)
                     .attr("x", function (d) { return labelWidth + barEnd(d) + 10; });
 
                 // Reference line: the slice's overall approval rate. Only
                 // meaningful against a percentage axis.
-                refG.transition().duration(DURATION).style("opacity", rateMode ? 1 : 0);
+                refG.transition().duration(dur).style("opacity", rateMode ? 1 : 0);
                 if (rateMode) {
                     var refX = marginX + labelWidth + scale(globalRate);
                     refG.select("line")
-                        .transition().duration(DURATION)
+                        .transition().duration(dur)
                         .attr("x1", refX).attr("x2", refX)
                         .attr("y1", topMargin).attr("y2", axisY);
                     refG.select("text")
                         .text(t("average") + " " + Math.round(globalRate * 100) + "%")
-                        .transition().duration(DURATION)
+                        .transition().duration(dur)
                         .attr("x", refX + 6).attr("y", topMargin);
                 }
 
@@ -445,7 +446,7 @@ function barChart(typeChart) {
                     var w = Math.round(b.width), h = Math.round(b.height);
                     if (Math.abs(w - lastW) < 2 && Math.abs(h - lastH) < 2) return;
                     lastW = w; lastH = h;
-                    render();
+                    render(false);   // reflow, not a data change: snap, don't animate
                 });
                 observer.observe(container);
             }
