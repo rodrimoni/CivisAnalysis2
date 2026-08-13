@@ -71,12 +71,19 @@ function barChart(typeChart) {
             var grandApproved = d3.sum(data, function (d) { return d.approved; });
             var globalRate = grandTotal ? grandApproved / grandTotal : 0;
 
-            // ---------- controls ----------
-            var controls = d3.select(container)
+            // ---------- header (controls + notice) ----------
+            // One flow container so the notice follows the controls instead of
+            // sitting at a fixed offset. render() measures its real height, so
+            // the plot starts below it however many lines the controls wrap to.
+            var header = d3.select(container)
+                .append("div")
+                .attr("class", "bar-chart-header")
+                .style("position", "absolute")
+                .style("top", "10px").style("left", "20px").style("right", "20px");
+
+            var controls = header
                 .append("div")
                 .attr("class", "bar-chart-controls")
-                .style("position", "absolute")
-                .style("top", "12px").style("left", "20px").style("right", "20px")
                 .style("display", "flex").style("align-items", "center")
                 .style("flex-wrap", "wrap").style("gap", "18px")
                 .style("font-size", "13px").style("color", "#333");
@@ -173,9 +180,10 @@ function barChart(typeChart) {
             }
 
             // Notice for data hidden by the min-n filter — never filter silently.
-            var notice = d3.select(container).append("div")
+            // Flows below the controls inside the header.
+            var notice = header.append("div")
                 .attr("class", "bar-chart-notice")
-                .style("position", "absolute").style("left", "20px").style("top", "44px")
+                .style("margin-top", "5px")
                 .style("font-size", "12px").style("color", "#888");
 
             // ---------- chart ----------
@@ -244,10 +252,19 @@ function barChart(typeChart) {
 
                 notice.text(hidden > 0 ? hiddenNotice(hidden, view.minN) : "");
 
-                var topMargin = 140;
+                // The header is HTML at a fixed pixel size while the chart scales
+                // with the viewBox, so convert its measured height into viewBox
+                // units. Without this the plot overlaps the controls the moment
+                // they wrap onto a second line in a narrow panel.
+                var pxToViewBox = width / (cw || width);
+                var headerPx = header.node() ? header.node().getBoundingClientRect().height : 0;
+                var topMargin = Math.max(120, Math.round((headerPx + 20) * pxToViewBox));
                 var bottomMargin = 70;
                 var valueLabelSpace = 170;
                 var axisY = height - bottomMargin;
+                // A short, wide panel can leave less room than the header wants;
+                // never let the plot band collapse to zero or invert.
+                topMargin = Math.min(topMargin, Math.max(0, axisY - marginY - 60));
                 var bandHeight = axisY - marginY - topMargin;
                 var count = vis.length || 1;
 
