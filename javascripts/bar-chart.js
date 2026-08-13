@@ -116,8 +116,10 @@ function barChart(typeChart) {
                 var opacity = d3.scale.linear().domain([0, max || 1]).range([0.35, 1]);
                 var labelWidth = 0;
                 var topMargin = 140;                // breathing room below the controls row
+                var bottomMargin = 70;              // room for the x-axis tick labels
                 var valueLabelSpace = 120;          // reserved room on the right for value labels
-                var bandHeight = height - axisMargin - marginY * 2 - topMargin;
+                var axisY = height - bottomMargin;
+                var bandHeight = axisY - marginY - topMargin;
 
                 var barHeight = bandHeight * 0.6 / sortedData.length;
                 var barPadding = bandHeight * 0.4 / sortedData.length;
@@ -157,7 +159,7 @@ function barChart(typeChart) {
 
                 var xAxis = d3.svg.axis()
                     .scale(scale)
-                    .tickSize(-(height - axisMargin - marginY - topMargin))
+                    .tickSize(-(axisY - topMargin))
                     .orient("bottom");
                 if (rateMode) xAxis.tickFormat(d3.format(".0%"));
 
@@ -222,7 +224,7 @@ function barChart(typeChart) {
 
                 svg.insert("g", ":first-child")
                     .attr("class", "axisHorizontal")
-                    .attr("transform", "translate(" + (marginX + labelWidth) + "," + (height - axisMargin - marginY) + ")")
+                    .attr("transform", "translate(" + (marginX + labelWidth) + "," + axisY + ")")
                     .call(xAxis);
             }
 
