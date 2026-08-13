@@ -614,20 +614,21 @@ function rollCallsHeatmap() {
     }
 
     function calculateThemesOcurrency(rcs) {
-        // Count the themes
+        // Count roll calls per theme, split by approval outcome.
         const themeCounts = rcs.reduce((acc, curr) => {
             if (curr.theme !== undefined) { // Check if theme is not undefined
-                if (acc[curr.theme]) {
-                    acc[curr.theme]++;
-                } else {
-                    acc[curr.theme] = 1;
-                }
+                if (!acc[curr.theme]) acc[curr.theme] = { frequency: 0, approved: 0, rejected: 0 };
+                acc[curr.theme].frequency++;
+                if (isRollCallApproved(curr)) acc[curr.theme].approved++;
+                else acc[curr.theme].rejected++;
             }
             return acc;
         }, {});
 
-        // Convert the result to an array of objects with {category, frequency}
-        const result = Object.entries(themeCounts).map(([category, frequency]) => ({ category, frequency }));
+        // Convert to array of {category, frequency, approved, rejected}
+        const result = Object.entries(themeCounts).map(([category, v]) => ({
+            category: category, frequency: v.frequency, approved: v.approved, rejected: v.rejected
+        }));
 
         // Sort the array by frequency in descending order
         return result.sort((a, b) => b.frequency - a.frequency);
