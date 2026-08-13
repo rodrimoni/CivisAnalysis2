@@ -106,6 +106,31 @@ function filterMotions(arr, filter) {
 }
 
 /**
+ * Whether a roll call was approved.
+ * Verdict-first: the summary text already reflects quorum rules (PEC 3/5,
+ * PLP absolute majority), so a clear "aprovad"/"rejeitad" wins. When the
+ * summary has no clear verdict (or contains both, ~0.2%), fall back to a
+ * simple-majority tally over the full votes.
+ * @param {Object} rc - { summary, votes:[{vote:'Sim'|'Não'|...}] }
+ * @returns {boolean}
+ */
+function isRollCallApproved(rc) {
+    var s = (rc && rc.summary ? rc.summary : "").toLowerCase();
+    var hasApprove = /aprovad/.test(s);
+    var hasReject = /rejeitad/.test(s);
+    if (hasReject && !hasApprove) return false;
+    if (hasApprove && !hasReject) return true;
+    // ambiguous or no verdict → simple majority from the full tally
+    var sim = 0, nao = 0;
+    var votes = (rc && rc.votes) || [];
+    for (var i = 0; i < votes.length; i++) {
+        if (votes[i].vote === 'Sim') sim++;
+        else if (votes[i].vote === 'Não') nao++;
+    }
+    return sim > nao;
+}
+
+/**
  * Create matrix of deputies x roll calls
  * @param {Array} deputies - Array of deputies
  * @returns {Array} Matrix with vote data
@@ -585,4 +610,9 @@ function loadScatterPlotDataByYear() {
             calcScatterDataRecursive(year + 1)
         })
     }
+}
+
+// Node-only export for standalone verification scripts (ignored in the browser).
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { isRollCallApproved: isRollCallApproved, filterMotions: filterMotions };
 }
