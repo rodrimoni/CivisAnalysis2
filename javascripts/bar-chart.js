@@ -21,6 +21,21 @@ function barChart(typeChart) {
     // chart reuses this factory with {category, frequency} only.
     var isThemes = (typeChart === THEMES_BAR_CHART);
 
+    // Subject emphasis inside this chart, mirroring what we send to the map.
+    // Factory scope (like panelID) so chart.clearSubjectHighlight can reach it.
+    var hoveredCategory = null;
+    var lockedCategory = null;
+    var applyFocus = null;
+
+    function focusedCategory() {
+        return hoveredCategory !== null ? hoveredCategory : lockedCategory;
+    }
+
+    function barOpacity(d) {
+        var focus = focusedCategory();
+        return (focus === null || d.category === focus) ? 1 : 0.25;
+    }
+
     const getCategoryColor = d => {
         if (typeChart === THEMES_BAR_CHART) {
             return CONGRESS_DEFINE.subjectsToColor[d];
@@ -274,7 +289,7 @@ function barChart(typeChart) {
                 bar.exit().transition().duration(DURATION).style("opacity", 0).remove();
 
                 bar.transition().duration(DURATION)
-                    .style("opacity", 1)
+                    .style("opacity", barOpacity)
                     .attr("transform", function (d, i) { return "translate(" + marginX + "," + barY(d, i) + ")"; });
 
                 bar.select("text.label")
@@ -353,20 +368,41 @@ function barChart(typeChart) {
 
                 bar.on("mouseout", function () { div.style("display", "none"); });
 
+                // Re-emphasis inside this chart: the focused subject stays lit,
+                // the rest recede — the same language the map speaks.
+                applyFocus = function () {
+                    barsG.selectAll("g.bar")
+                        .transition().duration(160)
+                        .style("opacity", barOpacity);
+                };
+
                 // Link to the parent Map of Roll Calls: hover previews the
                 // subject's votes, click locks the focus. Namespaced so these
                 // coexist with the tooltip handlers above.
-                if (isThemes && typeof subjectLinking !== 'undefined') {
+                if (isThemes) {
                     bar.style("cursor", "pointer")
                         .on("mouseover.link", function (d) {
-                            subjectLinking.preview(panelID, d.category);
+                            hoveredCategory = d.category;
+                            applyFocus();
+                            if (typeof subjectLinking !== 'undefined') {
+                                subjectLinking.preview(panelID, d.category);
+                            }
                         })
                         .on("mouseout.link", function () {
-                            subjectLinking.preview(panelID, null);
+                            hoveredCategory = null;
+                            applyFocus();
+                            if (typeof subjectLinking !== 'undefined') {
+                                subjectLinking.preview(panelID, null);
+                            }
                         })
                         .on("click.link", function (d) {
                             d3.event.stopPropagation();
-                            subjectLinking.toggleLock(panelID, d.category);
+                            // Same toggle rule as the map, so the two stay in step.
+                            lockedCategory = (lockedCategory === d.category) ? null : d.category;
+                            applyFocus();
+                            if (typeof subjectLinking !== 'undefined') {
+                                subjectLinking.toggleLock(panelID, d.category);
+                            }
                         });
                 }
             }
@@ -374,6 +410,16 @@ function barChart(typeChart) {
             render();
         });
     }
+
+    /**
+     * Drop any subject emphasis held by this chart. Called by the global
+     * "Reset all selections" so the view does not stay dimmed on its own.
+     */
+    chart.clearSubjectHighlight = function () {
+        hoveredCategory = null;
+        lockedCategory = null;
+        if (applyFocus) applyFocus();
+    };
 
     return chart;
 }

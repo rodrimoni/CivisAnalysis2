@@ -179,6 +179,17 @@ function resetSelection() {
     /* Reset the deputies selection by search */
     $('.searchDeputies').tagsinput('removeAll');
 
+    /* Reset any subject focus driven from the derived subject views: clear it
+       on the maps that hold it and on the child views that emphasize it. */
+    var tree = state.getTree();
+    if (tree) {
+        tree.traverseBF(function (node) {
+            if (!node || !node.chart) return;
+            if (typeof node.chart.clearSubjectFocus === 'function') node.chart.clearSubjectFocus();
+            if (typeof node.chart.clearSubjectHighlight === 'function') node.chart.clearSubjectHighlight();
+        });
+    }
+
     updateVisualizations();
 }
 

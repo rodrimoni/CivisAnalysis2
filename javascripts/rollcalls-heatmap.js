@@ -515,8 +515,10 @@ function rollCallsHeatmap() {
     };
 
     chart.update = function () {
+        // d3 v3: transition(x) names a transition, it does not set duration —
+        // duration() is what actually paces the fill tween.
         svg.selectAll(".rollCall")
-            .transition(750)
+            .transition().duration(260)
             .style("fill", function (d) { return setRollCallFill(d); })
             .attr("class", rollCallClasses)
     };

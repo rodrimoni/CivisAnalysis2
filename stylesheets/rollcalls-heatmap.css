@@ -39,6 +39,10 @@
 
 .rollCall {
     opacity: 0.15;
+    /* Opacity here is driven by class swaps (selected / hovered /
+       subject-dimmed), which CSS cannot tween on its own — this makes every
+       focus change fade instead of snap. */
+    transition: opacity 260ms ease;
 }
 
 .rollCall.selected {
