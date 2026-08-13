@@ -75,11 +75,13 @@ function barChart(typeChart) {
             // One flow container so the notice follows the controls instead of
             // sitting at a fixed offset. render() measures its real height, so
             // the plot starts below it however many lines the controls wrap to.
+            // Normal flow (not absolute): the SVG below simply takes whatever
+            // height is left, so no px->viewBox conversion is needed to keep the
+            // plot clear of the controls at any panel size.
             var header = d3.select(container)
                 .append("div")
                 .attr("class", "bar-chart-header")
-                .style("position", "absolute")
-                .style("top", "10px").style("left", "20px").style("right", "20px");
+                .style("padding", "10px 20px 0 20px");
 
             var controls = header
                 .append("div")
@@ -189,7 +191,9 @@ function barChart(typeChart) {
             // ---------- chart ----------
             var svg = d3.select(container)
                 .append("svg")
-                .attr("width", "100%").attr("height", "100%")
+                .attr("width", "100%")
+                // height is set per render from the space left below the header
+                .style("display", "block")
                 .attr("preserveAspectRatio", "xMidYMin meet")
                 .classed("bar-chart", true);
 
@@ -243,8 +247,16 @@ function barChart(typeChart) {
                 // chart fills the vertical space instead of letterboxing.
                 var cw = container.clientWidth || MAX_WIDTH;
                 var ch = container.clientHeight || MAX_HEIGHT;
-                height = Math.round(MAX_WIDTH * ch / cw);
-                svg.attr("viewBox", "0 0 " + width + " " + height);
+
+                // The header sits above in normal flow; the plot gets the rest.
+                // Sizing the SVG to exactly that height (and matching the
+                // viewBox aspect to it) leaves no dead band above the bars.
+                var headerPx = header.node() ? header.node().offsetHeight : 0;
+                var availPx = Math.max(80, ch - headerPx);
+                height = Math.round(MAX_WIDTH * availPx / cw);
+
+                svg.style("height", availPx + "px")
+                    .attr("viewBox", "0 0 " + width + " " + height);
 
                 var rateMode = isThemes && view.mode === 'rate';
                 var vis = visibleData();
@@ -252,19 +264,10 @@ function barChart(typeChart) {
 
                 notice.text(hidden > 0 ? hiddenNotice(hidden, view.minN) : "");
 
-                // The header is HTML at a fixed pixel size while the chart scales
-                // with the viewBox, so convert its measured height into viewBox
-                // units. Without this the plot overlaps the controls the moment
-                // they wrap onto a second line in a narrow panel.
-                var pxToViewBox = width / (cw || width);
-                var headerPx = header.node() ? header.node().getBoundingClientRect().height : 0;
-                var topMargin = Math.max(120, Math.round((headerPx + 20) * pxToViewBox));
+                var topMargin = 30;                 // small breathing room only
                 var bottomMargin = 70;
                 var valueLabelSpace = 170;
                 var axisY = height - bottomMargin;
-                // A short, wide panel can leave less room than the header wants;
-                // never let the plot band collapse to zero or invert.
-                topMargin = Math.min(topMargin, Math.max(0, axisY - marginY - 60));
                 var bandHeight = axisY - marginY - topMargin;
                 var count = vis.length || 1;
 
