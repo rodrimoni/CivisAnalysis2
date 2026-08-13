@@ -102,12 +102,20 @@ function barChart(typeChart) {
                 // Clear previous chart if it exists
                 d3.select("#" + panelID + " .bar-chart").remove();
 
+                // Fit the viewBox height to the panel's real aspect ratio so the chart
+                // fills the vertical space instead of letterboxing. Width stays at
+                // MAX_WIDTH so text/label scale is unchanged; only the height adapts.
+                var containerNode = selection.node();
+                var cw = containerNode.clientWidth || MAX_WIDTH;
+                var ch = containerNode.clientHeight || MAX_HEIGHT;
+                height = Math.round(MAX_WIDTH * ch / cw);
+
                 var rateMode = isThemes && d3.select("#" + panelID + " .rateCheckbox").property("checked") === true;
                 updateLegend(rateMode);
                 var max = d3.max(sortedData, function (d) { return d.frequency });
                 var opacity = d3.scale.linear().domain([0, max || 1]).range([0.35, 1]);
                 var labelWidth = 0;
-                var topMargin = 90;                 // room for the controls row; also top-aligns the chart
+                var topMargin = 140;                // breathing room below the controls row
                 var valueLabelSpace = 120;          // reserved room on the right for value labels
                 var bandHeight = height - axisMargin - marginY * 2 - topMargin;
 
