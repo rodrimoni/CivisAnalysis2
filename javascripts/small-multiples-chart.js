@@ -18,7 +18,7 @@ function smallMultiples(chart) {
     function chart(selection) {
         selection.each(function (data) {
 
-            console.log(data);
+            const panelID = $(this).parents('.panel').attr('id');
 
             const numRows = 6;
             const numCols = Math.ceil(data.length / numRows);
@@ -91,6 +91,23 @@ function smallMultiples(chart) {
                 .attr('fill', 'none')
                 .attr('stroke', 'steelblue')
                 .attr('stroke-width', 1.5);
+
+            // Link to the parent Map of Roll Calls. Bound to the whole cell so
+            // the hit area is the facet, not just its label. D3 v7 passes
+            // (event, d) to handlers.
+            if (typeof subjectLinking !== 'undefined') {
+                cells.style('cursor', 'pointer')
+                    .on('mouseover.link', function (event, d) {
+                        subjectLinking.preview(panelID, d.theme);
+                    })
+                    .on('mouseout.link', function () {
+                        subjectLinking.preview(panelID, null);
+                    })
+                    .on('click.link', function (event, d) {
+                        event.stopPropagation();
+                        subjectLinking.toggleLock(panelID, d.theme);
+                    });
+            }
 
             cells.append('text')
                 .attr('font-size', 16) // Adjust font size as needed

@@ -352,6 +352,23 @@ function barChart(typeChart) {
                 });
 
                 bar.on("mouseout", function () { div.style("display", "none"); });
+
+                // Link to the parent Map of Roll Calls: hover previews the
+                // subject's votes, click locks the focus. Namespaced so these
+                // coexist with the tooltip handlers above.
+                if (isThemes && typeof subjectLinking !== 'undefined') {
+                    bar.style("cursor", "pointer")
+                        .on("mouseover.link", function (d) {
+                            subjectLinking.preview(panelID, d.category);
+                        })
+                        .on("mouseout.link", function () {
+                            subjectLinking.preview(panelID, null);
+                        })
+                        .on("click.link", function (d) {
+                            d3.event.stopPropagation();
+                            subjectLinking.toggleLock(panelID, d.category);
+                        });
+                }
             }
 
             render();

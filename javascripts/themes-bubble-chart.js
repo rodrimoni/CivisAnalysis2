@@ -16,6 +16,7 @@ function themesBubbleChart() {
     }
 
     function drawBubbleChart(data, htmlContent) {
+        const panelID = $(htmlContent).parents('.panel').attr('id');
         // Create the pack layout
         const pack = d3v4.pack()
             .size([width - padding, height - padding])
@@ -51,9 +52,21 @@ function themesBubbleChart() {
         bubbles.append("circle")
             .attr("r", d => d.r)
             .attr("fill", d => CONGRESS_DEFINE.subjectsToColor[d.data.category])
-            .on('mouseover', function (d) { showToolTip(renderThemeTooltipHtml(d)); })
+            .style("cursor", "pointer")
+            .on('mouseover', function (d) {
+                showToolTip(renderThemeTooltipHtml(d));
+                // Link to the parent Map of Roll Calls.
+                if (typeof subjectLinking !== 'undefined') subjectLinking.preview(panelID, d.data.category);
+            })
             .on('mousemove', function () { moveToolTip(); })
-            .on('mouseout', function () { hideToolTip(); });
+            .on('mouseout', function () {
+                hideToolTip();
+                if (typeof subjectLinking !== 'undefined') subjectLinking.preview(panelID, null);
+            })
+            .on('click', function (d) {
+                d3v4.event.stopPropagation();
+                if (typeof subjectLinking !== 'undefined') subjectLinking.toggleLock(panelID, d.data.category);
+            });
 
         // Add a label.
         const text = bubbles.filter(d => d.r > 60)
