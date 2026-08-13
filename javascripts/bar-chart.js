@@ -75,12 +75,18 @@ function barChart(typeChart) {
             // One flow container so the notice follows the controls instead of
             // sitting at a fixed offset. render() measures its real height, so
             // the plot starts below it however many lines the controls wrap to.
-            // Normal flow (not absolute): the SVG below simply takes whatever
-            // height is left, so no px->viewBox conversion is needed to keep the
-            // plot clear of the controls at any panel size.
+            // Flex column: the header takes its natural height and the SVG below
+            // flexes into whatever is left. CSS keeps them stacked at any panel
+            // size, so the plot can neither overlap the controls nor overflow
+            // the panel — no pixel arithmetic involved.
+            d3.select(container)
+                .style("display", "flex")
+                .style("flex-direction", "column");
+
             var header = d3.select(container)
                 .append("div")
                 .attr("class", "bar-chart-header")
+                .style("flex", "0 0 auto")
                 .style("padding", "10px 20px 0 20px");
 
             var controls = header
@@ -192,7 +198,9 @@ function barChart(typeChart) {
             var svg = d3.select(container)
                 .append("svg")
                 .attr("width", "100%")
-                // height is set per render from the space left below the header
+                // Flexes into the space left by the header; min-height:0 lets it
+                // shrink instead of forcing the container to grow.
+                .style("flex", "1 1 auto").style("min-height", "0")
                 .style("display", "block")
                 .attr("preserveAspectRatio", "xMidYMin meet")
                 .classed("bar-chart", true);
@@ -245,18 +253,15 @@ function barChart(typeChart) {
             function render() {
                 // Fit the viewBox height to the panel's real aspect ratio so the
                 // chart fills the vertical space instead of letterboxing.
-                var cw = container.clientWidth || MAX_WIDTH;
-                var ch = container.clientHeight || MAX_HEIGHT;
+                // Match the viewBox aspect to the SVG's ACTUAL rendered box, so
+                // the drawing fills it exactly — no letterbox band, no overflow.
+                // Flex already decided that box; we only mirror it.
+                var box = svg.node().getBoundingClientRect();
+                var cw = Math.round(box.width) || MAX_WIDTH;
+                var boxHeight = Math.round(box.height) || MAX_HEIGHT;
+                height = Math.round(MAX_WIDTH * boxHeight / cw);
 
-                // The header sits above in normal flow; the plot gets the rest.
-                // Sizing the SVG to exactly that height (and matching the
-                // viewBox aspect to it) leaves no dead band above the bars.
-                var headerPx = header.node() ? header.node().offsetHeight : 0;
-                var availPx = Math.max(80, ch - headerPx);
-                height = Math.round(MAX_WIDTH * availPx / cw);
-
-                svg.style("height", availPx + "px")
-                    .attr("viewBox", "0 0 " + width + " " + height);
+                svg.attr("viewBox", "0 0 " + width + " " + height);
 
                 var rateMode = isThemes && view.mode === 'rate';
                 var vis = visibleData();
@@ -428,6 +433,22 @@ function barChart(typeChart) {
             }
 
             render();
+
+            // The panel is resizable and can be maximized, but its resize
+            // callback is generic — observe the container directly so the chart
+            // re-fits itself on any size change. Guarded so a re-render (which
+            // can change the header height) cannot loop.
+            if (typeof ResizeObserver !== 'undefined') {
+                var lastW = 0, lastH = 0;
+                var observer = new ResizeObserver(function () {
+                    var b = svg.node().getBoundingClientRect();
+                    var w = Math.round(b.width), h = Math.round(b.height);
+                    if (Math.abs(w - lastW) < 2 && Math.abs(h - lastH) < 2) return;
+                    lastW = w; lastH = h;
+                    render();
+                });
+                observer.observe(container);
+            }
         });
     }
 
