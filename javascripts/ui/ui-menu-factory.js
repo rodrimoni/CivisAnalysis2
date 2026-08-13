@@ -66,6 +66,9 @@ function addSubjectViewsMenu(newID, chart) {
     $("#" + newID + " .subject-view-item").on("click", function (e) {
         e.preventDefault();
         e.stopPropagation();
+        // Creating a view is a terminal action, unlike the filters below it
+        // which stack — close the menu so the new panel is visible right away.
+        $("#" + newID + " .panel-heading .btn-group").removeClass("open");
         chart.spawnSubjectView($(this).data("kind"));
     });
 }

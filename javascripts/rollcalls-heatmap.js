@@ -33,8 +33,8 @@ function rollCallsHeatmap() {
 
     // Subject focus, driven by the derived subject views (see subject-linking.js).
     // Two levels so a hover never destroys a click: effective = preview ?? lock.
-    var subjectPreview = null;              // transient (hover)
-    var subjectLock = null;                 // { theme, ownerPanelID } (click)
+    var subjectPreview = null;              // transient single theme (hover)
+    var subjectLock = null;                 // { themes: [...], ownerPanelID } (click)
 
     // Bound datum, kept so the subject views can be spawned from outside
     // chart(selection) — i.e. from the panel menu and the context menu.
@@ -463,17 +463,22 @@ function rollCallsHeatmap() {
         dispatch.update()
     };
 
-    function effectiveSubject() {
-        if (subjectPreview !== null) return subjectPreview;
-        return subjectLock ? subjectLock.theme : null;
+    /**
+     * Subjects currently in focus. A hover previews a single subject on top of
+     * whatever is locked; an empty result means "no focus", i.e. show everything.
+     * @returns {Array<string>}
+     */
+    function effectiveSubjects() {
+        if (subjectPreview !== null) return [subjectPreview];
+        return (subjectLock && subjectLock.themes.length) ? subjectLock.themes : [];
     }
 
     function rollCallClasses(d) {
         var classes = "rollCall bordered";
         if (d.selected) classes += " selected";
         if (d.hovered) classes += " hovered";
-        var focus = effectiveSubject();
-        if (focus !== null && d.theme !== focus) classes += " subject-dimmed";
+        var focus = effectiveSubjects();
+        if (focus.length && focus.indexOf(d.theme) === -1) classes += " subject-dimmed";
         return classes;
     }
 
@@ -508,11 +513,17 @@ function rollCallsHeatmap() {
         dispatch.update();
     };
 
-    chart.toggleSubjectLock = function (theme, ownerPanelID) {
-        if (subjectLock && subjectLock.theme === theme) subjectLock = null;
-        else subjectLock = { theme: theme, ownerPanelID: ownerPanelID };
+    /**
+     * Replace the locked subject set. An empty list clears the focus, which
+     * shows every roll call again.
+     * @param {Array<string>} themes
+     * @param {string} ownerPanelID
+     */
+    chart.setSubjectLock = function (themes, ownerPanelID) {
+        subjectLock = (themes && themes.length)
+            ? { themes: themes.slice(), ownerPanelID: ownerPanelID }
+            : null;
         dispatch.update();
-        return subjectLock ? subjectLock.theme : null;
     };
 
     chart.getSubjectLock = function () { return subjectLock; };

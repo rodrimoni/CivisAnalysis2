@@ -32,6 +32,28 @@ var subjectLinking = (function () {
 
     return {
         /**
+         * The selection rule shared by every subject view.
+         * Cmd/Ctrl held -> toggle membership (subjects stack).
+         * Plain click   -> that subject alone, or clear when it was the only one.
+         * An empty result means "nothing selected", which shows everything.
+         * @param {Array<string>} current
+         * @param {string} theme
+         * @param {boolean} additive
+         * @returns {Array<string>} the new selection (a new array)
+         */
+        toggleIn: function (current, theme, additive) {
+            var next = (current || []).slice();
+            var at = next.indexOf(theme);
+            if (additive) {
+                if (at > -1) next.splice(at, 1);
+                else next.push(theme);
+                return next;
+            }
+            if (at > -1 && next.length === 1) return [];
+            return [theme];
+        },
+
+        /**
          * Transient highlight while hovering. Pass null to clear the preview.
          */
         preview: function (childPanelID, theme) {
@@ -40,23 +62,26 @@ var subjectLinking = (function () {
         },
 
         /**
-         * Sticky highlight. Clicking the already-locked subject releases it.
-         * @returns {string|null} the newly locked theme, or null if released
+         * Sticky highlight over a SET of subjects. An empty list means "no
+         * focus", which shows everything.
+         * @param {string} childPanelID
+         * @param {Array<string>} themes
          */
-        toggleLock: function (childPanelID, theme) {
+        setLock: function (childPanelID, themes) {
             var c = mapChart(childPanelID);
-            return c ? c.toggleSubjectLock(theme, childPanelID) : null;
+            if (c) c.setSubjectLock(themes, childPanelID);
         },
 
         /**
-         * The theme locked BY THIS CHILD, or null. Lets a child render its own
-         * locked mark without claiming a lock another panel owns.
+         * The themes locked BY THIS CHILD. Lets a child render its own locked
+         * marks without claiming a lock another panel owns.
+         * @returns {Array<string>}
          */
-        lockedTheme: function (childPanelID) {
+        lockedThemes: function (childPanelID) {
             var c = mapChart(childPanelID);
-            if (!c) return null;
+            if (!c) return [];
             var lock = c.getSubjectLock();
-            return (lock && lock.ownerPanelID === childPanelID) ? lock.theme : null;
+            return (lock && lock.ownerPanelID === childPanelID) ? lock.themes.slice() : [];
         }
     };
 })();

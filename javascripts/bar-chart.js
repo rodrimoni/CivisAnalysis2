@@ -24,16 +24,22 @@ function barChart(typeChart) {
     // Subject emphasis inside this chart, mirroring what we send to the map.
     // Factory scope (like panelID) so chart.clearSubjectHighlight can reach it.
     var hoveredCategory = null;
-    var lockedCategory = null;
+    var lockedCategories = [];              // empty means "no focus" = show all
     var applyFocus = null;
 
-    function focusedCategory() {
-        return hoveredCategory !== null ? hoveredCategory : lockedCategory;
+    /**
+     * Categories in focus. A hover previews one on top of the locked set; an
+     * empty result means nothing is selected, so everything is shown.
+     */
+    function focusedCategories() {
+        if (hoveredCategory !== null) return [hoveredCategory];
+        return lockedCategories;
     }
 
     function barOpacity(d) {
-        var focus = focusedCategory();
-        return (focus === null || d.category === focus) ? 1 : 0.25;
+        var focus = focusedCategories();
+        if (!focus.length) return 1;
+        return focus.indexOf(d.category) > -1 ? 1 : 0.25;
     }
 
     const getCategoryColor = d => {
@@ -423,12 +429,17 @@ function barChart(typeChart) {
                         })
                         .on("click.link", function (d) {
                             d3.event.stopPropagation();
-                            // Same toggle rule as the map, so the two stay in step.
-                            lockedCategory = (lockedCategory === d.category) ? null : d.category;
-                            applyFocus();
+                            // Cmd/Ctrl held: stack subjects (toggle membership).
+                            // Plain click: single subject, or clear if it was the
+                            // only one. Empty selection means "all shown".
+                            var additive = d3.event.metaKey || d3.event.ctrlKey;
+                            if (additive) d3.event.preventDefault();   // macOS ctrl-click opens a context menu
+
                             if (typeof subjectLinking !== 'undefined') {
-                                subjectLinking.toggleLock(panelID, d.category);
+                                lockedCategories = subjectLinking.toggleIn(lockedCategories, d.category, additive);
+                                subjectLinking.setLock(panelID, lockedCategories);
                             }
+                            applyFocus();
                         });
                 }
             }
@@ -459,7 +470,7 @@ function barChart(typeChart) {
      */
     chart.clearSubjectHighlight = function () {
         hoveredCategory = null;
-        lockedCategory = null;
+        lockedCategories = [];
         if (applyFocus) applyFocus();
     };
 
