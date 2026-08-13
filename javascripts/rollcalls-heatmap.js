@@ -41,68 +41,99 @@ function rollCallsHeatmap() {
                 .append("div")
                 .classed("heat-map-controls", true)
 
-            // Create the dropdown
-            const dropdown = controls
-                .append("select")
-                .attr("class", "themeDropdown")
-                .attr("style", "position:absolute; left:60%;") // Adjust position as needed
-                .on("click", function () {
-                    d3.event.stopPropagation(); // avoid ui to navigate to panel
-                })
+            // One control whose menu items ARE the actions: one click instead of
+            // two, and no dead intermediate "Select..." state.
+            const menuWrap = controls.append("div")
+                .attr("class", "subject-menu-wrap")
+                .style("position", "absolute").style("left", "60%");
 
-            // Add options to the dropdown
-            const options = [
-                { value: "default", text: "Select..." }, // Placeholder option
-                { value: "bubble", text: "Proportion" },
-                { value: "bar", text: "Histogram" },
-                { value: "line", text: "Trends" },
-                // Add more options here if needed
-            ];
-
-            dropdown.selectAll("option")
-                .data(options)
-                .enter()
-                .append("option")
-                .attr("value", d => d.value)
-                .text(d => d.text);
-
-            // Keep the original button
-            const button = controls
-                .append("button")
+            const menuBtn = menuWrap.append("button")
                 .attr("id", "showRollCallsTheme")
-                .attr("style", "position:absolute; left:75%;")
-                .text("Show subjects")
+                .style("font-size", "13px").style("padding", "4px 11px")
+                .style("border", "1px solid #ccc").style("border-radius", "4px")
+                .style("background", "#fff").style("cursor", "pointer")
+                .on("mouseover", function () { d3.select(this).style("background", "#f0f4f9"); })
+                .on("mouseout", function () { d3.select(this).style("background", "#fff"); })
                 .on("click", function () {
-                    const selectedValue = d3.select("#" + panelID + " .themeDropdown").property("value");
-                    let chartData, chartID;
-
-                    // Inherit the map's active filters (proposition type / theme / date) at spawn time.
-                    var filter = getFilters(panelID);
-                    var filteredRcs = filterMotions(data.rcs, filter);
-
-                    switch (selectedValue) {
-                        case "bubble":
-                            chartData = calculateThemesOcurrency(filteredRcs);
-                            chartID = THEMES_BUBBLE_CHART
-                            break;
-                        case "bar":
-                            chartData = calculateThemesOcurrency(filteredRcs);
-                            chartID = BAR_CHART
-                            break;
-                        case "line":
-                            chartData = calculateSmallMultiplesData(filteredRcs);
-                            chartID = SMALL_MULTIPLES_CHART
-                            break;
-                        default:
-                            return;
-                    }
-
-                    handleButtonThemes(panelID, chartData, chartID);
-                    // Prevent any default behavior
                     d3.event.stopPropagation();
+                    const isOpen = menu.style("display") === "block";
+                    menu.style("display", isOpen ? "none" : "block");
                 });
 
+            const menu = menuWrap.append("div")
+                .attr("class", "subject-menu")
+                .style("display", "none")
+                .style("position", "absolute").style("z-index", 200)
+                .style("background", "#fff").style("border", "1px solid #ccc")
+                .style("border-radius", "4px").style("min-width", "190px")
+                .style("box-shadow", "0 2px 6px rgba(0,0,0,.15)");
+
+            [
+                { kind: 'bar', icon: '▤', label: t("Histogram") },
+                { kind: 'bubble', icon: '⬤', label: t("Proportion") },
+                { kind: 'line', icon: '📈', label: t("Trends") }
+            ].forEach(function (opt) {
+                menu.append("div")
+                    .style("padding", "7px 12px").style("cursor", "pointer")
+                    .style("white-space", "nowrap")
+                    .html('<span style="display:inline-block;width:22px;">' + opt.icon + '</span>' + opt.label)
+                    .on("mouseover", function () { d3.select(this).style("background", "#f0f4f9"); })
+                    .on("mouseout", function () { d3.select(this).style("background", "#fff"); })
+                    .on("click", function () {
+                        d3.event.stopPropagation();
+                        menu.style("display", "none");
+                        spawnSubjectView(opt.kind);
+                    });
+            });
+
+            // Close the menu when clicking anywhere else in the panel.
+            d3.select(this).on("click.subjectMenu", function () { menu.style("display", "none"); });
+
+            // The button states the slice the child will inherit, so the filter
+            // inheritance is visible instead of implicit.
+            function refreshMenuLabel() {
+                var suffix = "";
+                try {
+                    var f = getFilters(panelID);
+                    var bits = [];
+                    if (f.motionTypeFilter.length) bits.push(f.motionTypeFilter.join(", "));
+                    if (f.motionThemeFilter.length) bits.push(f.motionThemeFilter.length + " " + t("Subjects").toLowerCase());
+                    if (f.dateFilter[0] && f.dateFilter[1]) {
+                        bits.push(f.dateFilter[0].getFullYear() + "–" + f.dateFilter[1].getFullYear());
+                    }
+                    if (bits.length) suffix = " (" + bits.join(" · ") + ")";
+                } catch (e) {
+                    // panelID/filter widgets not ready yet — plain label is fine.
+                }
+                menuBtn.text("+ " + t("Subjects") + suffix + " ▾");
+            }
+
+            function spawnSubjectView(kind) {
+                // Inherit the map's active filters (proposition type / theme / date) at spawn time.
+                var filter = getFilters(panelID);
+                var filteredRcs = filterMotions(data.rcs, filter);
+                var chartData, chartID;
+
+                if (kind === 'bubble') {
+                    chartData = calculateThemesOcurrency(filteredRcs);
+                    chartID = THEMES_BUBBLE_CHART;
+                } else if (kind === 'bar') {
+                    chartData = calculateThemesOcurrency(filteredRcs);
+                    chartID = BAR_CHART;
+                } else {
+                    chartData = calculateSmallMultiplesData(filteredRcs);
+                    chartID = SMALL_MULTIPLES_CHART;
+                }
+
+                handleButtonThemes(panelID, chartData, chartID);
+            }
+
             chart.drawRollCallsHeatMap(rcs, this);
+
+            // panelID is assigned inside drawRollCallsHeatMap, so label the
+            // button after it and refresh on hover as filters change.
+            refreshMenuLabel();
+            menuWrap.on("mouseenter", refreshMenuLabel);
         });
     }
 
