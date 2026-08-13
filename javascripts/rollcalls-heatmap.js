@@ -76,17 +76,21 @@ function rollCallsHeatmap() {
                     const selectedValue = d3.select("#" + panelID + " .themeDropdown").property("value");
                     let chartData, chartID;
 
+                    // Inherit the map's active filters (proposition type / theme / date) at spawn time.
+                    var filter = getFilters(panelID);
+                    var filteredRcs = filterMotions(data.rcs, filter);
+
                     switch (selectedValue) {
                         case "bubble":
-                            chartData = calculateThemesOcurrency(data.rcs);
+                            chartData = calculateThemesOcurrency(filteredRcs);
                             chartID = THEMES_BUBBLE_CHART
                             break;
                         case "bar":
-                            chartData = calculateThemesOcurrency(data.rcs);
+                            chartData = calculateThemesOcurrency(filteredRcs);
                             chartID = BAR_CHART
                             break;
                         case "line":
-                            chartData = calculateSmallMultiplesData(data.rcs);
+                            chartData = calculateSmallMultiplesData(filteredRcs);
                             chartID = SMALL_MULTIPLES_CHART
                             break;
                         default:
