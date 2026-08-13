@@ -54,14 +54,18 @@ function addClusteringMenu(newID) {
  * @param {Object} chart - The rollCallsHeatmap chart instance
  */
 function addSubjectViewsMenu(newID, chart) {
+    // Reuse the app's own chart icons — the same ones the spawned panel shows in
+    // its title bar, so the icon you click is the icon you get.
+    function viewItem(kind, iconClass, label) {
+        return '<li><a tabindex="-1" class="subject-view-item" data-kind="' + kind + '" href="#">' +
+            '<span class="subject-view-icon ' + iconClass + '"></span>' + label + '</a></li>';
+    }
+
     $("#" + newID + " .panel-settings")
         .append('<li role="presentation" class="dropdown-header"><span class="trn">Create visualization</span></li>')
-        .append('<li><a tabindex="-1" class="subject-view-item" data-kind="bar" href="#">' +
-            '<span style="display:inline-block;width:22px;">▤</span>' + t("Histogram") + '</a></li>')
-        .append('<li><a tabindex="-1" class="subject-view-item" data-kind="bubble" href="#">' +
-            '<span style="display:inline-block;width:22px;">⬤</span>' + t("Proportion") + '</a></li>')
-        .append('<li><a tabindex="-1" class="subject-view-item" data-kind="line" href="#">' +
-            '<span style="display:inline-block;width:22px;">📈</span>' + t("Trends") + '</a></li>');
+        .append(viewItem('bar', 'icon-bar-chart', t("Histogram")))
+        .append(viewItem('bubble', 'icon-bubble-chart', t("Proportion")))
+        .append(viewItem('line', 'icon-line-chart', t("Trends")));
 
     $("#" + newID + " .subject-view-item").on("click", function (e) {
         e.preventDefault();
