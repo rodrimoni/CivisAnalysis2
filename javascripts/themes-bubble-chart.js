@@ -92,11 +92,19 @@ function themesBubbleChart() {
         // Re-emphasis inside this chart: focused subjects stay lit, the rest
         // recede — the same language the map and the histogram speak.
         applyBubbleFocus = function () {
-            const focus = hoveredCategory !== null ? [hoveredCategory] : lockedCategories;
+            // Union, so hovering never drops a pinned subject.
+            let focus = lockedCategories;
+            if (hoveredCategory !== null && focus.indexOf(hoveredCategory) === -1) {
+                focus = focus.concat([hoveredCategory]);
+            }
             bubbles.selectAll("circle")
                 .transition().duration(160)
                 .style("opacity", d =>
                     (!focus.length || focus.indexOf(d.data.category) > -1) ? 1 : 0.25);
+            // Outline marks what is pinned, distinct from what is merely hovered.
+            bubbles.selectAll("circle")
+                .style("stroke", d => lockedCategories.indexOf(d.data.category) > -1 ? '#333' : 'none')
+                .style("stroke-width", 2);
         };
 
         // Add a label.

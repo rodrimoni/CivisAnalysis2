@@ -99,10 +99,17 @@ function smallMultiples(chart) {
                 let lockedThemes = [];
                 let hoveredTheme = null;
                 const applyCellFocus = () => {
-                    const focus = hoveredTheme !== null ? [hoveredTheme] : lockedThemes;
+                    // Union, so hovering never drops a pinned subject.
+                    let focus = lockedThemes;
+                    if (hoveredTheme !== null && focus.indexOf(hoveredTheme) === -1) {
+                        focus = focus.concat([hoveredTheme]);
+                    }
                     cells.transition().duration(160)
                         .style('opacity', d =>
                             (!focus.length || focus.indexOf(d.theme) > -1) ? 1 : 0.25);
+                    // Pinned facets keep a bolder line than merely hovered ones.
+                    cells.selectAll('path')
+                        .style('stroke-width', d => lockedThemes.indexOf(d.theme) > -1 ? 3 : 1.5);
                 };
 
                 cells.style('cursor', 'pointer')

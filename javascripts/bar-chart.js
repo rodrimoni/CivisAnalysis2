@@ -28,18 +28,26 @@ function barChart(typeChart) {
     var applyFocus = null;
 
     /**
-     * Categories in focus. A hover previews one on top of the locked set; an
-     * empty result means nothing is selected, so everything is shown.
+     * Categories in focus: the locked set UNION whatever is hovered. Hovering
+     * must never drop a pinned subject — it adds a transient layer on top and
+     * previews what a cmd/ctrl-click would add. Empty means "show everything".
      */
     function focusedCategories() {
-        if (hoveredCategory !== null) return [hoveredCategory];
-        return lockedCategories;
+        if (hoveredCategory === null) return lockedCategories;
+        if (lockedCategories.indexOf(hoveredCategory) > -1) return lockedCategories;
+        return lockedCategories.concat([hoveredCategory]);
     }
 
+    // Opacity says "in focus"; the outline says "pinned". Two states, two
+    // channels — otherwise hovered and selected are indistinguishable.
     function barOpacity(d) {
         var focus = focusedCategories();
         if (!focus.length) return 1;
         return focus.indexOf(d.category) > -1 ? 1 : 0.25;
+    }
+
+    function barStroke(d) {
+        return lockedCategories.indexOf(d.category) > -1 ? '#333' : 'none';
     }
 
     const getCategoryColor = d => {
@@ -324,6 +332,11 @@ function barChart(typeChart) {
                     .style("opacity", barOpacity)
                     .attr("transform", function (d, i) { return "translate(" + marginX + "," + barY(d, i) + ")"; });
 
+                // Keep the "pinned" marker through re-renders (mode/sort/filter).
+                bar.selectAll("rect")
+                    .style("stroke", barStroke)
+                    .style("stroke-width", 1.5);
+
                 bar.select("text.label")
                     .attr("dy", ".35em")
                     .text(function (d) { return getCategoryLabel(d.category); })
@@ -406,6 +419,10 @@ function barChart(typeChart) {
                     barsG.selectAll("g.bar")
                         .transition().duration(160)
                         .style("opacity", barOpacity);
+                    // Stroke is not animated: it is a state marker, not a value.
+                    barsG.selectAll("g.bar").selectAll("rect")
+                        .style("stroke", barStroke)
+                        .style("stroke-width", 1.5);
                 };
 
                 // Link to the parent Map of Roll Calls: hover previews the

@@ -464,13 +464,16 @@ function rollCallsHeatmap() {
     };
 
     /**
-     * Subjects currently in focus. A hover previews a single subject on top of
-     * whatever is locked; an empty result means "no focus", i.e. show everything.
+     * Subjects currently in focus: the locked set UNION whatever is hovered.
+     * A hover must never drop a pinned subject — it only adds a transient layer.
+     * An empty result means "no focus", i.e. show everything.
      * @returns {Array<string>}
      */
     function effectiveSubjects() {
-        if (subjectPreview !== null) return [subjectPreview];
-        return (subjectLock && subjectLock.themes.length) ? subjectLock.themes : [];
+        var locked = (subjectLock && subjectLock.themes.length) ? subjectLock.themes : [];
+        if (subjectPreview === null) return locked;
+        if (locked.indexOf(subjectPreview) > -1) return locked;
+        return locked.concat([subjectPreview]);
     }
 
     function rollCallClasses(d) {
