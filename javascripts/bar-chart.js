@@ -107,16 +107,19 @@ function barChart(typeChart) {
                 var max = d3.max(sortedData, function (d) { return d.frequency });
                 var opacity = d3.scale.linear().domain([0, max || 1]).range([0.35, 1]);
                 var labelWidth = 0;
-                var valueMargin = 2;
+                var topMargin = 90;                 // room for the controls row; also top-aligns the chart
+                var valueLabelSpace = 120;          // reserved room on the right for value labels
+                var bandHeight = height - axisMargin - marginY * 2 - topMargin;
 
-                var barHeight = (height - axisMargin - marginY * 2) * 0.6 / sortedData.length;
-                var barPadding = (height - axisMargin - marginY * 2) * 0.4 / sortedData.length;
+                var barHeight = bandHeight * 0.6 / sortedData.length;
+                var barPadding = bandHeight * 0.4 / sortedData.length;
 
                 var svg = d3.select(selection.node())
                     .append("svg")
                     .attr("width", "100%")
                     .attr("height", "100%")
                     .attr("viewBox", "0 0 " + width + " " + height)
+                    .attr("preserveAspectRatio", "xMidYMin meet")
                     .classed("bar-chart", true);
 
                 var bar = svg.selectAll("g.bar")
@@ -126,7 +129,7 @@ function barChart(typeChart) {
 
                 bar.attr("class", "bar")
                     .attr("transform", function (d, i) {
-                        return "translate(" + marginX + "," + (i * (barHeight + barPadding) + barPadding) + ")";
+                        return "translate(" + marginX + "," + (topMargin + i * (barHeight + barPadding) + barPadding) + ")";
                     });
 
                 bar.append("text")
@@ -142,11 +145,11 @@ function barChart(typeChart) {
 
                 var scale = d3.scale.linear()
                     .domain(rateMode ? [0, 1] : [0, max])
-                    .range([0, width - marginX * 2 - labelWidth]);
+                    .range([0, width - marginX * 2 - labelWidth - valueLabelSpace]);
 
                 var xAxis = d3.svg.axis()
                     .scale(scale)
-                    .tickSize(-height + 2 * marginY)
+                    .tickSize(-(height - axisMargin - marginY - topMargin))
                     .orient("bottom");
                 if (rateMode) xAxis.tickFormat(d3.format(".0%"));
 
@@ -182,15 +185,13 @@ function barChart(typeChart) {
                 bar.append("text")
                     .attr("class", "value")
                     .attr("y", barHeight / 2)
-                    .attr("dx", labelWidth + 10)
                     .attr("dy", ".35em")
                     .attr("text-anchor", "start")
                     .text(function (d) {
                         return rateMode ? (Math.round(d.rate * 100) + "%  n=" + d.frequency) : d.frequency;
                     })
                     .attr("x", function (d) {
-                        var w = this.getBBox().width;
-                        return Math.max(w + valueMargin, scale(rateMode ? d.rate : d.frequency));
+                        return labelWidth + scale(rateMode ? d.rate : d.frequency) + 6;
                     })
                     .style("pointer-events", "none");
 
@@ -199,10 +200,11 @@ function barChart(typeChart) {
                     div.style("left", d3.event.pageX + 10 + "px");
                     div.style("top", d3.event.pageY - 25 + "px");
                     div.style("display", "inline-block");
+                    var subject = "<strong>" + getCategoryLabel(d.category) + "</strong>";
                     var html;
-                    if (rateMode) html = getCategoryLabel(d.category) + "<br>" + pct + "% approved · n=" + d.frequency;
-                    else if (isThemes) html = getCategoryLabel(d.category) + "<br>" + d.frequency + " total · " + d.approved + " approved (" + pct + "%)";
-                    else html = getCategoryLabel(d.category) + "<br>" + d.frequency;
+                    if (rateMode) html = subject + "<br>" + pct + "% approved · n=" + d.frequency;
+                    else if (isThemes) html = subject + "<br>" + d.frequency + " total · " + d.approved + " approved (" + pct + "%)";
+                    else html = subject + "<br>" + d.frequency;
                     div.html(html);
                 });
 
