@@ -102,28 +102,28 @@ function barChart(typeChart) {
             }
 
             if (isThemes) {
-                segmented(addGroup("View:"), [
-                    { value: 'volume', label: 'Volume' },
-                    { value: 'rate', label: 'Approval rate' }
+                segmented(addGroup(t("View:")), [
+                    { value: 'volume', label: t("Volume") },
+                    { value: 'rate', label: t("Approval rate") }
                 ], view.mode, function (v) { view.mode = v; render(); });
             }
 
-            segmented(addGroup("Sort:"), [
-                { value: 'value', label: 'Value' },
+            segmented(addGroup(t("Sort:")), [
+                { value: 'value', label: t("Value") },
                 { value: 'alpha', label: 'A–Z' }
             ], view.sort, function (v) { view.sort = v; render(); });
 
             if (isThemes) {
-                var minGroup = addGroup("Min. votes:");
+                var minGroup = addGroup(t("Min. votes:"));
                 var select = minGroup.append("select")
                     .style("font-size", "13px").style("padding", "3px 5px")
                     .style("border", "1px solid #ccc").style("border-radius", "4px")
                     .style("cursor", "pointer")
                     .on("click", function () { d3.event.stopPropagation(); })
                     .on("change", function () { view.minN = +this.value; render(); });
-                [{ v: 1, t: 'all' }, { v: 3, t: 'n≥3' }, { v: 5, t: 'n≥5' }, { v: 10, t: 'n≥10' }]
+                [{ v: 1, label: t("all") }, { v: 3, label: 'n≥3' }, { v: 5, label: 'n≥5' }, { v: 10, label: 'n≥10' }]
                     .forEach(function (o) {
-                        select.append("option").attr("value", o.v).text(o.t)
+                        select.append("option").attr("value", o.v).text(o.label)
                             .property("selected", o.v === view.minN);
                     });
             }
@@ -141,9 +141,20 @@ function barChart(typeChart) {
                         .style("background", color).style("border-radius", "2px");
                 }
                 swatch(APPROVED_COLOR);
-                legend.append("span").text("approved").style("margin-right", "8px");
+                legend.append("span").text(t("approved")).style("margin-right", "8px");
                 swatch(REJECTED_COLOR);
-                legend.append("span").text("rejected");
+                legend.append("span").text(t("rejected"));
+            }
+
+            // Composed strings take parameters and a plural, so build them
+            // explicitly rather than concatenating dictionary fragments.
+            function hiddenNotice(count, minN) {
+                if (typeof language !== 'undefined' && language === PORTUGUESE) {
+                    return count + (count === 1 ? " tema oculto" : " temas ocultos") +
+                        " (menos de " + minN + " votações)";
+                }
+                return count + (count === 1 ? " subject hidden" : " subjects hidden") +
+                    " (fewer than " + minN + " votes)";
             }
 
             // Notice for data hidden by the min-n filter — never filter silently.
@@ -216,10 +227,7 @@ function barChart(typeChart) {
                 var vis = visibleData();
                 var hidden = data.length - vis.length;
 
-                notice.text(hidden > 0
-                    ? hidden + (hidden === 1 ? " subject hidden" : " subjects hidden") +
-                      " (fewer than " + view.minN + " votes)"
-                    : "");
+                notice.text(hidden > 0 ? hiddenNotice(hidden, view.minN) : "");
 
                 var topMargin = 140;
                 var bottomMargin = 70;
@@ -321,7 +329,7 @@ function barChart(typeChart) {
                         .attr("x1", refX).attr("x2", refX)
                         .attr("y1", topMargin).attr("y2", axisY);
                     refG.select("text")
-                        .text("average " + Math.round(globalRate * 100) + "%")
+                        .text(t("average") + " " + Math.round(globalRate * 100) + "%")
                         .transition().duration(DURATION)
                         .attr("x", refX + 6).attr("y", topMargin);
                 }
@@ -332,9 +340,15 @@ function barChart(typeChart) {
                     div.style("top", d3.event.pageY - 25 + "px");
                     div.style("display", "inline-block");
                     var subject = "<strong>" + getCategoryLabel(d.category) + "</strong>";
-                    if (!isThemes) div.html(subject + "<br>" + d.frequency);
-                    else div.html(subject + "<br>" + pct + "% approved · " +
-                        d.approved + " of " + d.frequency + " votes");
+                    if (!isThemes) {
+                        div.html(subject + "<br>" + d.frequency);
+                    } else if (typeof language !== 'undefined' && language === PORTUGUESE) {
+                        div.html(subject + "<br>" + pct + "% aprovadas · " +
+                            d.approved + " de " + d.frequency + " votações");
+                    } else {
+                        div.html(subject + "<br>" + pct + "% approved · " +
+                            d.approved + " of " + d.frequency + " votes");
+                    }
                 });
 
                 bar.on("mouseout", function () { div.style("display", "none"); });
