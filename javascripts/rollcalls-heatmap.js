@@ -31,6 +31,11 @@ function rollCallsHeatmap() {
     var itemWidth, itemHeight;
     let themesCount = null;
 
+    // Subject focus, driven by the derived subject views (see subject-linking.js).
+    // Two levels so a hover never destroys a click: effective = preview ?? lock.
+    var subjectPreview = null;              // transient (hover)
+    var subjectLock = null;                 // { theme, ownerPanelID } (click)
+
     function chart(selection) {
         selection.each(function (data) {
             // filter empty, all rollCalls
@@ -400,12 +405,7 @@ function rollCallsHeatmap() {
             .attr("y", function (d) { return yScale(d.period); })
             .attr("rx", 4)
             .attr("ry", 4)
-            .attr("class", function (d) {
-                let classes = "rollCall bordered";
-                if (d.selected) classes += " selected";
-                if (d.hovered) classes += " hovered";
-                return classes;
-            })
+            .attr("class", rollCallClasses)
             .attr("width", itemWidth)
             .attr("height", itemHeight)
             .style("fill", "grey")
@@ -518,12 +518,7 @@ function rollCallsHeatmap() {
         svg.selectAll(".rollCall")
             .transition(750)
             .style("fill", function (d) { return setRollCallFill(d); })
-            .attr("class", function (d) {
-                let classes = "rollCall bordered";
-                if (d.selected) classes += " selected";
-                if (d.hovered) classes += " hovered";
-                return classes;
-            })
+            .attr("class", rollCallClasses)
     };
 
     chart.heatMapDeputies = function (_) {
@@ -542,6 +537,69 @@ function rollCallsHeatmap() {
         });
 
         dispatch.update()
+    };
+
+    function effectiveSubject() {
+        if (subjectPreview !== null) return subjectPreview;
+        return subjectLock ? subjectLock.theme : null;
+    }
+
+    function rollCallClasses(d) {
+        var classes = "rollCall bordered";
+        if (d.selected) classes += " selected";
+        if (d.hovered) classes += " hovered";
+        var focus = effectiveSubject();
+        if (focus !== null && d.theme !== focus) classes += " subject-dimmed";
+        return classes;
+    }
+
+    function renderSubjectChip() {
+        var host = d3.select("#" + panelID + " .heat-map-controls");
+        if (host.empty()) return;
+        host.selectAll(".subject-chip").remove();
+        if (!subjectLock) return;
+
+        var label = language === ENGLISH
+            ? (subjectsToEnglish[subjectLock.theme] || subjectLock.theme)
+            : subjectLock.theme;
+
+        var chip = host.append("div")
+            .attr("class", "subject-chip")
+            .style("position", "absolute").style("left", "0px").style("top", "2px")
+            .style("display", "inline-flex").style("align-items", "center").style("gap", "6px")
+            .style("padding", "2px 8px").style("border-radius", "10px")
+            .style("background", "#e8eef7").style("border", "1px solid #b9cbe4")
+            .style("font-size", "12px");
+
+        chip.append("span").text(t("Subject:") + " " + label);
+        chip.append("span").text("✕")
+            .style("cursor", "pointer").style("font-weight", "bold")
+            .on("click", function () {
+                d3.event.stopPropagation();
+                chart.clearSubjectFocus();
+            });
+    }
+
+    chart.setSubjectPreview = function (theme) {
+        subjectPreview = theme;
+        dispatch.update();
+    };
+
+    chart.toggleSubjectLock = function (theme, ownerPanelID) {
+        if (subjectLock && subjectLock.theme === theme) subjectLock = null;
+        else subjectLock = { theme: theme, ownerPanelID: ownerPanelID };
+        dispatch.update();
+        renderSubjectChip();
+        return subjectLock ? subjectLock.theme : null;
+    };
+
+    chart.getSubjectLock = function () { return subjectLock; };
+
+    chart.clearSubjectFocus = function () {
+        subjectPreview = null;
+        subjectLock = null;
+        dispatch.update();
+        renderSubjectChip();
     };
 
     chart.selectAllRollCalls = function (id) {

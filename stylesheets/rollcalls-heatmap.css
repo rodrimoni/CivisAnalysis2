@@ -49,3 +49,13 @@
     opacity: 0.4;
     stroke: #141313 !important;
 }
+
+/*
+ * Subject focus, driven from the derived subject views. Reuses the dim value
+ * already established above as "not in focus". It must carry !important and be
+ * declared last: cells default to selected (data-processor sets selected=true),
+ * and `.rollCall.selected` sets opacity:1 !important at equal specificity.
+ */
+.rollCall.subject-dimmed {
+    opacity: 0.15 !important;
+}
