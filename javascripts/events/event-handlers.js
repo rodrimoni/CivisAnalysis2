@@ -397,6 +397,27 @@ function reloadScatterPlotData(filteredData, dimensionalReductionTechnique, pane
  * @param {Object} selectedMenu - Selected menu item
  * @param {Array} filteredData - Filtered data
  */
+/**
+ * Handle the Map of Roll Calls grid context menu: spawn a derived subject view
+ * over the map's currently filtered slice.
+ * @param {Object} invokedOn - Element the menu was invoked on
+ * @param {Object} selectedMenu - Selected menu item
+ */
+function handleContextMenuRollCallsHeatmap(invokedOn, selectedMenu) {
+    var panelID = invokedOn.parents(".panel").attr('id');
+    var tree = state.getTree();
+    var node = tree.getNode(panelID, tree.traverseBF);
+    if (!node || !node.chart || typeof node.chart.spawnSubjectView !== 'function') return;
+
+    var kinds = {
+        'heatmap-subjects-histogram': 'bar',
+        'heatmap-subjects-proportion': 'bubble',
+        'heatmap-subjects-trends': 'line'
+    };
+    var kind = kinds[selectedMenu.context.id];
+    if (kind) node.chart.spawnSubjectView(kind);
+}
+
 function handleContextMenuTimeline(invokedOn, selectedMenu, filteredData) {
     var panelID = invokedOn.parents(".panel").attr('id');
 
@@ -734,13 +755,13 @@ function handleButtonThemes(panelID, data, chartID) {
         if (type !== 'year') {
             periodData = CONGRESS_DEFINE[type + "s"][id];
             title = "<span><span class='trn'>Subjects</span>: <span class='trn'>" + periodData.name + "</span></span>";
-            prettyTitle = "Subjects: " + periodData.name;
+            prettyTitle = t("Subjects") + ": " + periodData.name;
             subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " <span class='trn'>to</span> " + periodData.period[1].toLocaleDateString() + "</span>";
             title += subtitle;
         }
         else {
             title = "<span><span class='trn'>Subjects</span>: " + "<span class='trn'>Year</span> " + id + "</span>";
-            prettyTitle = "Subjects: Year " + id;
+            prettyTitle = t("Subjects") + ": " + t("Year") + " " + id;
         }
         panelClass = type + '-' + id;
     }
@@ -748,7 +769,7 @@ function handleButtonThemes(panelID, data, chartID) {
         firstYear = periodID[1];
         lastYear = periodID[2];
         title = "<span><span class='trn'>Subjects</span>: " + firstYear + " <span class='trn'>to</span> " + lastYear + "</span>";
-        prettyTitle = "Subjects: " + firstYear + " to " + lastYear;
+        prettyTitle = t("Subjects") + ": " + firstYear + " " + t("to") + " " + lastYear;
         panelClass = type + "-" + firstYear + "-" + lastYear;
     }
 

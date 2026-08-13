@@ -203,6 +203,7 @@ function initializeRollCallsHeatmap(newID, chartObj, isStatic) {
     setVotesForSelectedDeputies(newID);
 
     addConfigMenu(newID, 'rollCallsHeatmap', false);
+    addSubjectViewsMenu(newID, chart);
     addSearchRollCallMenu(newID, chartObj.data.rcs);
     addFilterMotionTypeMenu(newID, chartObj.data.rcs);
     addThemeFilter(newID, chartObj.data.rcs);

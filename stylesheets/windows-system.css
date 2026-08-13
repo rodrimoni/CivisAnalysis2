@@ -649,3 +649,18 @@ a:active {
     border-bottom: 1px solid #ccc !important;
     margin-bottom: 1px;
 }
+/*
+ * Chart-type icons inside the panel menu. Declared AFTER the .icon-* rules on
+ * purpose: those use the `background` shorthand, which resets background-size,
+ * so these longhands must come later to survive.
+ */
+.subject-view-icon {
+    display: inline-block;
+    width: 17px;
+    height: 17px;
+    margin-right: 9px;
+    vertical-align: -4px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}

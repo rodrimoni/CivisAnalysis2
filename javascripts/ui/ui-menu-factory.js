@@ -46,6 +46,37 @@ function addClusteringMenu(newID) {
  * @param {Array} rollCalls - Roll calls data
  * @returns {Object} Bloodhound search instance
  */
+/**
+ * Add the derived subject views to a Map of Roll Calls panel menu.
+ * Sits in the same menu as the filters that scope it, so "filter, then create"
+ * reads as one flow. Each item IS the action — no intermediate selection.
+ * @param {string} newID - Panel ID
+ * @param {Object} chart - The rollCallsHeatmap chart instance
+ */
+function addSubjectViewsMenu(newID, chart) {
+    // Reuse the app's own chart icons — the same ones the spawned panel shows in
+    // its title bar, so the icon you click is the icon you get.
+    function viewItem(kind, iconClass, label) {
+        return '<li><a tabindex="-1" class="subject-view-item" data-kind="' + kind + '" href="#">' +
+            '<span class="subject-view-icon ' + iconClass + '"></span>' + label + '</a></li>';
+    }
+
+    $("#" + newID + " .panel-settings")
+        .append('<li role="presentation" class="dropdown-header"><span class="trn">Create visualization</span></li>')
+        .append(viewItem('bar', 'icon-bar-chart', t("Histogram")))
+        .append(viewItem('bubble', 'icon-bubble-chart', t("Proportion")))
+        .append(viewItem('line', 'icon-line-chart', t("Trends")));
+
+    $("#" + newID + " .subject-view-item").on("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        // Creating a view is a terminal action, unlike the filters below it
+        // which stack — close the menu so the new panel is visible right away.
+        $("#" + newID + " .panel-heading .btn-group").removeClass("open");
+        chart.spawnSubjectView($(this).data("kind"));
+    });
+}
+
 function addSearchRollCallMenu(newID, rollCalls) {
     var placeholder = language === ENGLISH ? "Type a Roll Call Identifier" : "Digite o identificador de uma votação"
     $("#" + newID + " .panel-settings")

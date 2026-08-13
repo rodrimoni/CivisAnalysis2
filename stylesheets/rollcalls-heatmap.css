@@ -39,6 +39,10 @@
 
 .rollCall {
     opacity: 0.15;
+    /* Opacity here is driven by class swaps (selected / hovered /
+       subject-dimmed), which CSS cannot tween on its own — this makes every
+       focus change fade instead of snap. */
+    transition: opacity 260ms ease;
 }
 
 .rollCall.selected {
@@ -48,4 +52,14 @@
 .rollCall.hovered {
     opacity: 0.4;
     stroke: #141313 !important;
+}
+
+/*
+ * Subject focus, driven from the derived subject views. Reuses the dim value
+ * already established above as "not in focus". It must carry !important and be
+ * declared last: cells default to selected (data-processor sets selected=true),
+ * and `.rollCall.selected` sets opacity:1 !important at equal specificity.
+ */
+.rollCall.subject-dimmed {
+    opacity: 0.15 !important;
 }

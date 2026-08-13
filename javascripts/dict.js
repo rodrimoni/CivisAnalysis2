@@ -191,6 +191,54 @@ function initDict() {
         },
         "Amendment": {
             br: "Emenda"
+        },
+        "Subjects": {
+            br: "Temas"
+        },
+        "Histogram": {
+            br: "Histograma"
+        },
+        "Proportion": {
+            br: "Proporção"
+        },
+        "Trends": {
+            br: "Tendências"
+        },
+        "View:": {
+            br: "Visão:"
+        },
+        "Volume": {
+            br: "Volume"
+        },
+        "Approval rate": {
+            br: "Taxa de aprovação"
+        },
+        "Sort:": {
+            br: "Ordenar:"
+        },
+        "Value": {
+            br: "Valor"
+        },
+        "Min. votes:": {
+            br: "Mín. votações:"
+        },
+        "all": {
+            br: "todas"
+        },
+        "approved": {
+            br: "aprovadas"
+        },
+        "rejected": {
+            br: "rejeitadas"
+        },
+        "average": {
+            br: "média"
+        },
+        "Subject:": {
+            br: "Tema:"
+        },
+        "Create visualization": {
+            br: "Criar visualização"
         }
     }
 

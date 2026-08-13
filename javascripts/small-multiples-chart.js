@@ -18,7 +18,7 @@ function smallMultiples(chart) {
     function chart(selection) {
         selection.each(function (data) {
 
-            console.log(data);
+            const panelID = $(this).parents('.panel').attr('id');
 
             const numRows = 6;
             const numCols = Math.ceil(data.length / numRows);
@@ -91,6 +91,54 @@ function smallMultiples(chart) {
                 .attr('fill', 'none')
                 .attr('stroke', 'steelblue')
                 .attr('stroke-width', 1.5);
+
+            // Link to the parent Map of Roll Calls. Bound to the whole cell so
+            // the hit area is the facet, not just its label. D3 v7 passes
+            // (event, d) to handlers.
+            if (typeof subjectLinking !== 'undefined') {
+                let lockedThemes = [];
+                let hoveredTheme = null;
+                const applyCellFocus = () => {
+                    // Union, so hovering never drops a pinned subject.
+                    let focus = lockedThemes;
+                    if (hoveredTheme !== null && focus.indexOf(hoveredTheme) === -1) {
+                        focus = focus.concat([hoveredTheme]);
+                    }
+                    cells.transition().duration(160)
+                        .style('opacity', d =>
+                            (!focus.length || focus.indexOf(d.theme) > -1) ? 1 : 0.25);
+                    // Pinned facets keep a bolder line than merely hovered ones.
+                    cells.selectAll('path')
+                        .style('stroke-width', d => lockedThemes.indexOf(d.theme) > -1 ? 3 : 1.5);
+                };
+
+                cells.style('cursor', 'pointer')
+                    .on('mouseover.link', function (event, d) {
+                        hoveredTheme = d.theme;
+                        applyCellFocus();
+                        subjectLinking.preview(panelID, d.theme);
+                    })
+                    .on('mouseout.link', function () {
+                        hoveredTheme = null;
+                        applyCellFocus();
+                        subjectLinking.preview(panelID, null);
+                    })
+                    .on('click.link', function (event, d) {
+                        event.stopPropagation();
+                        // Cmd/Ctrl held stacks subjects; plain click selects one.
+                        const additive = event.metaKey || event.ctrlKey;
+                        if (additive) event.preventDefault();
+                        lockedThemes = subjectLinking.toggleIn(lockedThemes, d.theme, additive);
+                        subjectLinking.setLock(panelID, lockedThemes);
+                        applyCellFocus();
+                    });
+
+                chart.clearSubjectHighlight = function () {
+                    hoveredTheme = null;
+                    lockedThemes = [];
+                    applyCellFocus();
+                };
+            }
 
             cells.append('text')
                 .attr('font-size', 16) // Adjust font size as needed

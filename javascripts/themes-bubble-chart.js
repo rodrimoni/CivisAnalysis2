@@ -9,13 +9,25 @@ function themesBubbleChart() {
         return name.split(" ")
     };
 
+    // Subject emphasis inside this chart, mirroring what we send to the map.
+    var lockedCategories = [];              // empty means "no focus" = show all
+    var hoveredCategory = null;
+    var applyBubbleFocus = function () { };
+
     function chart(selection) {
         selection.each(function (data) {
             drawBubbleChart(data, this);
         });
     }
 
+    chart.clearSubjectHighlight = function () {
+        hoveredCategory = null;
+        lockedCategories = [];
+        applyBubbleFocus();
+    };
+
     function drawBubbleChart(data, htmlContent) {
+        const panelID = $(htmlContent).parents('.panel').attr('id');
         // Create the pack layout
         const pack = d3v4.pack()
             .size([width - padding, height - padding])
@@ -51,9 +63,49 @@ function themesBubbleChart() {
         bubbles.append("circle")
             .attr("r", d => d.r)
             .attr("fill", d => CONGRESS_DEFINE.subjectsToColor[d.data.category])
-            .on('mouseover', function (d) { showToolTip(renderThemeTooltipHtml(d)); })
+            .style("cursor", "pointer")
+            .on('mouseover', function (d) {
+                showToolTip(renderThemeTooltipHtml(d));
+                // Link to the parent Map of Roll Calls.
+                hoveredCategory = d.data.category;
+                applyBubbleFocus();
+                if (typeof subjectLinking !== 'undefined') subjectLinking.preview(panelID, d.data.category);
+            })
             .on('mousemove', function () { moveToolTip(); })
-            .on('mouseout', function () { hideToolTip(); });
+            .on('mouseout', function () {
+                hideToolTip();
+                hoveredCategory = null;
+                applyBubbleFocus();
+                if (typeof subjectLinking !== 'undefined') subjectLinking.preview(panelID, null);
+            })
+            .on('click', function (d) {
+                d3v4.event.stopPropagation();
+                if (typeof subjectLinking === 'undefined') return;
+                // Cmd/Ctrl held stacks subjects; plain click selects just one.
+                const additive = d3v4.event.metaKey || d3v4.event.ctrlKey;
+                if (additive) d3v4.event.preventDefault();
+                lockedCategories = subjectLinking.toggleIn(lockedCategories, d.data.category, additive);
+                subjectLinking.setLock(panelID, lockedCategories);
+                applyBubbleFocus();
+            });
+
+        // Re-emphasis inside this chart: focused subjects stay lit, the rest
+        // recede — the same language the map and the histogram speak.
+        applyBubbleFocus = function () {
+            // Union, so hovering never drops a pinned subject.
+            let focus = lockedCategories;
+            if (hoveredCategory !== null && focus.indexOf(hoveredCategory) === -1) {
+                focus = focus.concat([hoveredCategory]);
+            }
+            bubbles.selectAll("circle")
+                .transition().duration(160)
+                .style("opacity", d =>
+                    (!focus.length || focus.indexOf(d.data.category) > -1) ? 1 : 0.25);
+            // Outline marks what is pinned, distinct from what is merely hovered.
+            bubbles.selectAll("circle")
+                .style("stroke", d => lockedCategories.indexOf(d.data.category) > -1 ? '#333' : 'none')
+                .style("stroke-width", 2);
+        };
 
         // Add a label.
         const text = bubbles.filter(d => d.r > 60)

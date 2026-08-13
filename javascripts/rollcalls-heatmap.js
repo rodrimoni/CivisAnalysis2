@@ -31,72 +31,24 @@ function rollCallsHeatmap() {
     var itemWidth, itemHeight;
     let themesCount = null;
 
+    // Subject focus, driven by the derived subject views (see subject-linking.js).
+    // Two levels so a hover never destroys a click: effective = preview ?? lock.
+    var subjectPreview = null;              // transient single theme (hover)
+    var subjectLock = null;                 // { themes: [...], ownerPanelID } (click)
+
+    // Bound datum, kept so the subject views can be spawned from outside
+    // chart(selection) — i.e. from the panel menu and the context menu.
+    var heatMapData = null;
+
     function chart(selection) {
         selection.each(function (data) {
             // filter empty, all rollCalls
             chart.heatMapDeputies(data.deputies);
             var rcs = groupRollCallsByMonth(data.rcs, { motionTypeFilter: [], motionThemeFilter: [], dateFilter: [undefined, undefined] });
 
-            const controls = d3.select(this)
-                .append("div")
-                .classed("heat-map-controls", true)
-
-            // Create the dropdown
-            const dropdown = controls
-                .append("select")
-                .attr("class", "themeDropdown")
-                .attr("style", "position:absolute; left:60%;") // Adjust position as needed
-                .on("click", function () {
-                    d3.event.stopPropagation(); // avoid ui to navigate to panel
-                })
-
-            // Add options to the dropdown
-            const options = [
-                { value: "default", text: "Select..." }, // Placeholder option
-                { value: "bubble", text: "Proportion" },
-                { value: "bar", text: "Histogram" },
-                { value: "line", text: "Trends" },
-                // Add more options here if needed
-            ];
-
-            dropdown.selectAll("option")
-                .data(options)
-                .enter()
-                .append("option")
-                .attr("value", d => d.value)
-                .text(d => d.text);
-
-            // Keep the original button
-            const button = controls
-                .append("button")
-                .attr("id", "showRollCallsTheme")
-                .attr("style", "position:absolute; left:75%;")
-                .text("Show subjects")
-                .on("click", function () {
-                    const selectedValue = d3.select("#" + panelID + " .themeDropdown").property("value");
-                    let chartData, chartID;
-
-                    switch (selectedValue) {
-                        case "bubble":
-                            chartData = calculateThemesOcurrency(data.rcs);
-                            chartID = THEMES_BUBBLE_CHART
-                            break;
-                        case "bar":
-                            chartData = calculateThemesOcurrency(data.rcs);
-                            chartID = BAR_CHART
-                            break;
-                        case "line":
-                            chartData = calculateSmallMultiplesData(data.rcs);
-                            chartID = SMALL_MULTIPLES_CHART
-                            break;
-                        default:
-                            return;
-                    }
-
-                    handleButtonThemes(panelID, chartData, chartID);
-                    // Prevent any default behavior
-                    d3.event.stopPropagation();
-                });
+            // The subject views are spawned from the panel's settings menu and
+            // from the grid's context menu — the chart area stays uncluttered.
+            heatMapData = data;
 
             chart.drawRollCallsHeatMap(rcs, this);
         });
@@ -365,12 +317,7 @@ function rollCallsHeatmap() {
             .attr("y", function (d) { return yScale(d.period); })
             .attr("rx", 4)
             .attr("ry", 4)
-            .attr("class", function (d) {
-                let classes = "rollCall bordered";
-                if (d.selected) classes += " selected";
-                if (d.hovered) classes += " hovered";
-                return classes;
-            })
+            .attr("class", rollCallClasses)
             .attr("width", itemWidth)
             .attr("height", itemHeight)
             .style("fill", "grey")
@@ -477,18 +424,25 @@ function rollCallsHeatmap() {
             .attr("y", height + gridSize);
 
         legend.exit().remove();*/
+
+        // Right-clicking anywhere on the grid offers the derived subject views.
+        // Scope matches the action: this map -> views about this map.
+        $("#" + panelID + " .rollcalls-heatmap")
+            .contextMenu({
+                menuSelector: "#contextMenuRollCallsHeatmap",
+                menuSelected: function (invokedOn, selectedMenu) {
+                    handleContextMenuRollCallsHeatmap(invokedOn, selectedMenu);
+                }
+            });
     };
 
     chart.update = function () {
+        // d3 v3: transition(x) names a transition, it does not set duration —
+        // duration() is what actually paces the fill tween.
         svg.selectAll(".rollCall")
-            .transition(750)
+            .transition().duration(260)
             .style("fill", function (d) { return setRollCallFill(d); })
-            .attr("class", function (d) {
-                let classes = "rollCall bordered";
-                if (d.selected) classes += " selected";
-                if (d.hovered) classes += " hovered";
-                return classes;
-            })
+            .attr("class", rollCallClasses)
     };
 
     chart.heatMapDeputies = function (_) {
@@ -507,6 +461,80 @@ function rollCallsHeatmap() {
         });
 
         dispatch.update()
+    };
+
+    /**
+     * Subjects currently in focus: the locked set UNION whatever is hovered.
+     * A hover must never drop a pinned subject — it only adds a transient layer.
+     * An empty result means "no focus", i.e. show everything.
+     * @returns {Array<string>}
+     */
+    function effectiveSubjects() {
+        var locked = (subjectLock && subjectLock.themes.length) ? subjectLock.themes : [];
+        if (subjectPreview === null) return locked;
+        if (locked.indexOf(subjectPreview) > -1) return locked;
+        return locked.concat([subjectPreview]);
+    }
+
+    function rollCallClasses(d) {
+        var classes = "rollCall bordered";
+        if (d.selected) classes += " selected";
+        if (d.hovered) classes += " hovered";
+        var focus = effectiveSubjects();
+        if (focus.length && focus.indexOf(d.theme) === -1) classes += " subject-dimmed";
+        return classes;
+    }
+
+    /**
+     * Spawn a derived subject view over the map's currently filtered slice.
+     * @param {string} kind - 'bar' | 'bubble' | 'line'
+     */
+    chart.spawnSubjectView = function (kind) {
+        if (!heatMapData) return;
+
+        // Inherit the map's active filters (proposition type / theme / date).
+        var filter = getFilters(panelID);
+        var filteredRcs = filterMotions(heatMapData.rcs, filter);
+        var chartData, chartID;
+
+        if (kind === 'bubble') {
+            chartData = calculateThemesOcurrency(filteredRcs);
+            chartID = THEMES_BUBBLE_CHART;
+        } else if (kind === 'bar') {
+            chartData = calculateThemesOcurrency(filteredRcs);
+            chartID = BAR_CHART;
+        } else {
+            chartData = calculateSmallMultiplesData(filteredRcs);
+            chartID = SMALL_MULTIPLES_CHART;
+        }
+
+        handleButtonThemes(panelID, chartData, chartID);
+    };
+
+    chart.setSubjectPreview = function (theme) {
+        subjectPreview = theme;
+        dispatch.update();
+    };
+
+    /**
+     * Replace the locked subject set. An empty list clears the focus, which
+     * shows every roll call again.
+     * @param {Array<string>} themes
+     * @param {string} ownerPanelID
+     */
+    chart.setSubjectLock = function (themes, ownerPanelID) {
+        subjectLock = (themes && themes.length)
+            ? { themes: themes.slice(), ownerPanelID: ownerPanelID }
+            : null;
+        dispatch.update();
+    };
+
+    chart.getSubjectLock = function () { return subjectLock; };
+
+    chart.clearSubjectFocus = function () {
+        subjectPreview = null;
+        subjectLock = null;
+        dispatch.update();
     };
 
     chart.selectAllRollCalls = function (id) {
@@ -610,20 +638,21 @@ function rollCallsHeatmap() {
     }
 
     function calculateThemesOcurrency(rcs) {
-        // Count the themes
+        // Count roll calls per theme, split by approval outcome.
         const themeCounts = rcs.reduce((acc, curr) => {
             if (curr.theme !== undefined) { // Check if theme is not undefined
-                if (acc[curr.theme]) {
-                    acc[curr.theme]++;
-                } else {
-                    acc[curr.theme] = 1;
-                }
+                if (!acc[curr.theme]) acc[curr.theme] = { frequency: 0, approved: 0, rejected: 0 };
+                acc[curr.theme].frequency++;
+                if (isRollCallApproved(curr)) acc[curr.theme].approved++;
+                else acc[curr.theme].rejected++;
             }
             return acc;
         }, {});
 
-        // Convert the result to an array of objects with {category, frequency}
-        const result = Object.entries(themeCounts).map(([category, frequency]) => ({ category, frequency }));
+        // Convert to array of {category, frequency, approved, rejected}
+        const result = Object.entries(themeCounts).map(([category, v]) => ({
+            category: category, frequency: v.frequency, approved: v.approved, rejected: v.rejected
+        }));
 
         // Sort the array by frequency in descending order
         return result.sort((a, b) => b.frequency - a.frequency);

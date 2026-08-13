@@ -122,6 +122,7 @@
     <!-- Core Modules -->
     <script src="javascripts/core/constants.js"></script>
     <script src="javascripts/core/state-manager.js"></script>
+    <script src="javascripts/core/subject-linking.js"></script>
 
     <!-- Data Modules -->
     <script src="javascripts/data/data-loader.js"></script>
@@ -384,6 +385,13 @@
             <li><a tabindex="-1" id="bar-chart">Create a bar chart</a></li>
             <li><a tabindex="-1" id="force-layout">Show parties clusters</a></li>
         </ul>
+        <ul id="contextMenuRollCallsHeatmap" class="dropdown-menu" role="menu" style="display:none">
+            <li role="presentation" class="dropdown-header"><span class="trn">Create visualization</span></li>
+            <li><a tabindex="-1" id="heatmap-subjects-histogram" class="trn">Histogram</a></li>
+            <li><a tabindex="-1" id="heatmap-subjects-proportion" class="trn">Proportion</a></li>
+            <li><a tabindex="-1" id="heatmap-subjects-trends" class="trn">Trends</a></li>
+        </ul>
+
         <ul id="contextMenuTimeline" class="dropdown-menu" role="menu" style="display:none">
             <li><a tabindex="-1" id="scatter-plot-pca">Create a Political Spectrum of Deputies - Technique: PCA</a></li>
             <li><a tabindex="-1" id="scatter-plot-mds">Create a Political Spectrum of Deputies - Technique: MDS</a></li>
