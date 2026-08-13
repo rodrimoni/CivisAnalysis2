@@ -32,39 +32,68 @@ function barChart(typeChart) {
 
     function chart(selection) {
         selection.each(function (data) {
-            // Add the checkbox for sorting
-            var checkboxContainer = d3.select(this)
+            // Controls row (top-left): checkboxes with proper spacing
+            var controls = d3.select(this)
                 .append("div")
-                .attr("class", "checkbox-container")
-                .attr("style", "margin-top:20px; margin-left: 20px; position: absolute");
+                .attr("class", "bar-chart-controls")
+                .style("position", "absolute")
+                .style("top", "14px")
+                .style("left", "20px")
+                .style("display", "flex")
+                .style("align-items", "center")
+                .style("gap", "22px")
+                .style("font-size", "13px");
 
-            checkboxContainer.append("label")
-                .text("Sort Alphabetically")
-                .append("input")
-                .attr("type", "checkbox")
-                .attr("class", "sortCheckbox");
+            function addCheckbox(cls, text) {
+                var lbl = controls.append("label")
+                    .style("display", "inline-flex")
+                    .style("align-items", "center")
+                    .style("gap", "7px")
+                    .style("margin", "0")
+                    .style("font-weight", "normal")
+                    .style("cursor", "pointer");
+                lbl.append("input").attr("type", "checkbox").attr("class", cls);
+                lbl.append("span").text(text);
+            }
 
+            addCheckbox("sortCheckbox", "Sort Alphabetically");
+            if (isThemes) addCheckbox("rateCheckbox", "Approval rate");
+
+            // Legend (top-right); content is set per view mode by updateLegend()
+            var legend = null;
             if (isThemes) {
-                // Toggle: count (stacked) vs approval-rate view
-                var rateCheckboxContainer = d3.select(this)
-                    .append("div")
-                    .attr("class", "checkbox-container")
-                    .attr("style", "margin-top:44px; margin-left: 20px; position: absolute");
-                rateCheckboxContainer.append("label")
-                    .text("Approval rate")
-                    .append("input")
-                    .attr("type", "checkbox")
-                    .attr("class", "rateCheckbox");
-
-                // Approved / rejected color legend
-                var legend = d3.select(this)
+                legend = d3.select(this)
                     .append("div")
                     .attr("class", "approval-legend")
-                    .attr("style", "position:absolute; margin-top:20px; right:20px; font-size:12px;");
-                legend.append("span").attr("style", "display:inline-block;width:10px;height:10px;background:" + APPROVED_COLOR + ";margin-right:4px;");
-                legend.append("span").text("approved").style("margin-right", "12px");
-                legend.append("span").attr("style", "display:inline-block;width:10px;height:10px;background:" + REJECTED_COLOR + ";margin-right:4px;");
-                legend.append("span").text("rejected");
+                    .style("position", "absolute")
+                    .style("top", "14px")
+                    .style("right", "22px")
+                    .style("display", "flex")
+                    .style("align-items", "center")
+                    .style("gap", "6px")
+                    .style("font-size", "12px");
+            }
+
+            function updateLegend(rateMode) {
+                if (!legend) return;
+                legend.selectAll("*").remove();
+                function swatch(color, op) {
+                    legend.append("span")
+                        .style("display", "inline-block")
+                        .style("width", "11px").style("height", "11px")
+                        .style("background", color).style("opacity", op)
+                        .style("border-radius", "2px");
+                }
+                function caption(t) { legend.append("span").text(t).style("color", "#666"); }
+                function label(t) { legend.append("span").text(t); }
+                if (rateMode) {
+                    caption("votes (n):");
+                    swatch(APPROVED_COLOR, 0.35); label("few");
+                    swatch(APPROVED_COLOR, 1); label("many");
+                } else {
+                    swatch(APPROVED_COLOR, 1); label("approved");
+                    swatch(REJECTED_COLOR, 1); label("rejected");
+                }
             }
 
             panelID = ($(this).parents('.panel')).attr('id');
@@ -74,6 +103,7 @@ function barChart(typeChart) {
                 d3.select("#" + panelID + " .bar-chart").remove();
 
                 var rateMode = isThemes && d3.select("#" + panelID + " .rateCheckbox").property("checked") === true;
+                updateLegend(rateMode);
                 var max = d3.max(sortedData, function (d) { return d.frequency });
                 var opacity = d3.scale.linear().domain([0, max || 1]).range([0.35, 1]);
                 var labelWidth = 0;
