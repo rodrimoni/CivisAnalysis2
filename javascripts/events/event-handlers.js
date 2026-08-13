@@ -734,13 +734,13 @@ function handleButtonThemes(panelID, data, chartID) {
         if (type !== 'year') {
             periodData = CONGRESS_DEFINE[type + "s"][id];
             title = "<span><span class='trn'>Subjects</span>: <span class='trn'>" + periodData.name + "</span></span>";
-            prettyTitle = "Subjects: " + periodData.name;
+            prettyTitle = t("Subjects") + ": " + periodData.name;
             subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " <span class='trn'>to</span> " + periodData.period[1].toLocaleDateString() + "</span>";
             title += subtitle;
         }
         else {
             title = "<span><span class='trn'>Subjects</span>: " + "<span class='trn'>Year</span> " + id + "</span>";
-            prettyTitle = "Subjects: Year " + id;
+            prettyTitle = t("Subjects") + ": " + t("Year") + " " + id;
         }
         panelClass = type + '-' + id;
     }
@@ -748,7 +748,7 @@ function handleButtonThemes(panelID, data, chartID) {
         firstYear = periodID[1];
         lastYear = periodID[2];
         title = "<span><span class='trn'>Subjects</span>: " + firstYear + " <span class='trn'>to</span> " + lastYear + "</span>";
-        prettyTitle = "Subjects: " + firstYear + " to " + lastYear;
+        prettyTitle = t("Subjects") + ": " + firstYear + " " + t("to") + " " + lastYear;
         panelClass = type + "-" + firstYear + "-" + lastYear;
     }
 

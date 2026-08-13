@@ -152,6 +152,20 @@ function localizedTheme(theme) {
     return theme;
 }
 
+/**
+ * Translate a UI string. The translator is only initialized in Portuguese mode
+ * (dict.js:197), so fall back to the English key everywhere else.
+ * @param {string} key - English string, also the dict key
+ * @returns {string} Localized string
+ */
+function t(key) {
+    if (typeof language !== 'undefined' && language === PORTUGUESE &&
+        typeof translator !== 'undefined' && translator) {
+        return translator.get(key);
+    }
+    return key;
+}
+
 function calcThePartyTracesByYear(periodOfYears) {
     var startYear = CONGRESS_DEFINE.startingYear, endYear = CONGRESS_DEFINE.endingYear;
 
