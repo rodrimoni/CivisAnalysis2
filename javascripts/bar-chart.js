@@ -9,6 +9,9 @@ function barChart(typeChart) {
 
     let panelID = "";
 
+    var APPROVED_COLOR = '#313695'; // "Sim"
+    var REJECTED_COLOR = '#a50026'; // "Não"
+
     const getCategoryColor = d => {
         if (typeChart === THEMES_BAR_CHART) {
             return CONGRESS_DEFINE.subjectsToColor[d];
@@ -37,8 +40,26 @@ function barChart(typeChart) {
                 .attr("type", "checkbox")
                 .attr("class", "sortCheckbox");
 
-            // Store original data for sorting reference
-            var originalData = data.slice();
+            // Toggle: count (stacked) vs approval-rate view
+            var rateCheckboxContainer = d3.select(this)
+                .append("div")
+                .attr("class", "checkbox-container")
+                .attr("style", "margin-top:44px; margin-left: 20px; position: absolute");
+            rateCheckboxContainer.append("label")
+                .text("Approval rate")
+                .append("input")
+                .attr("type", "checkbox")
+                .attr("class", "rateCheckbox");
+
+            // Approved / rejected color legend
+            var legend = d3.select(this)
+                .append("div")
+                .attr("class", "approval-legend")
+                .attr("style", "position:absolute; margin-top:20px; right:20px; font-size:12px;");
+            legend.append("span").attr("style", "display:inline-block;width:10px;height:10px;background:" + APPROVED_COLOR + ";margin-right:4px;");
+            legend.append("span").text("approved").style("margin-right", "12px");
+            legend.append("span").attr("style", "display:inline-block;width:10px;height:10px;background:" + REJECTED_COLOR + ";margin-right:4px;");
+            legend.append("span").text("rejected");
 
             panelID = ($(this).parents('.panel')).attr('id');
 
@@ -46,7 +67,9 @@ function barChart(typeChart) {
                 // Clear previous chart if it exists
                 d3.select("#" + panelID + " .bar-chart").remove();
 
+                var rateMode = d3.select("#" + panelID + " .rateCheckbox").property("checked");
                 var max = d3.max(sortedData, function (d) { return d.frequency });
+                var opacity = d3.scale.linear().domain([0, max || 1]).range([0.35, 1]);
                 var labelWidth = 0;
                 var valueMargin = 2;
 
@@ -60,13 +83,12 @@ function barChart(typeChart) {
                     .attr("viewBox", "0 0 " + width + " " + height)
                     .classed("bar-chart", true);
 
-                var bar = svg.selectAll("g")
+                var bar = svg.selectAll("g.bar")
                     .data(sortedData)
                     .enter()
                     .append("g");
 
                 bar.attr("class", "bar")
-                    .attr("fill", function (d) { return getCategoryColor(d.category); })
                     .attr("transform", function (d, i) {
                         return "translate(" + marginX + "," + (i * (barHeight + barPadding) + barPadding) + ")";
                     });
@@ -83,20 +105,37 @@ function barChart(typeChart) {
                     .style("pointer-events", "none");
 
                 var scale = d3.scale.linear()
-                    .domain([0, max])
+                    .domain(rateMode ? [0, 1] : [0, max])
                     .range([0, width - marginX * 2 - labelWidth]);
 
                 var xAxis = d3.svg.axis()
                     .scale(scale)
                     .tickSize(-height + 2 * marginY)
                     .orient("bottom");
+                if (rateMode) xAxis.tickFormat(d3.format(".0%"));
 
-                bar.append("rect")
-                    .attr("transform", "translate(" + labelWidth + ", 0)")
-                    .attr("height", barHeight)
-                    .attr("width", function (d) {
-                        return scale(d.frequency);
-                    });
+                if (!rateMode) {
+                    // approved segment
+                    bar.append("rect")
+                        .attr("transform", "translate(" + labelWidth + ", 0)")
+                        .attr("height", barHeight)
+                        .attr("width", function (d) { return scale(d.approved); })
+                        .attr("fill", APPROVED_COLOR);
+                    // rejected segment, stacked after approved
+                    bar.append("rect")
+                        .attr("transform", function (d) { return "translate(" + (labelWidth + scale(d.approved)) + ", 0)"; })
+                        .attr("height", barHeight)
+                        .attr("width", function (d) { return scale(d.rejected); })
+                        .attr("fill", REJECTED_COLOR);
+                } else {
+                    // approval-rate bar, opacity proportional to volume
+                    bar.append("rect")
+                        .attr("transform", "translate(" + labelWidth + ", 0)")
+                        .attr("height", barHeight)
+                        .attr("width", function (d) { return scale(d.rate); })
+                        .attr("fill", APPROVED_COLOR)
+                        .attr("opacity", function (d) { return opacity(d.frequency); });
+                }
 
                 bar.append("text")
                     .attr("class", "value")
@@ -105,19 +144,22 @@ function barChart(typeChart) {
                     .attr("dy", ".35em")
                     .attr("text-anchor", "start")
                     .text(function (d) {
-                        return d.frequency;
+                        return rateMode ? (Math.round(d.rate * 100) + "%  n=" + d.frequency) : d.frequency;
                     })
                     .attr("x", function (d) {
-                        var width = this.getBBox().width;
-                        return Math.max(width + valueMargin, scale(d.frequency));
+                        var w = this.getBBox().width;
+                        return Math.max(w + valueMargin, scale(rateMode ? d.rate : d.frequency));
                     })
                     .style("pointer-events", "none");
 
                 bar.on("mousemove", function (d) {
+                    var pct = d.frequency ? Math.round(100 * d.approved / d.frequency) : 0;
                     div.style("left", d3.event.pageX + 10 + "px");
                     div.style("top", d3.event.pageY - 25 + "px");
                     div.style("display", "inline-block");
-                    div.html(getCategoryLabel(d.category) + "<br>" + d.frequency);
+                    div.html(rateMode
+                        ? getCategoryLabel(d.category) + "<br>" + pct + "% approved · n=" + d.frequency
+                        : getCategoryLabel(d.category) + "<br>" + d.frequency + " total · " + d.approved + " approved (" + pct + "%)");
                 });
 
                 bar.on("mouseout", function () {
@@ -130,25 +172,36 @@ function barChart(typeChart) {
                     .call(xAxis);
             }
 
-            // Initial render with unsorted data
-            render(data);
+            // Compute the data order for the current checkbox state.
+            function getSortedData() {
+                var alpha = d3.select("#" + panelID + " .sortCheckbox").property("checked");
+                var rate = d3.select("#" + panelID + " .rateCheckbox").property("checked");
+                var arr = data.slice();
 
-            // Handle checkbox change event for sorting
-            d3.select("#" + panelID + " .sortCheckbox").on("change", function () {
-                if (this.checked) {
-                    // Sort data alphabetically
-                    var sortedData = data.slice().sort(function (a, b) {
+                arr.forEach(function (d) { d.rate = d.frequency ? d.approved / d.frequency : 0; });
+
+                if (alpha) {
+                    arr.sort(function (a, b) {
                         if (language === ENGLISH && typeChart === THEMES_BAR_CHART) {
                             return d3.ascending(subjectsToEnglish[a.category], subjectsToEnglish[b.category]);
                         }
                         return d3.ascending(a.category, b.category);
                     });
-                    render(sortedData);
+                } else if (rate) {
+                    arr.sort(function (a, b) { return d3.descending(a.rate, b.rate); });
                 } else {
-                    // Use the original data order
-                    render(originalData);
+                    arr.sort(function (a, b) { return b.frequency - a.frequency; });
                 }
-            });
+                return arr;
+            }
+
+            function rerender() { render(getSortedData()); }
+
+            // Initial render
+            rerender();
+
+            d3.select("#" + panelID + " .sortCheckbox").on("change", rerender);
+            d3.select("#" + panelID + " .rateCheckbox").on("change", rerender);
         });
     }
 
