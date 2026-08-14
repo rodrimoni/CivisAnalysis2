@@ -294,6 +294,27 @@ function setUpScatterPlotData(filteredData, dimensionalReductionTechnique, type)
 }
 
 /**
+ * Narrow the period's roll calls by subject and motion type, in place.
+ * Both filters are optional; with both given the result is the intersection
+ * (subject AND type). Shared by the scatter plot and the deputies similarity
+ * graph reload paths so the two cannot drift apart.
+ * @param {Array} subjects - Selected subjects (already localized), may be empty
+ * @param {Array} types - Selected motion types, may be empty
+ */
+function applyRollCallFilters(subjects, types) {
+    if (subjects && subjects.length)
+        rollCallInTheDateRange = rollCallInTheDateRange.filter(function (rollCall) {
+            var theme = language === ENGLISH ? subjectsToEnglish[rollCall.theme] : rollCall.theme;
+            return subjects.includes(theme);
+        });
+
+    if (types && types.length)
+        rollCallInTheDateRange = rollCallInTheDateRange.filter(function (rollCall) {
+            return types.includes(rollCall.type);
+        });
+}
+
+/**
  * Reload scatter plot data with new filters
  * @param {Array} filteredData - Filtered date range
  * @param {string} dimensionalReductionTechnique - DR technique
@@ -310,16 +331,7 @@ function reloadScatterPlotData(filteredData, dimensionalReductionTechnique, pane
     const chart = tree.getNode(panelID, tree.traverseBF).chart;
 
     updateDataforDateRange(filteredData, function () {
-        if (!!subjects.length)
-            rollCallInTheDateRange = rollCallInTheDateRange.filter(rollCall => {
-                const theme = language === ENGLISH ? subjectsToEnglish[rollCall.theme] : rollCall.theme;
-                return subjects.includes(theme)
-            });
-
-        if (types && types.length)
-            rollCallInTheDateRange = rollCallInTheDateRange.filter(rollCall => {
-                return types.includes(rollCall.type)
-            });
+        applyRollCallFilters(subjects, types);
 
         var filteredDeputies = filterDeputies();
         var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
