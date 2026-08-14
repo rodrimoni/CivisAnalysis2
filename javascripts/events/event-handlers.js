@@ -69,6 +69,10 @@ function setUpScatterPlotData(filteredData, dimensionalReductionTechnique, type)
     }
     else if (type === DEPUTIES_SIMILARITY_FORCE) {
         var createDeputiesSimilarityForce = function () {
+            // The gear menu's subject/type filters need the period's roll calls,
+            // the same way createScatterPlot supplies them.
+            args = { ...args, rcs: state.getCurrentRollCalls() };
+
             var chartObj = {
                 'chartID': DEPUTIES_SIMILARITY_FORCE,
                 'data': similarityGraph,
@@ -294,6 +298,27 @@ function setUpScatterPlotData(filteredData, dimensionalReductionTechnique, type)
 }
 
 /**
+ * Narrow the period's roll calls by subject and motion type, in place.
+ * Both filters are optional; with both given the result is the intersection
+ * (subject AND type). Shared by the scatter plot and the deputies similarity
+ * graph reload paths so the two cannot drift apart.
+ * @param {Array} subjects - Selected subjects (already localized), may be empty
+ * @param {Array} types - Selected motion types, may be empty
+ */
+function applyRollCallFilters(subjects, types) {
+    if (subjects && subjects.length)
+        rollCallInTheDateRange = rollCallInTheDateRange.filter(function (rollCall) {
+            var theme = language === ENGLISH ? subjectsToEnglish[rollCall.theme] : rollCall.theme;
+            return subjects.includes(theme);
+        });
+
+    if (types && types.length)
+        rollCallInTheDateRange = rollCallInTheDateRange.filter(function (rollCall) {
+            return types.includes(rollCall.type);
+        });
+}
+
+/**
  * Reload scatter plot data with new filters
  * @param {Array} filteredData - Filtered date range
  * @param {string} dimensionalReductionTechnique - DR technique
@@ -310,16 +335,7 @@ function reloadScatterPlotData(filteredData, dimensionalReductionTechnique, pane
     const chart = tree.getNode(panelID, tree.traverseBF).chart;
 
     updateDataforDateRange(filteredData, function () {
-        if (!!subjects.length)
-            rollCallInTheDateRange = rollCallInTheDateRange.filter(rollCall => {
-                const theme = language === ENGLISH ? subjectsToEnglish[rollCall.theme] : rollCall.theme;
-                return subjects.includes(theme)
-            });
-
-        if (types && types.length)
-            rollCallInTheDateRange = rollCallInTheDateRange.filter(rollCall => {
-                return types.includes(rollCall.type)
-            });
+        applyRollCallFilters(subjects, types);
 
         var filteredDeputies = filterDeputies();
         var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
@@ -386,6 +402,61 @@ function reloadScatterPlotData(filteredData, dimensionalReductionTechnique, pane
             var emptyMsg = language === ENGLISH
                 ? "No roll calls match the selected filters for this period. The spectrum was not updated."
                 : "Nenhuma votação corresponde aos filtros selecionados neste período. O espectro não foi atualizado.";
+            alert(emptyMsg);
+        }
+    });
+}
+
+/**
+ * Recompute the deputies similarity graph for a panel under new subject/type
+ * filters and hand the fresh graph to its chart. Party filtering is absent on
+ * purpose: it needs no recompute and is applied by the chart itself, so it
+ * survives this reload — as does the similarity slider's value.
+ * @param {Array} filteredData - Date range [start, end]
+ * @param {string} panelID - Panel ID
+ * @param {Array} subjects - Selected subjects
+ * @param {Array} types - Selected motion types
+ */
+function reloadSimilarityGraphData(filteredData, panelID, subjects, types) {
+    $('#loading').css('visibility', 'visible');
+
+    var tree = state.getTree();
+    var chart = tree.getNode(panelID, tree.traverseBF).chart;
+
+    updateDataforDateRange(filteredData, function () {
+        applyRollCallFilters(subjects, types);
+
+        var filteredDeputies = filterDeputies();
+        var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
+
+        if (matrixDeputiesPerRollCall.length > 0 && matrixDeputiesPerRollCall[0].length > 0) {
+            var text = language === ENGLISH ? "Generating Deputies Similarity Graph" : "Gerando Grafo de Similaridade";
+            $('#loading #msg').text(text);
+
+            // Yield once so the overlay paints before the O(n²) distance matrix.
+            setTimeout(function () {
+                var matrixDistanceDeputies = createMatrixDistanceDeputies(matrixDeputiesPerRollCall);
+                var similarityGraph = createDeputySimilarityGraph(matrixDistanceDeputies, filteredDeputies);
+
+                state.setCurrentDeputies(similarityGraph.nodes);
+                state.setCurrentRollCalls(rollCallInTheDateRange);
+                calcRollCallRate(state.getCurrentRollCalls(), state.getCurrentDeputies());
+
+                state.addDeputyNode(panelID, state.getCurrentDeputies());
+                state.addRollCallRate(panelID, state.getCurrentRollCalls());
+
+                chart.reloadSimilarityGraph(similarityGraph);
+
+                $('#loading').css('visibility', 'hidden');
+            }, 10);
+        }
+        else {
+            // Unlike reloadScatterPlotData, state is not cleared up front, so on
+            // this path the panel keeps the graph it already had.
+            $('#loading').css('visibility', 'hidden');
+            var emptyMsg = language === ENGLISH
+                ? "No roll calls match the selected filters for this period. The graph was not updated."
+                : "Nenhuma votação corresponde aos filtros selecionados neste período. O grafo não foi atualizado.";
             alert(emptyMsg);
         }
     });

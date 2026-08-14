@@ -137,9 +137,10 @@ function addSearchRollCallMenu(newID, rollCalls) {
  * @param {Object} elt - jQuery <input> element to turn into a tagsinput
  * @param {Array<string>} optionValues - option labels (already localized)
  * @param {string} datasetName - typeahead dataset name
+ * @param {Function} [tagClass] - Optional; receives the item {key, value} and returns the tag's CSS classes
  * @returns {Object} the same jQuery element, for chaining
  */
-function setupFilterTagsinput(elt, optionValues, datasetName) {
+function setupFilterTagsinput(elt, optionValues, datasetName, tagClass) {
     var options = optionValues.slice().sort();
     var engine = new Bloodhound({
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
@@ -148,7 +149,7 @@ function setupFilterTagsinput(elt, optionValues, datasetName) {
         identify: function (obj) { return obj.value; }
     });
     engine.initialize();
-    elt.tagsinput({
+    var settings = {
         itemValue: 'key',
         itemText: 'value',
         typeaheadjs: [{
@@ -165,7 +166,9 @@ function setupFilterTagsinput(elt, optionValues, datasetName) {
                 else engine.search(q, sync);
             }
         }]
-    });
+    };
+    if (tagClass) settings.tagClass = tagClass;
+    elt.tagsinput(settings);
     return elt;
 }
 
@@ -235,6 +238,49 @@ function addFilterMotionTypeChart(newID, rollCalls, datasetName) {
 
     elt.on('itemAdded', applyTypeFilter);
     elt.on('itemRemoved', applyTypeFilter);
+
+    $("#" + newID + " .bootstrap-tagsinput").click(function (e) {
+        e.stopPropagation();
+    });
+}
+
+/**
+ * Add a party filter to a panel whose chart exposes setPartyFilter.
+ * Applies immediately: party membership does not change any pairwise
+ * similarity, so the chart just prunes the induced subgraph — no recompute and
+ * no loading overlay. Empty selection = all parties. Options come from the
+ * deputies currently on the panel, so the list never offers an absent party.
+ * @param {string} newID - Panel ID
+ * @param {Array} deputies - Deputy nodes currently in the panel
+ */
+function addPartyFilter(newID, deputies) {
+    var placeholder = language === ENGLISH
+        ? "Type a party to filter (e.g. PT, PSDB, etc)"
+        : "Digite partidos para filtrar (ex. PT, PSDB, etc)";
+
+    $("#" + newID + " .panel-settings")
+        .append('<li role="presentation" class="dropdown-header"><span class="trn">Select parties</span></li>')
+        .append('<li><input type="text" class="form-control typeahead filterParty" placeholder="' + placeholder + '"/></li>');
+
+    var parties = d3.map(deputies, function (d) { return d.party; }).keys();
+    var elt = $('#' + newID + ' .filterParty');
+    setupFilterTagsinput(elt, parties, 'deputyParties', function (item) {
+        return 'label label-info label-' + item.value;
+    });
+
+    function applyPartyFilter(event) {
+        if (event && event.item)
+            $("#" + newID + " .tag.label-" + event.item.value)
+                .css({ "background-color": CONGRESS_DEFINE.getPartyColor(event.item.value) });
+
+        var tree = state.getTree();
+        var chart = tree.getNode(newID, tree.traverseBF).chart;
+        var selected = elt.tagsinput('items').map(function (item) { return item.value; });
+        chart.setPartyFilter(selected);
+    }
+
+    elt.on('itemAdded', applyPartyFilter);
+    elt.on('itemRemoved', applyPartyFilter);
 
     $("#" + newID + " .bootstrap-tagsinput").click(function (e) {
         e.stopPropagation();
@@ -624,23 +670,25 @@ function addThemeFilter(newID, rollCalls) {
 }
 
 /**
- * Add subject + motion-type filters for the scatter plot.
- * Both reuse the standard tagsinput + typeahead pattern and feed the shared
+ * Add subject + motion-type filters to a panel's gear menu.
+ * Both reuse the standard tagsinput + typeahead pattern and feed a shared
  * Reload button, applied as an intersection (subject AND type). Empty = no
  * filter. Options are derived from the period's roll calls; the full list is
- * shown on focus (minLength 0, no result cap).
+ * shown on focus (minLength 0, no result cap). The caller supplies what the
+ * Reload button does, so scatter plot and similarity graph panels share this
+ * DOM without sharing a recompute pipeline.
  * @param {string} newID - Panel ID
  * @param {Array} rollCalls - Roll calls data for the period
+ * @param {string} popoverText - Tooltip shown on hover over the Reload button
+ * @param {Function} onReload - Called as onReload(subjects, types) on click
  */
-function addScatterPlotFilters(newID, rollCalls) {
+function addSubjectTypeFilters(newID, rollCalls, popoverText, onReload) {
     var subjectPlaceholder = language === ENGLISH
         ? "Type subject to select (e.g. Health, Education, etc)"
         : "Digite temas de votações para filtrar (e.g. Saúde, Educação, Economia, etc)";
     var typePlaceholder = language === ENGLISH
         ? "Type motion type to filter"
         : "Digite tipos de votações para filtrar";
-
-    const popoverContent = 'Reload scatterplot with subjects and types';
 
     $("#" + newID + " .panel-settings")
         .append('<li role="presentation" class="dropdown-header"><span class="trn">Select Subjects</span></li>')
@@ -649,13 +697,13 @@ function addScatterPlotFilters(newID, rollCalls) {
         .append('<li><div class="row" style="width: 100%; margin: 0;">' +
             '<div class="col-xs-11" style="padding-left: 0;"><input type="text" class="form-control typeahead filterMotions" placeholder="' + typePlaceholder + ' (e.g. PL, PEC, etc.)"/></div>' +
             '<div class="col-xs-1" style="padding-left: 0;">' +
-            '<button class="btn btn-primary reloadScatter" style="padding:12px; display: flex; align-items: center; justify-content: center;" ' +
-            'data-container="body" data-content="' + popoverContent + '" data-html="true" rel="popover" ' +
+            '<button class="btn btn-primary reloadFilters" style="padding:12px; display: flex; align-items: center; justify-content: center;" ' +
+            'data-container="body" data-content="' + popoverText + '" data-html="true" rel="popover" ' +
             'data-placement="top" data-trigger="hover" data-viewport="body">' +
             '<i class="fa fa-rotate-right"></i></button></div>' +
             '</div></li>');
 
-    $('#' + newID + ' .reloadScatter').popover();
+    $('#' + newID + ' .reloadFilters').popover();
 
     // --- Subjects typeahead (full option list shown on focus) ---
     var rollCallsThemes = d3.map(rollCalls, function (d) {
@@ -673,12 +721,10 @@ function addScatterPlotFilters(newID, rollCalls) {
         e.stopPropagation();
     });
 
-    $('#' + newID + ' .reloadScatter').click(function () {
-        var tree = state.getTree();
-        const { filteredData, dimensionalReductionTechnique } = tree.getNode(newID, tree.traverseBF).args;
-        const subjects = themeElt.tagsinput('items').map(item => item.value);
-        const types = typeElt.tagsinput('items').map(item => item.value);
-        reloadScatterPlotData(filteredData, dimensionalReductionTechnique, newID, subjects, types);
+    $('#' + newID + ' .reloadFilters').click(function () {
+        var subjects = themeElt.tagsinput('items').map(function (item) { return item.value; });
+        var types = typeElt.tagsinput('items').map(function (item) { return item.value; });
+        onReload(subjects, types);
     });
 }
 

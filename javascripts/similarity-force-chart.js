@@ -7,10 +7,16 @@ function similarityForce() {
 
     var svg;
     var panelID;
+    var panelNode;
     var dispatch = d3.dispatch('update');
     var div = d3.select(".toolTip");
     var simulation;
     var nodeRadius = 5;
+
+    // View state: the full graph plus the two cuts applied to it before drawing.
+    var currentData;
+    var currentSimilarity = 80;
+    var selectedParties = [];
 
     function drag(simulation) {
         function dragstarted(d) {
@@ -132,22 +138,46 @@ function similarityForce() {
             });
     }
 
-    function filterEdges(data, similarity) {
-        var result = {};
+    /**
+     * Build the subgraph to draw: edges at or above the similarity cut and,
+     * when parties are selected, only deputies from those parties. Edges that
+     * lost an endpoint must go too — forceLink throws on a missing node.
+     * Party membership never changes a pairwise similarity value, so pruning
+     * here is equivalent to recomputing with fewer deputies, and free.
+     * Re-runnable because update() draws copies (Object.create), leaving raw
+     * deputyIDs on currentData's link source/target.
+     */
+    function applyFilters(data, similarity, parties) {
+        var nodes = d3.values(data.nodes);
 
-        result.links = data.links.filter(function (d) {
-            return d.value >= similarity;
+        if (parties.length)
+            nodes = nodes.filter(function (d) { return parties.indexOf(d.party) !== -1; });
+
+        var kept = {};
+        nodes.forEach(function (d) { kept[d.deputyID] = true; });
+
+        var links = data.links.filter(function (d) {
+            return d.value >= similarity && kept[d.source] && kept[d.target];
         });
 
-        result.nodes = d3.values(data.nodes);
+        return { nodes: nodes, links: links };
+    }
 
-        return result;
+    /**
+     * Redraw the SVG from currentData under the current cuts. The slider lives
+     * in .panel-body outside the SVG, so its value survives untouched.
+     */
+    function render() {
+        if (simulation) simulation.stop();
+        $(panelNode).find('svg').remove();
+        update(applyFilters(currentData, currentSimilarity, selectedParties), panelNode);
     }
 
     function chart(selection) {
         selection.each(function (data) {
             panelID = ($(this).parents('.panel')).attr('id');
-            var panel = this;
+            panelNode = this;
+            currentData = data;
 
             $("#" + panelID + " .panel-body")
                 .append('<div style="padding:10px;"><span class ="trn">Select the grade of similarity</span>: <b>50%</b> <input id= "slider-similarity-' + panelID + '" type="text" data-slider-min="50" data-slider-max="100" data-slider-step="1" data-slider-value="80"/> <b>100%</b></div>');
@@ -160,15 +190,11 @@ function similarityForce() {
             });
 
             mySlider.on("slideStop", function (slideEvt) {
-                var similarity = slideEvt.value;
-                simulation.stop();
-                $(panel).find('svg').remove();
-                var newData = filterEdges(data, similarity);
-                update(newData, panel);
+                currentSimilarity = slideEvt.value;
+                render();
             });
 
-            var newData = filterEdges(data, 80);
-            update(newData, this);
+            render();
         })
     }
 
@@ -232,7 +258,18 @@ function similarityForce() {
             .attr("r", function (d) { return (d.hovered) ? nodeRadius * 2 : nodeRadius; });
     };
 
+    chart.setPartyFilter = function (parties) {
+        selectedParties = parties || [];
+        render();
+    };
+
+    chart.reloadSimilarityGraph = function (data) {
+        currentData = data;
+        render();
+    };
+
     chart.selectDeputiesBySearch = function (deputies) {
+        var deputyNodes = state.getDeputyNodes();
         for (var key in deputyNodes) {
             for (var index in deputyNodes[key])
                 deputyNodes[key][index].selected = false;
