@@ -137,9 +137,10 @@ function addSearchRollCallMenu(newID, rollCalls) {
  * @param {Object} elt - jQuery <input> element to turn into a tagsinput
  * @param {Array<string>} optionValues - option labels (already localized)
  * @param {string} datasetName - typeahead dataset name
+ * @param {Function} [tagClass] - Optional; receives the item {key, value} and returns the tag's CSS classes
  * @returns {Object} the same jQuery element, for chaining
  */
-function setupFilterTagsinput(elt, optionValues, datasetName) {
+function setupFilterTagsinput(elt, optionValues, datasetName, tagClass) {
     var options = optionValues.slice().sort();
     var engine = new Bloodhound({
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
@@ -148,7 +149,7 @@ function setupFilterTagsinput(elt, optionValues, datasetName) {
         identify: function (obj) { return obj.value; }
     });
     engine.initialize();
-    elt.tagsinput({
+    var settings = {
         itemValue: 'key',
         itemText: 'value',
         typeaheadjs: [{
@@ -165,7 +166,9 @@ function setupFilterTagsinput(elt, optionValues, datasetName) {
                 else engine.search(q, sync);
             }
         }]
-    });
+    };
+    if (tagClass) settings.tagClass = tagClass;
+    elt.tagsinput(settings);
     return elt;
 }
 
@@ -235,6 +238,49 @@ function addFilterMotionTypeChart(newID, rollCalls, datasetName) {
 
     elt.on('itemAdded', applyTypeFilter);
     elt.on('itemRemoved', applyTypeFilter);
+
+    $("#" + newID + " .bootstrap-tagsinput").click(function (e) {
+        e.stopPropagation();
+    });
+}
+
+/**
+ * Add a party filter to a panel whose chart exposes setPartyFilter.
+ * Applies immediately: party membership does not change any pairwise
+ * similarity, so the chart just prunes the induced subgraph — no recompute and
+ * no loading overlay. Empty selection = all parties. Options come from the
+ * deputies currently on the panel, so the list never offers an absent party.
+ * @param {string} newID - Panel ID
+ * @param {Array} deputies - Deputy nodes currently in the panel
+ */
+function addPartyFilter(newID, deputies) {
+    var placeholder = language === ENGLISH
+        ? "Type a party to filter (e.g. PT, PSDB, etc)"
+        : "Digite partidos para filtrar (ex. PT, PSDB, etc)";
+
+    $("#" + newID + " .panel-settings")
+        .append('<li role="presentation" class="dropdown-header"><span class="trn">Select parties</span></li>')
+        .append('<li><input type="text" class="form-control typeahead filterParty" placeholder="' + placeholder + '"/></li>');
+
+    var parties = d3.map(deputies, function (d) { return d.party; }).keys();
+    var elt = $('#' + newID + ' .filterParty');
+    setupFilterTagsinput(elt, parties, 'deputyParties', function (item) {
+        return 'label label-info label-' + item.value;
+    });
+
+    function applyPartyFilter(event) {
+        if (event && event.item)
+            $("#" + newID + " .tag.label-" + event.item.value)
+                .css({ "background-color": CONGRESS_DEFINE.getPartyColor(event.item.value) });
+
+        var tree = state.getTree();
+        var chart = tree.getNode(newID, tree.traverseBF).chart;
+        var selected = elt.tagsinput('items').map(function (item) { return item.value; });
+        chart.setPartyFilter(selected);
+    }
+
+    elt.on('itemAdded', applyPartyFilter);
+    elt.on('itemRemoved', applyPartyFilter);
 
     $("#" + newID + " .bootstrap-tagsinput").click(function (e) {
         e.stopPropagation();

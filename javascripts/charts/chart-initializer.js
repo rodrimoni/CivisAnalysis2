@@ -241,6 +241,7 @@ function initializeDeputiesSimilarityForce(newID, chartObj) {
 
     addConfigMenu(newID, 'similarity-force', false);
     addSearchDeputyMenu(newID, d3.values(chartObj.data.nodes));
+    addPartyFilter(newID, d3.values(chartObj.data.nodes));
     addEditTitleInput(newID);
 
     $('#' + newID).attr('data-type-period', chartObj.panelClass);
