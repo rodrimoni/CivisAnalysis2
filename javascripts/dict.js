@@ -213,6 +213,21 @@ function initDict() {
         "Approval rate": {
             br: "Taxa de aprovação"
         },
+        "Government success": {
+            br: "Sucesso do governo"
+        },
+        "Share of roll calls that ended the way the government asked": {
+            br: "Fração das votações que terminaram como o governo orientou"
+        },
+        "No party-leader orientations published in this period": {
+            br: "Sem orientação de bancada publicada neste período"
+        },
+        "government prevailed": {
+            br: "governo prevaleceu"
+        },
+        "government defeated": {
+            br: "governo derrotado"
+        },
         "Sort:": {
             br: "Ordenar:"
         },

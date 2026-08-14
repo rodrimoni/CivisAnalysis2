@@ -131,6 +131,52 @@ function isRollCallApproved(rc) {
 }
 
 /**
+ * The direction the government asked its base to vote, from the orientations
+ * the party leaders declare before the roll call opens.
+ *
+ * Only Sim and Não are directions. "Liberado" is the government explicitly
+ * declining to take a side — an absence of position, not missing data, so it
+ * cannot count as either a win or a loss. "Obstrução" is a floor tactic rather
+ * than a verdict on the matter, and the remaining values carry no position at
+ * all. Together those are ~5% of the roll calls that have a government entry.
+ *
+ * @param {Object} rc - a roll call, possibly carrying `orientations`
+ * @returns {boolean|null} true = wanted it to pass, false = wanted it to fail,
+ *                         null = no direction on record
+ */
+function governmentWanted(rc) {
+    var orientations = rc && rc.orientations;
+    if (!orientations) return null;
+
+    var declared = orientations['GOV.'];
+    if (declared === undefined || declared === null) return null;
+
+    switch (String(declared).trim().toLowerCase()) {
+        case 'sim': return true;
+        case 'não':
+        case 'nao': return false;
+        default: return null;
+    }
+}
+
+/**
+ * Whether the plenary delivered what the government asked for.
+ *
+ * This is a comparison, not an inference: the position was declared before the
+ * vote, so nothing here guesses at intent. That matters because the outcome
+ * alone cannot tell a defeat from a win — most roll calls are procedural, and
+ * on those the government is usually asking for rejection.
+ *
+ * @param {Object} rc - a roll call
+ * @returns {boolean|null} null when the government stated no direction
+ */
+function didGovernmentPrevail(rc) {
+    var wanted = governmentWanted(rc);
+    if (wanted === null) return null;
+    return wanted === isRollCallApproved(rc);
+}
+
+/**
  * Create matrix of deputies x roll calls
  * @param {Array} deputies - Array of deputies
  * @returns {Array} Matrix with vote data
@@ -614,5 +660,10 @@ function loadScatterPlotDataByYear() {
 
 // Node-only export for standalone verification scripts (ignored in the browser).
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { isRollCallApproved: isRollCallApproved, filterMotions: filterMotions };
+    module.exports = {
+        isRollCallApproved: isRollCallApproved,
+        filterMotions: filterMotions,
+        governmentWanted: governmentWanted,
+        didGovernmentPrevail: didGovernmentPrevail
+    };
 }
