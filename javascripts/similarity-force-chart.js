@@ -269,6 +269,7 @@ function similarityForce() {
     };
 
     chart.selectDeputiesBySearch = function (deputies) {
+        var deputyNodes = state.getDeputyNodes();
         for (var key in deputyNodes) {
             for (var index in deputyNodes[key])
                 deputyNodes[key][index].selected = false;
