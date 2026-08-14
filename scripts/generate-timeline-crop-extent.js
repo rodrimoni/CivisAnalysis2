@@ -19,7 +19,7 @@ const PRECALC_DIR = path.join(BASE_DIR, 'data', 'precalc', 'pca');
 const OUTPUT_FILE = path.join(BASE_DIR, 'javascripts', 'timeline-crop-extent.js');
 
 const STARTING_YEAR = 1991;
-const ENDING_YEAR = 2025;
+const ENDING_YEAR = require('./ending-year').endingYear();
 
 // ============================================================
 // Calculate extents from precalc files

@@ -13,6 +13,29 @@
       "datetime": "2018-04-18T18:20:00.000Z",
       "obj": "REQUERIMENTO DE RETIRADA DE PAUTA",
       "summary": "Rejeitado o Requerimento. Sim: 38; não: 230; abstenção: 1; total: 269.",
+      "orientations": {
+        "PpPodeAvantePen": "Não",
+        "PT": "Obstrução",
+        "PMDB": "Não",
+        "PSDB": "Não",
+        "DEM": "Não",
+        "PR": "Não",
+        "PSD": "Não",
+        "PtbPros": "Sim",
+        "PSB": "Obstrução",
+        "PRB": "Sim",
+        "PDT": "Obstrução",
+        "PCdoB": "Obstrução",
+        "Solidaried": "Não",
+        "PPS": "Não",
+        "PSC": "Não",
+        "PSOL": "Obstrução",
+        "Repr.PV": "Não",
+        "Repr.REDE": "Obstrução",
+        "Minoria": "Obstrução",
+        "Oposição": "Obstrução",
+        "GOV.": "Não"
+      },
       "votes": [
         {
           "deputyID": 1647,
@@ -65,12 +88,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 1103,
+          "deputyID": 1185,
           "vote": 1,
           "party": "PTB"
         },
         {
-          "deputyID": 1104,
+          "deputyID": 1224,
           "vote": 1,
           "party": "PSDB"
         },
@@ -100,12 +123,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 1108,
+          "deputyID": 1264,
           "vote": 0,
           "party": "PRB"
         },
         {
-          "deputyID": 30,
+          "deputyID": 242,
           "vote": 1,
           "party": "DEM"
         },
@@ -125,7 +148,7 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 1111,
+          "deputyID": 1225,
           "vote": 1,
           "party": "PTB"
         },
@@ -195,7 +218,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 1124,
+          "deputyID": 1242,
           "vote": 1,
           "party": "PTB"
         },
@@ -215,7 +238,7 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 54,
+          "deputyID": 169,
           "vote": 1,
           "party": "PSDB"
         },
@@ -235,7 +258,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 749,
+          "deputyID": 538,
           "vote": 3,
           "party": "PDT"
         },
@@ -250,7 +273,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 966,
+          "deputyID": 971,
           "vote": 1,
           "party": "PSDB"
         },
@@ -265,7 +288,7 @@
           "party": "Avante"
         },
         {
-          "deputyID": 755,
+          "deputyID": 668,
           "vote": 3,
           "party": "PDT"
         },
@@ -300,7 +323,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 739,
+          "deputyID": 665,
           "vote": 1,
           "party": "PSD"
         },
@@ -310,7 +333,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 1260,
+          "deputyID": 1161,
           "vote": 1,
           "party": "DEM"
         },
@@ -405,7 +428,7 @@
           "party": "Avante"
         },
         {
-          "deputyID": 532,
+          "deputyID": 791,
           "vote": 3,
           "party": "PDT"
         },
@@ -520,7 +543,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 540,
+          "deputyID": 572,
           "vote": 1,
           "party": "PP"
         },
@@ -535,7 +558,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 127,
+          "deputyID": 136,
           "vote": 1,
           "party": "PR"
         },
@@ -545,7 +568,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 1160,
+          "deputyID": 1189,
           "vote": 1,
           "party": "PSDB"
         },
@@ -555,7 +578,7 @@
           "party": "PRB"
         },
         {
-          "deputyID": 1164,
+          "deputyID": 1236,
           "vote": 1,
           "party": "PSD"
         },
@@ -575,7 +598,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 117,
+          "deputyID": 38,
           "vote": 1,
           "party": "PTB"
         },
@@ -585,7 +608,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 128,
+          "deputyID": 153,
           "vote": 1,
           "party": "DEM"
         },
@@ -615,7 +638,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 569,
+          "deputyID": 565,
           "vote": 1,
           "party": "DEM"
         },
@@ -640,7 +663,7 @@
           "party": "PSC"
         },
         {
-          "deputyID": 574,
+          "deputyID": 630,
           "vote": 0,
           "party": "PROS"
         },
@@ -655,7 +678,7 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 1172,
+          "deputyID": 1193,
           "vote": 0,
           "party": "PR"
         },
@@ -680,7 +703,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 582,
+          "deputyID": 701,
           "vote": 1,
           "party": "PMDB"
         },
@@ -690,7 +713,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 564,
+          "deputyID": 756,
           "vote": 1,
           "party": "PMDB"
         },
@@ -850,7 +873,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 432,
+          "deputyID": 429,
           "vote": 3,
           "party": "PCdoB"
         },
@@ -865,7 +888,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 1189,
+          "deputyID": 1201,
           "vote": 3,
           "party": "PT"
         },
@@ -890,7 +913,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 718,
+          "deputyID": 729,
           "vote": 1,
           "party": "PR"
         },
@@ -900,7 +923,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 1193,
+          "deputyID": 1253,
           "vote": 4,
           "party": "DEM"
         },
@@ -915,7 +938,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 192,
+          "deputyID": 297,
           "vote": 1,
           "party": "PP"
         },
@@ -940,7 +963,7 @@
           "party": "PRB"
         },
         {
-          "deputyID": 202,
+          "deputyID": 24,
           "vote": 1,
           "party": "PP"
         },
@@ -950,7 +973,7 @@
           "party": "PPS"
         },
         {
-          "deputyID": 227,
+          "deputyID": 41,
           "vote": 1,
           "party": "PMDB"
         },
@@ -980,7 +1003,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 214,
+          "deputyID": 150,
           "vote": 1,
           "party": "DEM"
         },
@@ -995,7 +1018,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 449,
+          "deputyID": 452,
           "vote": 0,
           "party": "PTB"
         },
@@ -1010,7 +1033,7 @@
           "party": "Solidaried"
         },
         {
-          "deputyID": 228,
+          "deputyID": 266,
           "vote": 1,
           "party": "PP"
         },
@@ -1050,7 +1073,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 635,
+          "deputyID": 569,
           "vote": 0,
           "party": "PRB"
         },
@@ -1135,7 +1158,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 1155,
+          "deputyID": 1263,
           "vote": 0,
           "party": "PRB"
         },
@@ -1175,7 +1198,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 241,
+          "deputyID": 30,
           "vote": 1,
           "party": "Solidaried"
         },
@@ -1190,7 +1213,7 @@
           "party": "Podemos"
         },
         {
-          "deputyID": 1277,
+          "deputyID": 1096,
           "vote": 1,
           "party": "DEM"
         },
@@ -1210,7 +1233,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 654,
+          "deputyID": 664,
           "vote": 1,
           "party": "PTB"
         },
@@ -1220,12 +1243,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 1233,
+          "deputyID": 1239,
           "vote": 1,
           "party": "PMDB"
         },
         {
-          "deputyID": 379,
+          "deputyID": 384,
           "vote": 0,
           "party": "PP"
         },
@@ -1280,7 +1303,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 1310,
+          "deputyID": 1308,
           "vote": 0,
           "party": "PTB"
         },
@@ -1295,7 +1318,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 669,
+          "deputyID": 582,
           "vote": 1,
           "party": "PP"
         },
@@ -1310,12 +1333,12 @@
           "party": "PSL"
         },
         {
-          "deputyID": 870,
+          "deputyID": 867,
           "vote": 0,
           "party": "PMDB"
         },
         {
-          "deputyID": 270,
+          "deputyID": 186,
           "vote": 1,
           "party": "PSDB"
         },
@@ -1325,17 +1348,17 @@
           "party": "PR"
         },
         {
-          "deputyID": 677,
+          "deputyID": 714,
           "vote": 1,
           "party": "PP"
         },
         {
-          "deputyID": 1242,
+          "deputyID": 1229,
           "vote": 0,
           "party": "PP"
         },
         {
-          "deputyID": 276,
+          "deputyID": 283,
           "vote": 1,
           "party": "PPS"
         },
@@ -1370,7 +1393,7 @@
           "party": "PV"
         },
         {
-          "deputyID": 652,
+          "deputyID": 740,
           "vote": 1,
           "party": "PP"
         },
@@ -1440,12 +1463,12 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 706,
+          "deputyID": 777,
           "vote": 1,
           "party": "PMDB"
         },
         {
-          "deputyID": 386,
+          "deputyID": 332,
           "vote": 1,
           "party": "PSD"
         },
@@ -1485,7 +1508,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 665,
+          "deputyID": 579,
           "vote": 1,
           "party": "PMDB"
         },
@@ -1495,7 +1518,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 1253,
+          "deputyID": 1160,
           "vote": 3,
           "party": "PT"
         },
@@ -1520,7 +1543,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 1331,
+          "deputyID": 1329,
           "vote": 1,
           "party": "PMDB"
         },
@@ -1560,7 +1583,7 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 1257,
+          "deputyID": 1243,
           "vote": 3,
           "party": "PDT"
         },
@@ -1605,12 +1628,12 @@
           "party": "PT"
         },
         {
-          "deputyID": 737,
+          "deputyID": 780,
           "vote": 1,
           "party": "PR"
         },
         {
-          "deputyID": 886,
+          "deputyID": 887,
           "vote": 1,
           "party": "DEM"
         },
@@ -1645,7 +1668,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 683,
+          "deputyID": 792,
           "vote": 1,
           "party": "PSDB"
         },
@@ -1670,6 +1693,31 @@
       "datetime": "2018-04-18T17:26:00.000Z",
       "obj": "REQUERIMENTO DE VOTAÇÃO NOMINAL DO REQ. DE RETIRADA DE PAUTA",
       "summary": "Rejeitado o Requerimento. Sim: 14; não: 279; abstenção: 1; total: 294.",
+      "orientations": {
+        "PpPodeAvantePen": "Não",
+        "PT": "Obstrução",
+        "PMDB": "Não",
+        "PSDB": "Não",
+        "DEM": "Não",
+        "PR": "Não",
+        "PSD": "Não",
+        "PtbPros": "Não",
+        "PSB": "Obstrução",
+        "PRB": "Não",
+        "PDT": "Obstrução",
+        "PCdoB": "Obstrução",
+        "Solidaried": "Não",
+        "PSL": "Não",
+        "PPS": "Não",
+        "PSC": "Não",
+        "PSOL": "Obstrução",
+        "Repr.PV": "Não",
+        "Repr.REDE": "Sim",
+        "Minoria": "Obstrução",
+        "Maioria": "Não",
+        "Oposição": "Obstrução",
+        "GOV.": "Não"
+      },
       "votes": [
         {
           "deputyID": 2505,
@@ -1762,7 +1810,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 780,
+          "deputyID": 660,
           "vote": 1,
           "party": "PMDB"
         },
@@ -1782,7 +1830,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 1104,
+          "deputyID": 1224,
           "vote": 1,
           "party": "PSDB"
         },
@@ -1807,17 +1855,17 @@
           "party": "PR"
         },
         {
-          "deputyID": 491,
+          "deputyID": 492,
           "vote": 1,
           "party": "PP"
         },
         {
-          "deputyID": 1108,
+          "deputyID": 1264,
           "vote": 1,
           "party": "PRB"
         },
         {
-          "deputyID": 30,
+          "deputyID": 242,
           "vote": 1,
           "party": "DEM"
         },
@@ -1842,7 +1890,7 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 779,
+          "deputyID": 689,
           "vote": 1,
           "party": "PMDB"
         },
@@ -1922,7 +1970,7 @@
           "party": "PRB"
         },
         {
-          "deputyID": 1124,
+          "deputyID": 1242,
           "vote": 1,
           "party": "PTB"
         },
@@ -1942,7 +1990,7 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 54,
+          "deputyID": 169,
           "vote": 1,
           "party": "PSDB"
         },
@@ -1962,7 +2010,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 749,
+          "deputyID": 538,
           "vote": 3,
           "party": "PDT"
         },
@@ -1987,7 +2035,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 966,
+          "deputyID": 971,
           "vote": 1,
           "party": "PSDB"
         },
@@ -2002,7 +2050,7 @@
           "party": "Avante"
         },
         {
-          "deputyID": 755,
+          "deputyID": 668,
           "vote": 3,
           "party": "PDT"
         },
@@ -2032,12 +2080,12 @@
           "party": "PT"
         },
         {
-          "deputyID": 739,
+          "deputyID": 665,
           "vote": 1,
           "party": "PSD"
         },
         {
-          "deputyID": 1132,
+          "deputyID": 1204,
           "vote": 1,
           "party": "PMDB"
         },
@@ -2047,7 +2095,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 1260,
+          "deputyID": 1161,
           "vote": 1,
           "party": "DEM"
         },
@@ -2072,7 +2120,7 @@
           "party": "PHS"
         },
         {
-          "deputyID": 1139,
+          "deputyID": 1132,
           "vote": 3,
           "party": "PDT"
         },
@@ -2122,7 +2170,7 @@
           "party": "PTB"
         },
         {
-          "deputyID": 546,
+          "deputyID": 702,
           "vote": 1,
           "party": "DEM"
         },
@@ -2137,7 +2185,7 @@
           "party": "Avante"
         },
         {
-          "deputyID": 532,
+          "deputyID": 791,
           "vote": 3,
           "party": "PDT"
         },
@@ -2187,7 +2235,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1149,
+          "deputyID": 1156,
           "vote": 1,
           "party": "Avante"
         },
@@ -2272,7 +2320,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 540,
+          "deputyID": 572,
           "vote": 1,
           "party": "PP"
         },
@@ -2292,17 +2340,17 @@
           "party": "PR"
         },
         {
-          "deputyID": 1160,
+          "deputyID": 1189,
           "vote": 1,
           "party": "PSDB"
         },
         {
-          "deputyID": 1161,
+          "deputyID": 1219,
           "vote": 3,
           "party": "PT"
         },
         {
-          "deputyID": 1164,
+          "deputyID": 1236,
           "vote": 1,
           "party": "PSD"
         },
@@ -2327,7 +2375,7 @@
           "party": "Podemos"
         },
         {
-          "deputyID": 117,
+          "deputyID": 38,
           "vote": 1,
           "party": "PTB"
         },
@@ -2362,7 +2410,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 128,
+          "deputyID": 153,
           "vote": 1,
           "party": "DEM"
         },
@@ -2412,7 +2460,7 @@
           "party": "PCdoB"
         },
         {
-          "deputyID": 1172,
+          "deputyID": 1193,
           "vote": 0,
           "party": "PR"
         },
@@ -2447,7 +2495,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 564,
+          "deputyID": 756,
           "vote": 1,
           "party": "PMDB"
         },
@@ -2572,7 +2620,7 @@
           "party": "Solidaried"
         },
         {
-          "deputyID": 428,
+          "deputyID": 407,
           "vote": 3,
           "party": "PT"
         },
@@ -2627,12 +2675,12 @@
           "party": "PSD"
         },
         {
-          "deputyID": 181,
+          "deputyID": 127,
           "vote": 1,
           "party": "PSL"
         },
         {
-          "deputyID": 432,
+          "deputyID": 429,
           "vote": 3,
           "party": "PCdoB"
         },
@@ -2657,7 +2705,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 1189,
+          "deputyID": 1201,
           "vote": 3,
           "party": "PT"
         },
@@ -2677,7 +2725,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 194,
+          "deputyID": 215,
           "vote": 0,
           "party": "REDE"
         },
@@ -2687,7 +2735,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 718,
+          "deputyID": 729,
           "vote": 1,
           "party": "PR"
         },
@@ -2697,7 +2745,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 1193,
+          "deputyID": 1253,
           "vote": 4,
           "party": "DEM"
         },
@@ -2707,7 +2755,7 @@
           "party": "PRB"
         },
         {
-          "deputyID": 192,
+          "deputyID": 297,
           "vote": 1,
           "party": "PP"
         },
@@ -2737,12 +2785,12 @@
           "party": "PRB"
         },
         {
-          "deputyID": 601,
+          "deputyID": 547,
           "vote": 3,
           "party": "PT"
         },
         {
-          "deputyID": 202,
+          "deputyID": 24,
           "vote": 1,
           "party": "PP"
         },
@@ -2752,7 +2800,7 @@
           "party": "PPS"
         },
         {
-          "deputyID": 227,
+          "deputyID": 41,
           "vote": 1,
           "party": "PMDB"
         },
@@ -2777,7 +2825,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 614,
+          "deputyID": 628,
           "vote": 3,
           "party": "PSOL"
         },
@@ -2787,7 +2835,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 214,
+          "deputyID": 150,
           "vote": 1,
           "party": "DEM"
         },
@@ -2797,7 +2845,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 1207,
+          "deputyID": 1202,
           "vote": 3,
           "party": "PSOL"
         },
@@ -2807,7 +2855,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 1209,
+          "deputyID": 1215,
           "vote": 1,
           "party": "PR"
         },
@@ -2817,7 +2865,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 449,
+          "deputyID": 452,
           "vote": 1,
           "party": "PTB"
         },
@@ -2832,7 +2880,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 228,
+          "deputyID": 266,
           "vote": 1,
           "party": "PP"
         },
@@ -2967,7 +3015,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 1155,
+          "deputyID": 1263,
           "vote": 1,
           "party": "PRB"
         },
@@ -3007,7 +3055,7 @@
           "party": "PRB"
         },
         {
-          "deputyID": 241,
+          "deputyID": 30,
           "vote": 1,
           "party": "Solidaried"
         },
@@ -3022,7 +3070,7 @@
           "party": "Podemos"
         },
         {
-          "deputyID": 1277,
+          "deputyID": 1096,
           "vote": 1,
           "party": "DEM"
         },
@@ -3057,12 +3105,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 1233,
+          "deputyID": 1239,
           "vote": 1,
           "party": "PMDB"
         },
         {
-          "deputyID": 379,
+          "deputyID": 384,
           "vote": 0,
           "party": "PP"
         },
@@ -3127,7 +3175,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 1310,
+          "deputyID": 1308,
           "vote": 0,
           "party": "PTB"
         },
@@ -3142,7 +3190,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 669,
+          "deputyID": 582,
           "vote": 1,
           "party": "PP"
         },
@@ -3152,7 +3200,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 870,
+          "deputyID": 867,
           "vote": 1,
           "party": "PMDB"
         },
@@ -3162,7 +3210,7 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 270,
+          "deputyID": 186,
           "vote": 1,
           "party": "PSDB"
         },
@@ -3172,17 +3220,17 @@
           "party": "PR"
         },
         {
-          "deputyID": 677,
+          "deputyID": 714,
           "vote": 1,
           "party": "PP"
         },
         {
-          "deputyID": 1242,
+          "deputyID": 1229,
           "vote": 1,
           "party": "PP"
         },
         {
-          "deputyID": 276,
+          "deputyID": 283,
           "vote": 1,
           "party": "PPS"
         },
@@ -3222,7 +3270,7 @@
           "party": "PV"
         },
         {
-          "deputyID": 652,
+          "deputyID": 740,
           "vote": 1,
           "party": "PP"
         },
@@ -3287,12 +3335,12 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 706,
+          "deputyID": 777,
           "vote": 1,
           "party": "PMDB"
         },
         {
-          "deputyID": 386,
+          "deputyID": 332,
           "vote": 1,
           "party": "PSD"
         },
@@ -3332,7 +3380,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 665,
+          "deputyID": 579,
           "vote": 1,
           "party": "PMDB"
         },
@@ -3342,7 +3390,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 1253,
+          "deputyID": 1160,
           "vote": 3,
           "party": "PT"
         },
@@ -3357,7 +3405,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 1254,
+          "deputyID": 1197,
           "vote": 1,
           "party": "PP"
         },
@@ -3377,7 +3425,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 1331,
+          "deputyID": 1329,
           "vote": 1,
           "party": "PMDB"
         },
@@ -3412,7 +3460,7 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 1257,
+          "deputyID": 1243,
           "vote": 1,
           "party": "PDT"
         },
@@ -3457,12 +3505,12 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 737,
+          "deputyID": 780,
           "vote": 1,
           "party": "PR"
         },
         {
-          "deputyID": 886,
+          "deputyID": 887,
           "vote": 1,
           "party": "DEM"
         },
@@ -3492,7 +3540,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 683,
+          "deputyID": 792,
           "vote": 1,
           "party": "PSDB"
         },
@@ -3517,6 +3565,29 @@
       "datetime": "2018-05-09T17:42:00.000Z",
       "obj": "SUBSTITUTIVO DA COMISSÃO ESPECIAL",
       "summary": "Aprovado o Substitutivo Reformulado em Plenário pelo Relator da Comissão Especial apresentado ao Projeto de Lei Complementar nº 441, de 2017, ressalvados os destaques. Sim: 273; não: 150; abstenção: 1; total: 424.",
+      "orientations": {
+        "PpPodeAvantePen": "Sim",
+        "PT": "Obstrução",
+        "PMDB": "Sim",
+        "PSDB": "Sim",
+        "DEM": "Sim",
+        "PR": "Sim",
+        "PSD": "Sim",
+        "PtbPros": "Sim",
+        "PSB": "Obstrução",
+        "PRB": "Obstrução",
+        "PDT": "Obstrução",
+        "PCdoB": "Obstrução",
+        "Solidaried": "Sim",
+        "PPS": "Sim",
+        "PSC": "Sim",
+        "PSOL": "Obstrução",
+        "Repr.PV": "Sim",
+        "Repr.REDE": "Obstrução",
+        "Minoria": "Obstrução",
+        "Oposição": "Obstrução",
+        "GOV.": "Sim"
+      },
       "votes": [
         {
           "deputyID": 1647,
@@ -3599,7 +3670,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 792,
+          "deputyID": 592,
           "vote": 0,
           "party": "PMDB"
         },
@@ -3629,12 +3700,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 1103,
+          "deputyID": 1185,
           "vote": 0,
           "party": "PTB"
         },
         {
-          "deputyID": 1104,
+          "deputyID": 1224,
           "vote": 0,
           "party": "PSDB"
         },
@@ -3664,17 +3735,17 @@
           "party": "PR"
         },
         {
-          "deputyID": 491,
+          "deputyID": 492,
           "vote": 0,
           "party": "PP"
         },
         {
-          "deputyID": 1108,
+          "deputyID": 1264,
           "vote": 3,
           "party": "PRB"
         },
         {
-          "deputyID": 30,
+          "deputyID": 242,
           "vote": 0,
           "party": "DEM"
         },
@@ -3704,12 +3775,12 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 1111,
+          "deputyID": 1225,
           "vote": 0,
           "party": "PTB"
         },
         {
-          "deputyID": 779,
+          "deputyID": 689,
           "vote": 0,
           "party": "PMDB"
         },
@@ -3794,12 +3865,12 @@
           "party": "PRB"
         },
         {
-          "deputyID": 1124,
+          "deputyID": 1242,
           "vote": 0,
           "party": "PTB"
         },
         {
-          "deputyID": 55,
+          "deputyID": 288,
           "vote": 0,
           "party": "PV"
         },
@@ -3834,7 +3905,7 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 54,
+          "deputyID": 169,
           "vote": 0,
           "party": "PSDB"
         },
@@ -3869,7 +3940,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 883,
+          "deputyID": 878,
           "vote": 0,
           "party": "DEM"
         },
@@ -3894,7 +3965,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 966,
+          "deputyID": 971,
           "vote": 0,
           "party": "PSDB"
         },
@@ -3904,7 +3975,7 @@
           "party": "Avante"
         },
         {
-          "deputyID": 755,
+          "deputyID": 668,
           "vote": 1,
           "party": "PDT"
         },
@@ -3954,17 +4025,17 @@
           "party": "PP"
         },
         {
-          "deputyID": 739,
+          "deputyID": 665,
           "vote": 0,
           "party": "PSD"
         },
         {
-          "deputyID": 1132,
+          "deputyID": 1204,
           "vote": 1,
           "party": "PMDB"
         },
         {
-          "deputyID": 75,
+          "deputyID": 240,
           "vote": 0,
           "party": "PTB"
         },
@@ -3974,7 +4045,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 1260,
+          "deputyID": 1161,
           "vote": 0,
           "party": "DEM"
         },
@@ -4029,7 +4100,7 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 1139,
+          "deputyID": 1132,
           "vote": 1,
           "party": "PDT"
         },
@@ -4084,7 +4155,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 525,
+          "deputyID": 619,
           "vote": 3,
           "party": "PSB"
         },
@@ -4104,7 +4175,7 @@
           "party": "PCdoB"
         },
         {
-          "deputyID": 546,
+          "deputyID": 702,
           "vote": 0,
           "party": "DEM"
         },
@@ -4119,7 +4190,7 @@
           "party": "Avante"
         },
         {
-          "deputyID": 532,
+          "deputyID": 791,
           "vote": 1,
           "party": "PDT"
         },
@@ -4259,12 +4330,12 @@
           "party": "PSB"
         },
         {
-          "deputyID": 540,
+          "deputyID": 572,
           "vote": 0,
           "party": "PP"
         },
         {
-          "deputyID": 127,
+          "deputyID": 136,
           "vote": 0,
           "party": "PR"
         },
@@ -4279,7 +4350,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 556,
+          "deputyID": 662,
           "vote": 0,
           "party": "PR"
         },
@@ -4289,17 +4360,17 @@
           "party": "PT"
         },
         {
-          "deputyID": 1160,
+          "deputyID": 1189,
           "vote": 0,
           "party": "PSDB"
         },
         {
-          "deputyID": 1161,
+          "deputyID": 1219,
           "vote": 1,
           "party": "PT"
         },
         {
-          "deputyID": 1164,
+          "deputyID": 1236,
           "vote": 0,
           "party": "PSD"
         },
@@ -4309,7 +4380,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 421,
+          "deputyID": 464,
           "vote": 0,
           "party": "PSD"
         },
@@ -4329,7 +4400,7 @@
           "party": "Podemos"
         },
         {
-          "deputyID": 117,
+          "deputyID": 38,
           "vote": 0,
           "party": "PTB"
         },
@@ -4369,7 +4440,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 128,
+          "deputyID": 153,
           "vote": 0,
           "party": "DEM"
         },
@@ -4404,7 +4475,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 569,
+          "deputyID": 565,
           "vote": 0,
           "party": "DEM"
         },
@@ -4434,7 +4505,7 @@
           "party": "PSC"
         },
         {
-          "deputyID": 574,
+          "deputyID": 630,
           "vote": 0,
           "party": "PROS"
         },
@@ -4489,7 +4560,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 582,
+          "deputyID": 701,
           "vote": 0,
           "party": "PMDB"
         },
@@ -4519,7 +4590,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 564,
+          "deputyID": 756,
           "vote": 1,
           "party": "PMDB"
         },
@@ -4664,7 +4735,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 177,
+          "deputyID": 26,
           "vote": 0,
           "party": "PSD"
         },
@@ -4674,7 +4745,7 @@
           "party": "Solidaried"
         },
         {
-          "deputyID": 428,
+          "deputyID": 407,
           "vote": 1,
           "party": "PT"
         },
@@ -4729,12 +4800,12 @@
           "party": "PSD"
         },
         {
-          "deputyID": 181,
+          "deputyID": 127,
           "vote": 1,
           "party": "PSL"
         },
         {
-          "deputyID": 432,
+          "deputyID": 429,
           "vote": 1,
           "party": "PCdoB"
         },
@@ -4754,7 +4825,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 1189,
+          "deputyID": 1201,
           "vote": 3,
           "party": "PT"
         },
@@ -4774,7 +4845,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 194,
+          "deputyID": 215,
           "vote": 3,
           "party": "REDE"
         },
@@ -4784,7 +4855,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 718,
+          "deputyID": 729,
           "vote": 0,
           "party": "PR"
         },
@@ -4799,7 +4870,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 1193,
+          "deputyID": 1253,
           "vote": 4,
           "party": "DEM"
         },
@@ -4834,17 +4905,17 @@
           "party": "PRB"
         },
         {
-          "deputyID": 601,
+          "deputyID": 547,
           "vote": 1,
           "party": "PT"
         },
         {
-          "deputyID": 202,
+          "deputyID": 24,
           "vote": 1,
           "party": "PP"
         },
         {
-          "deputyID": 227,
+          "deputyID": 41,
           "vote": 0,
           "party": "PMDB"
         },
@@ -4874,7 +4945,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 614,
+          "deputyID": 628,
           "vote": 1,
           "party": "PSOL"
         },
@@ -4894,7 +4965,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 1207,
+          "deputyID": 1202,
           "vote": 1,
           "party": "PSOL"
         },
@@ -4909,7 +4980,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 449,
+          "deputyID": 452,
           "vote": 0,
           "party": "PTB"
         },
@@ -4929,7 +5000,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 228,
+          "deputyID": 266,
           "vote": 0,
           "party": "PP"
         },
@@ -4949,7 +5020,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 631,
+          "deputyID": 768,
           "vote": 0,
           "party": "PSDB"
         },
@@ -4989,7 +5060,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 635,
+          "deputyID": 569,
           "vote": 1,
           "party": "PRB"
         },
@@ -5084,7 +5155,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 1155,
+          "deputyID": 1263,
           "vote": 1,
           "party": "PRB"
         },
@@ -5139,7 +5210,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 241,
+          "deputyID": 30,
           "vote": 0,
           "party": "Solidaried"
         },
@@ -5159,7 +5230,7 @@
           "party": "Podemos"
         },
         {
-          "deputyID": 1277,
+          "deputyID": 1096,
           "vote": 0,
           "party": "DEM"
         },
@@ -5199,7 +5270,7 @@
           "party": "PRB"
         },
         {
-          "deputyID": 654,
+          "deputyID": 664,
           "vote": 0,
           "party": "PTB"
         },
@@ -5209,12 +5280,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 1233,
+          "deputyID": 1239,
           "vote": 0,
           "party": "PMDB"
         },
         {
-          "deputyID": 379,
+          "deputyID": 384,
           "vote": 1,
           "party": "PP"
         },
@@ -5284,7 +5355,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 1310,
+          "deputyID": 1308,
           "vote": 1,
           "party": "PTB"
         },
@@ -5314,7 +5385,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 870,
+          "deputyID": 867,
           "vote": 0,
           "party": "PMDB"
         },
@@ -5329,7 +5400,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 270,
+          "deputyID": 186,
           "vote": 0,
           "party": "PSDB"
         },
@@ -5339,17 +5410,17 @@
           "party": "PR"
         },
         {
-          "deputyID": 677,
+          "deputyID": 714,
           "vote": 0,
           "party": "PP"
         },
         {
-          "deputyID": 1242,
+          "deputyID": 1229,
           "vote": 1,
           "party": "PP"
         },
         {
-          "deputyID": 276,
+          "deputyID": 283,
           "vote": 0,
           "party": "PPS"
         },
@@ -5399,7 +5470,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 652,
+          "deputyID": 740,
           "vote": 0,
           "party": "PP"
         },
@@ -5469,12 +5540,12 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 706,
+          "deputyID": 777,
           "vote": 1,
           "party": "PMDB"
         },
         {
-          "deputyID": 386,
+          "deputyID": 332,
           "vote": 0,
           "party": "PSD"
         },
@@ -5509,7 +5580,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 665,
+          "deputyID": 579,
           "vote": 0,
           "party": "PMDB"
         },
@@ -5529,7 +5600,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 1254,
+          "deputyID": 1197,
           "vote": 1,
           "party": "PP"
         },
@@ -5554,7 +5625,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 1331,
+          "deputyID": 1329,
           "vote": 0,
           "party": "PMDB"
         },
@@ -5654,12 +5725,12 @@
           "party": "DEM"
         },
         {
-          "deputyID": 886,
+          "deputyID": 887,
           "vote": 0,
           "party": "DEM"
         },
         {
-          "deputyID": 275,
+          "deputyID": 263,
           "vote": 0,
           "party": "PSD"
         },
@@ -5694,7 +5765,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 683,
+          "deputyID": 792,
           "vote": 0,
           "party": "PSDB"
         },
@@ -5729,6 +5800,18 @@
       "datetime": "2019-02-19T19:19:00.000Z",
       "obj": "DTQ. 10 - PSOL - ART. 1º DO SUBSTITUTIVO",
       "summary": "Mantido o texto. Sim: 287; não: 175; total: 462.",
+      "orientations": {
+        "PslPpPsd...": "Sim",
+        "PdtSdPode...": "Não",
+        "PT": "Não",
+        "PSB": "Não",
+        "PSOL": "Obstrução",
+        "PPS": "Sim",
+        "NOVO": "Sim",
+        "Patriota": "Sim",
+        "Minoria": "Não",
+        "GOV.": "Sim"
+      },
       "votes": [
         {
           "deputyID": 1647,
@@ -5846,7 +5929,7 @@
           "party": "PTB"
         },
         {
-          "deputyID": 792,
+          "deputyID": 592,
           "vote": 0,
           "party": "MDB"
         },
@@ -5856,7 +5939,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 780,
+          "deputyID": 660,
           "vote": 0,
           "party": "MDB"
         },
@@ -5866,7 +5949,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 1104,
+          "deputyID": 1224,
           "vote": 0,
           "party": "PSDB"
         },
@@ -5916,7 +5999,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 1108,
+          "deputyID": 1264,
           "vote": 0,
           "party": "PRB"
         },
@@ -6156,7 +6239,7 @@
           "party": "Patriota"
         },
         {
-          "deputyID": 755,
+          "deputyID": 668,
           "vote": 1,
           "party": "PDT"
         },
@@ -6181,7 +6264,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 735,
+          "deputyID": 746,
           "vote": 0,
           "party": "PSDB"
         },
@@ -6211,7 +6294,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 739,
+          "deputyID": 665,
           "vote": 0,
           "party": "PSD"
         },
@@ -6256,7 +6339,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 39,
+          "deputyID": 141,
           "vote": 0,
           "party": "PR"
         },
@@ -6281,7 +6364,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1139,
+          "deputyID": 1132,
           "vote": 1,
           "party": "PDT"
         },
@@ -6396,7 +6479,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 478,
+          "deputyID": 486,
           "vote": 1,
           "party": "PCdoB"
         },
@@ -6426,7 +6509,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 532,
+          "deputyID": 791,
           "vote": 1,
           "party": "PDT"
         },
@@ -6576,7 +6659,7 @@
           "party": "PHS"
         },
         {
-          "deputyID": 127,
+          "deputyID": 136,
           "vote": 0,
           "party": "PR"
         },
@@ -6621,7 +6704,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1161,
+          "deputyID": 1219,
           "vote": 1,
           "party": "PT"
         },
@@ -6656,7 +6739,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 421,
+          "deputyID": 464,
           "vote": 0,
           "party": "PSD"
         },
@@ -6816,7 +6899,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 1172,
+          "deputyID": 1193,
           "vote": 0,
           "party": "PR"
         },
@@ -6841,7 +6924,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 582,
+          "deputyID": 701,
           "vote": 0,
           "party": "MDB"
         },
@@ -6991,7 +7074,7 @@
           "party": "Solidaried"
         },
         {
-          "deputyID": 428,
+          "deputyID": 407,
           "vote": 1,
           "party": "PT"
         },
@@ -7081,7 +7164,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 432,
+          "deputyID": 429,
           "vote": 1,
           "party": "PCdoB"
         },
@@ -7136,7 +7219,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 322,
+          "deputyID": 249,
           "vote": 1,
           "party": "PDT"
         },
@@ -7151,7 +7234,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 1193,
+          "deputyID": 1253,
           "vote": 0,
           "party": "DEM"
         },
@@ -7226,7 +7309,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 601,
+          "deputyID": 547,
           "vote": 1,
           "party": "PT"
         },
@@ -7266,7 +7349,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 635,
+          "deputyID": 569,
           "vote": 1,
           "party": "PRB"
         },
@@ -7331,7 +7414,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 614,
+          "deputyID": 628,
           "vote": 3,
           "party": "PSOL"
         },
@@ -7441,7 +7524,7 @@
           "party": "Podemos"
         },
         {
-          "deputyID": 228,
+          "deputyID": 266,
           "vote": 0,
           "party": "PP"
         },
@@ -7761,12 +7844,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 1238,
+          "deputyID": 1157,
           "vote": 1,
           "party": "PDT"
         },
         {
-          "deputyID": 870,
+          "deputyID": 867,
           "vote": 1,
           "party": "MDB"
         },
@@ -7811,12 +7894,12 @@
           "party": "PRB"
         },
         {
-          "deputyID": 652,
+          "deputyID": 740,
           "vote": 1,
           "party": "PP"
         },
         {
-          "deputyID": 276,
+          "deputyID": 283,
           "vote": 0,
           "party": "PPS"
         },
@@ -7896,7 +7979,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 1170,
+          "deputyID": 1159,
           "vote": 1,
           "party": "PRB"
         },
@@ -7976,7 +8059,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 1253,
+          "deputyID": 1160,
           "vote": 1,
           "party": "PT"
         },
@@ -8031,7 +8114,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1257,
+          "deputyID": 1243,
           "vote": 1,
           "party": "PDT"
         },
@@ -8061,7 +8144,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 665,
+          "deputyID": 579,
           "vote": 0,
           "party": "MDB"
         },
@@ -8091,6 +8174,20 @@
       "datetime": "2019-02-20T17:02:00.000Z",
       "obj": "DTQ. 6 - PT - ART. 4º DA LEI 12.414/2011 CONST. DO ART. 2º DO SUBTITUTIVO",
       "summary": "Mantido o texto. Sim: 307; não: 160; abstenção: 1; total: 468.",
+      "orientations": {
+        "PslPpPsd...": "Sim",
+        "PdtSdPode...": "Liberado",
+        "PT": "Não",
+        "PSB": "Não",
+        "PSOL": "Não",
+        "PROS": "Não",
+        "PPS": "Sim",
+        "NOVO": "Sim",
+        "Patriota": "Sim",
+        "Minoria": "Liberado",
+        "Oposição": "Não",
+        "GOV.": "Sim"
+      },
       "votes": [
         {
           "deputyID": 1647,
@@ -8208,7 +8305,7 @@
           "party": "PTB"
         },
         {
-          "deputyID": 792,
+          "deputyID": 592,
           "vote": 0,
           "party": "MDB"
         },
@@ -8218,7 +8315,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 780,
+          "deputyID": 660,
           "vote": 0,
           "party": "MDB"
         },
@@ -8228,7 +8325,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 1104,
+          "deputyID": 1224,
           "vote": 0,
           "party": "PSDB"
         },
@@ -8273,7 +8370,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 1108,
+          "deputyID": 1264,
           "vote": 0,
           "party": "PRB"
         },
@@ -8543,7 +8640,7 @@
           "party": "Patriota"
         },
         {
-          "deputyID": 755,
+          "deputyID": 668,
           "vote": 1,
           "party": "PDT"
         },
@@ -8573,7 +8670,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 735,
+          "deputyID": 746,
           "vote": 0,
           "party": "PSDB"
         },
@@ -8603,7 +8700,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 739,
+          "deputyID": 665,
           "vote": 0,
           "party": "PSD"
         },
@@ -8648,7 +8745,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 39,
+          "deputyID": 141,
           "vote": 0,
           "party": "PR"
         },
@@ -8673,7 +8770,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1139,
+          "deputyID": 1132,
           "vote": 1,
           "party": "PDT"
         },
@@ -8783,7 +8880,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 478,
+          "deputyID": 486,
           "vote": 1,
           "party": "PCdoB"
         },
@@ -8813,7 +8910,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 532,
+          "deputyID": 791,
           "vote": 1,
           "party": "PDT"
         },
@@ -8978,7 +9075,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 556,
+          "deputyID": 662,
           "vote": 0,
           "party": "PR"
         },
@@ -9008,7 +9105,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1161,
+          "deputyID": 1219,
           "vote": 1,
           "party": "PT"
         },
@@ -9043,7 +9140,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 421,
+          "deputyID": 464,
           "vote": 0,
           "party": "PSD"
         },
@@ -9073,7 +9170,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 351,
+          "deputyID": 326,
           "vote": 0,
           "party": "PSDB"
         },
@@ -9203,7 +9300,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 1172,
+          "deputyID": 1193,
           "vote": 0,
           "party": "PR"
         },
@@ -9223,7 +9320,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 582,
+          "deputyID": 701,
           "vote": 0,
           "party": "MDB"
         },
@@ -9443,7 +9540,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 432,
+          "deputyID": 429,
           "vote": 1,
           "party": "PCdoB"
         },
@@ -9498,7 +9595,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 322,
+          "deputyID": 249,
           "vote": 1,
           "party": "PDT"
         },
@@ -9513,7 +9610,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 1193,
+          "deputyID": 1253,
           "vote": 0,
           "party": "DEM"
         },
@@ -9588,7 +9685,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 601,
+          "deputyID": 547,
           "vote": 1,
           "party": "PT"
         },
@@ -9618,7 +9715,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 635,
+          "deputyID": 569,
           "vote": 0,
           "party": "PRB"
         },
@@ -9693,7 +9790,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 614,
+          "deputyID": 628,
           "vote": 1,
           "party": "PSOL"
         },
@@ -9798,7 +9895,7 @@
           "party": "Podemos"
         },
         {
-          "deputyID": 228,
+          "deputyID": 266,
           "vote": 0,
           "party": "PP"
         },
@@ -10113,12 +10210,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 1238,
+          "deputyID": 1157,
           "vote": 1,
           "party": "PDT"
         },
         {
-          "deputyID": 870,
+          "deputyID": 867,
           "vote": 1,
           "party": "MDB"
         },
@@ -10163,7 +10260,7 @@
           "party": "PRB"
         },
         {
-          "deputyID": 276,
+          "deputyID": 283,
           "vote": 0,
           "party": "PPS"
         },
@@ -10248,7 +10345,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 1170,
+          "deputyID": 1159,
           "vote": 0,
           "party": "PRB"
         },
@@ -10323,7 +10420,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 1253,
+          "deputyID": 1160,
           "vote": 1,
           "party": "PT"
         },
@@ -10383,7 +10480,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1257,
+          "deputyID": 1243,
           "vote": 1,
           "party": "PDT"
         },
@@ -10413,7 +10510,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 665,
+          "deputyID": 579,
           "vote": 0,
           "party": "MDB"
         },
@@ -10443,6 +10540,18 @@
       "datetime": "2019-02-20T17:43:00.000Z",
       "obj": "DTQ. 14 - PP - EMENDA DE PLENÁRIO Nº 10",
       "summary": "Rejeitada a Emenda nº 10. Sim: 7; não: 379; total: 386.",
+      "orientations": {
+        "PslPpPsd...": "Não",
+        "PdtSdPode...": "Liberado",
+        "PT": "Obstrução",
+        "PSB": "Não",
+        "PSOL": "Obstrução",
+        "PPS": "Não",
+        "NOVO": "Não",
+        "Patriota": "Não",
+        "Minoria": "Não",
+        "Oposição": "Não"
+      },
       "votes": [
         {
           "deputyID": 1647,
@@ -10545,7 +10654,7 @@
           "party": "PTB"
         },
         {
-          "deputyID": 792,
+          "deputyID": 592,
           "vote": 1,
           "party": "MDB"
         },
@@ -10560,7 +10669,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 1104,
+          "deputyID": 1224,
           "vote": 1,
           "party": "PSDB"
         },
@@ -10605,7 +10714,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 1108,
+          "deputyID": 1264,
           "vote": 1,
           "party": "PRB"
         },
@@ -10845,7 +10954,7 @@
           "party": "Patriota"
         },
         {
-          "deputyID": 755,
+          "deputyID": 668,
           "vote": 1,
           "party": "PDT"
         },
@@ -10900,7 +11009,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 739,
+          "deputyID": 665,
           "vote": 1,
           "party": "PSD"
         },
@@ -10940,7 +11049,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 39,
+          "deputyID": 141,
           "vote": 1,
           "party": "PR"
         },
@@ -10960,7 +11069,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1139,
+          "deputyID": 1132,
           "vote": 1,
           "party": "PDT"
         },
@@ -11060,7 +11169,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 478,
+          "deputyID": 486,
           "vote": 1,
           "party": "PCdoB"
         },
@@ -11265,7 +11374,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 421,
+          "deputyID": 464,
           "vote": 1,
           "party": "PSD"
         },
@@ -11280,7 +11389,7 @@
           "party": "PPL"
         },
         {
-          "deputyID": 351,
+          "deputyID": 326,
           "vote": 1,
           "party": "PSDB"
         },
@@ -11410,7 +11519,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 1172,
+          "deputyID": 1193,
           "vote": 1,
           "party": "PR"
         },
@@ -11425,7 +11534,7 @@
           "party": "PHS"
         },
         {
-          "deputyID": 582,
+          "deputyID": 701,
           "vote": 1,
           "party": "MDB"
         },
@@ -11615,7 +11724,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 432,
+          "deputyID": 429,
           "vote": 1,
           "party": "PCdoB"
         },
@@ -11675,7 +11784,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 1193,
+          "deputyID": 1253,
           "vote": 4,
           "party": "DEM"
         },
@@ -11765,7 +11874,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 635,
+          "deputyID": 569,
           "vote": 1,
           "party": "PRB"
         },
@@ -11820,7 +11929,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 614,
+          "deputyID": 628,
           "vote": 3,
           "party": "PSOL"
         },
@@ -11905,7 +12014,7 @@
           "party": "Podemos"
         },
         {
-          "deputyID": 228,
+          "deputyID": 266,
           "vote": 1,
           "party": "PP"
         },
@@ -12170,12 +12279,12 @@
           "party": "PSL"
         },
         {
-          "deputyID": 1238,
+          "deputyID": 1157,
           "vote": 1,
           "party": "PDT"
         },
         {
-          "deputyID": 870,
+          "deputyID": 867,
           "vote": 1,
           "party": "MDB"
         },
@@ -12210,7 +12319,7 @@
           "party": "PRB"
         },
         {
-          "deputyID": 276,
+          "deputyID": 283,
           "vote": 1,
           "party": "PPS"
         },
@@ -12285,7 +12394,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 1170,
+          "deputyID": 1159,
           "vote": 1,
           "party": "PRB"
         },
@@ -12345,7 +12454,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 1253,
+          "deputyID": 1160,
           "vote": 1,
           "party": "PT"
         },
@@ -12405,7 +12514,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 665,
+          "deputyID": 579,
           "vote": 0,
           "party": "MDB"
         },
@@ -12435,6 +12544,19 @@
       "datetime": "2019-02-20T18:11:00.000Z",
       "obj": "DTQ. 7 - PDT - EMENDA DE PLENÁRIO Nº 6",
       "summary": "Rejeitada a Emenda nº 6. Sim: 143; não: 271; abstenção: 2; total: 416.",
+      "orientations": {
+        "PslPpPsd...": "Não",
+        "PdtSdPode...": "Liberado",
+        "PT": "Sim",
+        "PSB": "Sim",
+        "PSOL": "Sim",
+        "PPS": "Não",
+        "NOVO": "Não",
+        "Patriota": "Não",
+        "Minoria": "Sim",
+        "Oposição": "Sim",
+        "GOV.": "Não"
+      },
       "votes": [
         {
           "deputyID": 1647,
@@ -12532,7 +12654,7 @@
           "party": "PTB"
         },
         {
-          "deputyID": 792,
+          "deputyID": 592,
           "vote": 1,
           "party": "MDB"
         },
@@ -12542,7 +12664,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 780,
+          "deputyID": 660,
           "vote": 1,
           "party": "MDB"
         },
@@ -12552,7 +12674,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 1104,
+          "deputyID": 1224,
           "vote": 1,
           "party": "PSDB"
         },
@@ -12602,7 +12724,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 1108,
+          "deputyID": 1264,
           "vote": 0,
           "party": "PRB"
         },
@@ -12932,7 +13054,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 39,
+          "deputyID": 141,
           "vote": 1,
           "party": "PR"
         },
@@ -13057,7 +13179,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 478,
+          "deputyID": 486,
           "vote": 0,
           "party": "PCdoB"
         },
@@ -13072,7 +13194,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 532,
+          "deputyID": 791,
           "vote": 0,
           "party": "PDT"
         },
@@ -13242,7 +13364,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1161,
+          "deputyID": 1219,
           "vote": 0,
           "party": "PT"
         },
@@ -13272,7 +13394,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 421,
+          "deputyID": 464,
           "vote": 1,
           "party": "PSD"
         },
@@ -13407,7 +13529,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 1172,
+          "deputyID": 1193,
           "vote": 1,
           "party": "PR"
         },
@@ -13617,7 +13739,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 432,
+          "deputyID": 429,
           "vote": 0,
           "party": "PCdoB"
         },
@@ -13672,7 +13794,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 322,
+          "deputyID": 249,
           "vote": 0,
           "party": "PDT"
         },
@@ -13687,7 +13809,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 1193,
+          "deputyID": 1253,
           "vote": 1,
           "party": "DEM"
         },
@@ -13757,7 +13879,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 601,
+          "deputyID": 547,
           "vote": 0,
           "party": "PT"
         },
@@ -13842,7 +13964,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 614,
+          "deputyID": 628,
           "vote": 0,
           "party": "PSOL"
         },
@@ -13932,7 +14054,7 @@
           "party": "Podemos"
         },
         {
-          "deputyID": 228,
+          "deputyID": 266,
           "vote": 1,
           "party": "PP"
         },
@@ -14207,12 +14329,12 @@
           "party": "PSL"
         },
         {
-          "deputyID": 1238,
+          "deputyID": 1157,
           "vote": 0,
           "party": "PDT"
         },
         {
-          "deputyID": 870,
+          "deputyID": 867,
           "vote": 0,
           "party": "MDB"
         },
@@ -14252,7 +14374,7 @@
           "party": "PRB"
         },
         {
-          "deputyID": 276,
+          "deputyID": 283,
           "vote": 1,
           "party": "PPS"
         },
@@ -14337,7 +14459,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 1170,
+          "deputyID": 1159,
           "vote": 0,
           "party": "PRB"
         },
@@ -14412,7 +14534,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 1253,
+          "deputyID": 1160,
           "vote": 0,
           "party": "PT"
         },
@@ -14472,7 +14594,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1257,
+          "deputyID": 1243,
           "vote": 1,
           "party": "PDT"
         },
@@ -14497,7 +14619,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 665,
+          "deputyID": 579,
           "vote": 1,
           "party": "MDB"
         },
@@ -14522,6 +14644,18 @@
       "datetime": "2019-02-20T18:44:00.000Z",
       "obj": "DTQ. 12 - PT - INC. V, CONST. DO ART. 5º DA LEI Nº 12.414/2011",
       "summary": "Mantido o texto. Sim: 287; não: 105; abstenção: 2; total: 394.",
+      "orientations": {
+        "PslPpPsd...": "Sim",
+        "PdtSdPode...": "Liberado",
+        "PT": "Obstrução",
+        "PSB": "Não",
+        "PSOL": "Obstrução",
+        "PPS": "Sim",
+        "NOVO": "Sim",
+        "Patriota": "Sim",
+        "Minoria": "Não",
+        "GOV.": "Sim"
+      },
       "votes": [
         {
           "deputyID": 1647,
@@ -14624,7 +14758,7 @@
           "party": "PTB"
         },
         {
-          "deputyID": 792,
+          "deputyID": 592,
           "vote": 0,
           "party": "MDB"
         },
@@ -14634,7 +14768,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 780,
+          "deputyID": 660,
           "vote": 0,
           "party": "MDB"
         },
@@ -14644,7 +14778,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 1104,
+          "deputyID": 1224,
           "vote": 0,
           "party": "PSDB"
         },
@@ -14694,7 +14828,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 1108,
+          "deputyID": 1264,
           "vote": 0,
           "party": "PRB"
         },
@@ -14964,7 +15098,7 @@
           "party": "Patriota"
         },
         {
-          "deputyID": 755,
+          "deputyID": 668,
           "vote": 1,
           "party": "PDT"
         },
@@ -14989,7 +15123,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 735,
+          "deputyID": 746,
           "vote": 0,
           "party": "PSDB"
         },
@@ -15014,7 +15148,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 739,
+          "deputyID": 665,
           "vote": 0,
           "party": "PSD"
         },
@@ -15054,7 +15188,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 39,
+          "deputyID": 141,
           "vote": 0,
           "party": "PR"
         },
@@ -15074,7 +15208,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1139,
+          "deputyID": 1132,
           "vote": 1,
           "party": "PDT"
         },
@@ -15179,7 +15313,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 478,
+          "deputyID": 486,
           "vote": 1,
           "party": "PCdoB"
         },
@@ -15204,7 +15338,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 532,
+          "deputyID": 791,
           "vote": 1,
           "party": "PDT"
         },
@@ -15344,7 +15478,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 556,
+          "deputyID": 662,
           "vote": 0,
           "party": "PR"
         },
@@ -15374,7 +15508,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1161,
+          "deputyID": 1219,
           "vote": 3,
           "party": "PT"
         },
@@ -15404,7 +15538,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 421,
+          "deputyID": 464,
           "vote": 0,
           "party": "PSD"
         },
@@ -15559,7 +15693,7 @@
           "party": "PHS"
         },
         {
-          "deputyID": 582,
+          "deputyID": 701,
           "vote": 0,
           "party": "MDB"
         },
@@ -15764,7 +15898,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 432,
+          "deputyID": 429,
           "vote": 1,
           "party": "PCdoB"
         },
@@ -15819,7 +15953,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 322,
+          "deputyID": 249,
           "vote": 1,
           "party": "PDT"
         },
@@ -15834,7 +15968,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 1193,
+          "deputyID": 1253,
           "vote": 4,
           "party": "DEM"
         },
@@ -15929,7 +16063,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 635,
+          "deputyID": 569,
           "vote": 1,
           "party": "PRB"
         },
@@ -15989,7 +16123,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 614,
+          "deputyID": 628,
           "vote": 3,
           "party": "PSOL"
         },
@@ -16079,7 +16213,7 @@
           "party": "Podemos"
         },
         {
-          "deputyID": 228,
+          "deputyID": 266,
           "vote": 0,
           "party": "PP"
         },
@@ -16359,12 +16493,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 1238,
+          "deputyID": 1157,
           "vote": 1,
           "party": "PDT"
         },
         {
-          "deputyID": 870,
+          "deputyID": 867,
           "vote": 1,
           "party": "MDB"
         },
@@ -16404,12 +16538,12 @@
           "party": "PRB"
         },
         {
-          "deputyID": 652,
+          "deputyID": 740,
           "vote": 1,
           "party": "PP"
         },
         {
-          "deputyID": 276,
+          "deputyID": 283,
           "vote": 0,
           "party": "PPS"
         },
@@ -16489,7 +16623,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 1170,
+          "deputyID": 1159,
           "vote": 1,
           "party": "PRB"
         },
@@ -16564,7 +16698,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 1253,
+          "deputyID": 1160,
           "vote": 1,
           "party": "PT"
         },
@@ -16614,7 +16748,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1257,
+          "deputyID": 1243,
           "vote": 1,
           "party": "PDT"
         },
@@ -16644,7 +16778,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 665,
+          "deputyID": 579,
           "vote": 0,
           "party": "MDB"
         },
@@ -16669,6 +16803,17 @@
       "datetime": "2019-02-20T19:38:00.000Z",
       "obj": "DTQ. 11 - PCdoB - ART. 16 DA LEI Nº 12.414/2011",
       "summary": "Mantido o texto. Sim: 306; não: 145; total: 451.",
+      "orientations": {
+        "PslPpPsd...": "Sim",
+        "PdtSdPode...": "Liberado",
+        "PT": "Não",
+        "PSB": "Não",
+        "PSOL": "Não",
+        "PPS": "Sim",
+        "NOVO": "Sim",
+        "Patriota": "Sim",
+        "GOV.": "Sim"
+      },
       "votes": [
         {
           "deputyID": 1647,
@@ -16771,7 +16916,7 @@
           "party": "PTB"
         },
         {
-          "deputyID": 792,
+          "deputyID": 592,
           "vote": 0,
           "party": "MDB"
         },
@@ -16781,7 +16926,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 780,
+          "deputyID": 660,
           "vote": 0,
           "party": "MDB"
         },
@@ -16791,7 +16936,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 1104,
+          "deputyID": 1224,
           "vote": 0,
           "party": "PSDB"
         },
@@ -16841,7 +16986,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 1108,
+          "deputyID": 1264,
           "vote": 0,
           "party": "PRB"
         },
@@ -17111,7 +17256,7 @@
           "party": "Patriota"
         },
         {
-          "deputyID": 755,
+          "deputyID": 668,
           "vote": 1,
           "party": "PDT"
         },
@@ -17141,7 +17286,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 735,
+          "deputyID": 746,
           "vote": 0,
           "party": "PSDB"
         },
@@ -17166,7 +17311,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 739,
+          "deputyID": 665,
           "vote": 0,
           "party": "PSD"
         },
@@ -17201,7 +17346,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 39,
+          "deputyID": 141,
           "vote": 0,
           "party": "PR"
         },
@@ -17226,7 +17371,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1139,
+          "deputyID": 1132,
           "vote": 1,
           "party": "PDT"
         },
@@ -17341,7 +17486,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 478,
+          "deputyID": 486,
           "vote": 1,
           "party": "PCdoB"
         },
@@ -17371,7 +17516,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 532,
+          "deputyID": 791,
           "vote": 1,
           "party": "PDT"
         },
@@ -17561,7 +17706,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1161,
+          "deputyID": 1219,
           "vote": 1,
           "party": "PT"
         },
@@ -17591,7 +17736,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 421,
+          "deputyID": 464,
           "vote": 0,
           "party": "PSD"
         },
@@ -17746,7 +17891,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 1172,
+          "deputyID": 1193,
           "vote": 0,
           "party": "PR"
         },
@@ -17771,7 +17916,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 582,
+          "deputyID": 701,
           "vote": 0,
           "party": "MDB"
         },
@@ -18016,7 +18161,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 322,
+          "deputyID": 249,
           "vote": 1,
           "party": "PDT"
         },
@@ -18031,7 +18176,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 1193,
+          "deputyID": 1253,
           "vote": 4,
           "party": "DEM"
         },
@@ -18106,7 +18251,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 601,
+          "deputyID": 547,
           "vote": 1,
           "party": "PT"
         },
@@ -18141,7 +18286,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 635,
+          "deputyID": 569,
           "vote": 0,
           "party": "PRB"
         },
@@ -18211,7 +18356,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 614,
+          "deputyID": 628,
           "vote": 1,
           "party": "PSOL"
         },
@@ -18311,7 +18456,7 @@
           "party": "Podemos"
         },
         {
-          "deputyID": 228,
+          "deputyID": 266,
           "vote": 0,
           "party": "PP"
         },
@@ -18616,12 +18761,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 1238,
+          "deputyID": 1157,
           "vote": 1,
           "party": "PDT"
         },
         {
-          "deputyID": 870,
+          "deputyID": 867,
           "vote": 0,
           "party": "MDB"
         },
@@ -18666,7 +18811,7 @@
           "party": "PRB"
         },
         {
-          "deputyID": 276,
+          "deputyID": 283,
           "vote": 0,
           "party": "PPS"
         },
@@ -18741,7 +18886,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 1170,
+          "deputyID": 1159,
           "vote": 0,
           "party": "PRB"
         },
@@ -18816,7 +18961,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 1253,
+          "deputyID": 1160,
           "vote": 1,
           "party": "PT"
         },
@@ -18876,7 +19021,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1257,
+          "deputyID": 1243,
           "vote": 1,
           "party": "PDT"
         },
@@ -18906,7 +19051,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 665,
+          "deputyID": 579,
           "vote": 0,
           "party": "MDB"
         },
@@ -18936,6 +19081,18 @@
       "datetime": "2019-02-20T20:29:00.000Z",
       "obj": "DTQ. 5 - PT - EMENDA DE PLENÁRIO Nº 2",
       "summary": "Rejeitada a Emenda nº 2. Sim: 140; não: 278; total: 418.",
+      "orientations": {
+        "PslPpPsd...": "Não",
+        "PdtSdPode...": "Sim",
+        "PT": "Sim",
+        "PSB": "Sim",
+        "PSOL": "Sim",
+        "PPS": "Não",
+        "NOVO": "Não",
+        "Patriota": "Não",
+        "Minoria": "Sim",
+        "GOV.": "Não"
+      },
       "votes": [
         {
           "deputyID": 1647,
@@ -19043,7 +19200,7 @@
           "party": "PTB"
         },
         {
-          "deputyID": 792,
+          "deputyID": 592,
           "vote": 1,
           "party": "MDB"
         },
@@ -19058,7 +19215,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 1104,
+          "deputyID": 1224,
           "vote": 1,
           "party": "PSDB"
         },
@@ -19368,7 +19525,7 @@
           "party": "Patriota"
         },
         {
-          "deputyID": 755,
+          "deputyID": 668,
           "vote": 0,
           "party": "PDT"
         },
@@ -19388,7 +19545,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 735,
+          "deputyID": 746,
           "vote": 1,
           "party": "PSDB"
         },
@@ -19413,7 +19570,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 739,
+          "deputyID": 665,
           "vote": 1,
           "party": "PSD"
         },
@@ -19458,7 +19615,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 39,
+          "deputyID": 141,
           "vote": 1,
           "party": "PR"
         },
@@ -19478,7 +19635,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1139,
+          "deputyID": 1132,
           "vote": 1,
           "party": "PDT"
         },
@@ -19588,7 +19745,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 478,
+          "deputyID": 486,
           "vote": 0,
           "party": "PCdoB"
         },
@@ -19618,7 +19775,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 532,
+          "deputyID": 791,
           "vote": 0,
           "party": "PDT"
         },
@@ -19773,7 +19930,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 556,
+          "deputyID": 662,
           "vote": 1,
           "party": "PR"
         },
@@ -19803,7 +19960,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1161,
+          "deputyID": 1219,
           "vote": 0,
           "party": "PT"
         },
@@ -19833,7 +19990,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 421,
+          "deputyID": 464,
           "vote": 1,
           "party": "PSD"
         },
@@ -19968,7 +20125,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 582,
+          "deputyID": 701,
           "vote": 1,
           "party": "MDB"
         },
@@ -20223,7 +20380,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 1193,
+          "deputyID": 1253,
           "vote": 4,
           "party": "DEM"
         },
@@ -20298,7 +20455,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 635,
+          "deputyID": 569,
           "vote": 1,
           "party": "PRB"
         },
@@ -20363,7 +20520,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 614,
+          "deputyID": 628,
           "vote": 0,
           "party": "PSOL"
         },
@@ -20468,7 +20625,7 @@
           "party": "Podemos"
         },
         {
-          "deputyID": 228,
+          "deputyID": 266,
           "vote": 1,
           "party": "PP"
         },
@@ -20733,12 +20890,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 1238,
+          "deputyID": 1157,
           "vote": 0,
           "party": "PDT"
         },
         {
-          "deputyID": 870,
+          "deputyID": 867,
           "vote": 1,
           "party": "MDB"
         },
@@ -20773,7 +20930,7 @@
           "party": "PRB"
         },
         {
-          "deputyID": 276,
+          "deputyID": 283,
           "vote": 1,
           "party": "PPS"
         },
@@ -20848,7 +21005,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 1170,
+          "deputyID": 1159,
           "vote": 1,
           "party": "PRB"
         },
@@ -20928,7 +21085,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 1253,
+          "deputyID": 1160,
           "vote": 0,
           "party": "PT"
         },
@@ -20978,7 +21135,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1257,
+          "deputyID": 1243,
           "vote": 0,
           "party": "PDT"
         },
@@ -21008,7 +21165,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 665,
+          "deputyID": 579,
           "vote": 1,
           "party": "MDB"
         },
@@ -21038,6 +21195,16 @@
       "datetime": "2019-02-20T20:49:00.000Z",
       "obj": "DTQ. 1 - PSB - INC. III, DO ART. 3º",
       "summary": "Mantido o texto. Sim: 267; não: 202; abstenção: 1; total: 470.",
+      "orientations": {
+        "PslPpPsd...": "Sim",
+        "PdtSdPode...": "Não",
+        "PT": "Não",
+        "PSB": "Não",
+        "PSOL": "Não",
+        "PPS": "Não",
+        "NOVO": "Sim",
+        "Patriota": "Sim"
+      },
       "votes": [
         {
           "deputyID": 2279,
@@ -21145,7 +21312,7 @@
           "party": "PTB"
         },
         {
-          "deputyID": 792,
+          "deputyID": 592,
           "vote": 0,
           "party": "MDB"
         },
@@ -21155,7 +21322,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 780,
+          "deputyID": 660,
           "vote": 0,
           "party": "MDB"
         },
@@ -21165,7 +21332,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 1104,
+          "deputyID": 1224,
           "vote": 0,
           "party": "PSDB"
         },
@@ -21215,7 +21382,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 1108,
+          "deputyID": 1264,
           "vote": 0,
           "party": "PRB"
         },
@@ -21490,7 +21657,7 @@
           "party": "Patriota"
         },
         {
-          "deputyID": 755,
+          "deputyID": 668,
           "vote": 1,
           "party": "PDT"
         },
@@ -21520,7 +21687,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 735,
+          "deputyID": 746,
           "vote": 0,
           "party": "PSDB"
         },
@@ -21550,7 +21717,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 739,
+          "deputyID": 665,
           "vote": 0,
           "party": "PSD"
         },
@@ -21590,7 +21757,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 39,
+          "deputyID": 141,
           "vote": 0,
           "party": "PR"
         },
@@ -21615,7 +21782,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1139,
+          "deputyID": 1132,
           "vote": 1,
           "party": "PDT"
         },
@@ -21730,7 +21897,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 478,
+          "deputyID": 486,
           "vote": 1,
           "party": "PCdoB"
         },
@@ -21760,7 +21927,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 532,
+          "deputyID": 791,
           "vote": 1,
           "party": "PDT"
         },
@@ -21925,7 +22092,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 556,
+          "deputyID": 662,
           "vote": 0,
           "party": "PR"
         },
@@ -21955,7 +22122,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1161,
+          "deputyID": 1219,
           "vote": 1,
           "party": "PT"
         },
@@ -21990,7 +22157,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 421,
+          "deputyID": 464,
           "vote": 0,
           "party": "PSD"
         },
@@ -22145,7 +22312,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 1172,
+          "deputyID": 1193,
           "vote": 1,
           "party": "PR"
         },
@@ -22165,7 +22332,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 582,
+          "deputyID": 701,
           "vote": 0,
           "party": "MDB"
         },
@@ -22395,7 +22562,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 432,
+          "deputyID": 429,
           "vote": 1,
           "party": "PCdoB"
         },
@@ -22450,7 +22617,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 322,
+          "deputyID": 249,
           "vote": 1,
           "party": "PDT"
         },
@@ -22465,7 +22632,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 1193,
+          "deputyID": 1253,
           "vote": 0,
           "party": "DEM"
         },
@@ -22540,7 +22707,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 601,
+          "deputyID": 547,
           "vote": 1,
           "party": "PT"
         },
@@ -22575,7 +22742,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 635,
+          "deputyID": 569,
           "vote": 0,
           "party": "PRB"
         },
@@ -22640,7 +22807,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 614,
+          "deputyID": 628,
           "vote": 1,
           "party": "PSOL"
         },
@@ -22740,7 +22907,7 @@
           "party": "Podemos"
         },
         {
-          "deputyID": 228,
+          "deputyID": 266,
           "vote": 0,
           "party": "PP"
         },
@@ -23050,12 +23217,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 1238,
+          "deputyID": 1157,
           "vote": 1,
           "party": "PDT"
         },
         {
-          "deputyID": 870,
+          "deputyID": 867,
           "vote": 1,
           "party": "MDB"
         },
@@ -23100,12 +23267,12 @@
           "party": "PRB"
         },
         {
-          "deputyID": 652,
+          "deputyID": 740,
           "vote": 1,
           "party": "PP"
         },
         {
-          "deputyID": 276,
+          "deputyID": 283,
           "vote": 1,
           "party": "PPS"
         },
@@ -23190,7 +23357,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 1170,
+          "deputyID": 1159,
           "vote": 0,
           "party": "PRB"
         },
@@ -23275,7 +23442,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 1253,
+          "deputyID": 1160,
           "vote": 1,
           "party": "PT"
         },
@@ -23335,7 +23502,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1257,
+          "deputyID": 1243,
           "vote": 1,
           "party": "PDT"
         },
@@ -23365,7 +23532,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 665,
+          "deputyID": 579,
           "vote": 0,
           "party": "MDB"
         },
@@ -23395,6 +23562,32 @@
       "datetime": "2018-04-18T20:13:00.000Z",
       "obj": "REQUERIMENTO PARA VOTAÇÃO EM GLOBO DOS DESTAQUES SIMPLES",
       "summary": "Aprovado o Requerimento. Sim: 279; não: 37; abstenção: 3; total: 319.",
+      "orientations": {
+        "PpPodeAvantePen": "Sim",
+        "PT": "Obstrução",
+        "PMDB": "Sim",
+        "PSDB": "Sim",
+        "DEM": "Sim",
+        "PR": "Sim",
+        "PSD": "Sim",
+        "PtbPros": "Sim",
+        "PSB": "Obstrução",
+        "PRB": "Obstrução",
+        "PDT": "Obstrução",
+        "PCdoB": "Obstrução",
+        "Solidaried": "Sim",
+        "PSL": "Sim",
+        "PPS": "Sim",
+        "PSC": "Sim",
+        "PSOL": "Obstrução",
+        "PHS": "Sim",
+        "Repr.PV": "Sim",
+        "Repr.REDE": "Obstrução",
+        "Minoria": "Obstrução",
+        "Maioria": "Sim",
+        "Oposição": "Obstrução",
+        "GOV.": "Sim"
+      },
       "votes": [
         {
           "deputyID": 2505,
@@ -23472,7 +23665,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 780,
+          "deputyID": 660,
           "vote": 0,
           "party": "PMDB"
         },
@@ -23492,12 +23685,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 1103,
+          "deputyID": 1185,
           "vote": 0,
           "party": "PTB"
         },
         {
-          "deputyID": 1104,
+          "deputyID": 1224,
           "vote": 0,
           "party": "PSDB"
         },
@@ -23527,12 +23720,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 1108,
+          "deputyID": 1264,
           "vote": 3,
           "party": "PRB"
         },
         {
-          "deputyID": 30,
+          "deputyID": 242,
           "vote": 0,
           "party": "DEM"
         },
@@ -23562,7 +23755,7 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 779,
+          "deputyID": 689,
           "vote": 0,
           "party": "PMDB"
         },
@@ -23647,7 +23840,7 @@
           "party": "PRB"
         },
         {
-          "deputyID": 1124,
+          "deputyID": 1242,
           "vote": 0,
           "party": "PTB"
         },
@@ -23677,7 +23870,7 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 54,
+          "deputyID": 169,
           "vote": 0,
           "party": "PSDB"
         },
@@ -23707,7 +23900,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 749,
+          "deputyID": 538,
           "vote": 3,
           "party": "PDT"
         },
@@ -23742,7 +23935,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 966,
+          "deputyID": 971,
           "vote": 0,
           "party": "PSDB"
         },
@@ -23757,7 +23950,7 @@
           "party": "Avante"
         },
         {
-          "deputyID": 755,
+          "deputyID": 668,
           "vote": 3,
           "party": "PDT"
         },
@@ -23797,17 +23990,17 @@
           "party": "PP"
         },
         {
-          "deputyID": 739,
+          "deputyID": 665,
           "vote": 0,
           "party": "PSD"
         },
         {
-          "deputyID": 1132,
+          "deputyID": 1204,
           "vote": 0,
           "party": "PMDB"
         },
         {
-          "deputyID": 75,
+          "deputyID": 240,
           "vote": 0,
           "party": "PTB"
         },
@@ -23817,7 +24010,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 1260,
+          "deputyID": 1161,
           "vote": 0,
           "party": "DEM"
         },
@@ -23902,7 +24095,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 525,
+          "deputyID": 619,
           "vote": 3,
           "party": "PSB"
         },
@@ -23917,7 +24110,7 @@
           "party": "PTB"
         },
         {
-          "deputyID": 546,
+          "deputyID": 702,
           "vote": 0,
           "party": "DEM"
         },
@@ -23932,7 +24125,7 @@
           "party": "Avante"
         },
         {
-          "deputyID": 532,
+          "deputyID": 791,
           "vote": 3,
           "party": "PDT"
         },
@@ -23992,7 +24185,7 @@
           "party": "PTB"
         },
         {
-          "deputyID": 1149,
+          "deputyID": 1156,
           "vote": 1,
           "party": "Avante"
         },
@@ -24067,7 +24260,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 540,
+          "deputyID": 572,
           "vote": 0,
           "party": "PP"
         },
@@ -24082,7 +24275,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 127,
+          "deputyID": 136,
           "vote": 0,
           "party": "PR"
         },
@@ -24092,22 +24285,22 @@
           "party": "PR"
         },
         {
-          "deputyID": 556,
+          "deputyID": 662,
           "vote": 0,
           "party": "PR"
         },
         {
-          "deputyID": 1160,
+          "deputyID": 1189,
           "vote": 0,
           "party": "PSDB"
         },
         {
-          "deputyID": 1161,
+          "deputyID": 1219,
           "vote": 3,
           "party": "PT"
         },
         {
-          "deputyID": 1164,
+          "deputyID": 1236,
           "vote": 0,
           "party": "PSD"
         },
@@ -24117,7 +24310,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 421,
+          "deputyID": 464,
           "vote": 0,
           "party": "PSD"
         },
@@ -24137,7 +24330,7 @@
           "party": "Podemos"
         },
         {
-          "deputyID": 117,
+          "deputyID": 38,
           "vote": 0,
           "party": "PTB"
         },
@@ -24172,7 +24365,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 128,
+          "deputyID": 153,
           "vote": 0,
           "party": "DEM"
         },
@@ -24207,12 +24400,12 @@
           "party": "DEM"
         },
         {
-          "deputyID": 568,
+          "deputyID": 559,
           "vote": 2,
           "party": "DEM"
         },
         {
-          "deputyID": 569,
+          "deputyID": 565,
           "vote": 0,
           "party": "DEM"
         },
@@ -24242,7 +24435,7 @@
           "party": "PSC"
         },
         {
-          "deputyID": 574,
+          "deputyID": 630,
           "vote": 0,
           "party": "PROS"
         },
@@ -24267,7 +24460,7 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 1172,
+          "deputyID": 1193,
           "vote": 1,
           "party": "PR"
         },
@@ -24302,7 +24495,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 582,
+          "deputyID": 701,
           "vote": 0,
           "party": "PMDB"
         },
@@ -24322,7 +24515,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 564,
+          "deputyID": 756,
           "vote": 0,
           "party": "PMDB"
         },
@@ -24472,7 +24665,7 @@
           "party": "Solidaried"
         },
         {
-          "deputyID": 428,
+          "deputyID": 407,
           "vote": 3,
           "party": "PT"
         },
@@ -24532,7 +24725,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 432,
+          "deputyID": 429,
           "vote": 3,
           "party": "PCdoB"
         },
@@ -24557,7 +24750,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 1189,
+          "deputyID": 1201,
           "vote": 3,
           "party": "PT"
         },
@@ -24577,7 +24770,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 194,
+          "deputyID": 215,
           "vote": 3,
           "party": "REDE"
         },
@@ -24587,7 +24780,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 718,
+          "deputyID": 729,
           "vote": 0,
           "party": "PR"
         },
@@ -24597,7 +24790,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 1193,
+          "deputyID": 1253,
           "vote": 4,
           "party": "DEM"
         },
@@ -24612,7 +24805,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 192,
+          "deputyID": 297,
           "vote": 0,
           "party": "PP"
         },
@@ -24637,7 +24830,7 @@
           "party": "PRB"
         },
         {
-          "deputyID": 202,
+          "deputyID": 24,
           "vote": 0,
           "party": "PP"
         },
@@ -24647,7 +24840,7 @@
           "party": "PPS"
         },
         {
-          "deputyID": 227,
+          "deputyID": 41,
           "vote": 0,
           "party": "PMDB"
         },
@@ -24662,7 +24855,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 614,
+          "deputyID": 628,
           "vote": 3,
           "party": "PSOL"
         },
@@ -24672,7 +24865,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 214,
+          "deputyID": 150,
           "vote": 0,
           "party": "DEM"
         },
@@ -24682,7 +24875,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 1207,
+          "deputyID": 1202,
           "vote": 3,
           "party": "PSOL"
         },
@@ -24692,12 +24885,12 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 1209,
+          "deputyID": 1215,
           "vote": 1,
           "party": "PR"
         },
         {
-          "deputyID": 449,
+          "deputyID": 452,
           "vote": 0,
           "party": "PTB"
         },
@@ -24712,7 +24905,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 228,
+          "deputyID": 266,
           "vote": 0,
           "party": "PP"
         },
@@ -24727,7 +24920,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 631,
+          "deputyID": 768,
           "vote": 0,
           "party": "PSDB"
         },
@@ -24857,7 +25050,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 1155,
+          "deputyID": 1263,
           "vote": 2,
           "party": "PRB"
         },
@@ -24912,7 +25105,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 241,
+          "deputyID": 30,
           "vote": 0,
           "party": "Solidaried"
         },
@@ -24932,7 +25125,7 @@
           "party": "Podemos"
         },
         {
-          "deputyID": 1277,
+          "deputyID": 1096,
           "vote": 0,
           "party": "DEM"
         },
@@ -24967,12 +25160,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 1233,
+          "deputyID": 1239,
           "vote": 0,
           "party": "PMDB"
         },
         {
-          "deputyID": 379,
+          "deputyID": 384,
           "vote": 0,
           "party": "PP"
         },
@@ -25052,7 +25245,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 669,
+          "deputyID": 582,
           "vote": 0,
           "party": "PP"
         },
@@ -25062,7 +25255,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 870,
+          "deputyID": 867,
           "vote": 1,
           "party": "PMDB"
         },
@@ -25072,7 +25265,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 270,
+          "deputyID": 186,
           "vote": 0,
           "party": "PSDB"
         },
@@ -25082,17 +25275,17 @@
           "party": "PR"
         },
         {
-          "deputyID": 677,
+          "deputyID": 714,
           "vote": 0,
           "party": "PP"
         },
         {
-          "deputyID": 1242,
+          "deputyID": 1229,
           "vote": 0,
           "party": "PP"
         },
         {
-          "deputyID": 276,
+          "deputyID": 283,
           "vote": 0,
           "party": "PPS"
         },
@@ -25142,7 +25335,7 @@
           "party": "PV"
         },
         {
-          "deputyID": 652,
+          "deputyID": 740,
           "vote": 0,
           "party": "PP"
         },
@@ -25212,12 +25405,12 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 706,
+          "deputyID": 777,
           "vote": 0,
           "party": "PMDB"
         },
         {
-          "deputyID": 386,
+          "deputyID": 332,
           "vote": 0,
           "party": "PSD"
         },
@@ -25257,7 +25450,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 665,
+          "deputyID": 579,
           "vote": 0,
           "party": "PMDB"
         },
@@ -25267,7 +25460,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 1253,
+          "deputyID": 1160,
           "vote": 1,
           "party": "PT"
         },
@@ -25277,7 +25470,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1254,
+          "deputyID": 1197,
           "vote": 0,
           "party": "PP"
         },
@@ -25292,7 +25485,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 1331,
+          "deputyID": 1329,
           "vote": 0,
           "party": "PMDB"
         },
@@ -25347,7 +25540,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 829,
+          "deputyID": 843,
           "vote": 0,
           "party": "PSD"
         },
@@ -25382,12 +25575,12 @@
           "party": "PT"
         },
         {
-          "deputyID": 737,
+          "deputyID": 780,
           "vote": 0,
           "party": "PR"
         },
         {
-          "deputyID": 886,
+          "deputyID": 887,
           "vote": 0,
           "party": "DEM"
         },
@@ -25417,7 +25610,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 683,
+          "deputyID": 792,
           "vote": 0,
           "party": "PSDB"
         },
@@ -25442,6 +25635,29 @@
       "datetime": "2018-04-18T18:52:00.000Z",
       "obj": "REQUERIMENTO DE VOTAÇÃO ARTIGO POR ARTIGO",
       "summary": "Rejeitado o Requerimento. Sim: 18; não: 241; abstenção: 1; total: 260.",
+      "orientations": {
+        "PpPodeAvantePen": "Não",
+        "PT": "Obstrução",
+        "PMDB": "Não",
+        "PSDB": "Não",
+        "DEM": "Não",
+        "PR": "Não",
+        "PSD": "Não",
+        "PtbPros": "Não",
+        "PSB": "Obstrução",
+        "PRB": "Obstrução",
+        "PDT": "Obstrução",
+        "PCdoB": "Obstrução",
+        "Solidaried": "Não",
+        "PSL": "Não",
+        "PPS": "Não",
+        "PSC": "Não",
+        "PSOL": "Obstrução",
+        "Repr.PV": "Não",
+        "Repr.REDE": "Obstrução",
+        "Maioria": "Não",
+        "GOV.": "Não"
+      },
       "votes": [
         {
           "deputyID": 2505,
@@ -25519,12 +25735,12 @@
           "party": "Podemos"
         },
         {
-          "deputyID": 1103,
+          "deputyID": 1185,
           "vote": 1,
           "party": "PTB"
         },
         {
-          "deputyID": 1104,
+          "deputyID": 1224,
           "vote": 1,
           "party": "PSDB"
         },
@@ -25554,12 +25770,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 1108,
+          "deputyID": 1264,
           "vote": 3,
           "party": "PRB"
         },
         {
-          "deputyID": 30,
+          "deputyID": 242,
           "vote": 1,
           "party": "DEM"
         },
@@ -25639,7 +25855,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 1124,
+          "deputyID": 1242,
           "vote": 1,
           "party": "PTB"
         },
@@ -25679,7 +25895,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 749,
+          "deputyID": 538,
           "vote": 3,
           "party": "PDT"
         },
@@ -25709,7 +25925,7 @@
           "party": "Podemos"
         },
         {
-          "deputyID": 755,
+          "deputyID": 668,
           "vote": 3,
           "party": "PDT"
         },
@@ -25739,7 +25955,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 739,
+          "deputyID": 665,
           "vote": 1,
           "party": "PSD"
         },
@@ -25749,7 +25965,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 1260,
+          "deputyID": 1161,
           "vote": 1,
           "party": "DEM"
         },
@@ -25774,7 +25990,7 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 1139,
+          "deputyID": 1132,
           "vote": 3,
           "party": "PDT"
         },
@@ -25814,7 +26030,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 525,
+          "deputyID": 619,
           "vote": 3,
           "party": "PSB"
         },
@@ -25839,7 +26055,7 @@
           "party": "Avante"
         },
         {
-          "deputyID": 532,
+          "deputyID": 791,
           "vote": 3,
           "party": "PDT"
         },
@@ -25889,7 +26105,7 @@
           "party": "PTB"
         },
         {
-          "deputyID": 1149,
+          "deputyID": 1156,
           "vote": 0,
           "party": "Avante"
         },
@@ -25949,7 +26165,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 540,
+          "deputyID": 572,
           "vote": 1,
           "party": "PP"
         },
@@ -25964,12 +26180,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 1160,
+          "deputyID": 1189,
           "vote": 1,
           "party": "PSDB"
         },
         {
-          "deputyID": 1164,
+          "deputyID": 1236,
           "vote": 1,
           "party": "PSD"
         },
@@ -25979,7 +26195,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 421,
+          "deputyID": 464,
           "vote": 1,
           "party": "PSD"
         },
@@ -25999,7 +26215,7 @@
           "party": "Podemos"
         },
         {
-          "deputyID": 117,
+          "deputyID": 38,
           "vote": 1,
           "party": "PTB"
         },
@@ -26039,7 +26255,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 568,
+          "deputyID": 559,
           "vote": 1,
           "party": "DEM"
         },
@@ -26084,7 +26300,7 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 1172,
+          "deputyID": 1193,
           "vote": 0,
           "party": "PR"
         },
@@ -26109,7 +26325,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 582,
+          "deputyID": 701,
           "vote": 1,
           "party": "PMDB"
         },
@@ -26124,7 +26340,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 564,
+          "deputyID": 756,
           "vote": 1,
           "party": "PMDB"
         },
@@ -26254,7 +26470,7 @@
           "party": "Solidaried"
         },
         {
-          "deputyID": 428,
+          "deputyID": 407,
           "vote": 3,
           "party": "PT"
         },
@@ -26299,7 +26515,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 432,
+          "deputyID": 429,
           "vote": 3,
           "party": "PCdoB"
         },
@@ -26339,7 +26555,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 1193,
+          "deputyID": 1253,
           "vote": 4,
           "party": "DEM"
         },
@@ -26379,12 +26595,12 @@
           "party": "PRB"
         },
         {
-          "deputyID": 202,
+          "deputyID": 24,
           "vote": 1,
           "party": "PP"
         },
         {
-          "deputyID": 227,
+          "deputyID": 41,
           "vote": 1,
           "party": "PMDB"
         },
@@ -26404,7 +26620,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 214,
+          "deputyID": 150,
           "vote": 1,
           "party": "DEM"
         },
@@ -26424,7 +26640,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 449,
+          "deputyID": 452,
           "vote": 1,
           "party": "PTB"
         },
@@ -26469,7 +26685,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 635,
+          "deputyID": 569,
           "vote": 3,
           "party": "PRB"
         },
@@ -26564,7 +26780,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 1155,
+          "deputyID": 1263,
           "vote": 2,
           "party": "PRB"
         },
@@ -26609,7 +26825,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 241,
+          "deputyID": 30,
           "vote": 1,
           "party": "Solidaried"
         },
@@ -26629,7 +26845,7 @@
           "party": "Podemos"
         },
         {
-          "deputyID": 1277,
+          "deputyID": 1096,
           "vote": 1,
           "party": "DEM"
         },
@@ -26664,7 +26880,7 @@
           "party": "PRB"
         },
         {
-          "deputyID": 654,
+          "deputyID": 664,
           "vote": 1,
           "party": "PTB"
         },
@@ -26674,12 +26890,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 1233,
+          "deputyID": 1239,
           "vote": 1,
           "party": "PMDB"
         },
         {
-          "deputyID": 379,
+          "deputyID": 384,
           "vote": 0,
           "party": "PP"
         },
@@ -26759,12 +26975,12 @@
           "party": "PDT"
         },
         {
-          "deputyID": 669,
+          "deputyID": 582,
           "vote": 1,
           "party": "PP"
         },
         {
-          "deputyID": 870,
+          "deputyID": 867,
           "vote": 0,
           "party": "PMDB"
         },
@@ -26774,7 +26990,7 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 270,
+          "deputyID": 186,
           "vote": 1,
           "party": "PSDB"
         },
@@ -26784,17 +27000,17 @@
           "party": "PR"
         },
         {
-          "deputyID": 677,
+          "deputyID": 714,
           "vote": 1,
           "party": "PP"
         },
         {
-          "deputyID": 1242,
+          "deputyID": 1229,
           "vote": 1,
           "party": "PP"
         },
         {
-          "deputyID": 276,
+          "deputyID": 283,
           "vote": 1,
           "party": "PPS"
         },
@@ -26889,12 +27105,12 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 706,
+          "deputyID": 777,
           "vote": 1,
           "party": "PMDB"
         },
         {
-          "deputyID": 386,
+          "deputyID": 332,
           "vote": 1,
           "party": "PSD"
         },
@@ -26934,7 +27150,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 665,
+          "deputyID": 579,
           "vote": 1,
           "party": "PMDB"
         },
@@ -26944,7 +27160,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 1253,
+          "deputyID": 1160,
           "vote": 3,
           "party": "PT"
         },
@@ -26959,7 +27175,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 1254,
+          "deputyID": 1197,
           "vote": 1,
           "party": "PP"
         },
@@ -26974,7 +27190,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 1331,
+          "deputyID": 1329,
           "vote": 1,
           "party": "PMDB"
         },
@@ -27014,7 +27230,7 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 1257,
+          "deputyID": 1243,
           "vote": 3,
           "party": "PDT"
         },
@@ -27029,7 +27245,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 829,
+          "deputyID": 843,
           "vote": 1,
           "party": "PSD"
         },
@@ -27059,12 +27275,12 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 737,
+          "deputyID": 780,
           "vote": 1,
           "party": "PR"
         },
         {
-          "deputyID": 886,
+          "deputyID": 887,
           "vote": 1,
           "party": "DEM"
         },
@@ -27099,7 +27315,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 683,
+          "deputyID": 792,
           "vote": 1,
           "party": "PSDB"
         },
@@ -27124,6 +27340,32 @@
       "datetime": "2018-05-09T16:35:00.000Z",
       "obj": "REQUERIMENTO DE RETIRADA DE PAUTA",
       "summary": "Rejeitado o Requerimento. Sim: 11; não: 245; abstenção: 2; total: 258.",
+      "orientations": {
+        "PpPodeAvantePen": "Não",
+        "PT": "Obstrução",
+        "PMDB": "Não",
+        "PSDB": "Não",
+        "DEM": "Não",
+        "PR": "Não",
+        "PSD": "Não",
+        "PtbPros": "Não",
+        "PSB": "Obstrução",
+        "PRB": "Obstrução",
+        "PDT": "Obstrução",
+        "PCdoB": "Obstrução",
+        "Solidaried": "Não",
+        "PSL": "Não",
+        "PPS": "Não",
+        "PSC": "Não",
+        "PSOL": "Obstrução",
+        "Repr.PV": "Não",
+        "Repr.REDE": "Obstrução",
+        "PPL": "Não",
+        "Minoria": "Obstrução",
+        "Maioria": "Não",
+        "Oposição": "Obstrução",
+        "GOV.": "Não"
+      },
       "votes": [
         {
           "deputyID": 1647,
@@ -27186,7 +27428,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 792,
+          "deputyID": 592,
           "vote": 1,
           "party": "PMDB"
         },
@@ -27206,12 +27448,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 1103,
+          "deputyID": 1185,
           "vote": 1,
           "party": "PTB"
         },
         {
-          "deputyID": 1104,
+          "deputyID": 1224,
           "vote": 1,
           "party": "PSDB"
         },
@@ -27236,17 +27478,17 @@
           "party": "PR"
         },
         {
-          "deputyID": 491,
+          "deputyID": 492,
           "vote": 1,
           "party": "PP"
         },
         {
-          "deputyID": 1108,
+          "deputyID": 1264,
           "vote": 3,
           "party": "PRB"
         },
         {
-          "deputyID": 30,
+          "deputyID": 242,
           "vote": 1,
           "party": "DEM"
         },
@@ -27266,12 +27508,12 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 1111,
+          "deputyID": 1225,
           "vote": 1,
           "party": "PTB"
         },
         {
-          "deputyID": 779,
+          "deputyID": 689,
           "vote": 1,
           "party": "PMDB"
         },
@@ -27346,12 +27588,12 @@
           "party": "PP"
         },
         {
-          "deputyID": 1124,
+          "deputyID": 1242,
           "vote": 1,
           "party": "PTB"
         },
         {
-          "deputyID": 55,
+          "deputyID": 288,
           "vote": 1,
           "party": "PV"
         },
@@ -27386,7 +27628,7 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 54,
+          "deputyID": 169,
           "vote": 1,
           "party": "PSDB"
         },
@@ -27406,7 +27648,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 883,
+          "deputyID": 878,
           "vote": 1,
           "party": "DEM"
         },
@@ -27426,12 +27668,12 @@
           "party": "PT"
         },
         {
-          "deputyID": 966,
+          "deputyID": 971,
           "vote": 1,
           "party": "PSDB"
         },
         {
-          "deputyID": 755,
+          "deputyID": 668,
           "vote": 3,
           "party": "PDT"
         },
@@ -27461,17 +27703,17 @@
           "party": "PT"
         },
         {
-          "deputyID": 739,
+          "deputyID": 665,
           "vote": 1,
           "party": "PSD"
         },
         {
-          "deputyID": 1132,
+          "deputyID": 1204,
           "vote": 1,
           "party": "PMDB"
         },
         {
-          "deputyID": 75,
+          "deputyID": 240,
           "vote": 1,
           "party": "PTB"
         },
@@ -27516,7 +27758,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1139,
+          "deputyID": 1132,
           "vote": 1,
           "party": "PDT"
         },
@@ -27546,7 +27788,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 525,
+          "deputyID": 619,
           "vote": 3,
           "party": "PSB"
         },
@@ -27681,17 +27923,17 @@
           "party": "PSB"
         },
         {
-          "deputyID": 540,
+          "deputyID": 572,
           "vote": 1,
           "party": "PP"
         },
         {
-          "deputyID": 556,
+          "deputyID": 662,
           "vote": 1,
           "party": "PR"
         },
         {
-          "deputyID": 1160,
+          "deputyID": 1189,
           "vote": 1,
           "party": "PSDB"
         },
@@ -27701,12 +27943,12 @@
           "party": "PRB"
         },
         {
-          "deputyID": 1161,
+          "deputyID": 1219,
           "vote": 3,
           "party": "PT"
         },
         {
-          "deputyID": 1164,
+          "deputyID": 1236,
           "vote": 1,
           "party": "PSD"
         },
@@ -27716,7 +27958,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 421,
+          "deputyID": 464,
           "vote": 1,
           "party": "PSD"
         },
@@ -27766,7 +28008,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 128,
+          "deputyID": 153,
           "vote": 1,
           "party": "DEM"
         },
@@ -27796,7 +28038,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 569,
+          "deputyID": 565,
           "vote": 1,
           "party": "DEM"
         },
@@ -27826,7 +28068,7 @@
           "party": "PSC"
         },
         {
-          "deputyID": 574,
+          "deputyID": 630,
           "vote": 1,
           "party": "PROS"
         },
@@ -27861,7 +28103,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 582,
+          "deputyID": 701,
           "vote": 1,
           "party": "PMDB"
         },
@@ -27871,7 +28113,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 564,
+          "deputyID": 756,
           "vote": 2,
           "party": "PMDB"
         },
@@ -27976,12 +28218,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 177,
+          "deputyID": 26,
           "vote": 1,
           "party": "PSD"
         },
         {
-          "deputyID": 428,
+          "deputyID": 407,
           "vote": 3,
           "party": "PT"
         },
@@ -28026,12 +28268,12 @@
           "party": "PSD"
         },
         {
-          "deputyID": 181,
+          "deputyID": 127,
           "vote": 1,
           "party": "PSL"
         },
         {
-          "deputyID": 432,
+          "deputyID": 429,
           "vote": 3,
           "party": "PCdoB"
         },
@@ -28051,7 +28293,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 1189,
+          "deputyID": 1201,
           "vote": 3,
           "party": "PT"
         },
@@ -28071,12 +28313,12 @@
           "party": "DEM"
         },
         {
-          "deputyID": 194,
+          "deputyID": 215,
           "vote": 3,
           "party": "REDE"
         },
         {
-          "deputyID": 718,
+          "deputyID": 729,
           "vote": 1,
           "party": "PR"
         },
@@ -28086,7 +28328,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 1193,
+          "deputyID": 1253,
           "vote": 4,
           "party": "DEM"
         },
@@ -28111,17 +28353,17 @@
           "party": "PRB"
         },
         {
-          "deputyID": 601,
+          "deputyID": 547,
           "vote": 3,
           "party": "PT"
         },
         {
-          "deputyID": 202,
+          "deputyID": 24,
           "vote": 1,
           "party": "PP"
         },
         {
-          "deputyID": 227,
+          "deputyID": 41,
           "vote": 1,
           "party": "PMDB"
         },
@@ -28141,7 +28383,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 614,
+          "deputyID": 628,
           "vote": 3,
           "party": "PSOL"
         },
@@ -28156,7 +28398,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 1207,
+          "deputyID": 1202,
           "vote": 3,
           "party": "PSOL"
         },
@@ -28166,7 +28408,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 1209,
+          "deputyID": 1215,
           "vote": 1,
           "party": "PR"
         },
@@ -28226,7 +28468,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 635,
+          "deputyID": 569,
           "vote": 3,
           "party": "PRB"
         },
@@ -28346,7 +28588,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 241,
+          "deputyID": 30,
           "vote": 1,
           "party": "Solidaried"
         },
@@ -28361,7 +28603,7 @@
           "party": "Podemos"
         },
         {
-          "deputyID": 1277,
+          "deputyID": 1096,
           "vote": 1,
           "party": "DEM"
         },
@@ -28391,17 +28633,17 @@
           "party": "PP"
         },
         {
-          "deputyID": 654,
+          "deputyID": 664,
           "vote": 1,
           "party": "PTB"
         },
         {
-          "deputyID": 1233,
+          "deputyID": 1239,
           "vote": 1,
           "party": "PMDB"
         },
         {
-          "deputyID": 379,
+          "deputyID": 384,
           "vote": 1,
           "party": "PP"
         },
@@ -28456,7 +28698,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 1310,
+          "deputyID": 1308,
           "vote": 0,
           "party": "PTB"
         },
@@ -28481,7 +28723,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 870,
+          "deputyID": 867,
           "vote": 1,
           "party": "PMDB"
         },
@@ -28496,7 +28738,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 270,
+          "deputyID": 186,
           "vote": 1,
           "party": "PSDB"
         },
@@ -28506,17 +28748,17 @@
           "party": "PR"
         },
         {
-          "deputyID": 677,
+          "deputyID": 714,
           "vote": 1,
           "party": "PP"
         },
         {
-          "deputyID": 1242,
+          "deputyID": 1229,
           "vote": 1,
           "party": "PP"
         },
         {
-          "deputyID": 276,
+          "deputyID": 283,
           "vote": 1,
           "party": "PPS"
         },
@@ -28541,7 +28783,7 @@
           "party": "PV"
         },
         {
-          "deputyID": 652,
+          "deputyID": 740,
           "vote": 1,
           "party": "PP"
         },
@@ -28591,7 +28833,7 @@
           "party": "PMDB"
         },
         {
-          "deputyID": 706,
+          "deputyID": 777,
           "vote": 1,
           "party": "PMDB"
         },
@@ -28621,7 +28863,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 665,
+          "deputyID": 579,
           "vote": 1,
           "party": "PMDB"
         },
@@ -28641,7 +28883,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 1254,
+          "deputyID": 1197,
           "vote": 1,
           "party": "PP"
         },
@@ -28661,7 +28903,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 1331,
+          "deputyID": 1329,
           "vote": 1,
           "party": "PMDB"
         },
@@ -28746,7 +28988,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 275,
+          "deputyID": 263,
           "vote": 1,
           "party": "PSD"
         },
@@ -28781,7 +29023,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 683,
+          "deputyID": 792,
           "vote": 1,
           "party": "PSDB"
         },
@@ -28806,6 +29048,29 @@
       "datetime": "2018-06-13T22:06:00.000Z",
       "obj": "REQUERIMENTO DE RETIRADA DE PAUTA",
       "summary": "Rejeitado o Requerimento. Sim: 64; não: 206; abstenção: 1; total: 271.",
+      "orientations": {
+        "PpPodeAvante": "Obstrução",
+        "PT": "Obstrução",
+        "MDB": "Não",
+        "PSDB": "Não",
+        "DEM": "Não",
+        "PR": "Não",
+        "PSD": "Não",
+        "PtbPros": "Obstrução",
+        "PSB": "Obstrução",
+        "PRB": "Não",
+        "PDT": "Obstrução",
+        "Solidaried": "Não",
+        "PCdoB": "Não",
+        "PSC": "Não",
+        "PSL": "Não",
+        "PPS": "Não",
+        "PSOL": "Obstrução",
+        "Patriota": "Obstrução",
+        "Repr.REDE": "Obstrução",
+        "Minoria": "Liberado",
+        "Oposição": "Liberado"
+      },
       "votes": [
         {
           "deputyID": 2505,
@@ -28863,7 +29128,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 1104,
+          "deputyID": 1224,
           "vote": 1,
           "party": "PSDB"
         },
@@ -28898,12 +29163,12 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 491,
+          "deputyID": 492,
           "vote": 1,
           "party": "PP"
         },
         {
-          "deputyID": 30,
+          "deputyID": 242,
           "vote": 1,
           "party": "DEM"
         },
@@ -28928,7 +29193,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 1111,
+          "deputyID": 1225,
           "vote": 1,
           "party": "PTB"
         },
@@ -29023,7 +29288,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 54,
+          "deputyID": 169,
           "vote": 1,
           "party": "PSDB"
         },
@@ -29063,7 +29328,7 @@
           "party": "Podemos"
         },
         {
-          "deputyID": 755,
+          "deputyID": 668,
           "vote": 3,
           "party": "PDT"
         },
@@ -29083,12 +29348,12 @@
           "party": "PROS"
         },
         {
-          "deputyID": 739,
+          "deputyID": 665,
           "vote": 1,
           "party": "PSD"
         },
         {
-          "deputyID": 1132,
+          "deputyID": 1204,
           "vote": 1,
           "party": "MDB"
         },
@@ -29098,7 +29363,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 1260,
+          "deputyID": 1161,
           "vote": 1,
           "party": "DEM"
         },
@@ -29138,7 +29403,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 1139,
+          "deputyID": 1132,
           "vote": 3,
           "party": "PDT"
         },
@@ -29188,7 +29453,7 @@
           "party": "Patriota"
         },
         {
-          "deputyID": 532,
+          "deputyID": 791,
           "vote": 0,
           "party": "PDT"
         },
@@ -29218,7 +29483,7 @@
           "party": "PROS"
         },
         {
-          "deputyID": 1149,
+          "deputyID": 1156,
           "vote": 0,
           "party": "Avante"
         },
@@ -29293,7 +29558,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 556,
+          "deputyID": 662,
           "vote": 1,
           "party": "PR"
         },
@@ -29303,7 +29568,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 1160,
+          "deputyID": 1189,
           "vote": 1,
           "party": "PSDB"
         },
@@ -29313,7 +29578,7 @@
           "party": "PRB"
         },
         {
-          "deputyID": 1161,
+          "deputyID": 1219,
           "vote": 0,
           "party": "PT"
         },
@@ -29323,7 +29588,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 421,
+          "deputyID": 464,
           "vote": 1,
           "party": "PSD"
         },
@@ -29343,7 +29608,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 128,
+          "deputyID": 153,
           "vote": 1,
           "party": "DEM"
         },
@@ -29368,7 +29633,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 569,
+          "deputyID": 565,
           "vote": 1,
           "party": "DEM"
         },
@@ -29408,7 +29673,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 1172,
+          "deputyID": 1193,
           "vote": 0,
           "party": "PR"
         },
@@ -29448,7 +29713,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 564,
+          "deputyID": 756,
           "vote": 1,
           "party": "MDB"
         },
@@ -29578,7 +29843,7 @@
           "party": "Solidaried"
         },
         {
-          "deputyID": 428,
+          "deputyID": 407,
           "vote": 0,
           "party": "PT"
         },
@@ -29618,12 +29883,12 @@
           "party": "PSD"
         },
         {
-          "deputyID": 181,
+          "deputyID": 127,
           "vote": 1,
           "party": "PSL"
         },
         {
-          "deputyID": 432,
+          "deputyID": 429,
           "vote": 1,
           "party": "PCdoB"
         },
@@ -29643,7 +29908,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 1189,
+          "deputyID": 1201,
           "vote": 0,
           "party": "PT"
         },
@@ -29673,7 +29938,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 1193,
+          "deputyID": 1253,
           "vote": 4,
           "party": "DEM"
         },
@@ -29698,17 +29963,17 @@
           "party": "PRB"
         },
         {
-          "deputyID": 601,
+          "deputyID": 547,
           "vote": 0,
           "party": "PT"
         },
         {
-          "deputyID": 202,
+          "deputyID": 24,
           "vote": 3,
           "party": "PP"
         },
         {
-          "deputyID": 227,
+          "deputyID": 41,
           "vote": 1,
           "party": "MDB"
         },
@@ -29723,7 +29988,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 614,
+          "deputyID": 628,
           "vote": 3,
           "party": "PSOL"
         },
@@ -29733,7 +29998,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 214,
+          "deputyID": 150,
           "vote": 1,
           "party": "DEM"
         },
@@ -29753,7 +30018,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 449,
+          "deputyID": 452,
           "vote": 3,
           "party": "PTB"
         },
@@ -29783,7 +30048,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 631,
+          "deputyID": 768,
           "vote": 1,
           "party": "PSDB"
         },
@@ -29818,7 +30083,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 635,
+          "deputyID": 569,
           "vote": 1,
           "party": "PRB"
         },
@@ -29908,7 +30173,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 1155,
+          "deputyID": 1263,
           "vote": 1,
           "party": "PRB"
         },
@@ -29953,7 +30218,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 241,
+          "deputyID": 30,
           "vote": 1,
           "party": "Solidaried"
         },
@@ -29968,7 +30233,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 1277,
+          "deputyID": 1096,
           "vote": 1,
           "party": "DEM"
         },
@@ -30003,12 +30268,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 1233,
+          "deputyID": 1239,
           "vote": 1,
           "party": "MDB"
         },
         {
-          "deputyID": 379,
+          "deputyID": 384,
           "vote": 3,
           "party": "PP"
         },
@@ -30078,7 +30343,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 870,
+          "deputyID": 867,
           "vote": 1,
           "party": "MDB"
         },
@@ -30088,7 +30353,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 270,
+          "deputyID": 186,
           "vote": 1,
           "party": "PSDB"
         },
@@ -30098,12 +30363,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 1242,
+          "deputyID": 1229,
           "vote": 3,
           "party": "PP"
         },
         {
-          "deputyID": 276,
+          "deputyID": 283,
           "vote": 1,
           "party": "PPS"
         },
@@ -30188,12 +30453,12 @@
           "party": "MDB"
         },
         {
-          "deputyID": 706,
+          "deputyID": 777,
           "vote": 1,
           "party": "MDB"
         },
         {
-          "deputyID": 386,
+          "deputyID": 332,
           "vote": 1,
           "party": "PSD"
         },
@@ -30228,12 +30493,12 @@
           "party": "PSD"
         },
         {
-          "deputyID": 665,
+          "deputyID": 579,
           "vote": 1,
           "party": "MDB"
         },
         {
-          "deputyID": 1253,
+          "deputyID": 1160,
           "vote": 0,
           "party": "PT"
         },
@@ -30248,7 +30513,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 1254,
+          "deputyID": 1197,
           "vote": 3,
           "party": "PP"
         },
@@ -30263,7 +30528,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 1331,
+          "deputyID": 1329,
           "vote": 1,
           "party": "MDB"
         },
@@ -30313,7 +30578,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 1257,
+          "deputyID": 1243,
           "vote": 2,
           "party": "PDT"
         },
@@ -30343,7 +30608,7 @@
           "party": "Patriota"
         },
         {
-          "deputyID": 1265,
+          "deputyID": 1125,
           "vote": 1,
           "party": "MDB"
         },
@@ -30353,12 +30618,12 @@
           "party": "PT"
         },
         {
-          "deputyID": 886,
+          "deputyID": 887,
           "vote": 1,
           "party": "DEM"
         },
         {
-          "deputyID": 1142,
+          "deputyID": 1207,
           "vote": 1,
           "party": "PSC"
         },
@@ -30423,6 +30688,16 @@
       "datetime": "2019-02-19T18:15:00.000Z",
       "obj": "EMENDAS DE NºS 6 E 8 COM PARECER PELA REJEIÇÃO",
       "summary": "Rejeitadas as Emendas de n°s 6 e 8. Sim: 182; não: 282; abstenção: 1; total: 465.",
+      "orientations": {
+        "PslPpPsd...": "Não",
+        "PdtSdPode...": "Sim",
+        "PT": "Sim",
+        "PSB": "Sim",
+        "PSOL": "Sim",
+        "PPS": "Não",
+        "NOVO": "Não",
+        "GOV.": "Não"
+      },
       "votes": [
         {
           "deputyID": 1647,
@@ -30540,7 +30815,7 @@
           "party": "PTB"
         },
         {
-          "deputyID": 792,
+          "deputyID": 592,
           "vote": 1,
           "party": "MDB"
         },
@@ -30550,7 +30825,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 780,
+          "deputyID": 660,
           "vote": 1,
           "party": "MDB"
         },
@@ -30560,7 +30835,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 1104,
+          "deputyID": 1224,
           "vote": 1,
           "party": "PSDB"
         },
@@ -30605,7 +30880,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 1108,
+          "deputyID": 1264,
           "vote": 0,
           "party": "PRB"
         },
@@ -30875,7 +31150,7 @@
           "party": "Patriota"
         },
         {
-          "deputyID": 755,
+          "deputyID": 668,
           "vote": 0,
           "party": "PDT"
         },
@@ -30895,7 +31170,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 735,
+          "deputyID": 746,
           "vote": 1,
           "party": "PSDB"
         },
@@ -30925,7 +31200,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 739,
+          "deputyID": 665,
           "vote": 1,
           "party": "PSD"
         },
@@ -30965,7 +31240,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 39,
+          "deputyID": 141,
           "vote": 1,
           "party": "PR"
         },
@@ -30990,7 +31265,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1139,
+          "deputyID": 1132,
           "vote": 0,
           "party": "PDT"
         },
@@ -31110,7 +31385,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 478,
+          "deputyID": 486,
           "vote": 0,
           "party": "PCdoB"
         },
@@ -31140,7 +31415,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 532,
+          "deputyID": 791,
           "vote": 0,
           "party": "PDT"
         },
@@ -31310,7 +31585,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 556,
+          "deputyID": 662,
           "vote": 1,
           "party": "PR"
         },
@@ -31340,7 +31615,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1161,
+          "deputyID": 1219,
           "vote": 0,
           "party": "PT"
         },
@@ -31395,7 +31670,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 351,
+          "deputyID": 326,
           "vote": 1,
           "party": "PSDB"
         },
@@ -31520,7 +31795,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 1172,
+          "deputyID": 1193,
           "vote": 1,
           "party": "PR"
         },
@@ -31545,7 +31820,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 582,
+          "deputyID": 701,
           "vote": 1,
           "party": "MDB"
         },
@@ -31690,7 +31965,7 @@
           "party": "Solidaried"
         },
         {
-          "deputyID": 428,
+          "deputyID": 407,
           "vote": 0,
           "party": "PT"
         },
@@ -31780,7 +32055,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 432,
+          "deputyID": 429,
           "vote": 0,
           "party": "PCdoB"
         },
@@ -31835,7 +32110,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 322,
+          "deputyID": 249,
           "vote": 0,
           "party": "PDT"
         },
@@ -31850,7 +32125,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 1193,
+          "deputyID": 1253,
           "vote": 4,
           "party": "DEM"
         },
@@ -31920,7 +32195,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 601,
+          "deputyID": 547,
           "vote": 0,
           "party": "PT"
         },
@@ -31955,7 +32230,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 635,
+          "deputyID": 569,
           "vote": 0,
           "party": "PRB"
         },
@@ -32020,7 +32295,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 614,
+          "deputyID": 628,
           "vote": 0,
           "party": "PSOL"
         },
@@ -32130,7 +32405,7 @@
           "party": "Podemos"
         },
         {
-          "deputyID": 228,
+          "deputyID": 266,
           "vote": 1,
           "party": "PP"
         },
@@ -32440,12 +32715,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 1238,
+          "deputyID": 1157,
           "vote": 0,
           "party": "PDT"
         },
         {
-          "deputyID": 870,
+          "deputyID": 867,
           "vote": 1,
           "party": "MDB"
         },
@@ -32490,7 +32765,7 @@
           "party": "PRB"
         },
         {
-          "deputyID": 276,
+          "deputyID": 283,
           "vote": 1,
           "party": "PPS"
         },
@@ -32570,7 +32845,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 1170,
+          "deputyID": 1159,
           "vote": 0,
           "party": "PRB"
         },
@@ -32645,7 +32920,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 1253,
+          "deputyID": 1160,
           "vote": 0,
           "party": "PT"
         },
@@ -32705,7 +32980,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1257,
+          "deputyID": 1243,
           "vote": 0,
           "party": "PDT"
         },
@@ -32730,7 +33005,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 665,
+          "deputyID": 579,
           "vote": 1,
           "party": "MDB"
         },
@@ -32760,6 +33035,27 @@
       "datetime": "2018-07-11T16:17:00.000Z",
       "obj": "REQUERIMENTO DE RETIRADA DE PAUTA",
       "summary": "Rejeitado o Requerimento. Sim: 19; não: 269; total: 288.",
+      "orientations": {
+        "PpPodeAvante": "Não",
+        "PT": "Obstrução",
+        "MDB": "Não",
+        "PSDB": "Não",
+        "DEM": "Não",
+        "PR": "Não",
+        "PSD": "Não",
+        "PtbPros": "Não",
+        "PSB": "Obstrução",
+        "PDT": "Obstrução",
+        "Solidaried": "Não",
+        "PCdoB": "Obstrução",
+        "PSC": "Não",
+        "PPS": "Não",
+        "PSOL": "Obstrução",
+        "Patriota": "Não",
+        "Repr.REDE": "Obstrução",
+        "Minoria": "Obstrução",
+        "Oposição": "Obstrução"
+      },
       "votes": [
         {
           "deputyID": 2505,
@@ -32832,7 +33128,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 780,
+          "deputyID": 660,
           "vote": 1,
           "party": "MDB"
         },
@@ -32842,12 +33138,12 @@
           "party": "Podemos"
         },
         {
-          "deputyID": 1103,
+          "deputyID": 1185,
           "vote": 1,
           "party": "PTB"
         },
         {
-          "deputyID": 1104,
+          "deputyID": 1224,
           "vote": 1,
           "party": "PSDB"
         },
@@ -32867,17 +33163,17 @@
           "party": "PR"
         },
         {
-          "deputyID": 491,
+          "deputyID": 492,
           "vote": 1,
           "party": "PP"
         },
         {
-          "deputyID": 1108,
+          "deputyID": 1264,
           "vote": 1,
           "party": "PRB"
         },
         {
-          "deputyID": 30,
+          "deputyID": 242,
           "vote": 1,
           "party": "DEM"
         },
@@ -32907,12 +33203,12 @@
           "party": "MDB"
         },
         {
-          "deputyID": 1111,
+          "deputyID": 1225,
           "vote": 1,
           "party": "PTB"
         },
         {
-          "deputyID": 779,
+          "deputyID": 689,
           "vote": 1,
           "party": "MDB"
         },
@@ -32992,7 +33288,7 @@
           "party": "PRB"
         },
         {
-          "deputyID": 1124,
+          "deputyID": 1242,
           "vote": 1,
           "party": "PTB"
         },
@@ -33042,12 +33338,12 @@
           "party": "PDT"
         },
         {
-          "deputyID": 883,
+          "deputyID": 878,
           "vote": 1,
           "party": "DEM"
         },
         {
-          "deputyID": 749,
+          "deputyID": 538,
           "vote": 3,
           "party": "PDT"
         },
@@ -33072,7 +33368,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 966,
+          "deputyID": 971,
           "vote": 1,
           "party": "PSDB"
         },
@@ -33087,7 +33383,7 @@
           "party": "Avante"
         },
         {
-          "deputyID": 755,
+          "deputyID": 668,
           "vote": 3,
           "party": "PDT"
         },
@@ -33112,17 +33408,17 @@
           "party": "PSB"
         },
         {
-          "deputyID": 739,
+          "deputyID": 665,
           "vote": 1,
           "party": "PSD"
         },
         {
-          "deputyID": 1132,
+          "deputyID": 1204,
           "vote": 1,
           "party": "MDB"
         },
         {
-          "deputyID": 75,
+          "deputyID": 240,
           "vote": 1,
           "party": "PTB"
         },
@@ -33132,7 +33428,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 1260,
+          "deputyID": 1161,
           "vote": 1,
           "party": "DEM"
         },
@@ -33192,7 +33488,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 1139,
+          "deputyID": 1132,
           "vote": 3,
           "party": "PDT"
         },
@@ -33247,7 +33543,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 525,
+          "deputyID": 619,
           "vote": 3,
           "party": "PSB"
         },
@@ -33262,7 +33558,7 @@
           "party": "PTB"
         },
         {
-          "deputyID": 546,
+          "deputyID": 702,
           "vote": 1,
           "party": "DEM"
         },
@@ -33317,7 +33613,7 @@
           "party": "PTB"
         },
         {
-          "deputyID": 1149,
+          "deputyID": 1156,
           "vote": 0,
           "party": "Avante"
         },
@@ -33377,7 +33673,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 540,
+          "deputyID": 572,
           "vote": 1,
           "party": "PP"
         },
@@ -33397,7 +33693,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 1160,
+          "deputyID": 1189,
           "vote": 1,
           "party": "PSDB"
         },
@@ -33412,12 +33708,12 @@
           "party": "PRB"
         },
         {
-          "deputyID": 1161,
+          "deputyID": 1219,
           "vote": 3,
           "party": "PT"
         },
         {
-          "deputyID": 1164,
+          "deputyID": 1236,
           "vote": 1,
           "party": "PSD"
         },
@@ -33432,7 +33728,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 117,
+          "deputyID": 38,
           "vote": 1,
           "party": "PTB"
         },
@@ -33462,7 +33758,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 128,
+          "deputyID": 153,
           "vote": 1,
           "party": "DEM"
         },
@@ -33492,7 +33788,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 568,
+          "deputyID": 559,
           "vote": 0,
           "party": "DEM"
         },
@@ -33522,7 +33818,7 @@
           "party": "PSC"
         },
         {
-          "deputyID": 574,
+          "deputyID": 630,
           "vote": 1,
           "party": "PROS"
         },
@@ -33537,7 +33833,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 1172,
+          "deputyID": 1193,
           "vote": 0,
           "party": "PR"
         },
@@ -33567,7 +33863,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 582,
+          "deputyID": 701,
           "vote": 1,
           "party": "MDB"
         },
@@ -33592,7 +33888,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 564,
+          "deputyID": 756,
           "vote": 1,
           "party": "MDB"
         },
@@ -33712,7 +34008,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 177,
+          "deputyID": 26,
           "vote": 1,
           "party": "PSD"
         },
@@ -33747,12 +34043,12 @@
           "party": "PSD"
         },
         {
-          "deputyID": 181,
+          "deputyID": 127,
           "vote": 1,
           "party": "PSL"
         },
         {
-          "deputyID": 432,
+          "deputyID": 429,
           "vote": 3,
           "party": "PCdoB"
         },
@@ -33772,7 +34068,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 1189,
+          "deputyID": 1201,
           "vote": 3,
           "party": "PT"
         },
@@ -33782,7 +34078,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 194,
+          "deputyID": 215,
           "vote": 3,
           "party": "REDE"
         },
@@ -33792,12 +34088,12 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 718,
+          "deputyID": 729,
           "vote": 1,
           "party": "PR"
         },
         {
-          "deputyID": 1193,
+          "deputyID": 1253,
           "vote": 1,
           "party": "DEM"
         },
@@ -33807,7 +34103,7 @@
           "party": "PRB"
         },
         {
-          "deputyID": 192,
+          "deputyID": 297,
           "vote": 1,
           "party": "PP"
         },
@@ -33837,7 +34133,7 @@
           "party": "PRB"
         },
         {
-          "deputyID": 202,
+          "deputyID": 24,
           "vote": 0,
           "party": "PP"
         },
@@ -33872,7 +34168,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 614,
+          "deputyID": 628,
           "vote": 3,
           "party": "PSOL"
         },
@@ -33887,7 +34183,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 1209,
+          "deputyID": 1215,
           "vote": 1,
           "party": "PR"
         },
@@ -33897,7 +34193,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 449,
+          "deputyID": 452,
           "vote": 1,
           "party": "PTB"
         },
@@ -33907,7 +34203,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 228,
+          "deputyID": 266,
           "vote": 1,
           "party": "PP"
         },
@@ -34072,7 +34368,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 241,
+          "deputyID": 30,
           "vote": 1,
           "party": "Solidaried"
         },
@@ -34082,7 +34378,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 1277,
+          "deputyID": 1096,
           "vote": 1,
           "party": "DEM"
         },
@@ -34112,7 +34408,7 @@
           "party": "PRB"
         },
         {
-          "deputyID": 654,
+          "deputyID": 664,
           "vote": 1,
           "party": "PTB"
         },
@@ -34122,12 +34418,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 1233,
+          "deputyID": 1239,
           "vote": 1,
           "party": "MDB"
         },
         {
-          "deputyID": 379,
+          "deputyID": 384,
           "vote": 1,
           "party": "PP"
         },
@@ -34197,7 +34493,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 1310,
+          "deputyID": 1308,
           "vote": 1,
           "party": "PTB"
         },
@@ -34217,7 +34513,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 270,
+          "deputyID": 186,
           "vote": 1,
           "party": "PSDB"
         },
@@ -34227,17 +34523,17 @@
           "party": "PR"
         },
         {
-          "deputyID": 677,
+          "deputyID": 714,
           "vote": 1,
           "party": "PP"
         },
         {
-          "deputyID": 1242,
+          "deputyID": 1229,
           "vote": 1,
           "party": "PP"
         },
         {
-          "deputyID": 276,
+          "deputyID": 283,
           "vote": 1,
           "party": "PPS"
         },
@@ -34267,7 +34563,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 652,
+          "deputyID": 740,
           "vote": 1,
           "party": "PP"
         },
@@ -34327,12 +34623,12 @@
           "party": "MDB"
         },
         {
-          "deputyID": 706,
+          "deputyID": 777,
           "vote": 1,
           "party": "MDB"
         },
         {
-          "deputyID": 386,
+          "deputyID": 332,
           "vote": 1,
           "party": "PSD"
         },
@@ -34377,12 +34673,12 @@
           "party": "PSD"
         },
         {
-          "deputyID": 665,
+          "deputyID": 579,
           "vote": 1,
           "party": "MDB"
         },
         {
-          "deputyID": 1253,
+          "deputyID": 1160,
           "vote": 3,
           "party": "PT"
         },
@@ -34397,7 +34693,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 1254,
+          "deputyID": 1197,
           "vote": 1,
           "party": "PP"
         },
@@ -34412,7 +34708,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 1331,
+          "deputyID": 1329,
           "vote": 1,
           "party": "MDB"
         },
@@ -34442,7 +34738,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 1257,
+          "deputyID": 1243,
           "vote": 3,
           "party": "PDT"
         },
@@ -34472,22 +34768,22 @@
           "party": "Patriota"
         },
         {
-          "deputyID": 1265,
+          "deputyID": 1125,
           "vote": 1,
           "party": "MDB"
         },
         {
-          "deputyID": 886,
+          "deputyID": 887,
           "vote": 1,
           "party": "DEM"
         },
         {
-          "deputyID": 1142,
+          "deputyID": 1207,
           "vote": 1,
           "party": "PSC"
         },
         {
-          "deputyID": 275,
+          "deputyID": 263,
           "vote": 0,
           "party": "PSD"
         },
@@ -34567,6 +34863,16 @@
       "datetime": "2019-02-20T19:06:00.000Z",
       "obj": "DTQ. 15 - PSB - §7º DO ART. 12 DA LEI Nº 12.414/2011, CONT. NO ART. 2º DO PLP",
       "summary": "Mantido o texto. Sim: 304; não: 149; total: 453.",
+      "orientations": {
+        "PslPpPsd...": "Sim",
+        "PdtSdPode...": "Não",
+        "PT": "Não",
+        "PSB": "Não",
+        "PSOL": "Não",
+        "PPS": "Sim",
+        "NOVO": "Sim",
+        "Patriota": "Sim"
+      },
       "votes": [
         {
           "deputyID": 1647,
@@ -34674,7 +34980,7 @@
           "party": "PTB"
         },
         {
-          "deputyID": 792,
+          "deputyID": 592,
           "vote": 0,
           "party": "MDB"
         },
@@ -34684,7 +34990,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 780,
+          "deputyID": 660,
           "vote": 0,
           "party": "MDB"
         },
@@ -34694,7 +35000,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 1104,
+          "deputyID": 1224,
           "vote": 0,
           "party": "PSDB"
         },
@@ -34744,7 +35050,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 1108,
+          "deputyID": 1264,
           "vote": 0,
           "party": "PRB"
         },
@@ -35014,7 +35320,7 @@
           "party": "Patriota"
         },
         {
-          "deputyID": 755,
+          "deputyID": 668,
           "vote": 1,
           "party": "PDT"
         },
@@ -35039,7 +35345,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 735,
+          "deputyID": 746,
           "vote": 0,
           "party": "PSDB"
         },
@@ -35064,7 +35370,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 739,
+          "deputyID": 665,
           "vote": 0,
           "party": "PSD"
         },
@@ -35099,7 +35405,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 39,
+          "deputyID": 141,
           "vote": 0,
           "party": "PR"
         },
@@ -35124,7 +35430,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1139,
+          "deputyID": 1132,
           "vote": 1,
           "party": "PDT"
         },
@@ -35234,7 +35540,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 478,
+          "deputyID": 486,
           "vote": 1,
           "party": "PCdoB"
         },
@@ -35264,7 +35570,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 532,
+          "deputyID": 791,
           "vote": 1,
           "party": "PDT"
         },
@@ -35419,7 +35725,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 556,
+          "deputyID": 662,
           "vote": 0,
           "party": "PR"
         },
@@ -35449,7 +35755,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1161,
+          "deputyID": 1219,
           "vote": 1,
           "party": "PT"
         },
@@ -35484,7 +35790,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 421,
+          "deputyID": 464,
           "vote": 0,
           "party": "PSD"
         },
@@ -35634,7 +35940,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 1172,
+          "deputyID": 1193,
           "vote": 0,
           "party": "PR"
         },
@@ -35659,7 +35965,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 582,
+          "deputyID": 701,
           "vote": 1,
           "party": "MDB"
         },
@@ -35869,7 +36175,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 432,
+          "deputyID": 429,
           "vote": 1,
           "party": "PCdoB"
         },
@@ -35924,7 +36230,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 322,
+          "deputyID": 249,
           "vote": 1,
           "party": "PDT"
         },
@@ -35939,7 +36245,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 1193,
+          "deputyID": 1253,
           "vote": 0,
           "party": "DEM"
         },
@@ -36014,7 +36320,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 601,
+          "deputyID": 547,
           "vote": 1,
           "party": "PT"
         },
@@ -36104,7 +36410,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 614,
+          "deputyID": 628,
           "vote": 1,
           "party": "PSOL"
         },
@@ -36209,7 +36515,7 @@
           "party": "Podemos"
         },
         {
-          "deputyID": 228,
+          "deputyID": 266,
           "vote": 0,
           "party": "PP"
         },
@@ -36514,12 +36820,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 1238,
+          "deputyID": 1157,
           "vote": 1,
           "party": "PDT"
         },
         {
-          "deputyID": 870,
+          "deputyID": 867,
           "vote": 0,
           "party": "MDB"
         },
@@ -36559,7 +36865,7 @@
           "party": "PRB"
         },
         {
-          "deputyID": 276,
+          "deputyID": 283,
           "vote": 0,
           "party": "PPS"
         },
@@ -36639,7 +36945,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 1170,
+          "deputyID": 1159,
           "vote": 0,
           "party": "PRB"
         },
@@ -36719,7 +37025,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 1253,
+          "deputyID": 1160,
           "vote": 1,
           "party": "PT"
         },
@@ -36779,7 +37085,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1257,
+          "deputyID": 1243,
           "vote": 1,
           "party": "PDT"
         },
@@ -36809,7 +37115,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 665,
+          "deputyID": 579,
           "vote": 0,
           "party": "MDB"
         },
@@ -36839,6 +37145,16 @@
       "datetime": "2019-02-20T16:22:00.000Z",
       "obj": "REQUERIMENTO DE RETIRADA DE PAUTA",
       "summary": "Rejeitado o Requerimento. Sim: 68; não: 236; abstenção: 1; total: 305.",
+      "orientations": {
+        "PslPpPsd...": "Obstrução",
+        "PdtSdPode...": "Liberado",
+        "PT": "Obstrução",
+        "PSB": "Sim",
+        "PSOL": "Obstrução",
+        "PPS": "Não",
+        "NOVO": "Não",
+        "Patriota": "Não"
+      },
       "votes": [
         {
           "deputyID": 1647,
@@ -36941,7 +37257,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 1104,
+          "deputyID": 1224,
           "vote": 1,
           "party": "PSDB"
         },
@@ -36971,7 +37287,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 1108,
+          "deputyID": 1264,
           "vote": 3,
           "party": "PRB"
         },
@@ -37166,7 +37482,7 @@
           "party": "Patriota"
         },
         {
-          "deputyID": 755,
+          "deputyID": 668,
           "vote": 0,
           "party": "PDT"
         },
@@ -37206,7 +37522,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 739,
+          "deputyID": 665,
           "vote": 3,
           "party": "PSD"
         },
@@ -37236,7 +37552,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 39,
+          "deputyID": 141,
           "vote": 1,
           "party": "PR"
         },
@@ -37256,7 +37572,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1139,
+          "deputyID": 1132,
           "vote": 1,
           "party": "PDT"
         },
@@ -37331,7 +37647,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 478,
+          "deputyID": 486,
           "vote": 0,
           "party": "PCdoB"
         },
@@ -37356,7 +37672,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 532,
+          "deputyID": 791,
           "vote": 0,
           "party": "PDT"
         },
@@ -37511,7 +37827,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1161,
+          "deputyID": 1219,
           "vote": 3,
           "party": "PT"
         },
@@ -37551,7 +37867,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 351,
+          "deputyID": 326,
           "vote": 1,
           "party": "PSDB"
         },
@@ -37661,7 +37977,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 1172,
+          "deputyID": 1193,
           "vote": 1,
           "party": "PR"
         },
@@ -37676,7 +37992,7 @@
           "party": "PHS"
         },
         {
-          "deputyID": 582,
+          "deputyID": 701,
           "vote": 1,
           "party": "MDB"
         },
@@ -37861,7 +38177,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 432,
+          "deputyID": 429,
           "vote": 0,
           "party": "PCdoB"
         },
@@ -37901,7 +38217,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 322,
+          "deputyID": 249,
           "vote": 0,
           "party": "PDT"
         },
@@ -37911,7 +38227,7 @@
           "party": "DEM"
         },
         {
-          "deputyID": 1193,
+          "deputyID": 1253,
           "vote": 4,
           "party": "DEM"
         },
@@ -37966,7 +38282,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 601,
+          "deputyID": 547,
           "vote": 3,
           "party": "PT"
         },
@@ -37991,7 +38307,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 635,
+          "deputyID": 569,
           "vote": 1,
           "party": "PRB"
         },
@@ -38061,7 +38377,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 614,
+          "deputyID": 628,
           "vote": 3,
           "party": "PSOL"
         },
@@ -38136,7 +38452,7 @@
           "party": "PR"
         },
         {
-          "deputyID": 228,
+          "deputyID": 266,
           "vote": 1,
           "party": "PP"
         },
@@ -38341,7 +38657,7 @@
           "party": "Podemos"
         },
         {
-          "deputyID": 1238,
+          "deputyID": 1157,
           "vote": 0,
           "party": "PDT"
         },
@@ -38371,7 +38687,7 @@
           "party": "PRB"
         },
         {
-          "deputyID": 276,
+          "deputyID": 283,
           "vote": 1,
           "party": "PPS"
         },
@@ -38441,7 +38757,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 1170,
+          "deputyID": 1159,
           "vote": 1,
           "party": "PRB"
         },
@@ -38556,7 +38872,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1257,
+          "deputyID": 1243,
           "vote": 1,
           "party": "PDT"
         },
@@ -38571,7 +38887,7 @@
           "party": "PSOL"
         },
         {
-          "deputyID": 665,
+          "deputyID": 579,
           "vote": 1,
           "party": "MDB"
         },
@@ -38596,6 +38912,15 @@
       "datetime": "2019-02-20T20:06:00.000Z",
       "obj": "REQUERIMENTO DE RETIRADA DE PAUTA",
       "summary": "Rejeitado o Requerimento. Sim: 34; não: 248; abstenção: 2; total: 284.",
+      "orientations": {
+        "PslPpPsd...": "Não",
+        "PdtSdPode...": "Não",
+        "PT": "Obstrução",
+        "PSB": "Sim",
+        "PSOL": "Obstrução",
+        "PPS": "Não",
+        "NOVO": "Não"
+      },
       "votes": [
         {
           "deputyID": 1647,
@@ -38668,7 +38993,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 780,
+          "deputyID": 660,
           "vote": 1,
           "party": "MDB"
         },
@@ -38678,7 +39003,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 1104,
+          "deputyID": 1224,
           "vote": 1,
           "party": "PSDB"
         },
@@ -38718,7 +39043,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 1108,
+          "deputyID": 1264,
           "vote": 1,
           "party": "PRB"
         },
@@ -38913,7 +39238,7 @@
           "party": "Patriota"
         },
         {
-          "deputyID": 755,
+          "deputyID": 668,
           "vote": 1,
           "party": "PDT"
         },
@@ -38928,7 +39253,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 735,
+          "deputyID": 746,
           "vote": 1,
           "party": "PSDB"
         },
@@ -38953,7 +39278,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 739,
+          "deputyID": 665,
           "vote": 1,
           "party": "PSD"
         },
@@ -38983,7 +39308,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 39,
+          "deputyID": 141,
           "vote": 1,
           "party": "PR"
         },
@@ -39003,7 +39328,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1139,
+          "deputyID": 1132,
           "vote": 1,
           "party": "PDT"
         },
@@ -39063,7 +39388,7 @@
           "party": "MDB"
         },
         {
-          "deputyID": 478,
+          "deputyID": 486,
           "vote": 0,
           "party": "PCdoB"
         },
@@ -39078,7 +39403,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 532,
+          "deputyID": 791,
           "vote": 1,
           "party": "PDT"
         },
@@ -39183,7 +39508,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 556,
+          "deputyID": 662,
           "vote": 1,
           "party": "PR"
         },
@@ -39203,7 +39528,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 1161,
+          "deputyID": 1219,
           "vote": 3,
           "party": "PT"
         },
@@ -39228,7 +39553,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 421,
+          "deputyID": 464,
           "vote": 1,
           "party": "PSD"
         },
@@ -39343,7 +39668,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 1172,
+          "deputyID": 1193,
           "vote": 1,
           "party": "PR"
         },
@@ -39363,7 +39688,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 582,
+          "deputyID": 701,
           "vote": 1,
           "party": "MDB"
         },
@@ -39558,7 +39883,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 1193,
+          "deputyID": 1253,
           "vote": 4,
           "party": "DEM"
         },
@@ -39608,7 +39933,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 601,
+          "deputyID": 547,
           "vote": 3,
           "party": "PT"
         },
@@ -39663,7 +39988,7 @@
           "party": "PSL"
         },
         {
-          "deputyID": 614,
+          "deputyID": 628,
           "vote": 3,
           "party": "PSOL"
         },
@@ -39968,12 +40293,12 @@
           "party": "PR"
         },
         {
-          "deputyID": 1238,
+          "deputyID": 1157,
           "vote": 1,
           "party": "PDT"
         },
         {
-          "deputyID": 870,
+          "deputyID": 867,
           "vote": 1,
           "party": "MDB"
         },
@@ -40008,7 +40333,7 @@
           "party": "PRB"
         },
         {
-          "deputyID": 276,
+          "deputyID": 283,
           "vote": 1,
           "party": "PPS"
         },
@@ -40068,7 +40393,7 @@
           "party": "NOVO"
         },
         {
-          "deputyID": 1170,
+          "deputyID": 1159,
           "vote": 1,
           "party": "PRB"
         },
@@ -40128,7 +40453,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 1253,
+          "deputyID": 1160,
           "vote": 3,
           "party": "PT"
         },
@@ -40198,7 +40523,7 @@
           "party": "PSD"
         },
         {
-          "deputyID": 665,
+          "deputyID": 579,
           "vote": 1,
           "party": "MDB"
         },

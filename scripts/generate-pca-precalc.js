@@ -32,7 +32,7 @@ const MAX_DEPUTIES = 513;
 // Period Definitions (matching congress-definitions.js)
 // ============================================================
 const STARTING_YEAR = 1991;
-const ENDING_YEAR = 2025;
+const ENDING_YEAR = require('./ending-year').endingYear();
 
 const LEGISLATURES = [
     { name: '49th Legislature', regimeParty: 'PFL', period: [new Date(1991, 1, 1), new Date(1995, 0, 31)] },
@@ -43,7 +43,7 @@ const LEGISLATURES = [
     { name: '54th Legislature', regimeParty: 'PT', period: [new Date(2011, 1, 1), new Date(2015, 0, 31)] },
     { name: '55th Legislature', regimeParty: 'PMDB', period: [new Date(2015, 1, 1), new Date(2019, 0, 31)] },
     { name: '56th Legislature', regimeParty: 'PL', period: [new Date(2019, 1, 1), new Date(2023, 0, 31)] },
-    { name: '57th Legislature', regimeParty: 'PT', period: [new Date(2023, 1, 1), new Date(2026, 0, 31)] },
+    { name: '57th Legislature', regimeParty: 'PT', period: [new Date(2023, 1, 1), new Date(2027, 0, 31)] },
 ];
 
 const PRESIDENTS = [
@@ -57,7 +57,7 @@ const PRESIDENTS = [
     { name: 'Dilma (PT)', period: [new Date(2015, 0, 1), new Date(2016, 4, 12)] },
     { name: 'Temer (PMDB)', period: [new Date(2016, 4, 13), new Date(2019, 0, 1)] },
     { name: 'Bolsonaro (PSL)', period: [new Date(2019, 0, 1), new Date(2023, 0, 1)] },
-    { name: 'Lula (PT)', period: [new Date(2023, 0, 1), new Date(2026, 0, 1)] },
+    { name: 'Lula (PT)', period: [new Date(2023, 0, 1), new Date(2027, 0, 1)] },
 ];
 
 const PERIODS = { year: [], legislature: LEGISLATURES, president: PRESIDENTS };

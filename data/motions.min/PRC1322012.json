@@ -13,9 +13,28 @@
       "datetime": "2014-02-13T12:12:00.000Z",
       "obj": "REQUERIMENTO DE ADIAMENTO DA VOTAÇÃO POR 2 SESSÕES",
       "summary": "Prejudicado o Requerimento por falta de \"quorum\" (OBSTRUÇÃO).",
+      "orientations": {
+        "PT": "Obstrução",
+        "PMDB": "Obstrução",
+        "PpPros": "Obstrução",
+        "PSDB": "Obstrução",
+        "PSD": "Obstrução",
+        "PrPtdobPrp": "Obstrução",
+        "DEM": "Obstrução",
+        "PSB": "Obstrução",
+        "Solidaried": "Obstrução",
+        "PDT": "Obstrução",
+        "PTB": "Obstrução",
+        "PCdoB": "Obstrução",
+        "PSC": "Obstrução",
+        "PRB": "Obstrução",
+        "PV": "Obstrução",
+        "PPS": "Obstrução",
+        "PSOL": "Obstrução"
+      },
       "votes": [
         {
-          "deputyID": 782,
+          "deputyID": 672,
           "vote": 3,
           "party": "PR"
         },
@@ -45,12 +64,12 @@
           "party": "PCdoB"
         },
         {
-          "deputyID": 194,
+          "deputyID": 215,
           "vote": 1,
           "party": "PROS"
         },
         {
-          "deputyID": 192,
+          "deputyID": 297,
           "vote": 4,
           "party": "PP"
         },
@@ -60,12 +79,12 @@
           "party": "DEM"
         },
         {
-          "deputyID": 614,
+          "deputyID": 628,
           "vote": 1,
           "party": "PSOL"
         },
         {
-          "deputyID": 449,
+          "deputyID": 452,
           "vote": 3,
           "party": "PTB"
         },
@@ -90,7 +109,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 241,
+          "deputyID": 30,
           "vote": 0,
           "party": "Solidaried"
         },
