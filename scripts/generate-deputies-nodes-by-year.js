@@ -20,7 +20,7 @@ const PRECALC_DIR = path.join(DATA_DIR, 'precalc', 'pca');
 const OUTPUT_FILE = path.join(DATA_DIR, 'deputiesNodesByYear.json');
 
 const STARTING_YEAR = 1991;
-const ENDING_YEAR = 2025;
+const ENDING_YEAR = require('./ending-year').endingYear();
 
 // Load deputies for name lookup
 console.log('Loading deputies...');

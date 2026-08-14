@@ -13,6 +13,31 @@
       "datetime": "2017-11-22T14:04:00.000Z",
       "obj": "REQUERIMENTO DE ADIAMENTO DE VOTAÇÃO POR 2 SESSÕES",
       "summary": "Prejudicada a votação do Requerimento por falta de quórum. Sim: 7; não: 62; total: 69.",
+      "orientations": {
+        "PMDB": "Obstrução",
+        "PT": "Obstrução",
+        "PpAvante": "Obstrução",
+        "PSDB": "Obstrução",
+        "PSD": "Obstrução",
+        "PR": "Obstrução",
+        "PSB": "Não",
+        "DEM": "Obstrução",
+        "PtbProsPslPrp": "Não",
+        "PRB": "Não",
+        "PDT": "Obstrução",
+        "Solidaried": "Não",
+        "PCdoB": "Obstrução",
+        "PSC": "Não",
+        "PPS": "Não",
+        "PHS": "Obstrução",
+        "PV": "Não",
+        "PSOL": "Obstrução",
+        "Repr.REDE": "Obstrução",
+        "Repr.PEN": "Não",
+        "Minoria": "Sim",
+        "Maioria": "Não",
+        "GOV.": "Não"
+      },
       "votes": [
         {
           "deputyID": 1365,
@@ -65,7 +90,7 @@
           "party": "PCdoB"
         },
         {
-          "deputyID": 966,
+          "deputyID": 971,
           "vote": 1,
           "party": "PSDB"
         },
@@ -125,7 +150,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 1149,
+          "deputyID": 1156,
           "vote": 1,
           "party": "PHS"
         },
@@ -145,7 +170,7 @@
           "party": "PCdoB"
         },
         {
-          "deputyID": 540,
+          "deputyID": 572,
           "vote": 1,
           "party": "DEM"
         },
@@ -155,12 +180,12 @@
           "party": "PSD"
         },
         {
-          "deputyID": 1164,
+          "deputyID": 1236,
           "vote": 1,
           "party": "PSD"
         },
         {
-          "deputyID": 117,
+          "deputyID": 38,
           "vote": 1,
           "party": "PTB"
         },
@@ -260,7 +285,7 @@
           "party": "PP"
         },
         {
-          "deputyID": 194,
+          "deputyID": 215,
           "vote": 3,
           "party": "REDE"
         },
@@ -270,7 +295,7 @@
           "party": "PSDB"
         },
         {
-          "deputyID": 718,
+          "deputyID": 729,
           "vote": 1,
           "party": "PR"
         },
@@ -280,17 +305,17 @@
           "party": "PRB"
         },
         {
-          "deputyID": 192,
+          "deputyID": 297,
           "vote": 1,
           "party": "PP"
         },
         {
-          "deputyID": 614,
+          "deputyID": 628,
           "vote": 3,
           "party": "PSOL"
         },
         {
-          "deputyID": 214,
+          "deputyID": 150,
           "vote": 1,
           "party": "DEM"
         },
@@ -300,7 +325,7 @@
           "party": "PSB"
         },
         {
-          "deputyID": 1207,
+          "deputyID": 1202,
           "vote": 3,
           "party": "PSOL"
         },
@@ -380,7 +405,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 1233,
+          "deputyID": 1239,
           "vote": 3,
           "party": "PMDB"
         },
@@ -410,7 +435,7 @@
           "party": "PDT"
         },
         {
-          "deputyID": 669,
+          "deputyID": 582,
           "vote": 1,
           "party": "PP"
         },
@@ -490,7 +515,7 @@
           "party": "PT"
         },
         {
-          "deputyID": 407,
+          "deputyID": 405,
           "vote": 1,
           "party": "PDT"
         },
@@ -515,7 +540,7 @@
           "party": "PRB"
         },
         {
-          "deputyID": 1147,
+          "deputyID": 1196,
           "vote": 1,
           "party": "PSL"
         },
