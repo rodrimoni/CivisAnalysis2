@@ -105,7 +105,11 @@ function initializeScatterPlot(newID, chartObj) {
     const parties = d3.map(d3.values(chartObj.data), function (d) { return d.party; }).keys()
 
     addSearchDeputyMenu(newID, deputies);
-    addScatterPlotFilters(newID, chartObj.args.rcs)
+    addSubjectTypeFilters(newID, chartObj.args.rcs, 'Reload scatterplot with subjects and types', function (subjects, types) {
+        var tree = state.getTree();
+        var args = tree.getNode(newID, tree.traverseBF).args;
+        reloadScatterPlotData(args.filteredData, args.dimensionalReductionTechnique, newID, subjects, types);
+    });
     //addPartySizeFilter(newID, chart);
     addEditTitleInput(newID);
 
