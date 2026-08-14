@@ -4,7 +4,7 @@ var CONGRESS_DEFINE = {
     //var integerToVote = {'0':"Sim",'1':"Não",'2':"Abstenção",'3':"Obstrução",'4':"Art. 17",'5':"Branco"};
 
     startingYear: 1991,
-    endingYear: 2025,
+    endingYear: 2026,
 
     // renamed parties
     // PFL ==> DEM
@@ -19,7 +19,7 @@ var CONGRESS_DEFINE = {
         { name: '54th Legislature', regimeParty: 'PT', period: [new Date(2011, 1, 1), new Date(2015, 0, 31)] },
         { name: '55th Legislature', regimeParty: 'PMDB', period: [new Date(2015, 1, 1), new Date(2019, 0, 31)] },
         { name: '56th Legislature', regimeParty: 'PL', period: [new Date(2019, 1, 1), new Date(2023, 0, 31)] },
-        { name: '57th Legislature', regimeParty: 'PT', period: [new Date(2023, 1, 1), new Date(2026, 0, 31)] },
+        { name: '57th Legislature', regimeParty: 'PT', period: [new Date(2023, 1, 1), new Date(2027, 0, 31)] },
     ],
 
     presidents: [
@@ -33,7 +33,7 @@ var CONGRESS_DEFINE = {
         { name: 'Dilma (PT)', party: 'PT', period: [new Date(2015, 0, 1), new Date(2016, 4, 12)] },
         { name: 'Temer (PMDB)', party: 'PMDB', period: [new Date(2016, 4, 13), new Date(2019, 0, 1)] },
         { name: 'Bolsonaro (PSL)', party: 'PSL', period: [new Date(2019, 0, 1), new Date(2023, 0, 1)] },
-        { name: 'Lula (PT)', party: 'PT', period: [new Date(2023, 0, 1), new Date(2026, 0, 1)] },
+        { name: 'Lula (PT)', party: 'PT', period: [new Date(2023, 0, 1), new Date(2027, 0, 1)] },
     ],
 
     //- organization:
