@@ -262,34 +262,32 @@ function barChart(typeChart) {
                 var pt = (typeof language !== 'undefined' && language === PORTUGUESE);
                 if (mode === 'gov') {
                     return pt ? [
-                        ["O que mostra", "Em que fração das votações do tema o plenário entregou o resultado que o líder do governo pediu."],
-                        ["Denominador", "Só as votações em que o governo declarou Sim ou Não — 69% do total. \"Liberado\" é o governo não tomar partido, e fica de fora."],
-                        ["Atenção", "Inclui votações procedimentais, que são a maioria. Mede controle de pauta, não aprovação de lei."],
-                        ["Cobertura", "A Câmara só publica orientação de bancada com regularidade a partir de 1999."]
+                        ["O que mostra", "Com que frequência o plenário decidiu no sentido que o governo pediu."],
+                        ["Como calculamos", "Antes de cada votação, o líder do governo orienta a bancada. Comparamos essa orientação com o resultado: se bateu, o governo venceu. Quando o governo libera a bancada ou não se manifesta, a votação fica de fora."],
+                        ["Vale lembrar", "Entram também as votações de rito, que são a maior parte. Isso diz mais sobre o controle da pauta do que sobre aprovar leis. A Câmara só passou a registrar a orientação de forma consistente no fim dos anos 1990."]
                     ] : [
-                        ["What it shows", "The share of the theme's roll calls where the floor delivered what the government's leader asked for."],
-                        ["Denominator", "Only roll calls where the government declared Sim or Não — 69% of the total. \"Liberado\" means it took no side, and is excluded."],
-                        ["Caveat", "Procedural roll calls are included, and they are the majority. This measures agenda control, not law-making."],
-                        ["Coverage", "The Chamber only publishes leader orientations consistently from 1999 on."]
+                        ["What it shows", "How often the floor decided the way the government asked."],
+                        ["How we calculate it", "Before each vote, the government's leader tells the bench how to vote. We compare that instruction with the outcome: if they match, the government won. When the government frees the bench or stays silent, the vote is left out."],
+                        ["Worth remembering", "Procedural votes are included, and they are most of them. This says more about control of the agenda than about passing laws. The Chamber only began recording these instructions consistently in the late 1990s."]
                     ];
                 }
                 if (mode === 'rate') {
                     return pt ? [
-                        ["O que mostra", "Em que fração das votações do tema a matéria avançou."],
-                        ["Como decide", "Vale o veredito do texto (\"aprovada\"/\"rejeitada\"), que já embute as regras de quórum — PEC exige 3/5, PLP maioria absoluta. Sem veredito no texto, vale a maioria simples dos votos."],
-                        ["Atenção", "Cerca de 4 em cada 5 votações são procedimentais. Derrubar um requerimento não é derrubar a matéria."]
+                        ["O que mostra", "Com que frequência as propostas de cada tema saem vitoriosas do plenário."],
+                        ["Como calculamos", "Lemos o resultado registrado de cada votação, que já leva em conta o quórum exigido por aquele tipo de proposta. Quando o resultado não diz se passou ou não, vale a maioria dos votos."],
+                        ["Vale lembrar", "Boa parte do que o plenário vota são etapas do rito — urgência, destaque, requerimento — e não a proposta em si. Derrubar uma dessas etapas não é derrubar a proposta."]
                     ] : [
-                        ["What it shows", "The share of the theme's roll calls where the matter advanced."],
-                        ["How it's decided", "The recorded verdict wins (\"aprovada\"/\"rejeitada\"), since it already reflects quorum rules — 3/5 for a PEC, absolute majority for a PLP. With no verdict in the text, a simple majority of the votes decides."],
-                        ["Caveat", "Roughly 4 in 5 roll calls are procedural. Defeating a motion is not the same as defeating the matter."]
+                        ["What it shows", "How often proposals in each theme come out of the floor successful."],
+                        ["How we calculate it", "We read the recorded outcome of each vote, which already accounts for the quorum that kind of proposal requires. When the outcome doesn't say either way, the majority of votes decides."],
+                        ["Worth remembering", "Much of what the floor votes on are steps in the process — urgency, separate votes, motions — not the proposal itself. Defeating one of those is not defeating the proposal."]
                     ];
                 }
                 return pt ? [
-                    ["O que mostra", "Quantas votações cada tema teve no recorte atual."],
-                    ["Como conta", "Toda votação nominal do tema: mérito, requerimento e destaque."]
+                    ["O que mostra", "Com que frequência cada tema foi ao plenário."],
+                    ["Como calculamos", "Cada votação do tema conta uma vez, seja sobre a proposta em si ou sobre uma etapa do rito."]
                 ] : [
-                    ["What it shows", "How many roll calls each theme had in the current slice."],
-                    ["How it counts", "Every recorded roll call on the theme: merits, motions and separate votes."]
+                    ["What it shows", "How often each theme reached the floor."],
+                    ["How we calculate it", "Every vote on the theme counts once, whether it was about the proposal itself or about a step in the process."]
                 ];
             }
 
