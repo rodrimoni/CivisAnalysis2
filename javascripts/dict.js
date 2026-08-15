@@ -216,6 +216,9 @@ function initDict() {
         "Government success": {
             br: "Sucesso do governo"
         },
+        "About this view": {
+            br: "Sobre esta visão"
+        },
         "Share of roll calls that ended the way the government asked": {
             br: "Fração das votações que terminaram como o governo orientou"
         },

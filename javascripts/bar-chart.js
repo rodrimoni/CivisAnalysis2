@@ -218,6 +218,98 @@ function barChart(typeChart) {
                     });
             }
 
+            // What each view means and how its number is reached. Written per
+            // mode rather than as one "about this chart", so it always describes
+            // what is actually on screen — the three views count different
+            // things over different denominators, and the differences are
+            // exactly what a reader would otherwise get wrong.
+            var infoOpen = false, info = null, infoBtn = null;
+            if (isThemes) {
+                infoBtn = addGroup(null).append("button")
+                    .attr("type", "button")
+                    .attr("aria-expanded", "false")
+                    .attr("title", t("About this view"))
+                    .text("i")
+                    .style("width", "20px").style("height", "20px")
+                    .style("border", "1px solid #ccc").style("border-radius", "50%")
+                    .style("background", "#fff").style("color", "#555")
+                    .style("font-size", "12px").style("font-style", "italic")
+                    .style("font-family", "Georgia, serif")
+                    .style("line-height", "1").style("padding", "0")
+                    .style("cursor", "pointer")
+                    .on("click", function () {
+                        d3.event.stopPropagation();
+                        infoOpen = !infoOpen;
+                        // The panel lives in the header, which the SVG flexes
+                        // against — re-render so the plot reclaims the space.
+                        // Snap rather than animate: this is a reflow, not data.
+                        render(false);
+                    });
+
+                info = header.append("div")
+                    .attr("class", "bar-chart-info")
+                    .style("display", "none")
+                    .style("margin-top", "8px")
+                    .style("padding", "9px 12px")
+                    .style("background", "#f6f7f9")
+                    .style("border", "1px solid #e2e6eb")
+                    .style("border-radius", "4px")
+                    .style("font-size", "12px").style("line-height", "1.5")
+                    .style("color", "#444");
+            }
+
+            function infoLines(mode) {
+                var pt = (typeof language !== 'undefined' && language === PORTUGUESE);
+                if (mode === 'gov') {
+                    return pt ? [
+                        ["O que mostra", "Em que fração das votações do tema o plenário entregou o resultado que o líder do governo pediu."],
+                        ["Denominador", "Só as votações em que o governo declarou Sim ou Não — 69% do total. \"Liberado\" é o governo não tomar partido, e fica de fora."],
+                        ["Atenção", "Inclui votações procedimentais, que são a maioria. Mede controle de pauta, não aprovação de lei."],
+                        ["Cobertura", "A Câmara só publica orientação de bancada com regularidade a partir de 1999."]
+                    ] : [
+                        ["What it shows", "The share of the theme's roll calls where the floor delivered what the government's leader asked for."],
+                        ["Denominator", "Only roll calls where the government declared Sim or Não — 69% of the total. \"Liberado\" means it took no side, and is excluded."],
+                        ["Caveat", "Procedural roll calls are included, and they are the majority. This measures agenda control, not law-making."],
+                        ["Coverage", "The Chamber only publishes leader orientations consistently from 1999 on."]
+                    ];
+                }
+                if (mode === 'rate') {
+                    return pt ? [
+                        ["O que mostra", "Em que fração das votações do tema a matéria avançou."],
+                        ["Como decide", "Vale o veredito do texto (\"aprovada\"/\"rejeitada\"), que já embute as regras de quórum — PEC exige 3/5, PLP maioria absoluta. Sem veredito no texto, vale a maioria simples dos votos."],
+                        ["Atenção", "Cerca de 4 em cada 5 votações são procedimentais. Derrubar um requerimento não é derrubar a matéria."]
+                    ] : [
+                        ["What it shows", "The share of the theme's roll calls where the matter advanced."],
+                        ["How it's decided", "The recorded verdict wins (\"aprovada\"/\"rejeitada\"), since it already reflects quorum rules — 3/5 for a PEC, absolute majority for a PLP. With no verdict in the text, a simple majority of the votes decides."],
+                        ["Caveat", "Roughly 4 in 5 roll calls are procedural. Defeating a motion is not the same as defeating the matter."]
+                    ];
+                }
+                return pt ? [
+                    ["O que mostra", "Quantas votações cada tema teve no recorte atual."],
+                    ["Como conta", "Toda votação nominal do tema: mérito, requerimento e destaque."]
+                ] : [
+                    ["What it shows", "How many roll calls each theme had in the current slice."],
+                    ["How it counts", "Every recorded roll call on the theme: merits, motions and separate votes."]
+                ];
+            }
+
+            function renderInfo(mode) {
+                if (!info) return;   // parties chart: no views to explain
+
+                info.style("display", infoOpen ? "block" : "none");
+                infoBtn.attr("aria-expanded", infoOpen ? "true" : "false")
+                    .style("background", infoOpen ? "#4575b4" : "#fff")
+                    .style("color", infoOpen ? "#fff" : "#555");
+                if (!infoOpen) return;
+
+                var rows = info.selectAll("div.info-row").data(infoLines(mode));
+                rows.enter().append("div").attr("class", "info-row").style("margin-bottom", "3px");
+                rows.exit().remove();
+                rows.html(function (d) {
+                    return "<strong>" + d[0] + ":</strong> " + d[1];
+                });
+            }
+
             // Legend (right side of the controls row).
             //
             // The two hues keep one meaning across modes — the outcome the
@@ -334,6 +426,12 @@ function barChart(typeChart) {
             function render(animate) {
                 // Layout reflows (resize) must snap; only data/view changes animate.
                 var dur = (animate === false) ? 0 : DURATION;
+
+                // Settle the header before measuring: the info panel lives in
+                // it and the plot flexes against what the header leaves over, so
+                // opening it after the measurement would size the viewBox to a
+                // box that no longer exists.
+                renderInfo(view.mode);
 
                 // Match the viewBox aspect to the SVG's ACTUAL rendered box, so
                 // the drawing fills it exactly — no letterbox band, no overflow.
