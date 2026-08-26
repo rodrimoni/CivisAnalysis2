@@ -81,3 +81,101 @@
 #collisiondetection {
     margin: 4px;
 }
+/*
+ * Layer controls.
+ *
+ * Toggles rather than checkboxes: a checkbox states a preference, while these
+ * switch a layer on and off, and the filled state says so without the reader
+ * having to find a tick mark. Matches the histogram's controls so the two
+ * charts read as one system.
+ *
+ * The chamber infographic still uses .checkbox-container above; it has a
+ * single control and no legend selection to gate it on.
+ */
+.chart-control-bar {
+    position: absolute;
+    margin-top: 20px;
+    margin-left: 20px;
+    z-index: 2;
+    max-width: calc(100% - 40px);
+}
+
+.chart-control-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.chart-pill {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 5px;
+    border: 1px solid #ccc;
+    border-radius: 999px;
+    background: #fff;
+    color: #333;
+    font-size: 13px;
+    line-height: 1.2;
+    padding: 5px 13px;
+    cursor: pointer;
+    transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.chart-pill:hover {
+    border-color: #4575b4;
+}
+
+.chart-pill:focus-visible {
+    outline: 2px solid #4575b4;
+    outline-offset: 2px;
+}
+
+.chart-pill.is-on {
+    background: #4575b4;
+    border-color: #4575b4;
+    color: #fff;
+}
+
+/* Names the parties the alignment scale is stretched over. */
+.chart-pill-note {
+    font-size: 12px;
+    opacity: 0.75;
+}
+
+.chart-info-toggle {
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    background: #fff;
+    color: #555;
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-size: 13px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.chart-info-toggle.is-on {
+    background: #4575b4;
+    border-color: #4575b4;
+    color: #fff;
+}
+
+.chart-info-panel {
+    margin-top: 8px;
+    padding: 9px 12px;
+    max-width: 460px;
+    background: #f6f7f9;
+    border: 1px solid #e2e6eb;
+    border-radius: 4px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #444;
+}
+
+.chart-info-row + .chart-info-row {
+    margin-top: 5px;
+}

@@ -28,13 +28,12 @@ function scatterPlotChart() {
     var svg;
     var panelID;
     var panelToBeRedrawn;
-    var checkbox;
-    var alignmentCheckbox;
-    var envelopeCheckbox;
     var nodesData; // Store nodes data for hull calculations
     var originalXDomain; // Store original x scale domain before zoom
     var originalYDomain; // Store original y scale domain before zoom
-    var selectedPartiesForHulls = []; // Track which parties have hulls displayed
+    // Parties picked in the legend. Drives the distribution hulls and gates the
+    // alignment control, which only means anything within a chosen party.
+    var selectedParties = [];
 
     var dispatch = d3.dispatch('update');
     var div = d3.select(".toolTip");
@@ -43,45 +42,211 @@ function scatterPlotChart() {
     var showAlignmentOpacity = false;
     var showPartyEnvelope = false;
 
+    // Assigned by drawScatterPlot, which owns the force simulation and the
+    // pre-force scales these need. No-ops until the plot has been drawn.
+    var toggleOverlapping = function () { };
+    var toggleEnvelope = function () { };
+
+    // Layers the reader can switch on, as toggles rather than checkboxes: the
+    // filled state reads at a glance and the strip stays on one line. Same
+    // shape as the histogram's controls, so the two charts behave alike.
+    var pills = {};
+    var infoOpen = false, infoPanel = null, infoBtn = null;
+
+    // Selected deputies already sit at full CSS opacity while the rest are
+    // faded, so fill-opacity is free to carry alignment on top of that.
+    var MIN_ALIGNMENT_OPACITY = 0.15;
+
+    function pillText(key) {
+        var pt = (language === PORTUGUESE);
+        if (key === 'overlapping') return pt ? 'Deputados sobrepostos' : 'Overlapping deputies';
+        if (key === 'envelope') return pt ? 'Área de distribuição dos partidos' : 'Party distribution area';
+        return pt ? 'Alinhamento deputado-partido' : 'Deputy-party alignment';
+    }
+
+    function pillHint(key) {
+        var pt = (language === PORTUGUESE);
+        if (key === 'overlapping') {
+            return pt
+                ? 'Afasta os deputados que caíram no mesmo ponto, para dar para contá-los'
+                : 'Pushes apart deputies that landed on the same point, so they can be counted';
+        }
+        if (key === 'envelope') {
+            return pt
+                ? 'Desenha a área que cada partido selecionado ocupa no espectro'
+                : 'Outlines the area each selected party occupies in the spectrum';
+        }
+        return pt
+            ? 'Escurece quem mais votou com o próprio partido, comparado ao restante da seleção'
+            : 'Darkens whoever voted most with their own party, compared to the rest of the selection';
+    }
+
+    function buildControlBar(container) {
+        var bar = d3.select(container).append("div").attr("class", "chart-control-bar");
+        var row = bar.append("div").attr("class", "chart-control-row");
+
+        addPill(row, 'overlapping', function (on) { toggleOverlapping(on); });
+        addPill(row, 'envelope', function (on) { toggleEnvelope(on); });
+        addPill(row, 'alignment', function (on) { toggleAlignment(on); });
+
+        infoBtn = row.append("button")
+            .attr("type", "button")
+            .attr("class", "chart-info-toggle")
+            .attr("aria-expanded", "false")
+            .attr("title", language === PORTUGUESE ? 'Sobre estas camadas' : 'About these layers')
+            .text("i")
+            .on("click", function () {
+                d3.event.stopPropagation();
+                infoOpen = !infoOpen;
+                renderInfo();
+            });
+
+        infoPanel = bar.append("div").attr("class", "chart-info-panel").style("display", "none");
+
+        refreshAlignmentControl();
+        return bar;
+    }
+
+    function addPill(row, key, onToggle) {
+        var btn = row.append("button")
+            .attr("type", "button")
+            .attr("class", "chart-pill")
+            .attr("aria-pressed", "false")
+            .attr("title", pillHint(key))
+            .on("click", function () {
+                d3.event.stopPropagation();
+                setPill(key, !pills[key].on);
+                onToggle(pills[key].on);
+            });
+        btn.append("span").attr("class", "chart-pill-label").text(pillText(key));
+        // Says which parties the alignment is being stretched over, so the
+        // scale never looks like it covers the whole chamber.
+        btn.append("span").attr("class", "chart-pill-note");
+        pills[key] = { btn: btn, on: false };
+        return btn;
+    }
+
+    function setPill(key, on) {
+        var p = pills[key];
+        if (!p) return;
+        p.on = on;
+        p.btn.classed("is-on", on).attr("aria-pressed", on ? "true" : "false");
+    }
+
+    /**
+     * The alignment layer only exists while at least one party is picked in the
+     * legend, because the scale is stretched across the picked deputies. With
+     * nothing picked there is no set to compare within, so the control is taken
+     * away rather than left to produce a meaningless ramp.
+     */
+    function refreshAlignmentControl() {
+        var p = pills.alignment;
+        if (!p) return;
+
+        var available = selectedParties.length > 0;
+        p.btn.style("display", available ? null : "none");
+        p.btn.select(".chart-pill-note")
+            .text(available ? " · " + selectedParties.join(", ") : "");
+
+        if (!available && p.on) {
+            setPill('alignment', false);
+            showAlignmentOpacity = false;
+            applyAlignmentOpacity();
+        }
+        if (infoOpen) renderInfo();
+    }
+
+    /**
+     * Maps alignment onto opacity across the CURRENT SELECTION rather than the
+     * full 0–1 range.
+     *
+     * Alignment is a deputy's own record against their own party, so the value
+     * itself does not depend on who else is on screen — but whether it can be
+     * seen does. Party discipline is high: inside PT the whole spread is
+     * 0.95–1.00, which the absolute scale turns into opacity 0.96–1.00 and the
+     * eye reads as flat. Stretching the scale over the selection is what makes
+     * the channel carry anything at all.
+     *
+     * @returns {Function|null} alignment -> opacity, or null when nothing is selected
+     */
+    function selectedAlignmentScale() {
+        if (!svg) return null;
+        var values = [];
+        svg.selectAll('.node').each(function (d) {
+            if (d && d.selected && typeof d.alignment === 'number') values.push(d.alignment);
+        });
+        if (!values.length) return null;
+
+        return alignmentOpacityScale(values, MIN_ALIGNMENT_OPACITY);
+    }
+
+    function applyAlignmentOpacity(animate) {
+        if (!svg) return;
+        var scale = currentAlignmentScale();
+        var nodes = svg.selectAll('.node');
+        var target = (animate === false) ? nodes : nodes.transition().duration(400);
+        target.style("fill-opacity", function (d) { return alignmentOpacityFor(d, scale); });
+    }
+
+    /**
+     * The scale for one render pass. Building it walks every node, so it must
+     * be hoisted out of the per-datum callback that uses it.
+     */
+    function currentAlignmentScale() {
+        return showAlignmentOpacity ? selectedAlignmentScale() : null;
+    }
+
+    function alignmentOpacityFor(d, scale) {
+        if (!scale) return 1;
+        // Unselected deputies are outside the comparison and are already faded
+        // by the stylesheet; dimming them again would only muddy the contrast.
+        if (!d || !d.selected || typeof d.alignment !== 'number') return 1;
+        return scale(d.alignment);
+    }
+
+    function toggleAlignment(on) {
+        showAlignmentOpacity = on;
+        applyAlignmentOpacity();
+        if (infoOpen) renderInfo();
+    }
+
+    function infoLines() {
+        var pt = (language === PORTUGUESE);
+        var lines = [
+            [pillText('overlapping'), pillHint('overlapping')],
+            [pillText('envelope'), pillHint('envelope')]
+        ];
+        if (selectedParties.length) {
+            lines.push([pillText('alignment'),
+            pt
+                ? 'A escala é esticada entre o menos e o mais alinhado da seleção — sem isso, um partido disciplinado sairia todo com a mesma opacidade. Alinhamento é a fração dos votos do deputado que seguiram a maioria do próprio partido.'
+                : 'The scale is stretched between the least and the most aligned of the selection — without that, a disciplined party would come out uniformly opaque. Alignment is the share of a deputy\'s votes that followed their own party\'s majority.']);
+        } else {
+            lines.push([pillText('alignment'),
+            pt
+                ? 'Disponível ao escolher um partido ou mais na legenda, já que a comparação acontece dentro da seleção.'
+                : 'Available once you pick one or more parties in the legend, since the comparison happens within the selection.']);
+        }
+        return lines;
+    }
+
+    function renderInfo() {
+        if (!infoPanel) return;
+        infoPanel.style("display", infoOpen ? "block" : "none");
+        infoBtn.classed("is-on", infoOpen).attr("aria-expanded", infoOpen ? "true" : "false");
+        if (!infoOpen) return;
+
+        var rows = infoPanel.selectAll("div.chart-info-row").data(infoLines());
+        rows.enter().append("div").attr("class", "chart-info-row");
+        rows.exit().remove();
+        rows.html(function (d) { return "<strong>" + d[0] + ":</strong> " + d[1]; });
+    }
+
     function chart(selection) {
         selection.each(function (data) {
             panelID = ($(this).parents('.panel')).attr('id');
 
-            // Add the checkbox container for controls
-            var checkboxContainer = d3.select(this)
-                .append("div")
-                .attr("class", "checkbox-container")
-                .attr("style", "margin-top:20px; margin-left: 20px; position: absolute");
-
-            // Overlapping deputies checkbox
-            var overlappingDeputiesLabel = checkboxContainer.append("label");
-            overlappingDeputiesLabel.append("input")
-                .attr("type", "checkbox")
-                .attr("id", panelID + "-forceLayoutApply")
-                .attr("class", "forceLayoutCheckbox")
-                .each(function () { checkbox = d3.select(this); });
-            overlappingDeputiesLabel.append("span")
-                .text(language === PORTUGUESE ? "Mostrar deputados sobrepostos" : "Show overlapping deputies");
-
-            // Party alignment opacity checkbox
-            var partyAlignmentLabel = checkboxContainer.append("label");
-            partyAlignmentLabel.append("input")
-                .attr("type", "checkbox")
-                .attr("id", panelID + "-alignmentOpacity")
-                .attr("class", "alignmentOpacityCheckbox")
-                .each(function () { alignmentCheckbox = d3.select(this); });
-            partyAlignmentLabel.append("span")
-                .text(language === PORTUGUESE ? "Mostrar alinhamento partidário" : "Show party alignment");
-
-            // Party envelope (hull) checkbox
-            var partyEnvelopeLabel = checkboxContainer.append("label");
-            partyEnvelopeLabel.append("input")
-                .attr("type", "checkbox")
-                .attr("id", panelID + "-partyEnvelope")
-                .attr("class", "partyEnvelopeCheckbox")
-                .each(function () { envelopeCheckbox = d3.select(this); });
-            partyEnvelopeLabel.append("span")
-                .text(language === PORTUGUESE ? 'Mostrar a área de distribuição dos partidos' : 'Show party distribution area');
+            buildControlBar(this);
 
             chart.createScatterPlotChart(data, this);
 
@@ -108,7 +273,8 @@ function scatterPlotChart() {
         showAlignmentOpacity = false;
         showPartyEnvelope = false;
         partyCountByOverlappedGroup = [];
-        selectedPartiesForHulls = []; // Reset hull selection
+        selectedParties = [];
+        Object.keys(pills).forEach(function (k) { setPill(k, false); });
 
         chart.createScatterPlotChart(data, htmlContent[0]);
     };
@@ -268,10 +434,10 @@ function scatterPlotChart() {
             .attr("cx", function (d) { return x(d.scatterplot[1]); })
             .attr("cy", function (d) { return y(d.scatterplot[0]); })
             .style("fill", function (d) { return setDeputyFill(d); })
-            .style("fill-opacity", function (d) {
-                if (!showAlignmentOpacity) return 1.0; // Fully opaque when disabled
-                return getAlignmentOpacity(d.alignment);
-            })
+            .style("fill-opacity", (function () {
+                var scale = currentAlignmentScale();
+                return function (d) { return alignmentOpacityFor(d, scale); };
+            })())
             .on('mousedown', function (d) {
                 mouseClickDeputy(d);
             })
@@ -345,8 +511,10 @@ function scatterPlotChart() {
 
         updateLegend(nodes, svg);
 
-        d3.select("#" + panelID + "-forceLayoutApply").on("change", function () {
-            if (checkbox.node().checked) {
+        // The pill drives this; the body needs `force` and the original scales,
+        // which only exist inside this closure.
+        toggleOverlapping = function (on) {
+            if (on) {
                 if (!isForceLayout) {
                     force.start();
                     isForceLayout = true;
@@ -368,37 +536,21 @@ function scatterPlotChart() {
                 deputies.each(resetPositions);
                 drawScatterPlot(nodes, panelToBeRedrawn, false);*/
             }
-        });
+        };
 
-        // Party alignment opacity toggle
-        d3.select("#" + panelID + "-alignmentOpacity").on("change", function () {
-            showAlignmentOpacity = alignmentCheckbox.node().checked;
-
-            // Update all node opacities with smooth transition
-            svg.selectAll('.node')
-                .transition()
-                .duration(500)
-                .style("fill-opacity", function (d) {
-                    if (!showAlignmentOpacity) return 1.0; // Fully opaque when disabled
-                    // Map alignment (0-1) to opacity range (0.4-1.0) for better visibility
-                    return d.alignment ? 0.4 + (d.alignment * 0.6) : 0.7;
-                });
-        });
-
-        // Party envelope (hull) toggle
-        d3.select("#" + panelID + "-partyEnvelope").on("change", function () {
-            showPartyEnvelope = envelopeCheckbox.node().checked;
+        toggleEnvelope = function (on) {
+            showPartyEnvelope = on;
 
             if (showPartyEnvelope) {
                 // Show hulls for currently selected parties
-                if (selectedPartiesForHulls.length > 0) {
-                    chart.showConvexHullOfParties(selectedPartiesForHulls);
+                if (selectedParties.length > 0) {
+                    chart.showConvexHullOfParties(selectedParties);
                 }
             } else {
                 // Hide all hulls but keep the party selection
                 svg.selectAll(".party-hull").remove();
             }
-        });
+        };
 
         function tick(e) {
             deputies.each(moveTowardDataPosition(e.alpha));
@@ -670,13 +822,11 @@ function scatterPlotChart() {
     };
 
     chart.update = function () {
+        var updateScale = currentAlignmentScale();
         svg.selectAll(".deputiesNodesDots .node")
             .transition()
             .style("fill", function (d) { return setDeputyFill(d); })
-            .style("fill-opacity", function (d) {
-                if (!showAlignmentOpacity) return 1.0; // Fully opaque when disabled
-                return getAlignmentOpacity(d.alignment);
-            })
+            .style("fill-opacity", function (d) { return alignmentOpacityFor(d, updateScale); })
             .attr("class", function (d) { return (d.selected) ? "node selected" : (d.hovered) ? "node hovered" : "node"; })
             .attr("r", function (d) { return (d.hovered) ? nodeRadius * 2 : nodeRadius; });
 
@@ -913,27 +1063,27 @@ function scatterPlotChart() {
     }
 
     function togglePartyHull(party, mode) {
-        var index = selectedPartiesForHulls.indexOf(party);
+        var index = selectedParties.indexOf(party);
 
         if (mode === 'add') {
             // Multi-select mode: add if not present
             if (index === -1) {
-                selectedPartiesForHulls.push(party);
+                selectedParties.push(party);
             }
         } else if (mode === 'remove') {
             // Remove mode: remove if present
             if (index > -1) {
-                selectedPartiesForHulls.splice(index, 1);
+                selectedParties.splice(index, 1);
             }
         } else if (mode === 'single') {
             // Single-select mode: replace with this party only
-            selectedPartiesForHulls = [party];
+            selectedParties = [party];
         }
 
-        // Update hull visualization only if the checkbox is active
+        // Only redraw the hulls when that layer is switched on
         if (showPartyEnvelope) {
-            if (selectedPartiesForHulls.length > 0) {
-                chart.showConvexHullOfParties(selectedPartiesForHulls);
+            if (selectedParties.length > 0) {
+                chart.showConvexHullOfParties(selectedParties);
             } else {
                 chart.hideConvexHulls();
             }
@@ -941,6 +1091,11 @@ function scatterPlotChart() {
 
         // Always update visual indicators on legend
         updateLegendHullIndicators();
+
+        // The alignment layer is scoped to the selection, so both its
+        // availability and its scale change whenever the selection does.
+        refreshAlignmentControl();
+        applyAlignmentOpacity();
     }
 
     function updateLegendHullIndicators() {
@@ -948,12 +1103,12 @@ function scatterPlotChart() {
 
         svg.selectAll('.legend circle')
             .style('stroke', function (d) {
-                return selectedPartiesForHulls.indexOf(d) > -1
+                return selectedParties.indexOf(d) > -1
                     ? '#000'
                     : 'none';
             })
             .style('stroke-width', function (d) {
-                return selectedPartiesForHulls.indexOf(d) > -1
+                return selectedParties.indexOf(d) > -1
                     ? '3px'
                     : '0';
             });
@@ -1081,7 +1236,7 @@ function scatterPlotChart() {
         if (!svg) return;
 
         // Clear internal state
-        selectedPartiesForHulls = [];
+        selectedParties = [];
 
         // Remove hulls from visualization
         svg.selectAll(".party-hull").remove();
@@ -1093,7 +1248,7 @@ function scatterPlotChart() {
     };
 
     chart.getSelectedPartiesForHulls = function () {
-        return selectedPartiesForHulls.slice();
+        return selectedParties.slice();
     };
 
     return d3.rebind(chart, dispatch, 'on');

@@ -100,6 +100,42 @@ function getAlignmentOpacity(alignment) {
 }
 
 /**
+ * Maps a set of alignment values onto opacity, stretched across the set itself
+ * rather than across the whole 0–1 range.
+ *
+ * Alignment is a deputy's own record against their own party, so the value does
+ * not depend on who else is on screen — but whether the difference can be SEEN
+ * does. Party discipline is high, and inside a single party the whole spread is
+ * often a few points: PT in the 57th runs 0.95–1.00, which the absolute mapping
+ * renders as opacity 0.96–1.00 and the eye reads as uniform. Stretching the
+ * scale over the compared set is what puts the difference back on screen.
+ *
+ * @param {Array<number>} values - alignments of the deputies being compared
+ * @param {number} [minOpacity=0.15] - opacity given to the least aligned
+ * @returns {Function|null} alignment -> opacity, or null when there is nothing
+ *                          to compare. A set with no spread maps to 1
+ *                          throughout, since a ramp there would invent
+ *                          differences that do not exist.
+ */
+function alignmentOpacityScale(values, minOpacity) {
+    var floor = (minOpacity === undefined) ? 0.15 : minOpacity;
+    var usable = (values || []).filter(function (v) { return typeof v === 'number' && isFinite(v); });
+    if (!usable.length) return null;
+
+    var lo = Math.min.apply(null, usable);
+    var hi = Math.max.apply(null, usable);
+    if (hi - lo < 1e-6) return function () { return 1; };
+
+    return function (alignment) {
+        if (typeof alignment !== 'number' || !isFinite(alignment)) return 1;
+        var t = (alignment - lo) / (hi - lo);
+        if (t < 0) t = 0;
+        if (t > 1) t = 1;
+        return floor + t * (1 - floor);
+    };
+}
+
+/**
  * Initialize system
  */
 function initSystem() {
@@ -246,4 +282,12 @@ function calcThePartyTracesByYear(periodOfYears) {
 
 function createTraces1by1() {
     calcThePartyTracesByYear(1); // calc by two years
+}
+// Node-only export for standalone verification scripts (ignored in the browser).
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        getAlignmentOpacity: getAlignmentOpacity,
+        alignmentOpacityScale: alignmentOpacityScale,
+        t: t
+    };
 }
