@@ -7,10 +7,12 @@
         "dev": "live-server --port=3000 --watch=. --wait=200 --ignore=dist,node_modules,.git --no-browser",
         "clean": "rimraf dist",
         "build": "rimraf dist && cpy \"{index.html,images/**,javascripts/**,stylesheets/**,fonts/**,data/**}\" dist --parents",
-        "preview": "serve dist -l 3000"
+        "preview": "serve dist -l 3000",
+        "test": "node scripts/verify-approval-rule.js && node scripts/verify-government-rule.js && node scripts/verify-bar-chart.js"
     },
     "devDependencies": {
         "cpy-cli": "^5.0.0",
+        "jsdom": "^29.1.1",
         "live-server": "^1.2.2",
         "rimraf": "^5.0.5",
         "serve": "^14.2.3"
