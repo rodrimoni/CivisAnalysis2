@@ -210,7 +210,7 @@ function initDict() {
         "Volume": {
             br: "Volume"
         },
-        "Approval rate": {
+        "Pass rate": {
             br: "Taxa de aprovação"
         },
         "Government success": {
@@ -243,7 +243,7 @@ function initDict() {
         "all": {
             br: "todas"
         },
-        "approved": {
+        "passed": {
             br: "aprovadas"
         },
         "rejected": {

@@ -186,7 +186,7 @@ function barChart(typeChart) {
             if (isThemes) {
                 segmented(addGroup(t("View:")), [
                     { value: 'volume', label: t("Volume") },
-                    { value: 'rate', label: t("Approval rate") },
+                    { value: 'rate', label: t("Pass rate") },
                     {
                         value: 'gov',
                         label: t("Government success"),
@@ -277,7 +277,7 @@ function barChart(typeChart) {
                         ["Como calculamos", "Lemos o resultado registrado de cada votação, que já leva em conta o quórum exigido por aquele tipo de proposta. Quando o resultado não diz se passou ou não, vale a maioria dos votos."],
                         ["Vale lembrar", "Boa parte do que o plenário vota são etapas do rito — urgência, destaque, requerimento — e não a proposta em si. Derrubar uma dessas etapas não é derrubar a proposta."]
                     ] : [
-                        ["What it shows", "How often proposals in each theme come out of the floor successful."],
+                        ["What it shows", "How often proposals in each theme pass on the floor."],
                         ["How we calculate it", "We read the recorded outcome of each vote, which already accounts for the quorum that kind of proposal requires. When the outcome doesn't say either way, the majority of votes decides."],
                         ["Worth remembering", "Much of what the floor votes on are steps in the process — urgency, separate votes, motions — not the proposal itself. Defeating one of those is not defeating the proposal."]
                     ];
@@ -448,7 +448,7 @@ function barChart(typeChart) {
                 notice.text(hidden > 0 ? hiddenNotice(hidden, view.minN, view.mode) : "");
 
                 if (legend) {
-                    legendPositive.text(view.mode === 'gov' ? t("government prevailed") : t("approved"));
+                    legendPositive.text(view.mode === 'gov' ? t("government prevailed") : t("passed"));
                     legendNegative.text(view.mode === 'gov' ? t("government defeated") : t("rejected"));
                 }
 
@@ -593,7 +593,7 @@ function barChart(typeChart) {
                     var pct = d.frequency ? Math.round(100 * d.approved / d.frequency) : 0;
                     div.html(subject + "<br>" + (pt
                         ? pct + "% aprovadas · " + d.approved + " de " + d.frequency + " votações"
-                        : pct + "% approved · " + d.approved + " of " + d.frequency + " votes"));
+                        : pct + "% passed · " + d.approved + " of " + d.frequency + " votes"));
                 });
 
                 bar.on("mouseout", function () { div.style("display", "none"); });
