@@ -108,13 +108,61 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
+.layer-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 7px;
+}
+
 .layer-panel-title {
     font-size: 10px;
     font-weight: 600;
     letter-spacing: 0.09em;
     text-transform: uppercase;
     color: #8a929c;
-    margin-bottom: 7px;
+}
+
+/* Folded away, the panel is only its heading and stops covering the plot. */
+.layer-panel.is-collapsed {
+    min-width: 0;
+    padding-bottom: 8px;
+}
+
+.layer-panel.is-collapsed .layer-panel-head {
+    margin-bottom: 0;
+}
+
+.layer-panel-collapse {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #d2d7dd;
+    border-radius: 3px;
+    background: #fff;
+    color: #78818c;
+    cursor: pointer;
+    transition: border-color 120ms ease, color 120ms ease;
+}
+
+.layer-panel-collapse:hover {
+    border-color: #4575b4;
+    color: #4575b4;
+}
+
+.layer-panel-collapse:focus-visible {
+    outline: 2px solid #4575b4;
+    outline-offset: 2px;
+}
+
+.layer-panel-collapse .glyphicon {
+    font-size: 9px;
+    top: 0;
 }
 
 .layer-row {

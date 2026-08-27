@@ -78,7 +78,8 @@ function scatterPlotChart() {
     // shape here would state exclusivity that does not exist — and a bare
     // rounded chip reads as a label rather than something to press.
     var layers = {};
-    var layerPanel = null;
+    var layerPanel = null, layerBody = null, collapseBtn = null;
+    var layersCollapsed = false;
 
     // Selected deputies already sit at full CSS opacity while the rest are
     // faded, so fill-opacity is free to carry alignment on top of that.
@@ -125,16 +126,60 @@ function scatterPlotChart() {
     function buildControlBar(container) {
         layerPanel = d3.select(container).append("div").attr("class", "layer-panel");
 
-        layerPanel.append("div")
+        var head = layerPanel.append("div").attr("class", "layer-panel-head");
+
+        head.append("span")
             .attr("class", "layer-panel-title")
             .text(language === PORTUGUESE ? 'Camadas' : 'Layers');
+
+        // Same minus/plus the window panels use, so collapsing reads as the
+        // gesture it already is elsewhere in the app.
+        collapseBtn = head.append("button")
+            .attr("type", "button")
+            .attr("class", "layer-panel-collapse")
+            .on("click", function () {
+                d3.event.stopPropagation();
+                layersCollapsed = !layersCollapsed;
+                renderCollapsed();
+            });
+        collapseBtn.append("i").attr("class", "glyphicon glyphicon-minus");
+
+        layerBody = layerPanel.append("div").attr("class", "layer-panel-body");
 
         addLayer('overlapping', function (on) { toggleOverlapping(on); });
         addLayer('envelope', function (on) { toggleEnvelope(on); });
         addLayer('alignment', function (on) { toggleAlignment(on); });
 
         refreshPartyDependentControls();
+        renderCollapsed();
         return layerPanel;
+    }
+
+    /**
+     * Collapsed, the panel keeps only its heading, so the plot underneath is
+     * clear. The count of switched-on layers rides along in the title — folded
+     * away is not the same as switched off, and the reader should not have to
+     * reopen the panel to remember what is being drawn.
+     */
+    function renderCollapsed() {
+        if (!layerPanel) return;
+
+        layerPanel.classed("is-collapsed", layersCollapsed);
+        layerBody.style("display", layersCollapsed ? "none" : null);
+
+        collapseBtn.select("i")
+            .attr("class", "glyphicon " + (layersCollapsed ? "glyphicon-plus" : "glyphicon-minus"));
+
+        var pt = (language === PORTUGUESE);
+        collapseBtn.attr("title", layersCollapsed
+            ? (pt ? 'Mostrar camadas' : 'Show layers')
+            : (pt ? 'Recolher camadas' : 'Collapse layers'));
+        collapseBtn.attr("aria-expanded", layersCollapsed ? "false" : "true");
+
+        var active = Object.keys(layers).filter(function (k) { return layers[k].on; }).length;
+        layerPanel.select(".layer-panel-title")
+            .text((pt ? 'Camadas' : 'Layers') +
+                (layersCollapsed && active ? ' · ' + active : ''));
     }
 
     function addLayer(key, onToggle) {
@@ -149,6 +194,7 @@ function scatterPlotChart() {
                 d3.event.stopPropagation();
                 layers[key].on = this.checked;
                 onToggle(this.checked);
+                renderCollapsed();
             })
             .on("click", function () { d3.event.stopPropagation(); });
 
@@ -208,6 +254,7 @@ function scatterPlotChart() {
      */
     function refreshPartyDependentControls() {
         var available = selectedParties.length > 0;
+        var turnedOffByLegend = false;
 
         PARTY_DEPENDENT.forEach(function (key) {
             var l = layers[key];
@@ -221,6 +268,7 @@ function scatterPlotChart() {
             // nothing to act upon.
             if (!available && l.on) {
                 setLayer(key, false);
+                turnedOffByLegend = true;
                 if (key === 'alignment') {
                     showAlignmentOpacity = false;
                     applyAlignmentOpacity();
@@ -232,6 +280,8 @@ function scatterPlotChart() {
             l.infoBtn.attr("aria-label", layerHint(key) +
                 (l.disabled ? ' ' + waitingNote() : ''));
         });
+
+        if (turnedOffByLegend) renderCollapsed();
     }
 
     /**
