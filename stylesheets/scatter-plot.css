@@ -84,98 +84,132 @@
 /*
  * Layer controls.
  *
- * Toggles rather than checkboxes: a checkbox states a preference, while these
- * switch a layer on and off, and the filled state says so without the reader
- * having to find a tick mark. Matches the histogram's controls so the two
- * charts read as one system.
+ * Checkboxes rather than the histogram's segmented control: that one picks one
+ * of three views, these switch three independent layers. Borrowing its shape
+ * would state an exclusivity that does not exist.
  *
- * The chamber infographic still uses .checkbox-container above; it has a
- * single control and no legend selection to gate it on.
+ * The panel is a surface with a border and a title, so it reads as a place
+ * where controls live instead of text floating over the plot.
+ *
+ * The chamber infographic still uses .checkbox-container above; it has a single
+ * control and no legend selection to gate it on.
  */
-.chart-control-bar {
+.layer-panel {
     position: absolute;
-    margin-top: 20px;
-    margin-left: 20px;
+    top: 14px;
+    left: 16px;
     z-index: 2;
-    max-width: calc(100% - 40px);
+    min-width: 210px;
+    max-width: min(320px, calc(100% - 32px));
+    padding: 10px 12px 11px;
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid #dfe3e8;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
-.chart-control-row {
+.layer-panel-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: #8a929c;
+    margin-bottom: 7px;
+}
+
+.layer-row {
     display: flex;
     align-items: center;
-    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 24px;
+}
+
+/* The label carries the hit area, so most of the row is clickable. */
+.layer-label {
+    display: flex;
+    align-items: center;
     gap: 8px;
-}
-
-.chart-pill {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 5px;
-    border: 1px solid #ccc;
-    border-radius: 999px;
-    background: #fff;
-    color: #333;
+    flex: 1 1 auto;
+    margin: 0;
+    padding: 2px 0;
     font-size: 13px;
-    line-height: 1.2;
-    padding: 5px 13px;
+    font-weight: normal;
+    line-height: 1.3;
+    color: #2f353c;
     cursor: pointer;
-    transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
 }
 
-.chart-pill:hover {
-    border-color: #4575b4;
+.layer-label input[type="checkbox"] {
+    flex: 0 0 auto;
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    accent-color: #4575b4;
+    cursor: pointer;
 }
 
-.chart-pill:focus-visible {
-    outline: 2px solid #4575b4;
-    outline-offset: 2px;
+/* Long names wrap inside the panel instead of pushing the info button out. */
+.layer-name {
+    flex: 0 1 auto;
+    min-width: 0;
 }
 
-.chart-pill.is-on {
-    background: #4575b4;
-    border-color: #4575b4;
-    color: #fff;
-}
-
-/* Names the parties the alignment scale is stretched over. */
-.chart-pill-note {
+.layer-note {
+    color: #6a727c;
     font-size: 12px;
-    opacity: 0.75;
 }
 
-.chart-info-toggle {
-    width: 22px;
-    height: 22px;
+/*
+ * Waiting on a party being picked in the legend. Greyed and left in place
+ * rather than removed: a control that disappears reads as one that does not
+ * exist, while a greyed one whose help names the condition teaches it.
+ */
+.layer-row.is-disabled .layer-label {
+    color: #a8aeb5;
+    cursor: not-allowed;
+}
+
+.layer-row.is-disabled .layer-label input[type="checkbox"] {
+    cursor: not-allowed;
+}
+
+.layer-info {
+    flex: 0 0 auto;
+    width: 18px;
+    height: 18px;
     padding: 0;
-    border: 1px solid #ccc;
+    border: 1px solid #d2d7dd;
     border-radius: 50%;
     background: #fff;
-    color: #555;
+    color: #78818c;
     font-family: Georgia, serif;
     font-style: italic;
-    font-size: 13px;
+    font-size: 11px;
     line-height: 1;
     cursor: pointer;
 }
 
-.chart-info-toggle.is-on {
+.layer-info:hover {
+    border-color: #4575b4;
+    color: #4575b4;
+}
+
+.layer-info.is-on {
     background: #4575b4;
     border-color: #4575b4;
     color: #fff;
 }
 
-.chart-info-panel {
-    margin-top: 8px;
-    padding: 9px 12px;
-    max-width: 460px;
-    background: #f6f7f9;
-    border: 1px solid #e2e6eb;
-    border-radius: 4px;
-    font-size: 12px;
-    line-height: 1.5;
-    color: #444;
+.layer-info:focus-visible {
+    outline: 2px solid #4575b4;
+    outline-offset: 2px;
 }
 
-.chart-info-row + .chart-info-row {
-    margin-top: 5px;
+/* Sits under its own row, so it explains that layer and not the panel. */
+.layer-help {
+    margin: 1px 0 6px 23px;
+    padding-right: 4px;
+    font-size: 11.5px;
+    line-height: 1.45;
+    color: #5c646d;
 }

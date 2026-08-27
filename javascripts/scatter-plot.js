@@ -47,113 +47,178 @@ function scatterPlotChart() {
     var toggleOverlapping = function () { };
     var toggleEnvelope = function () { };
 
-    // Layers the reader can switch on, as toggles rather than checkboxes: the
-    // filled state reads at a glance and the strip stays on one line. Same
-    // shape as the histogram's controls, so the two charts behave alike.
-    var pills = {};
-    var infoOpen = false, infoPanel = null, infoBtn = null;
+    // Layer controls.
+    //
+    // Checkboxes, not the histogram's segmented control: that one picks one of
+    // three views, while these switch three independent layers. Reusing its
+    // shape here would state exclusivity that does not exist — and a bare
+    // rounded chip reads as a label rather than something to press.
+    var layers = {};
+    var layerPanel = null;
 
     // Selected deputies already sit at full CSS opacity while the rest are
     // faded, so fill-opacity is free to carry alignment on top of that.
     var MIN_ALIGNMENT_OPACITY = 0.15;
 
-    function pillText(key) {
+    // Both of these describe a chosen party, so neither means anything until
+    // one is picked in the legend.
+    var PARTY_DEPENDENT = ['envelope', 'alignment'];
+
+    function needsParty(key) { return PARTY_DEPENDENT.indexOf(key) > -1; }
+
+    function layerText(key) {
         var pt = (language === PORTUGUESE);
         if (key === 'overlapping') return pt ? 'Deputados sobrepostos' : 'Overlapping deputies';
         if (key === 'envelope') return pt ? 'Área de distribuição dos partidos' : 'Party distribution area';
         return pt ? 'Alinhamento deputado-partido' : 'Deputy-party alignment';
     }
 
-    function pillHint(key) {
+    function layerHint(key) {
         var pt = (language === PORTUGUESE);
         if (key === 'overlapping') {
             return pt
-                ? 'Afasta os deputados que caíram no mesmo ponto, para dar para contá-los'
-                : 'Pushes apart deputies that landed on the same point, so they can be counted';
+                ? 'Afasta os deputados que caíram no mesmo ponto, para dar para contá-los.'
+                : 'Pushes apart deputies that landed on the same point, so they can be counted.';
         }
         if (key === 'envelope') {
             return pt
-                ? 'Desenha a área que cada partido selecionado ocupa no espectro'
-                : 'Outlines the area each selected party occupies in the spectrum';
+                ? 'Desenha a área que cada partido selecionado ocupa no espectro.'
+                : 'Outlines the area each selected party occupies in the spectrum.';
         }
         return pt
-            ? 'Escurece quem mais votou com o próprio partido, comparado ao restante da seleção'
-            : 'Darkens whoever voted most with their own party, compared to the rest of the selection';
+            ? 'Escurece quem mais votou com o próprio partido. A escala é esticada entre o menos e o mais alinhado da seleção — sem isso, um partido disciplinado sairia todo com a mesma opacidade.'
+            : 'Darkens whoever voted most with their own party. The scale is stretched between the least and the most aligned of the selection — without that, a disciplined party would come out uniformly opaque.';
+    }
+
+    // A disabled control has to name what it is waiting on, or it just reads as
+    // broken.
+    function waitingNote() {
+        return (language === PORTUGUESE)
+            ? 'Escolha um partido na legenda para usar esta camada.'
+            : 'Pick a party in the legend to use this layer.';
     }
 
     function buildControlBar(container) {
-        var bar = d3.select(container).append("div").attr("class", "chart-control-bar");
-        var row = bar.append("div").attr("class", "chart-control-row");
+        layerPanel = d3.select(container).append("div").attr("class", "layer-panel");
 
-        addPill(row, 'overlapping', function (on) { toggleOverlapping(on); });
-        addPill(row, 'envelope', function (on) { toggleEnvelope(on); });
-        addPill(row, 'alignment', function (on) { toggleAlignment(on); });
+        layerPanel.append("div")
+            .attr("class", "layer-panel-title")
+            .text(language === PORTUGUESE ? 'Camadas' : 'Layers');
 
-        infoBtn = row.append("button")
+        addLayer('overlapping', function (on) { toggleOverlapping(on); });
+        addLayer('envelope', function (on) { toggleEnvelope(on); });
+        addLayer('alignment', function (on) { toggleAlignment(on); });
+
+        refreshPartyDependentControls();
+        return layerPanel;
+    }
+
+    function addLayer(key, onToggle) {
+        var row = layerPanel.append("div").attr("class", "layer-row");
+
+        // The whole label is the hit area, which is most of the row.
+        var label = row.append("label").attr("class", "layer-label");
+        var input = label.append("input")
+            .attr("type", "checkbox")
+            .attr("id", panelID + "-layer-" + key)
+            .on("change", function () {
+                d3.event.stopPropagation();
+                layers[key].on = this.checked;
+                onToggle(this.checked);
+            })
+            .on("click", function () { d3.event.stopPropagation(); });
+
+        label.append("span").attr("class", "layer-name").text(layerText(key));
+        // Names the parties the alignment scale is stretched over, so it never
+        // looks like it covers the whole chamber.
+        label.append("span").attr("class", "layer-note");
+
+        var infoBtn = row.append("button")
             .attr("type", "button")
-            .attr("class", "chart-info-toggle")
+            .attr("class", "layer-info")
             .attr("aria-expanded", "false")
-            .attr("title", language === PORTUGUESE ? 'Sobre estas camadas' : 'About these layers')
+            .attr("title", language === PORTUGUESE ? 'Sobre esta camada' : 'About this layer')
             .text("i")
             .on("click", function () {
                 d3.event.stopPropagation();
-                infoOpen = !infoOpen;
-                renderInfo();
+                var l = layers[key];
+                l.infoOpen = !l.infoOpen;
+                renderLayerInfo(key);
             });
 
-        infoPanel = bar.append("div").attr("class", "chart-info-panel").style("display", "none");
+        var help = layerPanel.append("div").attr("class", "layer-help").style("display", "none");
 
-        refreshAlignmentControl();
-        return bar;
+        layers[key] = {
+            row: row, input: input, label: label, infoBtn: infoBtn, help: help,
+            on: false, disabled: false, infoOpen: false
+        };
+        renderLayerInfo(key);
+        return row;
     }
 
-    function addPill(row, key, onToggle) {
-        var btn = row.append("button")
-            .attr("type", "button")
-            .attr("class", "chart-pill")
-            .attr("aria-pressed", "false")
-            .attr("title", pillHint(key))
-            .on("click", function () {
-                d3.event.stopPropagation();
-                setPill(key, !pills[key].on);
-                onToggle(pills[key].on);
-            });
-        btn.append("span").attr("class", "chart-pill-label").text(pillText(key));
-        // Says which parties the alignment is being stretched over, so the
-        // scale never looks like it covers the whole chamber.
-        btn.append("span").attr("class", "chart-pill-note");
-        pills[key] = { btn: btn, on: false };
-        return btn;
+    // Explanation sits under its own row rather than in a tooltip: a native
+    // title is slow to appear, invisible on touch, and cannot hold the sentence
+    // the alignment layer actually needs.
+    function renderLayerInfo(key) {
+        var l = layers[key];
+        if (!l) return;
+
+        var text = layerHint(key);
+        if (l.disabled) text += ' ' + waitingNote();
+
+        l.help.style("display", l.infoOpen ? "block" : "none").text(text);
+        l.infoBtn.classed("is-on", l.infoOpen)
+            .attr("aria-expanded", l.infoOpen ? "true" : "false");
     }
 
-    function setPill(key, on) {
-        var p = pills[key];
-        if (!p) return;
-        p.on = on;
-        p.btn.classed("is-on", on).attr("aria-pressed", on ? "true" : "false");
+    function setLayer(key, on) {
+        var l = layers[key];
+        if (!l) return;
+        l.on = on;
+        l.input.property("checked", on);
     }
 
     /**
-     * The alignment layer only exists while at least one party is picked in the
-     * legend, because the scale is stretched across the picked deputies. With
-     * nothing picked there is no set to compare within, so the control is taken
-     * away rather than left to produce a meaningless ramp.
+     * Both party layers wait on the legend: the hulls outline chosen parties,
+     * and the alignment scale is stretched across the chosen deputies. With
+     * nothing picked there is nothing for either to describe.
+     *
+     * They stay on screen and go grey rather than disappearing — a control that
+     * vanishes reads as one that does not exist, while a greyed one that says
+     * what it is waiting for teaches the legend.
      */
-    function refreshAlignmentControl() {
-        var p = pills.alignment;
-        if (!p) return;
-
+    function refreshPartyDependentControls() {
         var available = selectedParties.length > 0;
-        p.btn.style("display", available ? null : "none");
-        p.btn.select(".chart-pill-note")
-            .text(available ? " · " + selectedParties.join(", ") : "");
 
-        if (!available && p.on) {
-            setPill('alignment', false);
-            showAlignmentOpacity = false;
-            applyAlignmentOpacity();
+        PARTY_DEPENDENT.forEach(function (key) {
+            var l = layers[key];
+            if (!l) return;
+
+            l.disabled = !available;
+            l.row.classed("is-disabled", !available);
+            l.input.property("disabled", !available);
+
+            // Turning off on the way out, so nothing is left switched on with
+            // nothing to act upon.
+            if (!available && l.on) {
+                setLayer(key, false);
+                if (key === 'alignment') {
+                    showAlignmentOpacity = false;
+                    applyAlignmentOpacity();
+                } else {
+                    showPartyEnvelope = false;
+                    if (svg) svg.selectAll(".party-hull").remove();
+                }
+            }
+            renderLayerInfo(key);
+        });
+
+        // Only the alignment scale is normalized over the selection, so only it
+        // has to say which parties it covers.
+        if (layers.alignment) {
+            layers.alignment.label.select(".layer-note")
+                .text(available ? " · " + selectedParties.join(", ") : "");
         }
-        if (infoOpen) renderInfo();
     }
 
     /**
@@ -175,17 +240,7 @@ function scatterPlotChart() {
         svg.selectAll('.node').each(function (d) {
             if (d && d.selected && typeof d.alignment === 'number') values.push(d.alignment);
         });
-        if (!values.length) return null;
-
         return alignmentOpacityScale(values, MIN_ALIGNMENT_OPACITY);
-    }
-
-    function applyAlignmentOpacity(animate) {
-        if (!svg) return;
-        var scale = currentAlignmentScale();
-        var nodes = svg.selectAll('.node');
-        var target = (animate === false) ? nodes : nodes.transition().duration(400);
-        target.style("fill-opacity", function (d) { return alignmentOpacityFor(d, scale); });
     }
 
     /**
@@ -204,43 +259,19 @@ function scatterPlotChart() {
         return scale(d.alignment);
     }
 
+    function applyAlignmentOpacity(animate) {
+        if (!svg) return;
+        var scale = currentAlignmentScale();
+        var nodes = svg.selectAll('.node');
+        var target = (animate === false) ? nodes : nodes.transition().duration(400);
+        target.style("fill-opacity", function (d) { return alignmentOpacityFor(d, scale); });
+    }
+
     function toggleAlignment(on) {
         showAlignmentOpacity = on;
         applyAlignmentOpacity();
-        if (infoOpen) renderInfo();
     }
 
-    function infoLines() {
-        var pt = (language === PORTUGUESE);
-        var lines = [
-            [pillText('overlapping'), pillHint('overlapping')],
-            [pillText('envelope'), pillHint('envelope')]
-        ];
-        if (selectedParties.length) {
-            lines.push([pillText('alignment'),
-            pt
-                ? 'A escala é esticada entre o menos e o mais alinhado da seleção — sem isso, um partido disciplinado sairia todo com a mesma opacidade. Alinhamento é a fração dos votos do deputado que seguiram a maioria do próprio partido.'
-                : 'The scale is stretched between the least and the most aligned of the selection — without that, a disciplined party would come out uniformly opaque. Alignment is the share of a deputy\'s votes that followed their own party\'s majority.']);
-        } else {
-            lines.push([pillText('alignment'),
-            pt
-                ? 'Disponível ao escolher um partido ou mais na legenda, já que a comparação acontece dentro da seleção.'
-                : 'Available once you pick one or more parties in the legend, since the comparison happens within the selection.']);
-        }
-        return lines;
-    }
-
-    function renderInfo() {
-        if (!infoPanel) return;
-        infoPanel.style("display", infoOpen ? "block" : "none");
-        infoBtn.classed("is-on", infoOpen).attr("aria-expanded", infoOpen ? "true" : "false");
-        if (!infoOpen) return;
-
-        var rows = infoPanel.selectAll("div.chart-info-row").data(infoLines());
-        rows.enter().append("div").attr("class", "chart-info-row");
-        rows.exit().remove();
-        rows.html(function (d) { return "<strong>" + d[0] + ":</strong> " + d[1]; });
-    }
 
     function chart(selection) {
         selection.each(function (data) {
@@ -274,7 +305,7 @@ function scatterPlotChart() {
         showPartyEnvelope = false;
         partyCountByOverlappedGroup = [];
         selectedParties = [];
-        Object.keys(pills).forEach(function (k) { setPill(k, false); });
+        Object.keys(layers).forEach(function (k) { setLayer(k, false); });
 
         chart.createScatterPlotChart(data, htmlContent[0]);
     };
@@ -1094,7 +1125,7 @@ function scatterPlotChart() {
 
         // The alignment layer is scoped to the selection, so both its
         // availability and its scale change whenever the selection does.
-        refreshAlignmentControl();
+        refreshPartyDependentControls();
         applyAlignmentOpacity();
     }
 
