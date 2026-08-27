@@ -47,6 +47,30 @@ function scatterPlotChart() {
     var toggleOverlapping = function () { };
     var toggleEnvelope = function () { };
 
+    // The app's one tooltip surface, shared by the deputies, the legend and the
+    // layer help — lifted out of drawScatterPlot so the controls, which are
+    // built before the plot, can reach it too.
+    function showToolTip(html) {
+        if (div.empty()) return;
+        div.transition().duration(0);
+        div.style("left", d3.event.pageX + 15 + "px");
+        div.style("top", d3.event.pageY - 10 + "px");
+        div.style("display", "inline-block").style("opacity", 1);
+        div.html(html);
+    }
+
+    function moveToolTip() {
+        if (div.empty()) return;
+        div.style("left", d3.event.pageX + 15 + "px");
+        div.style("top", d3.event.pageY - 10 + "px");
+    }
+
+    function hideToolTip() {
+        if (div.empty()) return;
+        div.transition().duration(0);
+        div.style("display", "none").style("opacity", 1);
+    }
+
     // Layer controls.
     //
     // Checkboxes, not the histogram's segmented control: that one picks one of
@@ -133,42 +157,40 @@ function scatterPlotChart() {
         // looks like it covers the whole chamber.
         label.append("span").attr("class", "layer-note");
 
-        var infoBtn = row.append("button")
-            .attr("type", "button")
+        // Hovering the mark reveals the explanation in the app's own tooltip,
+        // the same surface the deputies and the legend use. Opening a block of
+        // text inside the panel would push the rows around every time someone
+        // asked what a layer does.
+        var infoBtn = row.append("span")
             .attr("class", "layer-info")
-            .attr("aria-expanded", "false")
-            .attr("title", language === PORTUGUESE ? 'Sobre esta camada' : 'About this layer')
+            .attr("role", "img")
+            .attr("aria-label", layerHint(key))
             .text("i")
-            .on("click", function () {
-                d3.event.stopPropagation();
-                var l = layers[key];
-                l.infoOpen = !l.infoOpen;
-                renderLayerInfo(key);
-            });
-
-        var help = layerPanel.append("div").attr("class", "layer-help").style("display", "none");
+            .on("mouseover", function () { showToolTip(renderLayerTooltipHtml(key)); })
+            .on("mousemove", function () { moveToolTip(); })
+            .on("mouseout", function () { hideToolTip(); });
 
         layers[key] = {
-            row: row, input: input, label: label, infoBtn: infoBtn, help: help,
-            on: false, disabled: false, infoOpen: false
+            row: row, input: input, label: label, infoBtn: infoBtn,
+            on: false, disabled: false
         };
-        renderLayerInfo(key);
         return row;
     }
 
-    // Explanation sits under its own row rather than in a tooltip: a native
-    // title is slow to appear, invisible on touch, and cannot hold the sentence
-    // the alignment layer actually needs.
-    function renderLayerInfo(key) {
+    function renderLayerTooltipHtml(key) {
         var l = layers[key];
-        if (!l) return;
+        var waiting = (l && l.disabled)
+            ? '<div style="margin-top:6px; font-size:11px; color:#666;"><em>' +
+            waitingNote() + '</em></div>'
+            : '';
 
-        var text = layerHint(key);
-        if (l.disabled) text += ' ' + waitingNote();
-
-        l.help.style("display", l.infoOpen ? "block" : "none").text(text);
-        l.infoBtn.classed("is-on", l.infoOpen)
-            .attr("aria-expanded", l.infoOpen ? "true" : "false");
+        return '<div style="max-width: 260px;">' +
+            '<div style="font-size:14px; font-weight:700; color:#2f353c; margin-bottom:3px;">' +
+            layerText(key) + '</div>' +
+            '<div style="font-size:12.5px; color:#666; line-height:1.45;">' +
+            layerHint(key) + '</div>' +
+            waiting +
+            '</div>';
     }
 
     function setLayer(key, on) {
@@ -210,7 +232,8 @@ function scatterPlotChart() {
                     if (svg) svg.selectAll(".party-hull").remove();
                 }
             }
-            renderLayerInfo(key);
+            l.infoBtn.attr("aria-label", layerHint(key) +
+                (l.disabled ? ' ' + waitingNote() : ''));
         });
 
         // Only the alignment scale is normalized over the selection, so only it
@@ -509,27 +532,6 @@ function scatterPlotChart() {
                 '</div>';
 
             return (typeof language !== 'undefined' && language === PORTUGUESE) ? portuguese : english;
-        }
-
-        function showToolTip(html) {
-            if (div.empty()) return;
-            div.transition().duration(0);
-            div.style("left", d3.event.pageX + 15 + "px");
-            div.style("top", d3.event.pageY - 10 + "px");
-            div.style("display", "inline-block").style("opacity", 1);
-            div.html(html);
-        }
-
-        function moveToolTip() {
-            if (div.empty()) return;
-            div.style("left", d3.event.pageX + 15 + "px");
-            div.style("top", d3.event.pageY - 10 + "px");
-        }
-
-        function hideToolTip() {
-            if (div.empty()) return;
-            div.transition().duration(0);
-            div.style("display", "none").style("opacity", 1);
         }
 
         $("#" + panelID + " .node")

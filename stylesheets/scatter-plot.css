@@ -173,43 +173,31 @@
     cursor: not-allowed;
 }
 
+/*
+ * Marks that an explanation is available. A hover target rather than a button:
+ * it reveals the app's tooltip, so there is no state to press into.
+ */
 .layer-info {
     flex: 0 0 auto;
-    width: 18px;
-    height: 18px;
-    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
     border: 1px solid #d2d7dd;
     border-radius: 50%;
     background: #fff;
     color: #78818c;
     font-family: Georgia, serif;
     font-style: italic;
-    font-size: 11px;
+    font-size: 10px;
     line-height: 1;
-    cursor: pointer;
+    cursor: help;
+    user-select: none;
+    transition: border-color 120ms ease, color 120ms ease;
 }
 
 .layer-info:hover {
     border-color: #4575b4;
     color: #4575b4;
-}
-
-.layer-info.is-on {
-    background: #4575b4;
-    border-color: #4575b4;
-    color: #fff;
-}
-
-.layer-info:focus-visible {
-    outline: 2px solid #4575b4;
-    outline-offset: 2px;
-}
-
-/* Sits under its own row, so it explains that layer and not the panel. */
-.layer-help {
-    margin: 1px 0 6px 23px;
-    padding-right: 4px;
-    font-size: 11.5px;
-    line-height: 1.45;
-    color: #5c646d;
 }
