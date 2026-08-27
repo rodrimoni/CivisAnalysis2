@@ -183,7 +183,9 @@ function scatterPlotChart() {
     }
 
     function addLayer(key, onToggle) {
-        var row = layerPanel.append("div").attr("class", "layer-row");
+        // Into the body, not the panel: collapsing hides the body, and a row
+        // appended beside it would stay on screen.
+        var row = layerBody.append("div").attr("class", "layer-row");
 
         // The whole label is the hit area, which is most of the row.
         var label = row.append("label").attr("class", "layer-label");
