@@ -38,7 +38,8 @@ function scatterPlotChart() {
     var dispatch = d3.dispatch('update');
     var div = d3.select(".toolTip");
     var brush;
-    var isForceLayout = false;
+    var isForceLayout = false;      // dots are at the simulation's positions now
+    var forceHasRun = false;        // d.x / d.y have been computed at least once
     var showAlignmentOpacity = false;
     var showPartyEnvelope = false;
 
@@ -80,6 +81,10 @@ function scatterPlotChart() {
     var layers = {};
     var layerPanel = null, layerBody = null, collapseBtn = null;
     var layersCollapsed = false;
+
+    // The k the reader last asked for, so the clusters can be rebuilt when the
+    // dots move underneath them.
+    var lastClusterK = null;
 
     // Selected deputies already sit at full CSS opacity while the rest are
     // faded, so fill-opacity is free to carry alignment on top of that.
@@ -287,6 +292,64 @@ function scatterPlotChart() {
     }
 
     /**
+     * Scales from data space to pixels using the domains the plot was built
+     * with, so they survive zooming.
+     */
+    function originalScales() {
+        return {
+            x: d3.scale.linear().domain(originalXDomain).range(x.range()),
+            y: d3.scale.linear().domain(originalYDomain).range(y.range())
+        };
+    }
+
+    /**
+     * Where a deputy is actually drawn, in pixels.
+     *
+     * With "overlapping deputies" on, the force simulation moves deputies off
+     * their own coordinates so co-located ones can be told apart, and d.x/d.y
+     * is where they end up. Anything drawn around the dots — party envelopes,
+     * cluster envelopes — has to follow them, or it wraps positions that are no
+     * longer on screen.
+     */
+    function displayedPoint(d, scales) {
+        if (isForceLayout && typeof d.x === 'number' && typeof d.y === 'number') {
+            return [d.x, d.y];
+        }
+        return [scales.x(d.scatterplot[1]), scales.y(d.scatterplot[0])];
+    }
+
+    /**
+     * The same position back in data space, for anything that measures
+     * distances rather than draws.
+     *
+     * Clustering has to work in one space: the two axes have different pixel
+     * ranges, so grouping on pixels would silently weight one dimension over
+     * the other.
+     */
+    function displayedScatterplot(d, scales) {
+        if (!isForceLayout || typeof d.x !== 'number' || typeof d.y !== 'number') {
+            return d.scatterplot;
+        }
+        return [scales.y.invert(d.y), scales.x.invert(d.x)];
+    }
+
+    /**
+     * Everything drawn FROM the dot positions rather than being a dot. Called
+     * whenever the layout settles, since that is when those positions stop
+     * moving.
+     */
+    function refreshDerivedLayers() {
+        if (showPartyEnvelope && selectedParties.length > 0) {
+            chart.showConvexHullOfParties(selectedParties);
+        }
+        if (lastClusterK) {
+            var current = d3.select('#' + panelID + ' .deputiesNodesDots')
+                .selectAll('circle').data();
+            if (current && current.length) chart.getClusters(lastClusterK, current, panelID);
+        }
+    }
+
+    /**
      * Maps alignment onto opacity across the CURRENT SELECTION rather than the
      * full 0–1 range.
      *
@@ -366,6 +429,8 @@ function scatterPlotChart() {
 
         // reset globals
         isForceLayout = false;
+        forceHasRun = false;
+        lastClusterK = null;
         showAlignmentOpacity = false;
         showPartyEnvelope = false;
         partyCountByOverlappedGroup = [];
@@ -499,6 +564,9 @@ function scatterPlotChart() {
             .nodes(nodes)
             .size([width, height])
             .on("tick", tick)
+            // Settling is when the positions stop moving, so it is when the
+            // envelopes drawn around them can be trusted.
+            .on("end", refreshDerivedLayers)
             .charge(-0.1)
             .gravity(0)
             .chargeDistance(20);
@@ -588,30 +656,45 @@ function scatterPlotChart() {
 
         // The pill drives this; the body needs `force` and the original scales,
         // which only exist inside this closure.
+        var MOVE_DURATION = 1000;
+
+        // Two different facts, which used to share one flag: whether the dots
+        // are at the simulation's positions right now, and whether that
+        // simulation has ever run. Reusing the computed positions on the way
+        // back in is what keeps the second toggle cheap, but the first is what
+        // every derived layer reads — and it never went back to false, so after
+        // one toggle the envelopes believed the dots were displaced forever.
         toggleOverlapping = function (on) {
             if (on) {
-                if (!isForceLayout) {
+                isForceLayout = true;
+                if (!forceHasRun) {
                     force.start();
-                    isForceLayout = true;
-                }
-                else {
+                    forceHasRun = true;
+                    // The simulation settles on its own; "end" redraws.
+                } else {
                     svg.selectAll('.node')
-                        .transition().duration(1000)
+                        .transition().duration(MOVE_DURATION)
                         .attr('cx', function (d) { return d.x; })
                         .attr('cy', function (d) { return d.y; });
+                    afterMove();
                 }
             }
             else {
                 force.stop();
+                isForceLayout = false;
                 svg.selectAll('.node')
-                    .transition().duration(1000)
+                    .transition().duration(MOVE_DURATION)
                     .attr('cx', function (d) { return xOriginalForce(d.scatterplot[1]); })
                     .attr('cy', function (d) { return yOriginalForce(d.scatterplot[0]); });
-                /*$(panelToBeRedrawn).find('svg').remove();
-                deputies.each(resetPositions);
-                drawScatterPlot(nodes, panelToBeRedrawn, false);*/
+                afterMove();
             }
         };
+
+        // The dots travel over a transition, so anything wrapped around them is
+        // only right once they have arrived.
+        function afterMove() {
+            setTimeout(refreshDerivedLayers, MOVE_DURATION + 20);
+        }
 
         toggleEnvelope = function (on) {
             showPartyEnvelope = on;
@@ -918,18 +1001,33 @@ function scatterPlotChart() {
     }
 
     chart.getClusters = function (k, data, id) {
-        console.log(data);
+        lastClusterK = k;
+
         //number of clusters, defaults to undefined
         clusterMaker.k(k);
 
         //number of iterations (higher number gives more time to converge), defaults to 1000
         clusterMaker.iterations(750);
 
+        // Cluster where the deputies are shown, not where they started. With
+        // the overlapping layer on, the two differ, and grouping on the
+        // original coordinates would draw envelopes that cut across the dots
+        // the reader is looking at.
+        //
+        // The positions are carried back into data space first: clusterMaker
+        // reads `scatterplot`, and the two axes span different pixel ranges, so
+        // clustering on pixels would weight one dimension over the other.
+        var scales = originalScales();
+        var displayed = data.map(function (d) {
+            return Object.assign({}, d, { scatterplot: displayedScatterplot(d, scales) });
+        });
+
         //data from which to identify clusters, defaults to []
-        clusterMaker.data(data);
+        clusterMaker.data(displayed);
 
         this.clusters = clusterMaker.clusters();
         var clustersPoints = [];
+
 
         this.clusters.forEach(function (cluster, index) {
             clustersPoints.push({
@@ -938,8 +1036,6 @@ function scatterPlotChart() {
                 })
             });
         });
-
-        console.log(this.clusters);
 
         //updateHulls(hullSets, id);
         updateHullsTest(clustersPoints, id);
@@ -1243,14 +1339,7 @@ function scatterPlotChart() {
             return;
         }
 
-        // Create temporary scales with original domains for hull calculation
-        var xOriginal = d3.scale.linear()
-            .domain(originalXDomain)
-            .range(x.range());
-
-        var yOriginal = d3.scale.linear()
-            .domain(originalYDomain)
-            .range(y.range());
+        var scales = originalScales();
 
         // Prepare data for each party
         var partyHullData = [];
@@ -1273,8 +1362,11 @@ function scatterPlotChart() {
 
         // Function to create hull path using ORIGINAL scales
         var groupPath = function (d) {
+            // Follows the dots: with the overlapping layer on they sit at the
+            // simulation's positions, and an envelope drawn from the original
+            // coordinates would float away from the party it describes.
             var points = d.deputies.map(function (deputy) {
-                return [xOriginal(deputy.scatterplot[1]), yOriginal(deputy.scatterplot[0])];
+                return displayedPoint(deputy, scales);
             });
 
             var hull = d3.geom.hull(points);
