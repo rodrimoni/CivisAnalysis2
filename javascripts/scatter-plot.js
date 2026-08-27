@@ -153,9 +153,6 @@ function scatterPlotChart() {
             .on("click", function () { d3.event.stopPropagation(); });
 
         label.append("span").attr("class", "layer-name").text(layerText(key));
-        // Names the parties the alignment scale is stretched over, so it never
-        // looks like it covers the whole chamber.
-        label.append("span").attr("class", "layer-note");
 
         // Hovering the mark reveals the explanation in the app's own tooltip,
         // the same surface the deputies and the legend use. Opening a block of
@@ -235,13 +232,6 @@ function scatterPlotChart() {
             l.infoBtn.attr("aria-label", layerHint(key) +
                 (l.disabled ? ' ' + waitingNote() : ''));
         });
-
-        // Only the alignment scale is normalized over the selection, so only it
-        // has to say which parties it covers.
-        if (layers.alignment) {
-            layers.alignment.label.select(".layer-note")
-                .text(available ? " · " + selectedParties.join(", ") : "");
-        }
     }
 
     /**

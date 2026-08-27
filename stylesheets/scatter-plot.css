@@ -154,11 +154,6 @@
     min-width: 0;
 }
 
-.layer-note {
-    color: #6a727c;
-    font-size: 12px;
-}
-
 /*
  * Waiting on a party being picked in the legend. Greyed and left in place
  * rather than removed: a control that disappears reads as one that does not
