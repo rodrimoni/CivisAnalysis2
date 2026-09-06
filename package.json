@@ -8,7 +8,7 @@
         "clean": "rimraf dist",
         "build": "rimraf dist && cpy \"{index.html,images/**,javascripts/**,stylesheets/**,fonts/**,data/**}\" dist --parents",
         "preview": "serve dist -l 3000",
-        "test": "node scripts/verify-approval-rule.js && node scripts/verify-government-rule.js && node scripts/verify-alignment-scale.js && node scripts/verify-bar-chart.js && node scripts/verify-layer-panel.js && node scripts/verify-derived-layers.js"
+        "test": "node scripts/verify-approval-rule.js && node scripts/verify-government-rule.js && node scripts/verify-alignment-scale.js && node scripts/verify-context-menus.js && node scripts/verify-bar-chart.js && node scripts/verify-layer-panel.js && node scripts/verify-derived-layers.js"
     },
     "devDependencies": {
         "cpy-cli": "^5.0.0",
