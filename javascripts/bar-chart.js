@@ -77,13 +77,36 @@ function barChart(typeChart) {
             data.forEach(function (d) {
                 if (d.approved === undefined) d.approved = 0;
                 if (d.rejected === undefined) d.rejected = 0;
+                if (d.govDecided === undefined) d.govDecided = 0;
+                if (d.govPrevailed === undefined) d.govPrevailed = 0;
                 d.rate = d.frequency ? d.approved / d.frequency : 0;
+                // Its own denominator: only the roll calls where the government
+                // declared a direction. Dividing by `frequency` would read every
+                // roll call it stayed out of as a government defeat.
+                d.govRate = d.govDecided ? d.govPrevailed / d.govDecided : 0;
             });
 
-            // Overall approval rate for this slice — the reference baseline.
+            // Baselines for the reference line, one per mode — each against its
+            // own denominator, for the same reason.
             var grandTotal = d3.sum(data, function (d) { return d.frequency; });
             var grandApproved = d3.sum(data, function (d) { return d.approved; });
+            var grandGovDecided = d3.sum(data, function (d) { return d.govDecided; });
+            var grandGovPrevailed = d3.sum(data, function (d) { return d.govPrevailed; });
             var globalRate = grandTotal ? grandApproved / grandTotal : 0;
+            var globalGovRate = grandGovDecided ? grandGovPrevailed / grandGovDecided : 0;
+
+            // The Chamber only began publishing leader orientations consistently
+            // around 1999, so an earlier slice has nothing to measure here.
+            var hasGovData = grandGovDecided > 0;
+
+            // The three modes measure different things over different
+            // denominators. Every read goes through these, so the two rates
+            // cannot end up sharing a denominator by accident.
+            function isRateMode() { return isThemes && (view.mode === 'rate' || view.mode === 'gov'); }
+            function denominator(d) { return view.mode === 'gov' ? d.govDecided : d.frequency; }
+            function numerator(d) { return view.mode === 'gov' ? d.govPrevailed : d.approved; }
+            function shareOf(d) { return view.mode === 'gov' ? d.govRate : d.rate; }
+            function baseline() { return view.mode === 'gov' ? globalGovRate : globalRate; }
 
             // ---------- header (controls + notice) ----------
             // One flow container so the notice follows the controls instead of
@@ -117,38 +140,61 @@ function barChart(typeChart) {
                 return g;
             }
 
-            // Segmented control: mutually exclusive views.
+            // Segmented control: mutually exclusive views. An option the current
+            // slice has no data for is greyed and explains itself on hover,
+            // rather than disappearing — otherwise the view looks like it does
+            // not exist instead of not applying here.
             function segmented(group, options, current, onPick) {
                 var wrap = group.append("div")
                     .style("display", "inline-flex")
                     .style("border", "1px solid #ccc").style("border-radius", "4px")
                     .style("overflow", "hidden");
-                options.forEach(function (opt, i) {
-                    var btn = wrap.append("button")
+
+                var buttons = options.map(function (opt, i) {
+                    return wrap.append("button")
                         .attr("type", "button")
                         .attr("data-value", opt.value)
+                        .attr("title", opt.title || null)
                         .text(opt.label)
+                        .property("disabled", !!opt.disabled)
                         .style("border", "none")
                         .style("border-left", i ? "1px solid #ccc" : "none")
                         .style("padding", "4px 11px")
                         .style("font-size", "13px")
-                        .style("cursor", "pointer")
-                        .style("background", opt.value === current ? "#4575b4" : "#fff")
-                        .style("color", opt.value === current ? "#fff" : "#333")
+                        .style("cursor", opt.disabled ? "not-allowed" : "pointer")
                         .on("click", function () {
                             d3.event.stopPropagation();
-                            wrap.selectAll("button")
-                                .style("background", "#fff").style("color", "#333");
-                            btn.style("background", "#4575b4").style("color", "#fff");
+                            if (opt.disabled) return;
+                            paint(opt.value);
                             onPick(opt.value);
                         });
                 });
+
+                // Repaint from the options every time, so a disabled button
+                // keeps its greyed look instead of being reset to the idle style.
+                function paint(active) {
+                    buttons.forEach(function (btn, i) {
+                        var opt = options[i];
+                        var on = opt.value === active;
+                        btn.style("background", on ? "#4575b4" : "#fff")
+                            .style("color", opt.disabled ? "#bbb" : (on ? "#fff" : "#333"));
+                    });
+                }
+                paint(current);
             }
 
             if (isThemes) {
                 segmented(addGroup(t("View:")), [
                     { value: 'volume', label: t("Volume") },
-                    { value: 'rate', label: t("Approval rate") }
+                    { value: 'rate', label: t("Pass rate") },
+                    {
+                        value: 'gov',
+                        label: t("Government success"),
+                        disabled: !hasGovData,
+                        title: hasGovData
+                            ? t("Share of roll calls that ended the way the government asked")
+                            : t("No party-leader orientations published in this period")
+                    }
                 ], view.mode, function (v) { view.mode = v; render(); });
             }
 
@@ -172,8 +218,103 @@ function barChart(typeChart) {
                     });
             }
 
-            // Legend (right side of the controls row)
-            var legend = null;
+            // What each view means and how its number is reached. Written per
+            // mode rather than as one "about this chart", so it always describes
+            // what is actually on screen — the three views count different
+            // things over different denominators, and the differences are
+            // exactly what a reader would otherwise get wrong.
+            var infoOpen = false, info = null, infoBtn = null;
+            if (isThemes) {
+                infoBtn = addGroup(null).append("button")
+                    .attr("type", "button")
+                    .attr("aria-expanded", "false")
+                    .attr("title", t("About this view"))
+                    .text("i")
+                    .style("width", "20px").style("height", "20px")
+                    .style("border", "1px solid #ccc").style("border-radius", "50%")
+                    .style("background", "#fff").style("color", "#555")
+                    .style("font-size", "12px").style("font-style", "italic")
+                    .style("font-family", "Georgia, serif")
+                    .style("line-height", "1").style("padding", "0")
+                    .style("cursor", "pointer")
+                    .on("click", function () {
+                        d3.event.stopPropagation();
+                        infoOpen = !infoOpen;
+                        // The panel lives in the header, which the SVG flexes
+                        // against — re-render so the plot reclaims the space.
+                        // Snap rather than animate: this is a reflow, not data.
+                        render(false);
+                    });
+
+                info = header.append("div")
+                    .attr("class", "bar-chart-info")
+                    .style("display", "none")
+                    .style("margin-top", "8px")
+                    .style("padding", "9px 12px")
+                    .style("background", "#f6f7f9")
+                    .style("border", "1px solid #e2e6eb")
+                    .style("border-radius", "4px")
+                    .style("font-size", "12px").style("line-height", "1.5")
+                    .style("color", "#444");
+            }
+
+            function infoLines(mode) {
+                var pt = (typeof language !== 'undefined' && language === PORTUGUESE);
+                if (mode === 'gov') {
+                    return pt ? [
+                        ["O que mostra", "Com que frequência o plenário decidiu no sentido que o governo pediu."],
+                        ["Como calculamos", "Antes de cada votação, o líder do governo orienta a bancada. Comparamos essa orientação com o resultado: se bateu, o governo venceu. Quando o governo libera a bancada ou não se manifesta, a votação fica de fora."],
+                        ["Vale lembrar", "Entram também as votações de rito, que são a maior parte. Isso diz mais sobre o controle da pauta do que sobre aprovar leis. A Câmara só passou a registrar a orientação de forma consistente no fim dos anos 1990."]
+                    ] : [
+                        ["What it shows", "How often the floor decided the way the government asked."],
+                        ["How we calculate it", "Before each vote, the government's leader tells the bench how to vote. We compare that instruction with the outcome: if they match, the government won. When the government frees the bench or stays silent, the vote is left out."],
+                        ["Worth remembering", "Procedural votes are included, and they are most of them. This says more about control of the agenda than about passing laws. The Chamber only began recording these instructions consistently in the late 1990s."]
+                    ];
+                }
+                if (mode === 'rate') {
+                    return pt ? [
+                        ["O que mostra", "Com que frequência as propostas de cada tema saem vitoriosas do plenário."],
+                        ["Como calculamos", "Lemos o resultado registrado de cada votação, que já leva em conta o quórum exigido por aquele tipo de proposta. Quando o resultado não diz se passou ou não, vale a maioria dos votos."],
+                        ["Vale lembrar", "Boa parte do que o plenário vota são etapas do rito — urgência, destaque, requerimento — e não a proposta em si. Derrubar uma dessas etapas não é derrubar a proposta."]
+                    ] : [
+                        ["What it shows", "How often proposals in each theme pass on the floor."],
+                        ["How we calculate it", "We read the recorded outcome of each vote, which already accounts for the quorum that kind of proposal requires. When the outcome doesn't say either way, the majority of votes decides."],
+                        ["Worth remembering", "Much of what the floor votes on are steps in the process — urgency, separate votes, motions — not the proposal itself. Defeating one of those is not defeating the proposal."]
+                    ];
+                }
+                return pt ? [
+                    ["O que mostra", "Com que frequência cada tema foi ao plenário."],
+                    ["Como calculamos", "Cada votação do tema conta uma vez, seja sobre a proposta em si ou sobre uma etapa do rito."]
+                ] : [
+                    ["What it shows", "How often each theme reached the floor."],
+                    ["How we calculate it", "Every vote on the theme counts once, whether it was about the proposal itself or about a step in the process."]
+                ];
+            }
+
+            function renderInfo(mode) {
+                if (!info) return;   // parties chart: no views to explain
+
+                info.style("display", infoOpen ? "block" : "none");
+                infoBtn.attr("aria-expanded", infoOpen ? "true" : "false")
+                    .style("background", infoOpen ? "#4575b4" : "#fff")
+                    .style("color", infoOpen ? "#fff" : "#555");
+                if (!infoOpen) return;
+
+                var rows = info.selectAll("div.info-row").data(infoLines(mode));
+                rows.enter().append("div").attr("class", "info-row").style("margin-bottom", "3px");
+                rows.exit().remove();
+                rows.html(function (d) {
+                    return "<strong>" + d[0] + ":</strong> " + d[1];
+                });
+            }
+
+            // Legend (right side of the controls row).
+            //
+            // The two hues keep one meaning across modes — the outcome the
+            // current mode measures either happened or it did not — so the
+            // labels are what change, not the encoding. Only one mode is on
+            // screen at a time, and the legend always names the mode's terms.
+            var legend = null, legendPositive = null, legendNegative = null;
             if (isThemes) {
                 legend = controls.append("div")
                     .style("margin-left", "auto")
@@ -185,20 +326,31 @@ function barChart(typeChart) {
                         .style("background", color).style("border-radius", "2px");
                 }
                 swatch(APPROVED_COLOR);
-                legend.append("span").text(t("approved")).style("margin-right", "8px");
+                legendPositive = legend.append("span").style("margin-right", "8px");
                 swatch(REJECTED_COLOR);
-                legend.append("span").text(t("rejected"));
+                legendNegative = legend.append("span");
             }
 
             // Composed strings take parameters and a plural, so build them
             // explicitly rather than concatenating dictionary fragments.
-            function hiddenNotice(count, minN) {
-                if (typeof language !== 'undefined' && language === PORTUGUESE) {
-                    return count + (count === 1 ? " tema oculto" : " temas ocultos") +
-                        " (menos de " + minN + " votações)";
+            function hiddenNotice(count, minN, mode) {
+                var pt = (typeof language !== 'undefined' && language === PORTUGUESE);
+                var subjects = pt
+                    ? count + (count === 1 ? " tema oculto" : " temas ocultos")
+                    : count + (count === 1 ? " subject hidden" : " subjects hidden");
+
+                // In government mode the threshold counts a narrower set — only
+                // the roll calls the government took a side on — so saying just
+                // "votes" would point at the wrong number.
+                if (mode === 'gov') {
+                    return subjects + (pt
+                        ? " (menos de " + minN + (minN === 1 ? " votação" : " votações") +
+                          " com posição declarada do governo)"
+                        : " (fewer than " + minN + " roll calls with a declared government position)");
                 }
-                return count + (count === 1 ? " subject hidden" : " subjects hidden") +
-                    " (fewer than " + minN + " votes)";
+                return subjects + (pt
+                    ? " (menos de " + minN + " votações)"
+                    : " (fewer than " + minN + " votes)");
             }
 
             // Notice for data hidden by the min-n filter — never filter silently.
@@ -246,7 +398,11 @@ function barChart(typeChart) {
             })();
 
             function visibleData() {
-                var arr = data.filter(function (d) { return d.frequency >= view.minN; });
+                // Threshold applies to the mode's own denominator. In government
+                // mode this also drops themes with no declared position at all,
+                // which would otherwise plot as a flat 0% and read as a total
+                // government defeat instead of an absence of data.
+                var arr = data.filter(function (d) { return denominator(d) >= view.minN; });
                 if (view.sort === 'alpha') {
                     arr.sort(function (a, b) {
                         if (language === ENGLISH && isThemes) {
@@ -254,9 +410,10 @@ function barChart(typeChart) {
                         }
                         return d3.ascending(a.category, b.category);
                     });
-                } else if (view.mode === 'rate') {
+                } else if (isRateMode()) {
                     arr.sort(function (a, b) {
-                        return d3.descending(a.rate, b.rate) || d3.descending(a.frequency, b.frequency);
+                        return d3.descending(shareOf(a), shareOf(b)) ||
+                            d3.descending(denominator(a), denominator(b));
                     });
                 } else {
                     arr.sort(function (a, b) { return b.frequency - a.frequency; });
@@ -268,6 +425,12 @@ function barChart(typeChart) {
                 // Layout reflows (resize) must snap; only data/view changes animate.
                 var dur = (animate === false) ? 0 : DURATION;
 
+                // Settle the header before measuring: the info panel lives in
+                // it and the plot flexes against what the header leaves over, so
+                // opening it after the measurement would size the viewBox to a
+                // box that no longer exists.
+                renderInfo(view.mode);
+
                 // Match the viewBox aspect to the SVG's ACTUAL rendered box, so
                 // the drawing fills it exactly — no letterbox band, no overflow.
                 // Flex already decided that box; we only mirror it.
@@ -278,11 +441,16 @@ function barChart(typeChart) {
 
                 svg.attr("viewBox", "0 0 " + width + " " + height);
 
-                var rateMode = isThemes && view.mode === 'rate';
+                var rateMode = isRateMode();
                 var vis = visibleData();
                 var hidden = data.length - vis.length;
 
-                notice.text(hidden > 0 ? hiddenNotice(hidden, view.minN) : "");
+                notice.text(hidden > 0 ? hiddenNotice(hidden, view.minN, view.mode) : "");
+
+                if (legend) {
+                    legendPositive.text(view.mode === 'gov' ? t("government prevailed") : t("passed"));
+                    legendNegative.text(view.mode === 'gov' ? t("government defeated") : t("rejected"));
+                }
 
                 var topMargin = 30;                 // small breathing room only
                 var bottomMargin = 70;
@@ -350,7 +518,7 @@ function barChart(typeChart) {
                     .attr("height", barHeight)
                     .attr("width", function (d) {
                         if (!isThemes) return scale(d.frequency);
-                        return scale(rateMode ? d.rate : d.approved);
+                        return scale(rateMode ? shareOf(d) : numerator(d));
                     });
 
                 bar.select("rect.seg-rejected")
@@ -358,12 +526,12 @@ function barChart(typeChart) {
                     .transition().duration(dur)
                     .attr("height", barHeight)
                     .attr("x", function (d) {
-                        var start = scale(rateMode ? d.rate : d.approved);
+                        var start = scale(rateMode ? shareOf(d) : numerator(d));
                         return labelWidth + start + (start > 0 ? SEGMENT_GAP : 0);
                     })
                     .attr("width", function (d) {
                         if (!isThemes) return 0;
-                        var start = scale(rateMode ? d.rate : d.approved);
+                        var start = scale(rateMode ? shareOf(d) : numerator(d));
                         var full = scale(rateMode ? 1 : d.frequency);
                         return Math.max(0, full - start - (start > 0 ? SEGMENT_GAP : 0));
                     });
@@ -372,43 +540,60 @@ function barChart(typeChart) {
                     .attr("dy", ".35em")
                     .attr("text-anchor", "start")
                     .text(function (d) {
-                        if (rateMode) return Math.round(d.rate * 100) + "%   n=" + d.frequency;
+                        // n is the mode's denominator, so the reader can tell a
+                        // 100% built on 3 roll calls from one built on 90.
+                        if (rateMode) return Math.round(shareOf(d) * 100) + "%   n=" + denominator(d);
                         return d.frequency;
                     })
                     .transition().duration(dur)
                     .attr("y", barHeight / 2)
                     .attr("x", function (d) { return labelWidth + barEnd(d) + 10; });
 
-                // Reference line: the slice's overall approval rate. Only
-                // meaningful against a percentage axis.
+                // Reference line: the slice's overall rate under the current
+                // mode. Only meaningful against a percentage axis.
                 refG.transition().duration(dur).style("opacity", rateMode ? 1 : 0);
                 if (rateMode) {
-                    var refX = marginX + labelWidth + scale(globalRate);
+                    var refRate = baseline();
+                    var refX = marginX + labelWidth + scale(refRate);
                     refG.select("line")
                         .transition().duration(dur)
                         .attr("x1", refX).attr("x2", refX)
                         .attr("y1", topMargin).attr("y2", axisY);
                     refG.select("text")
-                        .text(t("average") + " " + Math.round(globalRate * 100) + "%")
+                        .text(t("average") + " " + Math.round(refRate * 100) + "%")
                         .transition().duration(dur)
                         .attr("x", refX + 6).attr("y", topMargin);
                 }
 
                 bar.on("mousemove", function (d) {
-                    var pct = d.frequency ? Math.round(100 * d.approved / d.frequency) : 0;
                     div.style("left", d3.event.pageX + 10 + "px");
                     div.style("top", d3.event.pageY - 25 + "px");
                     div.style("display", "inline-block");
+
                     var subject = "<strong>" + getCategoryLabel(d.category) + "</strong>";
+                    var pt = (typeof language !== 'undefined' && language === PORTUGUESE);
+
                     if (!isThemes) {
                         div.html(subject + "<br>" + d.frequency);
-                    } else if (typeof language !== 'undefined' && language === PORTUGUESE) {
-                        div.html(subject + "<br>" + pct + "% aprovadas · " +
-                            d.approved + " de " + d.frequency + " votações");
-                    } else {
-                        div.html(subject + "<br>" + pct + "% approved · " +
-                            d.approved + " of " + d.frequency + " votes");
+                        return;
                     }
+
+                    // Spell out the denominator: in government mode it is the
+                    // subset with a declared position, not every roll call.
+                    if (view.mode === 'gov') {
+                        var govPct = d.govDecided ? Math.round(100 * d.govPrevailed / d.govDecided) : 0;
+                        div.html(subject + "<br>" + (pt
+                            ? govPct + "% de sucesso do governo · " + d.govPrevailed + " de " +
+                              d.govDecided + " votações com posição declarada"
+                            : govPct + "% government success · " + d.govPrevailed + " of " +
+                              d.govDecided + " roll calls with a declared position"));
+                        return;
+                    }
+
+                    var pct = d.frequency ? Math.round(100 * d.approved / d.frequency) : 0;
+                    div.html(subject + "<br>" + (pt
+                        ? pct + "% aprovadas · " + d.approved + " de " + d.frequency + " votações"
+                        : pct + "% passed · " + d.approved + " of " + d.frequency + " votes"));
                 });
 
                 bar.on("mouseout", function () { div.style("display", "none"); });

@@ -638,20 +638,36 @@ function rollCallsHeatmap() {
     }
 
     function calculateThemesOcurrency(rcs) {
-        // Count roll calls per theme, split by approval outcome.
+        // Count roll calls per theme, split two ways: by whether the matter
+        // advanced, and by whether the government got the outcome it asked for.
+        // The two have different denominators — govDecided counts only the roll
+        // calls where the government declared a direction — so each rate must be
+        // computed against its own, never against `frequency`.
         const themeCounts = rcs.reduce((acc, curr) => {
             if (curr.theme !== undefined) { // Check if theme is not undefined
-                if (!acc[curr.theme]) acc[curr.theme] = { frequency: 0, approved: 0, rejected: 0 };
+                if (!acc[curr.theme]) {
+                    acc[curr.theme] = {
+                        frequency: 0, approved: 0, rejected: 0,
+                        govDecided: 0, govPrevailed: 0
+                    };
+                }
                 acc[curr.theme].frequency++;
                 if (isRollCallApproved(curr)) acc[curr.theme].approved++;
                 else acc[curr.theme].rejected++;
+
+                const prevailed = didGovernmentPrevail(curr);
+                if (prevailed !== null) {
+                    acc[curr.theme].govDecided++;
+                    if (prevailed) acc[curr.theme].govPrevailed++;
+                }
             }
             return acc;
         }, {});
 
-        // Convert to array of {category, frequency, approved, rejected}
+        // Convert to array of {category, frequency, approved, rejected, govDecided, govPrevailed}
         const result = Object.entries(themeCounts).map(([category, v]) => ({
-            category: category, frequency: v.frequency, approved: v.approved, rejected: v.rejected
+            category: category, frequency: v.frequency, approved: v.approved, rejected: v.rejected,
+            govDecided: v.govDecided, govPrevailed: v.govPrevailed
         }));
 
         // Sort the array by frequency in descending order
