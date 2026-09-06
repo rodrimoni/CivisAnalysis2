@@ -28,60 +28,384 @@ function scatterPlotChart() {
     var svg;
     var panelID;
     var panelToBeRedrawn;
-    var checkbox;
-    var alignmentCheckbox;
-    var envelopeCheckbox;
     var nodesData; // Store nodes data for hull calculations
     var originalXDomain; // Store original x scale domain before zoom
     var originalYDomain; // Store original y scale domain before zoom
-    var selectedPartiesForHulls = []; // Track which parties have hulls displayed
+    // Parties picked in the legend. Drives the distribution hulls and gates the
+    // alignment control, which only means anything within a chosen party.
+    var selectedParties = [];
 
     var dispatch = d3.dispatch('update');
     var div = d3.select(".toolTip");
     var brush;
-    var isForceLayout = false;
+    var isForceLayout = false;      // dots are at the simulation's positions now
+    var forceHasRun = false;        // d.x / d.y have been computed at least once
     var showAlignmentOpacity = false;
     var showPartyEnvelope = false;
+
+    // Assigned by drawScatterPlot, which owns the force simulation and the
+    // pre-force scales these need. No-ops until the plot has been drawn.
+    var toggleOverlapping = function () { };
+    var toggleEnvelope = function () { };
+
+    // The app's one tooltip surface, shared by the deputies, the legend and the
+    // layer help — lifted out of drawScatterPlot so the controls, which are
+    // built before the plot, can reach it too.
+    function showToolTip(html) {
+        if (div.empty()) return;
+        div.transition().duration(0);
+        div.style("left", d3.event.pageX + 15 + "px");
+        div.style("top", d3.event.pageY - 10 + "px");
+        div.style("display", "inline-block").style("opacity", 1);
+        div.html(html);
+    }
+
+    function moveToolTip() {
+        if (div.empty()) return;
+        div.style("left", d3.event.pageX + 15 + "px");
+        div.style("top", d3.event.pageY - 10 + "px");
+    }
+
+    function hideToolTip() {
+        if (div.empty()) return;
+        div.transition().duration(0);
+        div.style("display", "none").style("opacity", 1);
+    }
+
+    // Layer controls.
+    //
+    // Checkboxes, not the histogram's segmented control: that one picks one of
+    // three views, while these switch three independent layers. Reusing its
+    // shape here would state exclusivity that does not exist — and a bare
+    // rounded chip reads as a label rather than something to press.
+    var layers = {};
+    var layerPanel = null, layerBody = null, collapseBtn = null;
+    var layersCollapsed = false;
+
+    // The k the reader last asked for, so the clusters can be rebuilt when the
+    // dots move underneath them.
+    var lastClusterK = null;
+
+    // Selected deputies already sit at full CSS opacity while the rest are
+    // faded, so fill-opacity is free to carry alignment on top of that.
+    var MIN_ALIGNMENT_OPACITY = 0.15;
+
+    // Both of these describe a chosen party, so neither means anything until
+    // one is picked in the legend.
+    var PARTY_DEPENDENT = ['envelope', 'alignment'];
+
+    function needsParty(key) { return PARTY_DEPENDENT.indexOf(key) > -1; }
+
+    function layerText(key) {
+        var pt = (language === PORTUGUESE);
+        if (key === 'overlapping') return pt ? 'Deputados sobrepostos' : 'Overlapping deputies';
+        if (key === 'envelope') return pt ? 'Área de distribuição dos partidos' : 'Party distribution area';
+        return pt ? 'Alinhamento deputado-partido' : 'Deputy-party alignment';
+    }
+
+    function layerHint(key) {
+        var pt = (language === PORTUGUESE);
+        if (key === 'overlapping') {
+            return pt
+                ? 'Afasta os deputados que caíram no mesmo ponto, para dar para contá-los.'
+                : 'Pushes apart deputies that landed on the same point, so they can be counted.';
+        }
+        if (key === 'envelope') {
+            return pt
+                ? 'Desenha a área que cada partido selecionado ocupa no espectro.'
+                : 'Outlines the area each selected party occupies in the spectrum.';
+        }
+        return pt
+            ? 'Escurece quem mais votou com o próprio partido. A escala é esticada entre o menos e o mais alinhado da seleção — sem isso, um partido disciplinado sairia todo com a mesma opacidade.'
+            : 'Darkens whoever voted most with their own party. The scale is stretched between the least and the most aligned of the selection — without that, a disciplined party would come out uniformly opaque.';
+    }
+
+    // A disabled control has to name what it is waiting on, or it just reads as
+    // broken.
+    function waitingNote() {
+        return (language === PORTUGUESE)
+            ? 'Escolha um partido na legenda para usar esta camada.'
+            : 'Pick a party in the legend to use this layer.';
+    }
+
+    function buildControlBar(container) {
+        layerPanel = d3.select(container).append("div").attr("class", "layer-panel");
+
+        var head = layerPanel.append("div").attr("class", "layer-panel-head");
+
+        head.append("span")
+            .attr("class", "layer-panel-title")
+            .text(language === PORTUGUESE ? 'Camadas' : 'Layers');
+
+        // Same minus/plus the window panels use, so collapsing reads as the
+        // gesture it already is elsewhere in the app.
+        collapseBtn = head.append("button")
+            .attr("type", "button")
+            .attr("class", "layer-panel-collapse")
+            .on("click", function () {
+                d3.event.stopPropagation();
+                layersCollapsed = !layersCollapsed;
+                renderCollapsed();
+            });
+        collapseBtn.append("i").attr("class", "glyphicon glyphicon-minus");
+
+        layerBody = layerPanel.append("div").attr("class", "layer-panel-body");
+
+        addLayer('overlapping', function (on) { toggleOverlapping(on); });
+        addLayer('envelope', function (on) { toggleEnvelope(on); });
+        addLayer('alignment', function (on) { toggleAlignment(on); });
+
+        refreshPartyDependentControls();
+        renderCollapsed();
+        return layerPanel;
+    }
+
+    /**
+     * Collapsed, the panel keeps only its heading, so the plot underneath is
+     * clear. The count of switched-on layers rides along in the title — folded
+     * away is not the same as switched off, and the reader should not have to
+     * reopen the panel to remember what is being drawn.
+     */
+    function renderCollapsed() {
+        if (!layerPanel) return;
+
+        layerPanel.classed("is-collapsed", layersCollapsed);
+        layerBody.style("display", layersCollapsed ? "none" : null);
+
+        collapseBtn.select("i")
+            .attr("class", "glyphicon " + (layersCollapsed ? "glyphicon-plus" : "glyphicon-minus"));
+
+        var pt = (language === PORTUGUESE);
+        collapseBtn.attr("title", layersCollapsed
+            ? (pt ? 'Mostrar camadas' : 'Show layers')
+            : (pt ? 'Recolher camadas' : 'Collapse layers'));
+        collapseBtn.attr("aria-expanded", layersCollapsed ? "false" : "true");
+
+        var active = Object.keys(layers).filter(function (k) { return layers[k].on; }).length;
+        layerPanel.select(".layer-panel-title")
+            .text((pt ? 'Camadas' : 'Layers') +
+                (layersCollapsed && active ? ' · ' + active : ''));
+    }
+
+    function addLayer(key, onToggle) {
+        // Into the body, not the panel: collapsing hides the body, and a row
+        // appended beside it would stay on screen.
+        var row = layerBody.append("div").attr("class", "layer-row");
+
+        // The whole label is the hit area, which is most of the row.
+        var label = row.append("label").attr("class", "layer-label");
+        var input = label.append("input")
+            .attr("type", "checkbox")
+            .attr("id", panelID + "-layer-" + key)
+            .on("change", function () {
+                d3.event.stopPropagation();
+                layers[key].on = this.checked;
+                onToggle(this.checked);
+                renderCollapsed();
+            })
+            .on("click", function () { d3.event.stopPropagation(); });
+
+        label.append("span").attr("class", "layer-name").text(layerText(key));
+
+        // Hovering the mark reveals the explanation in the app's own tooltip,
+        // the same surface the deputies and the legend use. Opening a block of
+        // text inside the panel would push the rows around every time someone
+        // asked what a layer does.
+        var infoBtn = row.append("span")
+            .attr("class", "layer-info")
+            .attr("role", "img")
+            .attr("aria-label", layerHint(key))
+            .text("i")
+            .on("mouseover", function () { showToolTip(renderLayerTooltipHtml(key)); })
+            .on("mousemove", function () { moveToolTip(); })
+            .on("mouseout", function () { hideToolTip(); });
+
+        layers[key] = {
+            row: row, input: input, label: label, infoBtn: infoBtn,
+            on: false, disabled: false
+        };
+        return row;
+    }
+
+    function renderLayerTooltipHtml(key) {
+        var l = layers[key];
+        var waiting = (l && l.disabled)
+            ? '<div style="margin-top:6px; font-size:11px; color:#666;"><em>' +
+            waitingNote() + '</em></div>'
+            : '';
+
+        return '<div style="max-width: 260px;">' +
+            '<div style="font-size:14px; font-weight:700; color:#2f353c; margin-bottom:3px;">' +
+            layerText(key) + '</div>' +
+            '<div style="font-size:12.5px; color:#666; line-height:1.45;">' +
+            layerHint(key) + '</div>' +
+            waiting +
+            '</div>';
+    }
+
+    function setLayer(key, on) {
+        var l = layers[key];
+        if (!l) return;
+        l.on = on;
+        l.input.property("checked", on);
+    }
+
+    /**
+     * Both party layers wait on the legend: the hulls outline chosen parties,
+     * and the alignment scale is stretched across the chosen deputies. With
+     * nothing picked there is nothing for either to describe.
+     *
+     * They stay on screen and go grey rather than disappearing — a control that
+     * vanishes reads as one that does not exist, while a greyed one that says
+     * what it is waiting for teaches the legend.
+     */
+    function refreshPartyDependentControls() {
+        var available = selectedParties.length > 0;
+        var turnedOffByLegend = false;
+
+        PARTY_DEPENDENT.forEach(function (key) {
+            var l = layers[key];
+            if (!l) return;
+
+            l.disabled = !available;
+            l.row.classed("is-disabled", !available);
+            l.input.property("disabled", !available);
+
+            // Turning off on the way out, so nothing is left switched on with
+            // nothing to act upon.
+            if (!available && l.on) {
+                setLayer(key, false);
+                turnedOffByLegend = true;
+                if (key === 'alignment') {
+                    showAlignmentOpacity = false;
+                    applyAlignmentOpacity();
+                } else {
+                    showPartyEnvelope = false;
+                    if (svg) svg.selectAll(".party-hull").remove();
+                }
+            }
+            l.infoBtn.attr("aria-label", layerHint(key) +
+                (l.disabled ? ' ' + waitingNote() : ''));
+        });
+
+        if (turnedOffByLegend) renderCollapsed();
+    }
+
+    /**
+     * Scales from data space to pixels using the domains the plot was built
+     * with, so they survive zooming.
+     */
+    function originalScales() {
+        return {
+            x: d3.scale.linear().domain(originalXDomain).range(x.range()),
+            y: d3.scale.linear().domain(originalYDomain).range(y.range())
+        };
+    }
+
+    /**
+     * Where a deputy is actually drawn, in pixels.
+     *
+     * With "overlapping deputies" on, the force simulation moves deputies off
+     * their own coordinates so co-located ones can be told apart, and d.x/d.y
+     * is where they end up. Anything drawn around the dots — party envelopes,
+     * cluster envelopes — has to follow them, or it wraps positions that are no
+     * longer on screen.
+     */
+    function displayedPoint(d, scales) {
+        if (isForceLayout && typeof d.x === 'number' && typeof d.y === 'number') {
+            return [d.x, d.y];
+        }
+        return [scales.x(d.scatterplot[1]), scales.y(d.scatterplot[0])];
+    }
+
+    /**
+     * The same position back in data space, for anything that measures
+     * distances rather than draws.
+     *
+     * Clustering has to work in one space: the two axes have different pixel
+     * ranges, so grouping on pixels would silently weight one dimension over
+     * the other.
+     */
+    function displayedScatterplot(d, scales) {
+        if (!isForceLayout || typeof d.x !== 'number' || typeof d.y !== 'number') {
+            return d.scatterplot;
+        }
+        return [scales.y.invert(d.y), scales.x.invert(d.x)];
+    }
+
+    /**
+     * Everything drawn FROM the dot positions rather than being a dot. Called
+     * whenever the layout settles, since that is when those positions stop
+     * moving.
+     */
+    function refreshDerivedLayers() {
+        if (showPartyEnvelope && selectedParties.length > 0) {
+            chart.showConvexHullOfParties(selectedParties);
+        }
+        if (lastClusterK) {
+            var current = d3.select('#' + panelID + ' .deputiesNodesDots')
+                .selectAll('circle').data();
+            if (current && current.length) chart.getClusters(lastClusterK, current, panelID);
+        }
+    }
+
+    /**
+     * Maps alignment onto opacity across the CURRENT SELECTION rather than the
+     * full 0–1 range.
+     *
+     * Alignment is a deputy's own record against their own party, so the value
+     * itself does not depend on who else is on screen — but whether it can be
+     * seen does. Party discipline is high: inside PT the whole spread is
+     * 0.95–1.00, which the absolute scale turns into opacity 0.96–1.00 and the
+     * eye reads as flat. Stretching the scale over the selection is what makes
+     * the channel carry anything at all.
+     *
+     * @returns {Function|null} alignment -> opacity, or null when nothing is selected
+     */
+    function selectedAlignmentScale() {
+        if (!svg) return null;
+        var values = [];
+        svg.selectAll('.node').each(function (d) {
+            if (d && d.selected && typeof d.alignment === 'number') values.push(d.alignment);
+        });
+        return alignmentOpacityScale(values, MIN_ALIGNMENT_OPACITY);
+    }
+
+    /**
+     * The scale for one render pass. Building it walks every node, so it must
+     * be hoisted out of the per-datum callback that uses it.
+     */
+    function currentAlignmentScale() {
+        return showAlignmentOpacity ? selectedAlignmentScale() : null;
+    }
+
+    function alignmentOpacityFor(d, scale) {
+        if (!scale) return 1;
+        // Unselected deputies are outside the comparison and are already faded
+        // by the stylesheet; dimming them again would only muddy the contrast.
+        if (!d || !d.selected || typeof d.alignment !== 'number') return 1;
+        return scale(d.alignment);
+    }
+
+    function applyAlignmentOpacity(animate) {
+        if (!svg) return;
+        var scale = currentAlignmentScale();
+        var nodes = svg.selectAll('.node');
+        var target = (animate === false) ? nodes : nodes.transition().duration(400);
+        target.style("fill-opacity", function (d) { return alignmentOpacityFor(d, scale); });
+    }
+
+    function toggleAlignment(on) {
+        showAlignmentOpacity = on;
+        applyAlignmentOpacity();
+    }
+
 
     function chart(selection) {
         selection.each(function (data) {
             panelID = ($(this).parents('.panel')).attr('id');
 
-            // Add the checkbox container for controls
-            var checkboxContainer = d3.select(this)
-                .append("div")
-                .attr("class", "checkbox-container")
-                .attr("style", "margin-top:20px; margin-left: 20px; position: absolute");
-
-            // Overlapping deputies checkbox
-            var overlappingDeputiesLabel = checkboxContainer.append("label");
-            overlappingDeputiesLabel.append("input")
-                .attr("type", "checkbox")
-                .attr("id", panelID + "-forceLayoutApply")
-                .attr("class", "forceLayoutCheckbox")
-                .each(function () { checkbox = d3.select(this); });
-            overlappingDeputiesLabel.append("span")
-                .text(language === PORTUGUESE ? "Mostrar deputados sobrepostos" : "Show overlapping deputies");
-
-            // Party alignment opacity checkbox
-            var partyAlignmentLabel = checkboxContainer.append("label");
-            partyAlignmentLabel.append("input")
-                .attr("type", "checkbox")
-                .attr("id", panelID + "-alignmentOpacity")
-                .attr("class", "alignmentOpacityCheckbox")
-                .each(function () { alignmentCheckbox = d3.select(this); });
-            partyAlignmentLabel.append("span")
-                .text(language === PORTUGUESE ? "Mostrar alinhamento partidário" : "Show party alignment");
-
-            // Party envelope (hull) checkbox
-            var partyEnvelopeLabel = checkboxContainer.append("label");
-            partyEnvelopeLabel.append("input")
-                .attr("type", "checkbox")
-                .attr("id", panelID + "-partyEnvelope")
-                .attr("class", "partyEnvelopeCheckbox")
-                .each(function () { envelopeCheckbox = d3.select(this); });
-            partyEnvelopeLabel.append("span")
-                .text(language === PORTUGUESE ? 'Mostrar a área de distribuição dos partidos' : 'Show party distribution area');
+            buildControlBar(this);
 
             chart.createScatterPlotChart(data, this);
 
@@ -105,10 +429,13 @@ function scatterPlotChart() {
 
         // reset globals
         isForceLayout = false;
+        forceHasRun = false;
+        lastClusterK = null;
         showAlignmentOpacity = false;
         showPartyEnvelope = false;
         partyCountByOverlappedGroup = [];
-        selectedPartiesForHulls = []; // Reset hull selection
+        selectedParties = [];
+        Object.keys(layers).forEach(function (k) { setLayer(k, false); });
 
         chart.createScatterPlotChart(data, htmlContent[0]);
     };
@@ -237,6 +564,9 @@ function scatterPlotChart() {
             .nodes(nodes)
             .size([width, height])
             .on("tick", tick)
+            // Settling is when the positions stop moving, so it is when the
+            // envelopes drawn around them can be trusted.
+            .on("end", refreshDerivedLayers)
             .charge(-0.1)
             .gravity(0)
             .chargeDistance(20);
@@ -268,10 +598,10 @@ function scatterPlotChart() {
             .attr("cx", function (d) { return x(d.scatterplot[1]); })
             .attr("cy", function (d) { return y(d.scatterplot[0]); })
             .style("fill", function (d) { return setDeputyFill(d); })
-            .style("fill-opacity", function (d) {
-                if (!showAlignmentOpacity) return 1.0; // Fully opaque when disabled
-                return getAlignmentOpacity(d.alignment);
-            })
+            .style("fill-opacity", (function () {
+                var scale = currentAlignmentScale();
+                return function (d) { return alignmentOpacityFor(d, scale); };
+            })())
             .on('mousedown', function (d) {
                 mouseClickDeputy(d);
             })
@@ -314,27 +644,6 @@ function scatterPlotChart() {
             return (typeof language !== 'undefined' && language === PORTUGUESE) ? portuguese : english;
         }
 
-        function showToolTip(html) {
-            if (div.empty()) return;
-            div.transition().duration(0);
-            div.style("left", d3.event.pageX + 15 + "px");
-            div.style("top", d3.event.pageY - 10 + "px");
-            div.style("display", "inline-block").style("opacity", 1);
-            div.html(html);
-        }
-
-        function moveToolTip() {
-            if (div.empty()) return;
-            div.style("left", d3.event.pageX + 15 + "px");
-            div.style("top", d3.event.pageY - 10 + "px");
-        }
-
-        function hideToolTip() {
-            if (div.empty()) return;
-            div.transition().duration(0);
-            div.style("display", "none").style("opacity", 1);
-        }
-
         $("#" + panelID + " .node")
             .contextMenu({
                 menuSelector: "#contextMenuDeputy",
@@ -345,60 +654,61 @@ function scatterPlotChart() {
 
         updateLegend(nodes, svg);
 
-        d3.select("#" + panelID + "-forceLayoutApply").on("change", function () {
-            if (checkbox.node().checked) {
-                if (!isForceLayout) {
+        // The pill drives this; the body needs `force` and the original scales,
+        // which only exist inside this closure.
+        var MOVE_DURATION = 1000;
+
+        // Two different facts, which used to share one flag: whether the dots
+        // are at the simulation's positions right now, and whether that
+        // simulation has ever run. Reusing the computed positions on the way
+        // back in is what keeps the second toggle cheap, but the first is what
+        // every derived layer reads — and it never went back to false, so after
+        // one toggle the envelopes believed the dots were displaced forever.
+        toggleOverlapping = function (on) {
+            if (on) {
+                isForceLayout = true;
+                if (!forceHasRun) {
                     force.start();
-                    isForceLayout = true;
-                }
-                else {
+                    forceHasRun = true;
+                    // The simulation settles on its own; "end" redraws.
+                } else {
                     svg.selectAll('.node')
-                        .transition().duration(1000)
+                        .transition().duration(MOVE_DURATION)
                         .attr('cx', function (d) { return d.x; })
                         .attr('cy', function (d) { return d.y; });
+                    afterMove();
                 }
             }
             else {
                 force.stop();
+                isForceLayout = false;
                 svg.selectAll('.node')
-                    .transition().duration(1000)
+                    .transition().duration(MOVE_DURATION)
                     .attr('cx', function (d) { return xOriginalForce(d.scatterplot[1]); })
                     .attr('cy', function (d) { return yOriginalForce(d.scatterplot[0]); });
-                /*$(panelToBeRedrawn).find('svg').remove();
-                deputies.each(resetPositions);
-                drawScatterPlot(nodes, panelToBeRedrawn, false);*/
+                afterMove();
             }
-        });
+        };
 
-        // Party alignment opacity toggle
-        d3.select("#" + panelID + "-alignmentOpacity").on("change", function () {
-            showAlignmentOpacity = alignmentCheckbox.node().checked;
+        // The dots travel over a transition, so anything wrapped around them is
+        // only right once they have arrived.
+        function afterMove() {
+            setTimeout(refreshDerivedLayers, MOVE_DURATION + 20);
+        }
 
-            // Update all node opacities with smooth transition
-            svg.selectAll('.node')
-                .transition()
-                .duration(500)
-                .style("fill-opacity", function (d) {
-                    if (!showAlignmentOpacity) return 1.0; // Fully opaque when disabled
-                    // Map alignment (0-1) to opacity range (0.4-1.0) for better visibility
-                    return d.alignment ? 0.4 + (d.alignment * 0.6) : 0.7;
-                });
-        });
-
-        // Party envelope (hull) toggle
-        d3.select("#" + panelID + "-partyEnvelope").on("change", function () {
-            showPartyEnvelope = envelopeCheckbox.node().checked;
+        toggleEnvelope = function (on) {
+            showPartyEnvelope = on;
 
             if (showPartyEnvelope) {
                 // Show hulls for currently selected parties
-                if (selectedPartiesForHulls.length > 0) {
-                    chart.showConvexHullOfParties(selectedPartiesForHulls);
+                if (selectedParties.length > 0) {
+                    chart.showConvexHullOfParties(selectedParties);
                 }
             } else {
                 // Hide all hulls but keep the party selection
                 svg.selectAll(".party-hull").remove();
             }
-        });
+        };
 
         function tick(e) {
             deputies.each(moveTowardDataPosition(e.alpha));
@@ -670,13 +980,11 @@ function scatterPlotChart() {
     };
 
     chart.update = function () {
+        var updateScale = currentAlignmentScale();
         svg.selectAll(".deputiesNodesDots .node")
             .transition()
             .style("fill", function (d) { return setDeputyFill(d); })
-            .style("fill-opacity", function (d) {
-                if (!showAlignmentOpacity) return 1.0; // Fully opaque when disabled
-                return getAlignmentOpacity(d.alignment);
-            })
+            .style("fill-opacity", function (d) { return alignmentOpacityFor(d, updateScale); })
             .attr("class", function (d) { return (d.selected) ? "node selected" : (d.hovered) ? "node hovered" : "node"; })
             .attr("r", function (d) { return (d.hovered) ? nodeRadius * 2 : nodeRadius; });
 
@@ -693,18 +1001,33 @@ function scatterPlotChart() {
     }
 
     chart.getClusters = function (k, data, id) {
-        console.log(data);
+        lastClusterK = k;
+
         //number of clusters, defaults to undefined
         clusterMaker.k(k);
 
         //number of iterations (higher number gives more time to converge), defaults to 1000
         clusterMaker.iterations(750);
 
+        // Cluster where the deputies are shown, not where they started. With
+        // the overlapping layer on, the two differ, and grouping on the
+        // original coordinates would draw envelopes that cut across the dots
+        // the reader is looking at.
+        //
+        // The positions are carried back into data space first: clusterMaker
+        // reads `scatterplot`, and the two axes span different pixel ranges, so
+        // clustering on pixels would weight one dimension over the other.
+        var scales = originalScales();
+        var displayed = data.map(function (d) {
+            return Object.assign({}, d, { scatterplot: displayedScatterplot(d, scales) });
+        });
+
         //data from which to identify clusters, defaults to []
-        clusterMaker.data(data);
+        clusterMaker.data(displayed);
 
         this.clusters = clusterMaker.clusters();
         var clustersPoints = [];
+
 
         this.clusters.forEach(function (cluster, index) {
             clustersPoints.push({
@@ -713,8 +1036,6 @@ function scatterPlotChart() {
                 })
             });
         });
-
-        console.log(this.clusters);
 
         //updateHulls(hullSets, id);
         updateHullsTest(clustersPoints, id);
@@ -913,27 +1234,27 @@ function scatterPlotChart() {
     }
 
     function togglePartyHull(party, mode) {
-        var index = selectedPartiesForHulls.indexOf(party);
+        var index = selectedParties.indexOf(party);
 
         if (mode === 'add') {
             // Multi-select mode: add if not present
             if (index === -1) {
-                selectedPartiesForHulls.push(party);
+                selectedParties.push(party);
             }
         } else if (mode === 'remove') {
             // Remove mode: remove if present
             if (index > -1) {
-                selectedPartiesForHulls.splice(index, 1);
+                selectedParties.splice(index, 1);
             }
         } else if (mode === 'single') {
             // Single-select mode: replace with this party only
-            selectedPartiesForHulls = [party];
+            selectedParties = [party];
         }
 
-        // Update hull visualization only if the checkbox is active
+        // Only redraw the hulls when that layer is switched on
         if (showPartyEnvelope) {
-            if (selectedPartiesForHulls.length > 0) {
-                chart.showConvexHullOfParties(selectedPartiesForHulls);
+            if (selectedParties.length > 0) {
+                chart.showConvexHullOfParties(selectedParties);
             } else {
                 chart.hideConvexHulls();
             }
@@ -941,6 +1262,11 @@ function scatterPlotChart() {
 
         // Always update visual indicators on legend
         updateLegendHullIndicators();
+
+        // The alignment layer is scoped to the selection, so both its
+        // availability and its scale change whenever the selection does.
+        refreshPartyDependentControls();
+        applyAlignmentOpacity();
     }
 
     function updateLegendHullIndicators() {
@@ -948,12 +1274,12 @@ function scatterPlotChart() {
 
         svg.selectAll('.legend circle')
             .style('stroke', function (d) {
-                return selectedPartiesForHulls.indexOf(d) > -1
+                return selectedParties.indexOf(d) > -1
                     ? '#000'
                     : 'none';
             })
             .style('stroke-width', function (d) {
-                return selectedPartiesForHulls.indexOf(d) > -1
+                return selectedParties.indexOf(d) > -1
                     ? '3px'
                     : '0';
             });
@@ -1013,14 +1339,7 @@ function scatterPlotChart() {
             return;
         }
 
-        // Create temporary scales with original domains for hull calculation
-        var xOriginal = d3.scale.linear()
-            .domain(originalXDomain)
-            .range(x.range());
-
-        var yOriginal = d3.scale.linear()
-            .domain(originalYDomain)
-            .range(y.range());
+        var scales = originalScales();
 
         // Prepare data for each party
         var partyHullData = [];
@@ -1043,8 +1362,11 @@ function scatterPlotChart() {
 
         // Function to create hull path using ORIGINAL scales
         var groupPath = function (d) {
+            // Follows the dots: with the overlapping layer on they sit at the
+            // simulation's positions, and an envelope drawn from the original
+            // coordinates would float away from the party it describes.
             var points = d.deputies.map(function (deputy) {
-                return [xOriginal(deputy.scatterplot[1]), yOriginal(deputy.scatterplot[0])];
+                return displayedPoint(deputy, scales);
             });
 
             var hull = d3.geom.hull(points);
@@ -1081,7 +1403,7 @@ function scatterPlotChart() {
         if (!svg) return;
 
         // Clear internal state
-        selectedPartiesForHulls = [];
+        selectedParties = [];
 
         // Remove hulls from visualization
         svg.selectAll(".party-hull").remove();
@@ -1093,7 +1415,7 @@ function scatterPlotChart() {
     };
 
     chart.getSelectedPartiesForHulls = function () {
-        return selectedPartiesForHulls.slice();
+        return selectedParties.slice();
     };
 
     return d3.rebind(chart, dispatch, 'on');
