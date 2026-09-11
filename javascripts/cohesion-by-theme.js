@@ -88,13 +88,9 @@ function cohesionByTheme() {
             "<span style='font-weight: 600; color: " + cColor + "; font-size: 15px;'>" + agreementText + "</span>" +
             "<span style='color: #999; font-size: 11px; margin-left: 4px;'>" + agreementDetail + "</span>" +
             "</div>" +
-            "<div style='margin-bottom: 4px; color: #666;'>" +
+            "<div style='color: #666;'>" +
             "<span style='font-weight: 500;'>" + (eng ? 'Shared roll calls:' : 'Votações em comum:') + "</span> " +
             "<span style='color: #333;'>" + bar.rollCallCount + "</span>" +
-            "</div>" +
-            "<div style='color: #666;'>" +
-            "<span style='font-weight: 500;'>" + (eng ? 'Pairs:' : 'Duplas:') + "</span> " +
-            "<span style='color: #333;'>" + bar.totalPairs + "</span>" +
             "</div>" +
             "</div>" +
             "</div>" +
@@ -370,7 +366,7 @@ function cohesionByTheme() {
                 var r = calcGroupAgreementForRcs(rcsT, refSpec, groupSpec(c));
                 return {
                     label: c.label, color: c.color,
-                    agreement: r.agreement, rollCallCount: r.rollCallCount, totalPairs: r.totalPairs
+                    agreement: r.agreement, rollCallCount: r.rollCallCount
                 };
             });
 
