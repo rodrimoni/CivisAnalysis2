@@ -89,7 +89,7 @@ function cohesionByTheme() {
             "<span style='color: #999; font-size: 11px; margin-left: 4px;'>" + agreementDetail + "</span>" +
             "</div>" +
             "<div style='margin-bottom: 4px; color: #666;'>" +
-            "<span style='font-weight: 500;'>" + (eng ? 'Roll Calls:' : 'Votações:') + "</span> " +
+            "<span style='font-weight: 500;'>" + (eng ? 'Shared roll calls:' : 'Votações em comum:') + "</span> " +
             "<span style='color: #333;'>" + bar.rollCallCount + "</span>" +
             "</div>" +
             "<div style='color: #666;'>" +
@@ -116,8 +116,8 @@ function cohesionByTheme() {
     /**
      * Build a group spec from the shared editor's state. Party membership stays as
      * parties[] (attributed by the vote's own party label); only hand-picked
-     * deputies go into deputyIDs[]. calcGroupAgreementForRcs's union predicate handles
-     * mixed groups.
+     * deputies go into deputyIDs[]. calcGroupAgreementForRcs's party-or-deputy
+     * membership test handles mixed groups.
      */
     function buildGroupFromEditor(editorState) {
         var deputyIDs = [];

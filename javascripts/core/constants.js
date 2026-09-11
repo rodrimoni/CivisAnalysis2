@@ -55,7 +55,7 @@ const typeChartToString = [
     "Party Metrics",
     "Party Rice Timeline",
     "Cohesion Comparison",
-    "Cohesion by Subject"
+    "Agreement by Subject"
 ];
 
 /* Dimensional Reduction Techniques */

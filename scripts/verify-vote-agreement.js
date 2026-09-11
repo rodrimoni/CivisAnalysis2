@@ -50,6 +50,18 @@ check('os dois divididos ao meio → 50%',
     near(calcGroupAgreementForRcs(
         [rollCall({ A: { sim: 10, nao: 10 }, B: { sim: 10, nao: 10 } })], G('A'), G('B')).agreement, 0.5));
 
+// ---- grupos definidos por deputyIDs (deputados avulsos), não por parties ----
+// rollCall({ X: { sim: 4, nao: 3 } }) numera em ordem: ids 0-3 votam Sim, ids 4-6 votam Não.
+// Grupo A = deputados avulsos [0, 1, 4] → 2 sim, 1 não.
+// Grupo B = deputados avulsos [2, 3, 5, 6] → 2 sim, 2 não.
+// concordantes = yesA·yesB + noA·noB = 2·2 + 1·2 = 6; possíveis = 3·4 = 12 → 6/12 = 50%
+const D = (ids) => ({ parties: [], deputyIDs: ids });
+const porDeputyID = calcGroupAgreementForRcs(
+    [rollCall({ X: { sim: 4, nao: 3 } })], D([0, 1, 4]), D([2, 3, 5, 6])).agreement;
+check('grupos definidos por deputyIDs, sem parties, também calculam a concordância',
+    near(porDeputyID, 0.5),
+    'obtido ' + porDeputyID.toFixed(4) + ' | esperado 0.5000 (6 concordantes / 12 duplas)');
+
 // ---- a agregação do tema é ponderada por duplas ----
 // Votação 1: 2×2 duplas, todas concordam  -> 4 de 4
 // Votação 2: 10×10 duplas, nenhuma concorda -> 0 de 100

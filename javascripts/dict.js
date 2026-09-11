@@ -237,8 +237,8 @@ function initDict() {
         "Cohesion comparison": {
             br: "Comparação de coesão"
         },
-        "Cohesion by subject": {
-            br: "Coesão por tema"
+        "Agreement by subject": {
+            br: "Concordância por tema"
         },
         "Bar chart": {
             br: "Gráfico de barras"
