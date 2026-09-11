@@ -8,7 +8,7 @@
         "clean": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
         "build": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\" && cpy \"{index.html,images/**,javascripts/**,stylesheets/**,fonts/**,data/**}\" dist --parents",
         "preview": "serve dist -l 3000",
-        "test": "node scripts/verify-approval-rule.js && node scripts/verify-government-rule.js && node scripts/verify-alignment-scale.js && node scripts/verify-context-menus.js && node scripts/verify-bar-chart.js && node scripts/verify-layer-panel.js && node scripts/verify-derived-layers.js"
+        "test": "node scripts/verify-approval-rule.js && node scripts/verify-government-rule.js && node scripts/verify-alignment-scale.js && node scripts/verify-context-menus.js && node scripts/verify-bar-chart.js && node scripts/verify-layer-panel.js && node scripts/verify-derived-layers.js && node scripts/verify-vote-agreement.js"
     },
     "devDependencies": {
         "cpy-cli": "^5.0.0",

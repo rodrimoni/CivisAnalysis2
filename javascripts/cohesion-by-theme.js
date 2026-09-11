@@ -1,13 +1,12 @@
 /**
  * Cohesion by Theme Chart
  * Small multiples of horizontal bar charts — one chart per theme. Each bar is a
- * comparison group; its length is the Rice Index of the union
- * (reference ∪ that comparison group) restricted to the theme's roll calls.
- * A dashed vertical baseline marks the reference group's own internal Rice in
- * the theme.
+ * comparison group; its length is the share of deputy pairs — one from the
+ * reference group, one from that comparison group — that voted the same way,
+ * over the theme's roll calls.
  *
- * Dependencies: D3 v3, congress-definitions.js (party colors), core/rice-index.js,
- * ui/group-editor.js (shared openGroupEditor)
+ * Dependencies: D3 v3, congress-definitions.js (party colors),
+ * core/vote-agreement.js, ui/group-editor.js (shared openGroupEditor)
  */
 function cohesionByTheme() {
     // Layout
@@ -58,14 +57,18 @@ function cohesionByTheme() {
         tooltip.style("display", "none").style("opacity", 1);
     }
 
-    // Each bar is the Rice cohesion of the union (reference ∪ this comparison
-    // group); the tooltip makes that explicit and shows the reference's own
-    // (baseline) cohesion for context.
-    function barTooltipHtml(themeName, bar, refLabel, baseline, refColor) {
+    // Cada barra é a fração das duplas de deputados — um da referência, um do
+    // grupo comparador — que votaram a mesma coisa.
+    function barTooltipHtml(themeName, bar, refLabel, refColor) {
         var eng = isEnglish();
         var rColor = refColor || '#1e293b';
         var cColor = bar.color || '#2563eb';
-        var rice = bar.rice || 0;
+        var agreement = bar.agreement;
+        var temDados = (agreement !== null && agreement !== undefined);
+        var agreementText = temDados
+            ? (agreement * 100).toFixed(1) + "%"
+            : (eng ? 'no data' : 'sem dados');
+        var agreementDetail = temDados ? "(" + agreement.toFixed(3) + ")" : "";
 
         return "<div style='min-width: 220px; max-width: 340px;'>" +
             "<div style='padding-bottom: 4px; margin-bottom: 8px;'>" +
@@ -75,27 +78,19 @@ function cohesionByTheme() {
             "<div style='display:flex; align-items:center; gap:6px; padding-bottom:4px; margin-bottom:4px; border-bottom: 2px solid " + cColor + ";'>" +
             "<span style='font-weight:600; font-size:13px;'>" +
             "<span style='color:" + rColor + ";'>" + refLabel + "</span>" +
-            "<span style='color:#94a3b8; font-weight:400;'> + </span>" +
+            "<span style='color:#94a3b8; font-weight:400;'> × </span>" +
             "<span style='color:" + cColor + ";'>" + bar.label + "</span>" +
             "</span>" +
             "</div>" +
             "<div style='font-size: 13px; line-height: 1.6;'>" +
             "<div style='margin-bottom: 4px;'>" +
-            "<span style='color: #666; font-weight: 500;'>" + (eng ? 'Bloc cohesion:' : 'Coesão do bloco:') + "</span> " +
-            "<span style='font-weight: 600; color: " + cColor + "; font-size: 15px;'>" + (rice * 100).toFixed(1) + "%</span>" +
-            "<span style='color: #999; font-size: 11px; margin-left: 4px;'>(" + rice.toFixed(3) + ")</span>" +
-            "</div>" +
-            "<div style='margin-bottom: 4px; color: #666;'>" +
-            "<span style='font-weight: 500;'>" + (eng ? 'Reference alone:' : 'Só a referência:') + "</span> " +
-            "<span style='font-weight: 600; color: " + rColor + ";'>" + ((baseline || 0) * 100).toFixed(1) + "%</span>" +
-            "</div>" +
-            "<div style='margin-bottom: 4px; color: #666;'>" +
-            "<span style='font-weight: 500;'>" + (eng ? 'Roll Calls:' : 'Votações:') + "</span> " +
-            "<span style='color: #333;'>" + bar.rollCallCount + "</span>" +
+            "<span style='color: #666; font-weight: 500;'>" + (eng ? 'Agreement:' : 'Concordância:') + "</span> " +
+            "<span style='font-weight: 600; color: " + cColor + "; font-size: 15px;'>" + agreementText + "</span>" +
+            "<span style='color: #999; font-size: 11px; margin-left: 4px;'>" + agreementDetail + "</span>" +
             "</div>" +
             "<div style='color: #666;'>" +
-            "<span style='font-weight: 500;'>" + (eng ? 'Total Votes:' : 'Total de votos:') + "</span> " +
-            "<span style='color: #333;'>" + bar.totalVotes + "</span>" +
+            "<span style='font-weight: 500;'>" + (eng ? 'Shared roll calls:' : 'Votações em comum:') + "</span> " +
+            "<span style='color: #333;'>" + bar.rollCallCount + "</span>" +
             "</div>" +
             "</div>" +
             "</div>" +
@@ -117,8 +112,8 @@ function cohesionByTheme() {
     /**
      * Build a group spec from the shared editor's state. Party membership stays as
      * parties[] (attributed by the vote's own party label); only hand-picked
-     * deputies go into deputyIDs[]. calcGroupRiceForRcs's union predicate handles
-     * mixed groups.
+     * deputies go into deputyIDs[]. calcGroupAgreementForRcs's party-or-deputy
+     * membership test handles mixed groups.
      */
     function buildGroupFromEditor(editorState) {
         var deputyIDs = [];
@@ -355,14 +350,6 @@ function cohesionByTheme() {
         return { parties: (group && group.parties) || [], deputyIDs: (group && group.deputyIDs) || [] };
     }
 
-    function unionSpec(a, b) {
-        var parties = a.parties.slice();
-        b.parties.forEach(function (p) { if (parties.indexOf(p) === -1) parties.push(p); });
-        var deputyIDs = a.deputyIDs.slice();
-        b.deputyIDs.forEach(function (id) { if (deputyIDs.indexOf(id) === -1) deputyIDs.push(id); });
-        return { parties: parties, deputyIDs: deputyIDs };
-    }
-
     function computeThemeData() {
         var rcs = getFilteredRcs();
         var rawThemes = d3.map(rcs, function (d) { return d.theme; }).keys();
@@ -374,25 +361,28 @@ function cohesionByTheme() {
             if (selectedThemes.length && selectedThemes.indexOf(display) === -1) return;
 
             var rcsT = rcs.filter(function (rc) { return rc.theme === theme; });
-            var baseline = calcGroupRiceForRcs(rcsT, refSpec, RICE_CALC_CLASSIC);
 
             var bars = comparisonGroups.map(function (c) {
-                var u = unionSpec(refSpec, groupSpec(c));
-                var r = calcGroupRiceForRcs(rcsT, u, RICE_CALC_CLASSIC);
+                var r = calcGroupAgreementForRcs(rcsT, refSpec, groupSpec(c));
                 return {
                     label: c.label, color: c.color,
-                    rice: r.rice, rollCallCount: r.rollCallCount, totalVotes: r.totalVotes
+                    agreement: r.agreement, rollCallCount: r.rollCallCount
                 };
             });
 
             result.push({
                 theme: display, rawTheme: theme,
-                baseline: baseline.rice, baselineCount: baseline.rollCallCount,
+                rollCallCount: rcsT.length,
                 bars: bars
             });
         });
 
-        result.sort(function (a, b) { return b.baseline - a.baseline; });
+        // Os temas mais votados primeiro, que é onde a comparação tem mais base.
+        // O nome desempata: cinco temas da legislatura têm menos de dez votações
+        // e sem isso a ordem muda quando o filtro de tipo muda.
+        result.sort(function (a, b) {
+            return (b.rollCallCount - a.rollCallCount) || d3.ascending(a.theme, b.theme);
+        });
         return result;
     }
 
@@ -448,7 +438,7 @@ function cohesionByTheme() {
             .attr("x", 4).attr("y", 29)
             .style("font-size", "10px").style("fill", "#94a3b8")
             .text(function (d) {
-                return d.baselineCount + (isEnglish() ? " roll calls" : " votações");
+                return d.rollCallCount + (isEnglish() ? " roll calls" : " votações");
             });
 
         cells.each(function (cell) {
@@ -457,9 +447,9 @@ function cohesionByTheme() {
             cell.bars.forEach(function (bar, j) {
                 var y = headerH + j * barRowH;
 
-                var showBarTip = (function (theme, b, refLabel, baseline, refColor) {
-                    return function () { showToolTip(barTooltipHtml(theme, b, refLabel, baseline, refColor)); };
-                })(cell.theme, bar, referenceGroup ? referenceGroup.label : '', cell.baseline,
+                var showBarTip = (function (theme, b, refLabel, refColor) {
+                    return function () { showToolTip(barTooltipHtml(theme, b, refLabel, refColor)); };
+                })(cell.theme, bar, referenceGroup ? referenceGroup.label : '',
                     referenceGroup ? referenceGroup.color : '#1e293b');
 
                 g.append("text")
@@ -480,37 +470,30 @@ function cohesionByTheme() {
                     .on("mousemove", moveToolTip)
                     .on("mouseout", hideToolTip);
 
-                g.append("rect")
-                    .attr("x", barX).attr("y", y + 3)
-                    .attr("width", Math.max(0, xScale(bar.rice || 0)))
-                    .attr("height", barRowH - 10)
-                    .attr("rx", 2)
-                    .attr("fill", bar.color || "#2563eb")
-                    .style("cursor", "default")
-                    .on("mouseover", showBarTip)
-                    .on("mousemove", moveToolTip)
-                    .on("mouseout", hideToolTip);
+                var temDados = (bar.agreement !== null && bar.agreement !== undefined);
+
+                if (temDados) {
+                    g.append("rect")
+                        .attr("x", barX).attr("y", y + 3)
+                        .attr("width", Math.max(0, xScale(bar.agreement)))
+                        .attr("height", barRowH - 10)
+                        .attr("rx", 2)
+                        .attr("fill", bar.color || "#2563eb")
+                        .style("cursor", "default")
+                        .on("mouseover", showBarTip)
+                        .on("mousemove", moveToolTip)
+                        .on("mouseout", hideToolTip);
+                }
 
                 g.append("text")
                     .attr("x", barX + barW + 4).attr("y", y + barRowH / 2 + 3)
-                    .style("font-size", "10px").style("fill", "#475569")
-                    .text((bar.rice || 0).toFixed(2));
+                    .style("font-size", "10px")
+                    .style("fill", temDados ? "#475569" : "#cbd5e1")
+                    // Sem votação em comum não há o que comparar. Uma barra de
+                    // comprimento zero seria lida como oposição frontal, que é
+                    // o que zero significa nesta medida.
+                    .text(temDados ? bar.agreement.toFixed(2) : "—");
             });
-
-            // Baseline (reference internal Rice) — dashed vertical line over the bar rows
-            var baseline = cell.baseline || 0;
-            var baseX = barX + xScale(baseline);
-            g.append("line")
-                .attr("x1", baseX).attr("x2", baseX)
-                .attr("y1", headerH - 4).attr("y2", headerH + nBars * barRowH - 4)
-                .attr("stroke", "#475569").attr("stroke-width", 1)
-                .attr("stroke-dasharray", "3,3");
-
-            g.append("text")
-                .attr("x", baseX).attr("y", headerH - 7)
-                .attr("text-anchor", "middle")
-                .style("font-size", "9px").style("fill", "#475569")
-                .text("ref " + baseline.toFixed(2));
         });
     }
 
