@@ -1,13 +1,12 @@
 /**
  * Cohesion by Theme Chart
  * Small multiples of horizontal bar charts — one chart per theme. Each bar is a
- * comparison group; its length is the Rice Index of the union
- * (reference ∪ that comparison group) restricted to the theme's roll calls.
- * A dashed vertical baseline marks the reference group's own internal Rice in
- * the theme.
+ * comparison group; its length is the share of deputy pairs — one from the
+ * reference group, one from that comparison group — that voted the same way,
+ * over the theme's roll calls.
  *
- * Dependencies: D3 v3, congress-definitions.js (party colors), core/rice-index.js,
- * ui/group-editor.js (shared openGroupEditor)
+ * Dependencies: D3 v3, congress-definitions.js (party colors),
+ * core/vote-agreement.js, ui/group-editor.js (shared openGroupEditor)
  */
 function cohesionByTheme() {
     // Layout
@@ -58,10 +57,9 @@ function cohesionByTheme() {
         tooltip.style("display", "none").style("opacity", 1);
     }
 
-    // Each bar is the Rice cohesion of the union (reference ∪ this comparison
-    // group); the tooltip makes that explicit and shows the reference's own
-    // (baseline) cohesion for context.
-    function barTooltipHtml(themeName, bar, refLabel, baseline, refColor) {
+    // Cada barra é a fração das duplas de deputados — um da referência, um do
+    // grupo comparador — que votaram a mesma coisa.
+    function barTooltipHtml(themeName, bar, refLabel, refColor) {
         var eng = isEnglish();
         var rColor = refColor || '#1e293b';
         var cColor = bar.color || '#2563eb';
@@ -80,26 +78,22 @@ function cohesionByTheme() {
             "<div style='display:flex; align-items:center; gap:6px; padding-bottom:4px; margin-bottom:4px; border-bottom: 2px solid " + cColor + ";'>" +
             "<span style='font-weight:600; font-size:13px;'>" +
             "<span style='color:" + rColor + ";'>" + refLabel + "</span>" +
-            "<span style='color:#94a3b8; font-weight:400;'> + </span>" +
+            "<span style='color:#94a3b8; font-weight:400;'> × </span>" +
             "<span style='color:" + cColor + ";'>" + bar.label + "</span>" +
             "</span>" +
             "</div>" +
             "<div style='font-size: 13px; line-height: 1.6;'>" +
             "<div style='margin-bottom: 4px;'>" +
-            "<span style='color: #666; font-weight: 500;'>" + (eng ? 'Bloc cohesion:' : 'Coesão do bloco:') + "</span> " +
+            "<span style='color: #666; font-weight: 500;'>" + (eng ? 'Agreement:' : 'Concordância:') + "</span> " +
             "<span style='font-weight: 600; color: " + cColor + "; font-size: 15px;'>" + agreementText + "</span>" +
             "<span style='color: #999; font-size: 11px; margin-left: 4px;'>" + agreementDetail + "</span>" +
-            "</div>" +
-            "<div style='margin-bottom: 4px; color: #666;'>" +
-            "<span style='font-weight: 500;'>" + (eng ? 'Reference alone:' : 'Só a referência:') + "</span> " +
-            "<span style='font-weight: 600; color: " + rColor + ";'>" + ((baseline || 0) * 100).toFixed(1) + "%</span>" +
             "</div>" +
             "<div style='margin-bottom: 4px; color: #666;'>" +
             "<span style='font-weight: 500;'>" + (eng ? 'Roll Calls:' : 'Votações:') + "</span> " +
             "<span style='color: #333;'>" + bar.rollCallCount + "</span>" +
             "</div>" +
             "<div style='color: #666;'>" +
-            "<span style='font-weight: 500;'>" + (eng ? 'Total Votes:' : 'Total de votos:') + "</span> " +
+            "<span style='font-weight: 500;'>" + (eng ? 'Pairs:' : 'Duplas:') + "</span> " +
             "<span style='color: #333;'>" + bar.totalPairs + "</span>" +
             "</div>" +
             "</div>" +
@@ -122,7 +116,7 @@ function cohesionByTheme() {
     /**
      * Build a group spec from the shared editor's state. Party membership stays as
      * parties[] (attributed by the vote's own party label); only hand-picked
-     * deputies go into deputyIDs[]. calcGroupRiceForRcs's union predicate handles
+     * deputies go into deputyIDs[]. calcGroupAgreementForRcs's union predicate handles
      * mixed groups.
      */
     function buildGroupFromEditor(editorState) {
@@ -457,9 +451,9 @@ function cohesionByTheme() {
             cell.bars.forEach(function (bar, j) {
                 var y = headerH + j * barRowH;
 
-                var showBarTip = (function (theme, b, refLabel, baseline, refColor) {
-                    return function () { showToolTip(barTooltipHtml(theme, b, refLabel, baseline, refColor)); };
-                })(cell.theme, bar, referenceGroup ? referenceGroup.label : '', cell.baseline,
+                var showBarTip = (function (theme, b, refLabel, refColor) {
+                    return function () { showToolTip(barTooltipHtml(theme, b, refLabel, refColor)); };
+                })(cell.theme, bar, referenceGroup ? referenceGroup.label : '',
                     referenceGroup ? referenceGroup.color : '#1e293b');
 
                 g.append("text")
@@ -504,21 +498,6 @@ function cohesionByTheme() {
                     // o que zero significa nesta medida.
                     .text(temDados ? bar.agreement.toFixed(2) : "—");
             });
-
-            // Baseline (reference internal Rice) — dashed vertical line over the bar rows
-            var baseline = cell.baseline || 0;
-            var baseX = barX + xScale(baseline);
-            g.append("line")
-                .attr("x1", baseX).attr("x2", baseX)
-                .attr("y1", headerH - 4).attr("y2", headerH + nBars * barRowH - 4)
-                .attr("stroke", "#475569").attr("stroke-width", 1)
-                .attr("stroke-dasharray", "3,3");
-
-            g.append("text")
-                .attr("x", baseX).attr("y", headerH - 7)
-                .attr("text-anchor", "middle")
-                .style("font-size", "9px").style("fill", "#475569")
-                .text("ref " + baseline.toFixed(2));
         });
     }
 
