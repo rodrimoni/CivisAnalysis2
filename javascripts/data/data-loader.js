@@ -182,6 +182,10 @@ var rollCallInTheDateRange = [];
 var deputiesInTheDateRange = {};
 var motions = {};
 
+// Motions still waiting for data in the current range load. Module-level so
+// the bundle fast path and the per-file fallback share (and shrink) it.
+var motionsToLoadPending = {};
+
 /**
  * Load motions within a date range
  * @param {Date} start - Start date
@@ -197,10 +201,10 @@ function loadMotionsInDateRange(start, end, defer) {
     });
 
     // check if the motion is already loaded AND reduce repeated motions(with the map{})
-    var motionsToLoad = {};
+    motionsToLoadPending = {};
     rollCallInTheDateRange.forEach(function (d) {
         if (motions[d.type + d.number + d.year] === undefined) {
-            motionsToLoad[d.type + d.number + d.year] = d;
+            motionsToLoadPending[d.type + d.number + d.year] = d;
         }
     });
 
@@ -208,19 +212,63 @@ function loadMotionsInDateRange(start, end, defer) {
     // rate limiting (HTTP 429) on shared static hosts. Retries hold their
     // queue slot while backing off, which further spaces out requests.
     motionLoadFailures = [];
-    var loadMotionsQueue = queue(MOTION_LOAD_CONCURRENCY);
 
-    $.each(motionsToLoad, function (motion) {
-        motions[motion] = {};
-        loadMotionsQueue.defer(
-            loadMotion,
-            motionsToLoad[motion].type,
-            motionsToLoad[motion].number,
-            motionsToLoad[motion].year
-        )
+    // Fast path: one bundle per year turns hundreds of files into a handful
+    // of requests. Years come from the roll calls' own UTC dates — the same
+    // basis the bundles were built on. Whatever is left falls back to
+    // per-file loading below, so a missing bundle never breaks the load.
+    var yearsToLoad = {};
+    rollCallInTheDateRange.forEach(function (d) {
+        yearsToLoad[d.datetime.getUTCFullYear()] = true;
     });
+    var bundleQueue = queue(2);
+    Object.keys(yearsToLoad).forEach(function (year) {
+        bundleQueue.defer(loadMotionBundle, year);
+    });
+    bundleQueue.awaitAll(loadRemainingMotions);
 
-    loadMotionsQueue.awaitAll(function () { defer(null, true); }) // return to setDateRange()
+    function loadRemainingMotions() {
+        var loadMotionsQueue = queue(MOTION_LOAD_CONCURRENCY);
+
+        $.each(motionsToLoadPending, function (motion) {
+            motions[motion] = {};
+            loadMotionsQueue.defer(
+                loadMotion,
+                motionsToLoadPending[motion].type,
+                motionsToLoadPending[motion].number,
+                motionsToLoadPending[motion].year
+            )
+        });
+
+        loadMotionsQueue.awaitAll(function () { defer(null, true); }) // return to setDateRange()
+    }
+}
+
+/**
+ * Load one yearly bundle (data/bundles/motions-YYYY.json) and ingest every
+ * entry still pending in motionsToLoadPending. Missing/failed bundles are
+ * fine: those motions stay pending and load per-file afterwards.
+ * @param {string|number} year - The bundle year
+ * @param {Function} done - Queue callback
+ */
+function loadMotionBundle(year, done) {
+    var url = 'data/bundles/motions-' + year + '.json';
+    fetchJsonWithRetry(url, 1, function (bundle) {
+        if (bundle !== null && bundle !== undefined) {
+            Object.keys(bundle).forEach(function (key) {
+                if (motionsToLoadPending[key] !== undefined) {
+                    var d = motionsToLoadPending[key];
+                    motions[key] = {};
+                    ingestMotion(d.type, d.number, d.year, bundle[key]);
+                    delete motionsToLoadPending[key];
+                }
+            });
+        }
+        done(null, true);
+    }, function () {
+        console.log('loadMotionBundle: ' + url + ' unavailable, falling back to per-file');
+        done(null, true);
+    });
 }
 
 /**
@@ -231,9 +279,6 @@ function loadMotionsInDateRange(start, end, defer) {
  * @param {Function} defer - Deferred callback
  */
 function loadMotion(type, number, year, defer) {
-    var deputiesArray = state.getDeputiesArray();
-    var arrayRollCalls = state.getArrayRollCalls();
-
     getMotion(type, number, year, function (motion) {
         // Null means the file failed even after all retries: skip it so the
         // queue always finishes instead of hanging, and report it at the end.
@@ -241,7 +286,24 @@ function loadMotion(type, number, year, defer) {
             defer(null, true);
             return;
         }
-        motions[type + number + year] = motion;
+        ingestMotion(type, number, year, motion);
+        defer(null, true)
+    })
+}
+
+/**
+ * Merge a motion's roll calls and votes into the app state. Shared by the
+ * per-file path and the yearly-bundle fast path.
+ * @param {string} type - Motion type
+ * @param {string|number} number - Motion number
+ * @param {string|number} year - Motion year
+ * @param {Object} motion - Motion data with rollCalls
+ */
+function ingestMotion(type, number, year, motion) {
+    var deputiesArray = state.getDeputiesArray();
+    var arrayRollCalls = state.getArrayRollCalls();
+
+    motions[type + number + year] = motion;
 
         motion.rollCalls.forEach(function (rollCall) {
             if (rollCall.votes !== undefined) {
@@ -279,9 +341,6 @@ function loadMotion(type, number, year, defer) {
                 rollCall = dtRollCall[0];
             }
         });
-
-        defer(null, true)
-    })
 }
 
 /**
