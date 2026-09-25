@@ -85,13 +85,96 @@ function loadNodes(type, selectedTime, callback, technique) {
  * @param {string} type - Motion type
  * @param {string|number} number - Motion number
  * @param {string|number} year - Motion year
- * @param {Function} callback - Callback function with motion data
+ * @param {Function} callback - Callback function with motion data (null when
+ *                              the motion could not be loaded after retries)
  */
 function getMotion(type, number, year, callback) {
-    d3.json('data/motions.min/' + type + '' + number + '' + year + '.json', function (motion) {
-        if (motion === null) console.log('Could not load DB getMotion/' + type + '/' + number + '/' + year);
+    var url = 'data/motions.min/' + type + '' + number + '' + year + '.json';
+    fetchJsonWithRetry(url, 1, function (motion) {
+        if (motion === null || motion === undefined) {
+            console.log('Could not load DB getMotion/' + type + '/' + number + '/' + year);
+            recordMotionFailure(type, number, year);
+            callback(null);
+            return;
+        }
         callback(motion);
-    })
+    }, function () {
+        console.log('Could not load DB getMotion/' + type + '/' + number + '/' + year);
+        recordMotionFailure(type, number, year);
+        callback(null);
+    });
+}
+
+// Tuning for static hosts with request rate limiting (HTTP 429). A whole
+// legislature means hundreds of small motion files; bursting them at high
+// concurrency trips server-side limits, so we stay polite and retry.
+var MOTION_LOAD_CONCURRENCY = 4;
+var MOTION_LOAD_MAX_ATTEMPTS = 6;
+var MOTION_LOAD_BASE_DELAY_MS = 600;
+var MOTION_LOAD_MAX_DELAY_MS = 15000;
+var MOTION_LOAD_REQUEST_TIMEOUT_MS = 30000;
+
+// Keys of motions that failed even after all retries, reset on every range load.
+var motionLoadFailures = [];
+
+function recordMotionFailure(type, number, year) {
+    var key = type + number + year;
+    if (motionLoadFailures.indexOf(key) === -1) motionLoadFailures.push(key);
+}
+
+function isRetryableStatus(status) {
+    return status === 0 || status === 408 || status === 429 ||
+        status === 502 || status === 503 || status === 504;
+}
+
+function retryDelayMs(attempt, jqXHR) {
+    if (jqXHR && jqXHR.status === 429 && typeof jqXHR.getResponseHeader === 'function') {
+        try {
+            var retryAfter = parseInt(jqXHR.getResponseHeader('Retry-After'), 10);
+            if (!isNaN(retryAfter) && retryAfter >= 0 && retryAfter <= 120) {
+                return retryAfter * 1000 + Math.floor(Math.random() * MOTION_LOAD_BASE_DELAY_MS);
+            }
+        } catch (e) { /* fall through to exponential backoff */ }
+    }
+    var backoff = MOTION_LOAD_BASE_DELAY_MS * Math.pow(2, attempt - 1);
+    var jitter = Math.floor(Math.random() * MOTION_LOAD_BASE_DELAY_MS);
+    return Math.min(backoff, MOTION_LOAD_MAX_DELAY_MS) + jitter;
+}
+
+function motionLoadingNotice(text) {
+    try {
+        if (typeof $ !== 'undefined') $('#loading #msg').text(text);
+    } catch (e) { /* overlay may not exist in every context */ }
+}
+
+function retryNoticeText(attempt, maxAttempts) {
+    var language = (typeof state !== 'undefined' && state.getLanguage) ? state.getLanguage() : null;
+    if (language === ENGLISH) return 'Server is busy, retrying (' + attempt + '/' + maxAttempts + ')...';
+    return 'Servidor ocupado, tentando de novo (' + attempt + '/' + maxAttempts + ')...';
+}
+
+/**
+ * Fetch JSON with retries for rate limiting (429) and transient errors.
+ * Honors the server's Retry-After header, otherwise backs off exponentially.
+ */
+function fetchJsonWithRetry(url, attempt, onSuccess, onFailure) {
+    $.ajax({ url: url, dataType: 'json', cache: true, timeout: MOTION_LOAD_REQUEST_TIMEOUT_MS })
+        .done(function (data) { onSuccess(data); })
+        .fail(function (jqXHR, textStatus) {
+            var status = jqXHR ? jqXHR.status : 0;
+            if (isRetryableStatus(status) && attempt < MOTION_LOAD_MAX_ATTEMPTS) {
+                var delay = retryDelayMs(attempt, jqXHR);
+                console.log('fetchJsonWithRetry: ' + url + ' failed with ' + status +
+                    ' (' + textStatus + '), retry ' + (attempt + 1) + '/' +
+                    MOTION_LOAD_MAX_ATTEMPTS + ' in ' + delay + 'ms');
+                motionLoadingNotice(retryNoticeText(attempt + 1, MOTION_LOAD_MAX_ATTEMPTS));
+                setTimeout(function () {
+                    fetchJsonWithRetry(url, attempt + 1, onSuccess, onFailure);
+                }, delay);
+            } else {
+                onFailure(status);
+            }
+        });
 }
 
 // Variables for motion loading (module-level scope)
@@ -121,7 +204,11 @@ function loadMotionsInDateRange(start, end, defer) {
         }
     });
 
-    var loadMotionsQueue = queue(20);
+    // Low concurrency on purpose: hundreds of motion files in a burst trips
+    // rate limiting (HTTP 429) on shared static hosts. Retries hold their
+    // queue slot while backing off, which further spaces out requests.
+    motionLoadFailures = [];
+    var loadMotionsQueue = queue(MOTION_LOAD_CONCURRENCY);
 
     $.each(motionsToLoad, function (motion) {
         motions[motion] = {};
@@ -148,6 +235,12 @@ function loadMotion(type, number, year, defer) {
     var arrayRollCalls = state.getArrayRollCalls();
 
     getMotion(type, number, year, function (motion) {
+        // Null means the file failed even after all retries: skip it so the
+        // queue always finishes instead of hanging, and report it at the end.
+        if (motion === null || motion === undefined) {
+            defer(null, true);
+            return;
+        }
         motions[type + number + year] = motion;
 
         motion.rollCalls.forEach(function (rollCall) {
@@ -250,6 +343,17 @@ function updateDataforDateRange(period, callback) {
                 rollCallInTheDateRange.push(rollCall);
         })
         deputiesInTheDateRange = adeputiesInTheDateRange;
+
+        if (motionLoadFailures.length > 0) {
+            console.warn('updateDataforDateRange: ' + motionLoadFailures.length +
+                ' motion(s) could not be loaded: ' + motionLoadFailures.slice(0, 10).join(', ') +
+                (motionLoadFailures.length > 10 ? ', ...' : ''));
+            if (language === ENGLISH) {
+                alert(motionLoadFailures.length + ' motion file(s) could not be loaded (server rate limit). Results may be incomplete — try selecting the period again.');
+            } else {
+                alert(motionLoadFailures.length + ' arquivo(s) de proposição não puderam ser carregados (limite do servidor). Os resultados podem estar incompletos — tente selecionar o período de novo.');
+            }
+        }
 
         console.log("DONE");
         callback();
