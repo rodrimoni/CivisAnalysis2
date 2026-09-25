@@ -19,7 +19,8 @@
  *   --skip-pca         Skip PCA precalc generation
  *   --skip-w-nominate  Skip W-NOMINATE generation
  *   --skip-traces      Skip parties traces generation
- *   --only <name>      Run only a specific step (pca, w-nominate, traces, extent, nodes)
+ *   --skip-bundles     Skip motion bundles generation
+ *   --only <name>      Run only a specific step (pca, w-nominate, traces, extent, nodes, bundles)
  */
 'use strict';
 
@@ -35,6 +36,7 @@ const args = process.argv.slice(2);
 const skipPca = args.includes('--skip-pca');
 const skipWNominate = args.includes('--skip-w-nominate');
 const skipTraces = args.includes('--skip-traces');
+const skipBundles = args.includes('--skip-bundles');
 const onlyIdx = args.indexOf('--only');
 const only = onlyIdx !== -1 ? args[onlyIdx + 1] : null;
 
@@ -92,8 +94,14 @@ if (only === 'extent' || !only) {
 
 // Step 5: Deputies nodes by year (reads PCA precalc)
 if (only === 'nodes' || !only) {
-    run('Step 5/5: Deputies Nodes By Year',
+    run('Step 5/6: Deputies Nodes By Year',
         `node "${path.join(SCRIPTS_DIR, 'generate-deputies-nodes-by-year.js')}"`);
+}
+
+// Step 6: Motion bundles (reads arrayRollCalls + motions.min)
+if (only === 'bundles' || (!only && !skipBundles)) {
+    run('Step 6/6: Motion Bundles (yearly)',
+        `node "${path.join(SCRIPTS_DIR, 'generate-motion-bundles.js')}"`);
 }
 
 const totalElapsed = ((Date.now() - totalStart) / 1000).toFixed(1);
