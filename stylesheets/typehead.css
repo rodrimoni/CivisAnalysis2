@@ -105,40 +105,28 @@ span.twitter-typeahead .tt-dropdown-menu {
     max-height: 240px;
     overflow-y: auto;
 }
-/* Shortcut row under the motion-type field. The chip carries its own label
-   so the preset no longer depends on hovering an unlabelled icon. */
-.motion-preset-row {
+/* Preset shortcut rendered as the motion-type field's footer: the box keeps
+   its own border but drops the margin below it, so the strip sits flush under
+   the field and reads as part of it rather than as a control floating below. */
+.motion-type-box .bootstrap-tagsinput {
+    display: block;
+    margin-bottom: 0;
+}
+
+.motion-preset-footer {
     display: flex;
     align-items: center;
-    flex-wrap: wrap;
     gap: 6px;
-    padding: 2px 0 4px;
+    padding: 4px 2px 8px;
 }
 
 .motion-preset-label {
     font-size: 11px;
-    color: #999;
+    color: #888;
 }
 
-a.motion-preset-chip,
-a.motion-preset-chip:link,
-a.motion-preset-chip:visited {
-    display: inline-block;
-    padding: 2px 8px;
-    border: 1px solid #d0d0d0;
-    border-radius: 10px;
-    background-color: #f7f7f7;
+.motion-type-box .btn.presetMainMotions {
     font-size: 11px;
     line-height: 16px;
-    color: #555;
-    text-decoration: none;
-    white-space: nowrap;
-}
-
-a.motion-preset-chip:hover,
-a.motion-preset-chip:focus {
-    border-color: #adadad;
-    background-color: #ebebeb;
-    color: #333;
-    text-decoration: none;
+    padding: 1px 8px;
 }

@@ -38,15 +38,18 @@ builders.forEach((name) => {
     const body = factory.slice(factory.indexOf('function ' + name));
     const nextFn = body.slice(('function ' + name).length).search(/\nfunction /);
     const block = nextFn === -1 ? body : body.slice(0, nextFn);
-    check(name + ' tem a linha de atalho abaixo do campo',
-        block.includes('mainMotionsPresetRow()'));
+    check(name + ' tem o rodapé de atalho colado no campo',
+        block.includes('mainMotionsPresetFooter()') &&
+        block.includes('motion-type-box'));
     check(name + ' preenche via applyMainMotionsPreset',
         block.includes('applyMainMotionsPreset('));
 });
 check('campo de tipos não divide mais a linha com o preset',
     !factory.includes('mainMotionsPresetButton'));
-check('atalho é chip nomeado, sem ícone sem rótulo',
-    factory.includes('motion-preset-chip presetMainMotions') &&
+check('rodapé fica no mesmo wrapper do input (o plugin insere a caixa antes dele)',
+    /motion-type-box[\s\S]*?filterMotions[\s\S]*?mainMotionsPresetFooter\(\)/.test(factory));
+check('atalho é botão nomeado, sem ícone sem rótulo',
+    factory.includes('btn btn-xs btn-default presetMainMotions') &&
     factory.includes('mainMotionsPresetLabel()') &&
     !factory.includes('btn btn-default presetMainMotions') &&
     !factory.includes('fa-star'));

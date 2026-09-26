@@ -183,17 +183,19 @@ function mainMotionsPresetLabel() {
 }
 
 /**
- * Shortcut row rendered under the motion-type field: a named chip beats the
- * icon-only button it replaces, which asked the user to hover a star to learn
- * that it filled the field.
+ * Footer strip attached to the bottom of the motion-type field: shares the
+ * field's border so it reads as part of it, not as a separate control. It
+ * replaces an icon-only star button whose meaning lived in a tooltip.
+ * Must sit inside the same wrapper as the input - the tagsinput plugin
+ * inserts its box before the original input, so the footer stays last.
  */
-function mainMotionsPresetRow() {
+function mainMotionsPresetFooter() {
     var shortcutsLabel = language === ENGLISH ? 'Shortcuts:' : 'Atalhos:';
-    return '<li><div class="motion-preset-row">' +
+    return '<div class="motion-preset-footer">' +
         '<span class="motion-preset-label">' + shortcutsLabel + '</span>' +
-        '<a href="#" class="motion-preset-chip presetMainMotions" ' +
-        'title="MPV, PEC, PL, PLN, PLP">' + mainMotionsPresetLabel() + '</a>' +
-        '</div></li>';
+        '<button type="button" class="btn btn-xs btn-default presetMainMotions" ' +
+        'title="MPV, PEC, PL, PLN, PLP">' + mainMotionsPresetLabel() + '</button>' +
+        '</div>';
 }
 
 /**
@@ -223,9 +225,10 @@ function addFilterMotionTypeMenu(newID, rollCalls) {
     var placeholder = language === ENGLISH ? "Type motion type to filter" : "Digite tipos de votações para filtrar"
     $("#" + newID + " .panel-settings")
         .append('<li role="presentation" class="dropdown-header"><span class="trn">Select motion types</span></li>')
-        .append('<li><input type="text" class="form-control typeahead filterMotions" ' +
-            'placeholder="' + placeholder + ' (e.g. PL, PEC, etc.)"/></li>')
-        .append(mainMotionsPresetRow());
+        .append('<li class="motion-type-field"><div class="motion-type-box">' +
+            '<input type="text" class="form-control typeahead filterMotions" ' +
+            'placeholder="' + placeholder + ' (e.g. PL, PEC, etc.)"/>' +
+            mainMotionsPresetFooter() + '</div></li>');
 
     var rollCallsTypes = d3.map(rollCalls, function (d) { return d.type; }).keys();
     var elt = $('#' + newID + ' .filterMotions');
@@ -270,9 +273,10 @@ function addFilterMotionTypeChart(newID, rollCalls, datasetName) {
     var placeholder = language === ENGLISH ? "Type motion type to filter" : "Digite tipos de votações para filtrar";
     $("#" + newID + " .panel-settings")
         .append('<li role="presentation" class="dropdown-header"><span class="trn">Select motion types</span></li>')
-        .append('<li><input type="text" class="form-control typeahead filterMotions" ' +
-            'placeholder="' + placeholder + ' (e.g. PL, PEC, etc.)"/></li>')
-        .append(mainMotionsPresetRow());
+        .append('<li class="motion-type-field"><div class="motion-type-box">' +
+            '<input type="text" class="form-control typeahead filterMotions" ' +
+            'placeholder="' + placeholder + ' (e.g. PL, PEC, etc.)"/>' +
+            mainMotionsPresetFooter() + '</div></li>');
 
     var rollCallsTypes = d3.map(rollCalls, function (d) { return d.type; }).keys();
     var elt = $('#' + newID + ' .filterMotions');
@@ -750,15 +754,14 @@ function addSubjectTypeFilters(newID, rollCalls, popoverText, onReload) {
         .append('<li role="presentation" class="dropdown-header"><span class="trn">Select Subjects</span></li>')
         .append('<li><input type="text" class="form-control typeahead filterSubjectMotions" placeholder="' + subjectPlaceholder + '"/></li>')
         .append('<li role="presentation" class="dropdown-header"><span class="trn">Select motion types</span></li>')
-        .append('<li><div class="row" style="width: 100%; margin: 0;">' +
-            '<div class="col-xs-11" style="padding-left: 0; padding-right: 4px;"><input type="text" class="form-control typeahead filterMotions" placeholder="' + typePlaceholder + ' (e.g. PL, PEC, etc.)"/></div>' +
+        .append('<li class="motion-type-field"><div class="row" style="width: 100%; margin: 0;">' +
+            '<div class="col-xs-11 motion-type-box" style="padding-left: 0; padding-right: 4px;"><input type="text" class="form-control typeahead filterMotions" placeholder="' + typePlaceholder + ' (e.g. PL, PEC, etc.)"/>' + mainMotionsPresetFooter() + '</div>' +
             '<div class="col-xs-1" style="padding-left: 0; padding-right: 0;">' +
             '<button class="btn btn-primary reloadFilters" style="padding:12px; display: flex; align-items: center; justify-content: center;" ' +
             'data-container="body" data-content="' + popoverText + '" data-html="true" rel="popover" ' +
             'data-placement="top" data-trigger="hover" data-viewport="body">' +
             '<i class="fa fa-rotate-right"></i></button></div>' +
-            '</div></li>')
-        .append(mainMotionsPresetRow());
+            '</div></li>');
 
     $('#' + newID + ' .reloadFilters').popover();
 
