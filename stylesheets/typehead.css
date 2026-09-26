@@ -105,3 +105,28 @@ span.twitter-typeahead .tt-dropdown-menu {
     max-height: 240px;
     overflow-y: auto;
 }
+/* Preset shortcut rendered as the motion-type field's footer: the box keeps
+   its own border but drops the margin below it, so the strip sits flush under
+   the field and reads as part of it rather than as a control floating below. */
+.motion-type-box .bootstrap-tagsinput {
+    display: block;
+    margin-bottom: 0;
+}
+
+.motion-preset-footer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 2px 8px;
+}
+
+.motion-preset-label {
+    font-size: 11px;
+    color: #888;
+}
+
+.motion-type-box .btn.presetMainMotions {
+    font-size: 11px;
+    line-height: 16px;
+    padding: 1px 8px;
+}

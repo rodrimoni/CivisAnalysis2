@@ -173,6 +173,50 @@ function setupFilterTagsinput(elt, optionValues, datasetName, tagClass) {
 }
 
 /**
+ * Preset of substantive proposition types offered as a one-click shortcut in
+ * every motion-type filter: MPV, PEC, PL, PLN, PLP.
+ */
+var MAIN_MOTION_TYPES = ['MPV', 'PEC', 'PL', 'PLN', 'PLP'];
+
+function mainMotionsPresetLabel() {
+    return language === ENGLISH ? 'Main motions' : 'Proposições principais';
+}
+
+/**
+ * Footer strip attached to the bottom of the motion-type field: shares the
+ * field's border so it reads as part of it, not as a separate control. It
+ * replaces an icon-only star button whose meaning lived in a tooltip.
+ * Must sit inside the same wrapper as the input - the tagsinput plugin
+ * inserts its box before the original input, so the footer stays last.
+ */
+function mainMotionsPresetFooter() {
+    var shortcutsLabel = language === ENGLISH ? 'Shortcuts:' : 'Atalhos:';
+    return '<div class="motion-preset-footer">' +
+        '<span class="motion-preset-label">' + shortcutsLabel + '</span>' +
+        '<button type="button" class="btn btn-xs btn-default presetMainMotions" ' +
+        'title="MPV, PEC, PL, PLN, PLP">' + mainMotionsPresetLabel() + '</button>' +
+        '</div>';
+}
+
+/**
+ * Fill a motion-type tagsinput with the preset. Only types present in the
+ * period's options are added, and duplicates are ignored by the plugin.
+ * Programmatic adds fire itemAdded, so panels that apply live
+ * (heatmap, charts) pick the preset up with no extra wiring.
+ * @param {Object} elt - jQuery tagsinput element
+ * @param {Array<string>} optionValues - option labels, same list fed to setupFilterTagsinput
+ */
+function applyMainMotionsPreset(elt, optionValues) {
+    // Same order as setupFilterTagsinput: the plugin dedupes by key
+    // (the option index), so a different order would duplicate tags.
+    var entries = d3.entries(optionValues.slice().sort());
+    MAIN_MOTION_TYPES.forEach(function (type) {
+        var match = entries.filter(function (e) { return e.value === type; })[0];
+        if (match) elt.tagsinput('add', match);
+    });
+}
+
+/**
  * Add filter motion type menu
  * @param {string} newID - Panel ID
  * @param {Array} rollCalls - Roll calls data
@@ -181,9 +225,10 @@ function addFilterMotionTypeMenu(newID, rollCalls) {
     var placeholder = language === ENGLISH ? "Type motion type to filter" : "Digite tipos de votações para filtrar"
     $("#" + newID + " .panel-settings")
         .append('<li role="presentation" class="dropdown-header"><span class="trn">Select motion types</span></li>')
-        .append('<li><input type="text" ' +
-            'class="form-control typeahead filterMotions" ' +
-            'placeholder="' + placeholder + ' (e.g. PL, PEC, etc.)"/> </li>');
+        .append('<li class="motion-type-field"><div class="motion-type-box">' +
+            '<input type="text" class="form-control typeahead filterMotions" ' +
+            'placeholder="' + placeholder + ' (e.g. PL, PEC, etc.)"/>' +
+            mainMotionsPresetFooter() + '</div></li>');
 
     var rollCallsTypes = d3.map(rollCalls, function (d) { return d.type; }).keys();
     var elt = $('#' + newID + ' .filterMotions');
@@ -200,6 +245,13 @@ function addFilterMotionTypeMenu(newID, rollCalls) {
         var tree = state.getTree();
         chart = tree.getNode(newID, tree.traverseBF).chart;
         chart.selectRollCallsByFilter(newID);
+    });
+
+    $("#" + newID + " .presetMainMotions").click(function (e) {
+        e.preventDefault();
+        // Keep the settings dropdown open so the user sees the tags fill in.
+        e.stopPropagation();
+        applyMainMotionsPreset(elt, rollCallsTypes);
     });
 
     $("#" + newID + " .bootstrap-tagsinput").click(function (e) {
@@ -221,9 +273,10 @@ function addFilterMotionTypeChart(newID, rollCalls, datasetName) {
     var placeholder = language === ENGLISH ? "Type motion type to filter" : "Digite tipos de votações para filtrar";
     $("#" + newID + " .panel-settings")
         .append('<li role="presentation" class="dropdown-header"><span class="trn">Select motion types</span></li>')
-        .append('<li><input type="text" ' +
-            'class="form-control typeahead filterMotions" ' +
-            'placeholder="' + placeholder + ' (e.g. PL, PEC, etc.)"/> </li>');
+        .append('<li class="motion-type-field"><div class="motion-type-box">' +
+            '<input type="text" class="form-control typeahead filterMotions" ' +
+            'placeholder="' + placeholder + ' (e.g. PL, PEC, etc.)"/>' +
+            mainMotionsPresetFooter() + '</div></li>');
 
     var rollCallsTypes = d3.map(rollCalls, function (d) { return d.type; }).keys();
     var elt = $('#' + newID + ' .filterMotions');
@@ -238,6 +291,13 @@ function addFilterMotionTypeChart(newID, rollCalls, datasetName) {
 
     elt.on('itemAdded', applyTypeFilter);
     elt.on('itemRemoved', applyTypeFilter);
+
+    $("#" + newID + " .presetMainMotions").click(function (e) {
+        e.preventDefault();
+        // Keep the settings dropdown open so the user sees the tags fill in.
+        e.stopPropagation();
+        applyMainMotionsPreset(elt, rollCallsTypes);
+    });
 
     $("#" + newID + " .bootstrap-tagsinput").click(function (e) {
         e.stopPropagation();
@@ -694,9 +754,9 @@ function addSubjectTypeFilters(newID, rollCalls, popoverText, onReload) {
         .append('<li role="presentation" class="dropdown-header"><span class="trn">Select Subjects</span></li>')
         .append('<li><input type="text" class="form-control typeahead filterSubjectMotions" placeholder="' + subjectPlaceholder + '"/></li>')
         .append('<li role="presentation" class="dropdown-header"><span class="trn">Select motion types</span></li>')
-        .append('<li><div class="row" style="width: 100%; margin: 0;">' +
-            '<div class="col-xs-11" style="padding-left: 0;"><input type="text" class="form-control typeahead filterMotions" placeholder="' + typePlaceholder + ' (e.g. PL, PEC, etc.)"/></div>' +
-            '<div class="col-xs-1" style="padding-left: 0;">' +
+        .append('<li class="motion-type-field"><div class="row" style="width: 100%; margin: 0;">' +
+            '<div class="col-xs-11 motion-type-box" style="padding-left: 0; padding-right: 4px;"><input type="text" class="form-control typeahead filterMotions" placeholder="' + typePlaceholder + ' (e.g. PL, PEC, etc.)"/>' + mainMotionsPresetFooter() + '</div>' +
+            '<div class="col-xs-1" style="padding-left: 0; padding-right: 0;">' +
             '<button class="btn btn-primary reloadFilters" style="padding:12px; display: flex; align-items: center; justify-content: center;" ' +
             'data-container="body" data-content="' + popoverText + '" data-html="true" rel="popover" ' +
             'data-placement="top" data-trigger="hover" data-viewport="body">' +
@@ -725,6 +785,16 @@ function addSubjectTypeFilters(newID, rollCalls, popoverText, onReload) {
         var subjects = themeElt.tagsinput('items').map(function (item) { return item.value; });
         var types = typeElt.tagsinput('items').map(function (item) { return item.value; });
         onReload(subjects, types);
+    });
+
+    // The preset fills the tags AND applies immediately, so selecting it
+    // embeds the types without a second click on Reload.
+    $('#' + newID + ' .presetMainMotions').click(function (e) {
+        e.preventDefault();
+        // Keep the settings dropdown open so the user sees the tags fill in.
+        e.stopPropagation();
+        applyMainMotionsPreset(typeElt, rollCallsTypes);
+        $('#' + newID + ' .reloadFilters').click();
     });
 }
 
