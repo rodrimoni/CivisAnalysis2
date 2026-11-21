@@ -26,7 +26,7 @@ function createDeputyNodes(data_deputies, selecteddeputies, deputiesAligment) {
         depObj.scatterplot = data_deputies[i];
         depObj.selected = true;
         depObj.overlapped = null;
-        depObj.alignment = deputiesAligment ? deputiesAligment[i] : 0;
+        depObj.alignment = deputiesAligment ? deputiesAligment[i] : null;
         deputies[depObj.deputyID] = depObj;
     }
 
@@ -499,94 +499,32 @@ function checkSelectedValue(id) {
 }
 
 /**
- * Calculate party alignment for each deputy
- * @param {Array} matrixDeputiesPerRollCall - Matrix with deputy votes (rows: deputies, cols: roll calls)
- * @param {Array} filteredDeputies - Array of filtered deputy objects
- * @returns {Array} Array of alignment results with deputado_id, partido, alinhamento
+ * Party alignment of each filtered deputy over the roll calls in the current
+ * date range. The rule lives in core/party-alignment.js, shared with the
+ * precalc generators so precalc and on-the-fly periods agree.
+ *
+ * Every vote cast in the roll call counts toward the party majority, not only
+ * the votes of the deputies plotted, matching the generators.
+ *
+ * @param {Array} filteredDeputies - deputies in plot order (index == svdKey)
+ * @returns {Array<number|null>} alignment per filtered deputy, null when the
+ *          deputy cast no countable Sim/Não vote
  */
-function calculateDeputiesAligment(matrixDeputiesPerRollCall, filteredDeputies) {
-    if (!matrixDeputiesPerRollCall || !filteredDeputies || filteredDeputies.length === 0) {
-        return [];
-    }
+function calculateDeputiesAligment(filteredDeputies) {
+    if (!filteredDeputies || filteredDeputies.length === 0) return [];
 
-    const numberOfDeputies = matrixDeputiesPerRollCall.length;
-    const numberOfRollCalls = matrixDeputiesPerRollCall[0].length;
+    var votesByRollCall = rollCallInTheDateRange.map(function (rollCall) {
+        return rollCall.votes.map(function (vote) {
+            var deputy = deputiesInTheDateRange[vote.deputyID];
+            return {
+                row: deputy ? deputy.svdKey : null,
+                party: vote.party,
+                vote: vote.vote
+            };
+        });
+    });
 
-    // Result array
-    const alignmentResults = [];
-
-    // For each roll call, calculate the majority vote for each party
-    // partyMajorityVotes[rollCallIdx] = {party: majorityVote}
-    const partyMajorityVotes = [];
-
-    for (let rollCallIdx = 0; rollCallIdx < numberOfRollCalls; rollCallIdx++) {
-        const partyVotes = {}; // {partyName: {'1': count, '-1': count, '0': count}}
-
-        // Count votes per party for this roll call
-        for (let deputyIdx = 0; deputyIdx < numberOfDeputies; deputyIdx++) {
-            const party = filteredDeputies[deputyIdx].party;
-            const vote = matrixDeputiesPerRollCall[deputyIdx][rollCallIdx];
-
-            if (partyVotes[party] === undefined) {
-                partyVotes[party] = { '1': 0, '-1': 0, '0': 0 };
-            }
-
-            // Convert vote to string key for the object
-            const voteKey = vote.toString();
-            if (partyVotes[party][voteKey] !== undefined) {
-                partyVotes[party][voteKey]++;
-            }
-        }
-
-        // Determine majority vote for each party
-        const majorityByParty = {};
-        for (const party in partyVotes) {
-            const votes = partyVotes[party];
-            let maxCount = -1;
-            let majorityVote = 0;
-
-            // Find which vote has the max count
-            for (const voteType in votes) {
-                if (votes[voteType] > maxCount) {
-                    maxCount = votes[voteType];
-                    majorityVote = parseInt(voteType);
-                }
-            }
-
-            majorityByParty[party] = majorityVote;
-        }
-
-        partyMajorityVotes.push(majorityByParty);
-    }
-
-    // Calculate alignment for each deputy
-    for (let deputyIdx = 0; deputyIdx < numberOfDeputies; deputyIdx++) {
-        const deputy = filteredDeputies[deputyIdx];
-        const party = deputy.party;
-        let alignedVotes = 0;
-
-        for (let rollCallIdx = 0; rollCallIdx < numberOfRollCalls; rollCallIdx++) {
-            const deputyVote = matrixDeputiesPerRollCall[deputyIdx][rollCallIdx];
-            const partyMajority = partyMajorityVotes[rollCallIdx][party];
-
-            // Count all votes including abstentions (0) as valid political decisions
-            // Abstentions can be strategic and should be considered for party alignment
-            if (deputyVote === partyMajority) {
-                alignedVotes++;
-            }
-        }
-
-        // Calculate alignment proportion (0 to 1)
-        // All roll calls are considered, including abstentions
-        const alignment = numberOfRollCalls > 0 ? alignedVotes / numberOfRollCalls : 0;
-
-        // Round to 2 decimal places
-        const alignmentRounded = parseFloat(alignment.toFixed(2));
-
-        alignmentResults.push(alignmentRounded);
-    }
-
-    return alignmentResults;
+    return calcPartyAlignment(filteredDeputies.length, votesByRollCall);
 }
 
 function calcExtentValuesByYear() {

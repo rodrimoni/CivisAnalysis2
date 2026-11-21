@@ -96,7 +96,8 @@ function popoverAttrFocus(htmlContent, placement) {
  * @returns {number} Opacity value between 0.2 and 1.0 (or 0.7 if alignment is null/undefined)
  */
 function getAlignmentOpacity(alignment) {
-    return alignment ? 0.2 + (alignment * 0.8) : 0.7;
+    // typeof, not truthiness: 0 is a real alignment (always against the party).
+    return typeof alignment === 'number' ? 0.2 + (alignment * 0.8) : 0.7;
 }
 
 /**

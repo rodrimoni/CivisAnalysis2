@@ -140,7 +140,7 @@ function setUpScatterPlotData(filteredData, dimensionalReductionTechnique, type)
         if ((!dataRange.found && hasPrecalc) || !hasPrecalc) {
             var filteredDeputies = filterDeputies();
             var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
-            const deputiesAligment = calculateDeputiesAligment(matrixDeputiesPerRollCall, filteredDeputies);
+            const deputiesAligment = calculateDeputiesAligment(filteredDeputies);
 
             if (matrixDeputiesPerRollCall.length > 0 && matrixDeputiesPerRollCall[0].length > 0) {
                 if (dimensionalReductionTechnique === "MDS")
@@ -339,7 +339,7 @@ function reloadScatterPlotData(filteredData, dimensionalReductionTechnique, pane
 
         var filteredDeputies = filterDeputies();
         var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
-        const deputiesAligment = calculateDeputiesAligment(matrixDeputiesPerRollCall, filteredDeputies);
+        const deputiesAligment = calculateDeputiesAligment(filteredDeputies);
 
         if (matrixDeputiesPerRollCall.length > 0 && matrixDeputiesPerRollCall[0].length > 0) {
             if (dimensionalReductionTechnique === "MDS")
