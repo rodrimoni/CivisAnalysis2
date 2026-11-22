@@ -53,10 +53,8 @@ function loadNodes(type, selectedTime, callback, technique) {
     var deputiesArray = state.getDeputiesArray();
     var currentDeputies = state.getCurrentDeputies();
 
-    var basePath = 'data/precalc/pca/';
-    if (technique === 'W-NOMINATE') {
-        basePath = 'data/precalc/w-nominate/';
-    }
+    var precalcDirs = { 'PCA': 'pca', 'W-NOMINATE': 'w-nominate', 'MDS': 'mds', 'UMAP': 'umap' };
+    var basePath = 'data/precalc/' + (precalcDirs[technique] || 'pca') + '/';
     d3.json(basePath + type + '.' + selectedTime + '.json', function (precalc) {
         // SET THE precalc DEPUTIES to their constant object in the app
         precalc.deputyNodes.forEach(function (precalcDeputy) {

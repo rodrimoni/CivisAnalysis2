@@ -8,6 +8,7 @@
  * Pipeline:
  *   1. PCA precalc        → data/precalc/pca/*.json
  *   2. W-NOMINATE precalc → data/precalc/w-nominate/*.json  (JavaScript implementation)
+ *   2b. MDS / UMAP precalc → data/precalc/mds|umap/*.json  (t-SNE is never precalculated)
  *   3. Parties traces     → javascripts/parties-traces.js   (parallel with 2)
  *   4. Timeline crop extent → javascripts/timeline-crop-extent.js (needs PCA)
  *   5. Deputies nodes by year → data/deputiesNodesByYear.json (needs PCA)
@@ -18,9 +19,10 @@
  * Options:
  *   --skip-pca         Skip PCA precalc generation
  *   --skip-w-nominate  Skip W-NOMINATE generation
+ *   --skip-mds-umap    Skip MDS and UMAP precalc generation
  *   --skip-traces      Skip parties traces generation
  *   --skip-bundles     Skip motion bundles generation
- *   --only <name>      Run only a specific step (pca, w-nominate, traces, extent, nodes, bundles)
+ *   --only <name>      Run only a specific step (pca, w-nominate, mds, umap, traces, extent, nodes, bundles)
  */
 'use strict';
 
@@ -35,6 +37,7 @@ const SCRIPTS_DIR = __dirname;
 const args = process.argv.slice(2);
 const skipPca = args.includes('--skip-pca');
 const skipWNominate = args.includes('--skip-w-nominate');
+const skipMdsUmap = args.includes('--skip-mds-umap');
 const skipTraces = args.includes('--skip-traces');
 const skipBundles = args.includes('--skip-bundles');
 const onlyIdx = args.indexOf('--only');
@@ -78,6 +81,14 @@ if (only === 'pca' || (!only && !skipPca)) {
 if (only === 'w-nominate' || (!only && !skipWNominate)) {
     run('Step 2/5: W-NOMINATE Precalc (JS)',
         `node "${path.join(SCRIPTS_DIR, 'generate-w-nominate.js')}"`);
+}
+
+// Step 2b: MDS and UMAP precalc (deterministic techniques; t-SNE stays on demand)
+for (const technique of ['mds', 'umap']) {
+    if (only === technique || (!only && !skipMdsUmap)) {
+        run(`Step 2b: ${technique.toUpperCase()} Precalc (year, legislature, president)`,
+            `node "${path.join(SCRIPTS_DIR, 'generate-dr-precalc.js')}" ${technique}`);
+    }
 }
 
 // Step 3: Parties traces (own SVD from raw data)

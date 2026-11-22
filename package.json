@@ -8,13 +8,15 @@
         "clean": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
         "build": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\" && cpy \"{index.html,images/**,javascripts/**,stylesheets/**,fonts/**,data/**}\" dist --parents",
         "preview": "serve dist -l 3000",
-        "test": "node scripts/verify-approval-rule.js && node scripts/verify-government-rule.js && node scripts/verify-alignment-scale.js && node scripts/verify-context-menus.js && node scripts/verify-bar-chart.js && node scripts/verify-layer-panel.js && node scripts/verify-derived-layers.js && node scripts/verify-vote-agreement.js && node scripts/verify-motion-loader.js && node scripts/verify-motion-bundles.js && node scripts/verify-main-motions-preset.js"
+        "test": "node scripts/verify-approval-rule.js && node scripts/verify-government-rule.js && node scripts/verify-alignment-scale.js && node scripts/verify-context-menus.js && node scripts/verify-bar-chart.js && node scripts/verify-layer-panel.js && node scripts/verify-derived-layers.js && node scripts/verify-vote-agreement.js && node scripts/verify-motion-loader.js && node scripts/verify-motion-bundles.js && node scripts/verify-main-motions-preset.js && node scripts/verify-dr-precalc.js"
     },
     "devDependencies": {
         "cpy-cli": "^5.0.0",
         "jsdom": "^29.1.1",
         "live-server": "^1.2.2",
-        "serve": "^14.2.3"
+        "seedrandom": "3.0.5",
+        "serve": "^14.2.3",
+        "umap-js": "1.3.3"
     },
     "engines": {
         "node": ">=18"
