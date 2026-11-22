@@ -33,6 +33,7 @@ const MAX_DEPUTIES = 513;
 // ============================================================
 const STARTING_YEAR = 1991;
 const ENDING_YEAR = require('./ending-year').endingYear();
+const { calcPartyAlignment } = require(path.join(__dirname, '..', 'javascripts', 'core', 'party-alignment.js'));
 
 const LEGISLATURES = [
     { name: '49th Legislature', regimeParty: 'PFL', period: [new Date(1991, 1, 1), new Date(1995, 0, 31)] },
@@ -141,43 +142,31 @@ function computePCA(matrixDepXRollCall) {
 }
 
 // ============================================================
-// Alignment Computation (same as data-processor.js)
+// Party Alignment (shared with the browser: javascripts/core/party-alignment.js)
 // ============================================================
-function computeAlignment(N, M, observedByDep, observedByRC, deputyPartyInRC) {
-    var partyMaj = {};
-    for (var j = 0; j < M; j++) {
-        var pv = {};
-        for (var e = 0; e < observedByRC[j].length; e++) {
-            var ob = observedByRC[j][e];
-            var party = deputyPartyInRC[ob.i + ',' + j];
-            if (!party) continue;
-            if (!pv[party]) pv[party] = { pos: 0, neg: 0 };
-            if (ob.v === 1) pv[party].pos++; else pv[party].neg++;
-        }
-        var maj = {};
-        var parties = Object.keys(pv);
-        for (var p = 0; p < parties.length; p++) {
-            maj[parties[p]] = pv[parties[p]].pos >= pv[parties[p]].neg ? 1 : -1;
-        }
-        partyMaj[j] = maj;
-    }
+const VOTE_LABELS = ['Sim', 'Não', 'Abstenção', 'Obstrução', 'Art. 17', 'Branco'];
 
-    var alignments = {};
-    for (var i = 0; i < N; i++) {
-        var aligned = 0, total = 0;
-        for (var e = 0; e < observedByDep[i].length; e++) {
-            var ob = observedByDep[i][e];
-            var party = deputyPartyInRC[i + ',' + ob.j];
-            if (!party) continue;
-            var maj = partyMaj[ob.j];
-            if (maj && maj[party] !== undefined) {
-                if (ob.v === maj[party]) aligned++;
-                total++;
-            }
+/**
+ * Feeds every vote cast in the period's roll calls to the shared rule. All
+ * party members who voted count toward the party majority, not only the
+ * deputies kept in the plot — same as the browser.
+ */
+function computeAlignment(N, periodRCs, votesByRollCall, depIdxMap, numDeputies) {
+    var input = periodRCs.map(function (globalJ) {
+        var out = [];
+        var votes = votesByRollCall[globalJ];
+        for (var vi = 0; vi < votes.length; vi++) {
+            var v = votes[vi];
+            if (v.deputyID < 0 || v.deputyID >= numDeputies) continue;
+            var party = v.party;
+            if (party === 'Solidaried') party = 'SDD';
+            if (party === 'S.Part.') party = 'NoParty';
+            var row = depIdxMap[v.deputyID];
+            out.push({ row: row === undefined ? null : row, party: party, vote: VOTE_LABELS[v.vote] });
         }
-        alignments[i] = total > 0 ? parseFloat((aligned / total).toFixed(2)) : 0;
-    }
-    return alignments;
+        return out;
+    });
+    return calcPartyAlignment(N, input);
 }
 
 // ============================================================
@@ -307,10 +296,6 @@ function main() {
             // Build dense vote matrix (N x M) — same as browser's createMatrixDeputiesPerRollCall
             // Vote encoding: Sim(0)->1, Não(1)->-1, rest->0
             var matrixDepXRC = numeric.rep([N, M], 0);
-            var observedByDep = [], observedByRC = [];
-            for (var i = 0; i < N; i++) observedByDep.push([]);
-            for (var j = 0; j < M; j++) observedByRC.push([]);
-            var deputyPartyInRC = {};
 
             for (var di = 0; di < depIDs.length; di++) {
                 var depID = depIDs[di];
@@ -322,10 +307,6 @@ function main() {
                     else voteVal = 0;                        // Abstenção etc → 0
 
                     matrixDepXRC[di][dv[vi].localRC] = voteVal;
-                    var entry = { i: di, j: dv[vi].localRC, v: voteVal };
-                    observedByDep[di].push(entry);
-                    observedByRC[dv[vi].localRC].push(entry);
-                    deputyPartyInRC[di + ',' + dv[vi].localRC] = dv[vi].party;
                 }
             }
 
@@ -348,7 +329,7 @@ function main() {
             }
 
             // Compute alignment
-            var alignments = computeAlignment(N, M, observedByDep, observedByRC, deputyPartyInRC);
+            var alignments = computeAlignment(N, periodRCs, votesByRollCall, depIdxMap, deputies.length);
 
             // Build output nodes
             var deputyNodes = [];
@@ -357,7 +338,7 @@ function main() {
                     deputyID: depIDs[i],
                     scatterplot: [Number(positions[i][0].toPrecision(4)), Number(positions[i][1].toPrecision(4))],
                     party: deputyParties[i] || '',
-                    alignment: alignments[i] || 0
+                    alignment: alignments[i]
                 });
             }
 

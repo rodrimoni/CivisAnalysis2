@@ -455,7 +455,7 @@ function calculatePrecalc(type) {
             var filteredDeputies = filterDeputies();
             var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
 
-            const deputiesAligment = calculateDeputiesAligment(matrixDeputiesPerRollCall, filteredDeputies);
+            const deputiesAligment = calculateDeputiesAligment(filteredDeputies);
 
             calcSVD(matrixDeputiesPerRollCall, function (SVDdata) {
                 // Deputies array

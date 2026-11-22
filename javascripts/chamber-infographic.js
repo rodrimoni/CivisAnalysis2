@@ -155,16 +155,17 @@ function chamberInfographic() {
             });
 
         function renderDeputyTooltipHtml(d) {
-            var alignmentPercentage = d.alignment ? Math.round(d.alignment * 100) : 0;
+            // No countable Sim/Não vote means no alignment, not 0%.
+            var alignmentPercentage = typeof d.alignment === 'number' ? Math.round(d.alignment * 100) + '%' : '—';
             var color = CONGRESS_DEFINE.getPartyColor(d.party);
             var en = '<div style="min-width: 180px;">' +
                 '<div style="font-size:14px;font-weight:600;color:' + color + ';margin-bottom:4px;">' + d.name + ' (' + d.party + '-' + d.district + ')</div>' +
-                '<div style="font-size:13px;color:#666;">Party Alignment: <span style="font-weight:600;color:' + color + ';">' + alignmentPercentage + '%</span></div>' +
+                '<div style="font-size:13px;color:#666;">Party Alignment: <span style="font-weight:600;color:' + color + ';">' + alignmentPercentage + '</span></div>' +
                 '<div style="margin-top:6px;font-size:11px;color:#666;"><em>Left-Click to select</em><br><em>Right-Click to create new visualizations</em></div>' +
                 '</div>';
             var pt = '<div style="min-width: 180px;">' +
                 '<div style="font-size:14px;font-weight:600;color:' + color + ';margin-bottom:4px;">' + d.name + ' (' + d.party + '-' + d.district + ')</div>' +
-                '<div style="font-size:13px;color:#666;">Alinhamento Partidário: <span style="font-weight:600;color:' + color + ';">' + alignmentPercentage + '%</span></div>' +
+                '<div style="font-size:13px;color:#666;">Alinhamento Partidário: <span style="font-weight:600;color:' + color + ';">' + alignmentPercentage + '</span></div>' +
                 '<div style="margin-top:6px;font-size:11px;color:#666;"><em>Botão esquerdo para selecionar</em><br><em>Botão direito para criar novas vis.</em></div>' +
                 '</div>';
             return (language === PORTUGUESE) ? pt : en;
