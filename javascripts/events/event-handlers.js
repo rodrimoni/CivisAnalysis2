@@ -136,7 +136,13 @@ function setUpScatterPlotData(filteredData, dimensionalReductionTechnique, type)
     $('#loading').css('visibility', 'visible');
 
     updateDataforDateRange(filteredData, function () {
-        var hasPrecalc = dimensionalReductionTechnique === "PCA" || dimensionalReductionTechnique === "W-NOMINATE";
+        // Deterministic techniques have precalc files for the standard periods
+        // (data/precalc/<technique>/). t-SNE is always computed on demand, and
+        // the similarity graph needs the full distance matrix, not positions.
+        var hasPrecalc = dimensionalReductionTechnique === "PCA" ||
+            dimensionalReductionTechnique === "W-NOMINATE" ||
+            dimensionalReductionTechnique === "UMAP" ||
+            (dimensionalReductionTechnique === "MDS" && type !== DEPUTIES_SIMILARITY_FORCE);
         if ((!dataRange.found && hasPrecalc) || !hasPrecalc) {
             var filteredDeputies = filterDeputies();
             var matrixDeputiesPerRollCall = createMatrixDeputiesPerRollCall(filteredDeputies);
@@ -285,14 +291,8 @@ function setUpScatterPlotData(filteredData, dimensionalReductionTechnique, type)
             var subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
             title += subtitle;
 
-            if (dimensionalReductionTechnique === "PCA") {
-                loadNodes(dataRange.type, dataRange.id, createChart);
-                $('#loading').css('visibility', 'hidden');
-            }
-            else if (dimensionalReductionTechnique === "W-NOMINATE") {
-                loadNodes(dataRange.type, dataRange.id, createChart, "W-NOMINATE");
-                $('#loading').css('visibility', 'hidden');
-            }
+            loadNodes(dataRange.type, dataRange.id, createChart, dimensionalReductionTechnique);
+            $('#loading').css('visibility', 'hidden');
         }
     });
 }

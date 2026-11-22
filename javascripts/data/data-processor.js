@@ -276,32 +276,8 @@ function filterDeputies() {
  * @returns {Array} Distance matrix
  */
 function createMatrixDistanceDeputies(matrixDeputiesPerRollCall) {
-    var numberOfDeputies = matrixDeputiesPerRollCall.length;
-    var numberOfRollCalls = matrixDeputiesPerRollCall[0].length;
-
-    var matrixMatches = createArray(numberOfDeputies, numberOfDeputies);
-    var matrixDistances = createArray(numberOfDeputies, numberOfDeputies);
-
-    for (var i = 0; i < numberOfDeputies; i++)
-        for (var j = 0; j < numberOfDeputies; j++)
-            matrixMatches[i][j] = 0;
-
-    for (var d = 0; d < numberOfDeputies; d++)
-        for (var r = 0; r < numberOfRollCalls; r++)
-            for (var compareDeputy = d + 1; compareDeputy < numberOfDeputies; compareDeputy++)
-                if (matrixDeputiesPerRollCall[d][r] === matrixDeputiesPerRollCall[compareDeputy][r]) {
-                    matrixMatches[d][compareDeputy] += 1;
-                    matrixMatches[compareDeputy][d] += 1;
-                }
-
-    for (var i = 0; i < numberOfDeputies; i++)
-        for (var j = 0; j < numberOfDeputies; j++)
-            if (matrixMatches[i][j] !== 0)
-                matrixDistances[i][j] = 100 - (matrixMatches[i][j] * 100) / numberOfRollCalls;
-            else
-                matrixDistances[i][j] = 0;
-
-    return matrixDistances;
+    // Shared with the MDS precalc generator: javascripts/core/vote-distance.js
+    return calcVoteDistanceMatrix(matrixDeputiesPerRollCall);
 }
 
 /**
