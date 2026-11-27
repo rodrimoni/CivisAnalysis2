@@ -292,6 +292,13 @@ function createNewChild(currentId, chartObj) {
         node.typeChart = chartObj.chartID;
         node.title = chartObj.prettyTitle;
         node.args = chartObj.args;
+        // Real date range shown by the panel, used for its title and its
+        // children's: opened from the timeline it is the selection itself;
+        // otherwise it is inherited from the parent panel.
+        var parentNode = tree.getNode(currentId, tree.traverseBF);
+        node.periodRange = chartObj.periodRange ||
+            (chartObj.args && chartObj.args.filteredData) ||
+            (parentNode && parentNode.periodRange) || null;
 
         if (chartObj !== null)
             chart = initializeChart(newID, chartObj);

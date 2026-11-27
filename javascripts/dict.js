@@ -33,13 +33,13 @@ function initDict() {
         "50th Legislature": {
             br: "50ª Legislatura"
         },
-        "51th Legislature": {
+        "51st Legislature": {
             br: "51ª Legislatura"
         },
-        "52th Legislature": {
+        "52nd Legislature": {
             br: "52ª Legislatura"
         },
-        "53th Legislature": {
+        "53rd Legislature": {
             br: "53ª Legislatura"
         },
         "54th Legislature": {
@@ -50,6 +50,9 @@ function initDict() {
         },
         "56th Legislature": {
             br: "56ª Legislatura"
+        },
+        "57th Legislature": {
+            br: "57ª Legislatura"
         },
         "FHC (PSDB) 1st Term": {
             br: "FHC (PSDB) 1º Man"

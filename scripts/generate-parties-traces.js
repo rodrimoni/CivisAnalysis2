@@ -28,9 +28,9 @@ const ENDING_YEAR = require('./ending-year').endingYear();
 const LEGISLATURES = [
     { name: '49th Legislature', regimeParty: 'PFL', period: [new Date(1991, 1, 1), new Date(1995, 0, 31)] },
     { name: '50th Legislature', regimeParty: 'PFL', period: [new Date(1995, 1, 1), new Date(1999, 0, 31)] },
-    { name: '51th Legislature', regimeParty: 'PSDB', period: [new Date(1999, 1, 1), new Date(2003, 0, 31)] },
-    { name: '52th Legislature', regimeParty: 'PT', period: [new Date(2003, 1, 1), new Date(2007, 0, 31)] },
-    { name: '53th Legislature', regimeParty: 'PT', period: [new Date(2007, 1, 1), new Date(2011, 0, 31)] },
+    { name: '51st Legislature', regimeParty: 'PSDB', period: [new Date(1999, 1, 1), new Date(2003, 0, 31)] },
+    { name: '52nd Legislature', regimeParty: 'PT', period: [new Date(2003, 1, 1), new Date(2007, 0, 31)] },
+    { name: '53rd Legislature', regimeParty: 'PT', period: [new Date(2007, 1, 1), new Date(2011, 0, 31)] },
     { name: '54th Legislature', regimeParty: 'PT', period: [new Date(2011, 1, 1), new Date(2015, 0, 31)] },
     { name: '55th Legislature', regimeParty: 'PMDB', period: [new Date(2015, 1, 1), new Date(2019, 0, 31)] },
     { name: '56th Legislature', regimeParty: 'PL', period: [new Date(2019, 1, 1), new Date(2023, 0, 31)] },

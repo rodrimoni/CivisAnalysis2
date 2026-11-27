@@ -76,6 +76,75 @@ h2 {
     font-size: 14px;
 }
 
+/* Long titles (many parties, Portuguese names, narrow panels) must not run
+   under the panel buttons. The title takes the heading's width minus the
+   buttons, so it grows with the panel; each line stays on one row and is
+   clipped with an ellipsis, the full text being in its tooltip
+   (panel-titles.js). In the main line only the view/group part shrinks:
+   the period is never clipped. */
+.panel-heading .panel-title {
+    width: calc(100% - 135px);
+    /* Panels size themselves to their body (setUpPanel sets the body width):
+       the title must not widen them, whatever its length. */
+    contain: inline-size;
+}
+
+.panel-heading .panel-title .panel-main-title {
+    display: inline-flex;
+    max-width: calc(100% - 36px);
+    white-space: nowrap;
+    vertical-align: bottom;
+}
+
+.panel-heading .panel-title .panel-title-head {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.panel-heading .panel-title .panel-title-period {
+    flex-shrink: 0;
+    white-space: pre;
+}
+
+.panel-heading .panel-title .panel-subtitle {
+    display: inline-block;
+    max-width: calc(100% - 36px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+}
+
+/* Custom title (ui-menu-factory.js, insertCustomTitle): it takes the first
+   line, clipped like the others, and the default title drops to its own line
+   in subtitle size. The <br> inside the custom span is replaced by that rule,
+   since a one-row span cannot break. */
+.panel-heading .panel-title .custom-title {
+    display: inline-block;
+    max-width: calc(100% - 36px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+}
+
+.panel-heading .panel-title .custom-title br {
+    display: none;
+}
+
+.panel-heading .panel-title .custom-title ~ .panel-main-title {
+    display: flex;
+    max-width: calc(100% - 34px);
+    margin-left: 34px;
+    font-size: 14px;
+}
+
+/* That line is already a block: the <br> after it would add an empty row. */
+.panel-heading .panel-title .custom-title ~ .panel-main-title + br {
+    display: none;
+}
+
 i {
     position: absolute;
 }
@@ -663,4 +732,12 @@ a:active {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
+}
+
+/* Sidebar tree: one row per panel, like the panel titles; a long (custom)
+   title is clipped instead of wrapping under the icons. */
+#tree .list-group-item {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
