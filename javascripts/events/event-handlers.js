@@ -38,6 +38,30 @@ function handleContextMenuScatterPlot(invokedOn, selectedMenu) {
 }
 
 /**
+ * The real [start, end] date range a panel shows. Root panels store the
+ * selection they were opened with; children inherit their parent's
+ * (panel-manager.js, createNewChild).
+ * @param {string} panelID
+ * @returns {Date[]|null}
+ */
+function panelRange(panelID) {
+    var tree = state.getTree();
+    var node = tree.getNode(panelID, tree.traverseBF);
+    return (node && node.periodRange) ? node.periodRange : null;
+}
+
+/**
+ * Key stored in data-type-period for a free selection. The last year is the
+ * last one the selection reaches: the end is exclusive, so 01/01/2027 closes
+ * 2026 while 01/10/2026 still covers part of 2026.
+ * @param {Date[]} range
+ * @returns {string}
+ */
+function periodKey(range) {
+    return "period-" + range[0].getFullYear() + "-" + new Date(range[1].getTime() - 1).getFullYear();
+}
+
+/**
  * Set up scatter plot data and create visualization
  * @param {Array} filteredData - Filtered data range
  * @param {string} dimensionalReductionTechnique - Technique (PCA, MDS, t-SNE, UMAP)
@@ -50,6 +74,16 @@ function setUpScatterPlotData(filteredData, dimensionalReductionTechnique, type)
     state.setCurrentRollCalls([]);
 
     var dataRange = setNewDateRange(filteredData);
+    var titleView = {};
+    titleView[SCATTER_PLOT] = 'spectrum';
+    titleView[CHAMBER_INFOGRAPHIC] = 'infographic';
+    titleView[DEPUTIES_SIMILARITY_FORCE] = 'similarity';
+    titleView[ROLLCALLS_HEATMAP] = 'map';
+    var titles = panelTitle(titleView[type], filteredData,
+        { technique: type === SCATTER_PLOT ? dimensionalReductionTechnique : null });
+    title = titles.title;
+    prettyTitle = titles.prettyTitle;
+    panelClass = dataRange.found ? dataRange.type + '-' + dataRange.id : periodKey(filteredData);
     var matrixDistanceDeputies;
     var similarityGraph;
 
@@ -153,31 +187,6 @@ function setUpScatterPlotData(filteredData, dimensionalReductionTechnique, type)
                     matrixDistanceDeputies = createMatrixDistanceDeputies(matrixDeputiesPerRollCall);
 
                 function calcCallback(twoDimData) {
-                    if (dataRange.found) {
-                        if (dataRange.type !== "year") {
-                            title = "<span><span class ='trn'>" + CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name + "</span>";
-                            prettyTitle = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
-                        }
-                        else {
-                            title = "<span><span class ='trn'>Year</span>: " + dataRange.id;
-                            prettyTitle = "Year: " + dataRange.id;
-                        }
-                        if (type !== CHAMBER_INFOGRAPHIC) {
-                            title += " (" + dimensionalReductionTechnique + ")" + "</span>";
-                            prettyTitle += " (" + dimensionalReductionTechnique + ")";
-                        }
-                        else
-                            title += "</span>";
-
-                        var subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
-                        title += subtitle;
-                        panelClass = dataRange.type + '-' + dataRange.id;
-                    }
-                    else {
-                        title = '<span>' + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
-                        prettyTitle = filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString();
-                        panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear();
-                    }
 
                     if (type === CHAMBER_INFOGRAPHIC)
                         createChart = createChamberInfographic;
@@ -215,24 +224,6 @@ function setUpScatterPlotData(filteredData, dimensionalReductionTechnique, type)
                         var currentRollCalls = state.getCurrentRollCalls();
                         calcRollCallRate(currentRollCalls, currentDeputies);
 
-                        if (dataRange.found) {
-                            if (dataRange.type !== "year") {
-                                title = "<span class ='trn'>" + CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name + "</span>";
-                                prettyTitle = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
-                            }
-                            else {
-                                title = "<span><span class ='trn'>Year</span>: " + dataRange.id + "</span>";
-                                prettyTitle = "Year: " + dataRange.id;
-                            }
-                            var subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
-                            title += subtitle;
-                            panelClass = dataRange.type + '-' + dataRange.id;
-                        }
-                        else {
-                            title = "<span>" + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
-                            prettyTitle = filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString();
-                            panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear()
-                        }
                         $('#loading').css('visibility', 'hidden');
                         createDeputiesSimilarityForce();
                     }
@@ -264,33 +255,14 @@ function setUpScatterPlotData(filteredData, dimensionalReductionTechnique, type)
             }
         }
         else {
-            if (dataRange.type !== "year") {
-                title = "<span><span class ='trn'>" + CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name + "</span>";
-                prettyTitle = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id].name;
-            }
-            else {
-                title = "<span><span class ='trn'>Year</span>: " + dataRange.id;
-                prettyTitle = "Year: " + dataRange.id;
-            }
-            panelClass = dataRange.type + '-' + dataRange.id;
-
             var createChart;
 
             if (type === CHAMBER_INFOGRAPHIC)
                 createChart = createChamberInfographic;
             else if (type === ROLLCALLS_HEATMAP)
                 createChart = createRollCallsHeatMap;
-            else {
-                title += " (" + dimensionalReductionTechnique + ")" + "</span>";
-                prettyTitle += " (" + dimensionalReductionTechnique + ")";
+            else
                 createChart = createScatterPlot;
-            }
-
-            title += "</span>";
-
-            var subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
-            title += subtitle;
-
             loadNodes(dataRange.type, dataRange.id, createChart, dimensionalReductionTechnique);
             $('#loading').css('visibility', 'hidden');
         }
@@ -544,24 +516,10 @@ function setUpCohesionComparison(filteredData) {
             }
         });
 
-        // Build title
-        if (dataRange.found) {
-            if (dataRange.type !== "year") {
-                var periodData = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id];
-                title = "<span><span class='trn'>Cohesion Comparison</span>: <span class='trn'>" + periodData.name + "</span></span>";
-                prettyTitle = "Cohesion Comparison: " + periodData.name;
-                var subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
-                title += subtitle;
-            } else {
-                title = "<span><span class='trn'>Cohesion Comparison</span>: <span class='trn'>Year</span> " + dataRange.id + "</span>";
-                prettyTitle = "Cohesion Comparison: Year " + dataRange.id;
-            }
-            panelClass = dataRange.type + '-' + dataRange.id;
-        } else {
-            title = "<span><span class='trn'>Cohesion Comparison</span>: " + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
-            prettyTitle = "Cohesion Comparison: " + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString();
-            panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear();
-        }
+        var titles = panelTitle('comparison', filteredData);
+        title = titles.title;
+        prettyTitle = titles.prettyTitle;
+        panelClass = dataRange.found ? dataRange.type + '-' + dataRange.id : periodKey(filteredData);
 
         var data = {
             period: filteredData,
@@ -575,7 +533,8 @@ function setUpCohesionComparison(filteredData) {
             'data': data,
             'title': title,
             'prettyTitle': prettyTitle,
-            'panelClass': panelClass
+            'panelClass': panelClass,
+            'periodRange': filteredData
         };
 
         $('#loading').css('visibility', 'hidden');
@@ -610,23 +569,10 @@ function setUpCohesionByTheme(filteredData) {
             }
         });
 
-        if (dataRange.found) {
-            if (dataRange.type !== "year") {
-                var periodData = CONGRESS_DEFINE[dataRange.type + "s"][dataRange.id];
-                title = "<span><span class='trn'>Agreement by subject</span>: <span class='trn'>" + periodData.name + "</span></span>";
-                prettyTitle = "Agreement by subject: " + periodData.name;
-                var subtitle = "<br><span class='panel-subtitle'>" + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
-                title += subtitle;
-            } else {
-                title = "<span><span class='trn'>Agreement by subject</span>: <span class='trn'>Year</span> " + dataRange.id + "</span>";
-                prettyTitle = "Agreement by subject: Year " + dataRange.id;
-            }
-            panelClass = dataRange.type + '-' + dataRange.id;
-        } else {
-            title = "<span><span class='trn'>Agreement by subject</span>: " + filteredData[0].toLocaleDateString() + " <span class='trn'>to</span> " + filteredData[1].toLocaleDateString() + "</span>";
-            prettyTitle = "Agreement by subject: " + filteredData[0].toLocaleDateString() + " to " + filteredData[1].toLocaleDateString();
-            panelClass = "period-" + filteredData[0].getFullYear() + "-" + filteredData[1].getFullYear();
-        }
+        var titles = panelTitle('agreement', filteredData);
+        title = titles.title;
+        prettyTitle = titles.prettyTitle;
+        panelClass = dataRange.found ? dataRange.type + '-' + dataRange.id : periodKey(filteredData);
 
         var data = {
             period: filteredData,
@@ -641,7 +587,8 @@ function setUpCohesionByTheme(filteredData) {
             'data': data,
             'title': title,
             'prettyTitle': prettyTitle,
-            'panelClass': panelClass
+            'panelClass': panelClass,
+            'periodRange': filteredData
         };
 
         $('#loading').css('visibility', 'hidden');
@@ -662,29 +609,12 @@ function handleContextMenuDeputy(invokedOn, selectedMenu) {
     var period = invokedOn.parents('.panel').data().typePeriod;
 
     if (selectedMenu.context.id === 'time-line-crop-behavior-selection') {
-        var periodID = period.split("-");
-        var type, id, periodData, subtitle, panelClass, firstYear, lastYear;
-
-        if (periodID.length <= 2) {
-            type = periodID[0];
-            id = periodID[1];
-            periodData = CONGRESS_DEFINE[type + "s"][id];
-            title = "<span class ='trn'>" + periodData.name + "</span>";
-            prettyTitle = periodData.name;
-            subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " <span class='trn'>to</span> " + periodData.period[1].toLocaleDateString() + "</span>";
-            title += subtitle;
-            panelClass = type + '-' + id;
-            data.period = [periodData.period[0], periodData.period[1]];
-        }
-        else {
-            type = periodID[0];
-            firstYear = periodID[1];
-            lastYear = periodID[2];
-            title = "<span>" + firstYear + " <span class='trn'>to</span> " + lastYear + "</span>";
-            prettyTitle = firstYear + " to " + lastYear
-            panelClass = type + "-" + firstYear + "-" + lastYear;
-            data.period = [new Date(firstYear, 0, 1), new Date(lastYear, 0, 1)];
-        }
+        var range = panelRange(panelID);
+        var titles = panelTitle('crop', range);
+        title = titles.title;
+        prettyTitle = titles.prettyTitle;
+        var panelClass = period;
+        data.period = cropPeriod(range, CONGRESS_DEFINE).period;
 
         var deputies = [];
         $("#" + panelID + " .node.selected").each(function () {
@@ -699,32 +629,11 @@ function handleContextMenuDeputy(invokedOn, selectedMenu) {
         createNewChild(panelID, chartObj);
     }
     else if (selectedMenu.context.id === 'static-rollcalls-heatmap') {
-        var periodID = period.split("-");
-        var id, periodData, subtitle, panelClass, firstYear, lastYear;
-
-        if (periodID.length <= 2) {
-            type = periodID[0];
-            id = periodID[1];
-            if (type !== 'year') {
-                periodData = CONGRESS_DEFINE[type + "s"][id];
-                title = "<span><span class='trn'>Map of Roll Calls</span>: <span class='trn'>" + periodData.name + "</span></span>";
-                prettyTitle = "Map of Roll Calls: " + periodData.name;
-                subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " <span class='trn'>to</span> " + periodData.period[1].toLocaleDateString() + "</span>";
-                title += subtitle;
-            }
-            else {
-                title = "<span><span class='trn'>Map of Roll Calls</span>: " + "<span class='trn'>Year</span> " + id + "</span>";
-                prettyTitle = "Map of Roll Calls: Year " + id;
-            }
-            panelClass = type + '-' + id;
-        }
-        else {
-            firstYear = periodID[1];
-            lastYear = periodID[2];
-            title = "<span><span class='trn'>Map of Roll Calls</span>: " + firstYear + " <span class='trn'>to</span> " + lastYear + "</span>";
-            prettyTitle = "Map of Roll Calls: " + firstYear + " to " + lastYear;
-            panelClass = type + "-" + firstYear + "-" + lastYear;
-        }
+        var range = panelRange(panelID);
+        var titles = panelTitle('map', range);
+        title = titles.title;
+        prettyTitle = titles.prettyTitle;
+        var panelClass = period;
 
         var selectedDeputies = [];
         var hoveredDeputies = [];
@@ -749,33 +658,11 @@ function handleContextMenuDeputy(invokedOn, selectedMenu) {
         createNewChild(panelID, chartObj);
     }
     else if (selectedMenu.context.id === 'cohesion-timeline-deputies-selection') {
-        var periodID = period.split("-");
-        var type, id, periodData, subtitle, panelClass, firstYear, lastYear;
-
-        if (periodID.length <= 2) {
-            type = periodID[0];
-            id = periodID[1];
-            if (type !== 'year') {
-                periodData = CONGRESS_DEFINE[type + "s"][id];
-                title = "<span><span class='trn'>Deputies Cohesion Timeline</span>: <span class='trn'>" + periodData.name + "</span></span>";
-                prettyTitle = "Deputies Cohesion Timeline: " + periodData.name;
-                subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " <span class='trn'>to</span> " + periodData.period[1].toLocaleDateString() + "</span>";
-                title += subtitle;
-            }
-            else {
-                title = "<span><span class='trn'>Deputies Cohesion Timeline</span>: <span class='trn'>Year</span> " + id + "</span>";
-                prettyTitle = "Deputies Cohesion Timeline: Year " + id;
-            }
-            panelClass = type + '-' + id;
-        }
-        else {
-            type = periodID[0];
-            firstYear = periodID[1];
-            lastYear = periodID[2];
-            title = "<span><span class='trn'>Deputies Cohesion Timeline</span>: " + firstYear + " <span class='trn'>to</span> " + lastYear + "</span>";
-            prettyTitle = "Deputies Cohesion Timeline: " + firstYear + " to " + lastYear;
-            panelClass = type + "-" + firstYear + "-" + lastYear;
-        }
+        var range = panelRange(panelID);
+        var titles = panelTitle('deputiesCohesion', range);
+        title = titles.title;
+        prettyTitle = titles.prettyTitle;
+        var panelClass = period;
 
         var deputyNodes = state.getDeputyNodes();
         var rollCallsRates = state.getRollCallsRates();
@@ -817,32 +704,11 @@ function handleContextMenuDeputy(invokedOn, selectedMenu) {
  */
 function handleButtonThemes(panelID, data, chartID) {
     const period = $("#" + panelID).data().typePeriod;
-    var periodID = period.split("-");
-    var id, periodData, subtitle, panelClass, firstYear, lastYear;
-
-    if (periodID.length <= 2) {
-        type = periodID[0];
-        id = periodID[1];
-        if (type !== 'year') {
-            periodData = CONGRESS_DEFINE[type + "s"][id];
-            title = "<span><span class='trn'>Subjects</span>: <span class='trn'>" + periodData.name + "</span></span>";
-            prettyTitle = t("Subjects") + ": " + periodData.name;
-            subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " <span class='trn'>to</span> " + periodData.period[1].toLocaleDateString() + "</span>";
-            title += subtitle;
-        }
-        else {
-            title = "<span><span class='trn'>Subjects</span>: " + "<span class='trn'>Year</span> " + id + "</span>";
-            prettyTitle = t("Subjects") + ": " + t("Year") + " " + id;
-        }
-        panelClass = type + '-' + id;
-    }
-    else {
-        firstYear = periodID[1];
-        lastYear = periodID[2];
-        title = "<span><span class='trn'>Subjects</span>: " + firstYear + " <span class='trn'>to</span> " + lastYear + "</span>";
-        prettyTitle = t("Subjects") + ": " + firstYear + " " + t("to") + " " + lastYear;
-        panelClass = type + "-" + firstYear + "-" + lastYear;
-    }
+    var range = panelRange(panelID);
+    var titles = panelTitle('subjects', range);
+    title = titles.title;
+    prettyTitle = titles.prettyTitle;
+    var panelClass = period;
 
     let args = {}
 
@@ -866,24 +732,13 @@ function checkPeriodTimeLineCrop(event, deputy) {
     if (event.which === 3) {
         var period = $("#" + panelID).data().typePeriod;
         if (period !== undefined) {
-            var periodType = period.split("-")[0];
-            if (periodType === 'year') {
+            // The crop draws whole calendar years: it needs two of them inside
+            // the panel's real range (legislatures and terms always qualify).
+            var range = panelRange(panelID);
+            if (range && canCrop(range, CONGRESS_DEFINE))
+                contextMenuTimeLineCropSelection.removeClass("disabled");
+            else
                 contextMenuTimeLineCropSelection.addClass("disabled");
-            }
-            else {
-                if (periodType === 'period') {
-                    var years = period.split("-");
-                    var firstYear = years[1];
-                    var lastYear = years[2];
-
-                    if (lastYear - firstYear <= 1)
-                        contextMenuTimeLineCropSelection.addClass("disabled");
-                    else
-                        contextMenuTimeLineCropSelection.removeClass("disabled");
-                }
-                else
-                    contextMenuTimeLineCropSelection.removeClass("disabled");
-            }
 
             // Cohesion timeline: enable only when >= 2 deputies are selected
             var selectedCount = $("#" + panelID + " .node.selected").length;
@@ -955,32 +810,11 @@ function handleContextMenuPartyLegend(invokedOn, selectedMenu) {
     var chartObj = {};
 
     if (selectedMenu.context.id === 'party-metrics') {
-        var periodID = period.split("-");
-        var type, id, periodData, subtitle, panelClass, firstYear, lastYear;
-
-        if (periodID.length <= 2) {
-            type = periodID[0];
-            id = periodID[1];
-            if (type !== 'year') {
-                periodData = CONGRESS_DEFINE[type + "s"][id];
-                title = "<span><span class='trn'>Party Metrics</span>: " + party + " - <span class='trn'>" + periodData.name + "</span></span>";
-                prettyTitle = "Party Metrics: " + party + " - " + periodData.name;
-                subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " <span class='trn'>to</span> " + periodData.period[1].toLocaleDateString() + "</span>";
-                title += subtitle;
-            }
-            else {
-                title = "<span><span class='trn'>Party Metrics</span>: " + party + " - <span class='trn'>Year</span> " + id + "</span>";
-                prettyTitle = "Party Metrics: " + party + " - Year " + id;
-            }
-            panelClass = type + '-' + id;
-        }
-        else {
-            firstYear = periodID[1];
-            lastYear = periodID[2];
-            title = "<span><span class='trn'>Party Metrics</span>: " + party + " - " + firstYear + " <span class='trn'>to</span> " + lastYear + "</span>";
-            prettyTitle = "Party Metrics: " + party + " - " + firstYear + " to " + lastYear;
-            panelClass = type + "-" + firstYear + "-" + lastYear;
-        }
+        var range = panelRange(panelID);
+        var titles = panelTitle('partyMetrics', range, { group: party });
+        title = titles.title;
+        prettyTitle = titles.prettyTitle;
+        var panelClass = period;
 
         var data = {};
 
@@ -1025,36 +859,13 @@ function handleContextMenuPartyLegend(invokedOn, selectedMenu) {
             selectedParties = [party];
         }
 
-        var partiesLabel = selectedParties.length > 1
-            ? ''
-            : party;
+        var partiesLabel = selectedParties; // summarized by panelTitle when long
 
-        var periodID = period.split("-");
-        var type, id, periodData, subtitle, panelClass, firstYear, lastYear;
-
-        if (periodID.length <= 2) {
-            type = periodID[0];
-            id = periodID[1];
-            if (type !== 'year') {
-                periodData = CONGRESS_DEFINE[type + "s"][id];
-                title = "<span><span class='trn'>Cohesion Timeline</span>: " + partiesLabel + " - <span class='trn'>" + periodData.name + "</span></span>";
-                prettyTitle = "Cohesion Timeline: " + partiesLabel + " - " + periodData.name;
-                subtitle = "<br><span class='panel-subtitle'>" + periodData.period[0].toLocaleDateString() + " <span class='trn'>to</span> " + periodData.period[1].toLocaleDateString() + "</span>";
-                title += subtitle;
-            }
-            else {
-                title = "<span><span class='trn'>Cohesion Timeline</span>: " + partiesLabel + " - <span class='trn'>Year</span> " + id + "</span>";
-                prettyTitle = "Cohesion Timeline: " + partiesLabel + " - Year " + id;
-            }
-            panelClass = type + '-' + id;
-        }
-        else {
-            firstYear = periodID[1];
-            lastYear = periodID[2];
-            title = "<span><span class='trn'>Cohesion Timeline</span>: " + partiesLabel + " - " + firstYear + " <span class='trn'>to</span> " + lastYear + "</span>";
-            prettyTitle = "Cohesion Timeline: " + partiesLabel + " - " + firstYear + " to " + lastYear;
-            panelClass = type + "-" + firstYear + "-" + lastYear;
-        }
+        var range = panelRange(panelID);
+        var titles = panelTitle('cohesionTimeline', range, { group: partiesLabel });
+        title = titles.title;
+        prettyTitle = titles.prettyTitle;
+        var panelClass = period;
 
         var data = {};
 
