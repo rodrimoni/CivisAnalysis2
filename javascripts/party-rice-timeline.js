@@ -195,7 +195,8 @@ function partyRiceTimeline() {
         // Create axes - let D3 automatically determine appropriate ticks based on zoom level
         const xAxis = d3.svg.axis()
             .scale(xScale)
-            .orient("bottom");
+            .orient("bottom")
+            .tickFormat(dateOnlyTickFormat()); // no "01 AM" on DST days (core/date-axis-format.js)
 
         const yFocusAxis = d3.svg.axis()
             .scale(yFocusScale)
@@ -404,7 +405,8 @@ function partyRiceTimeline() {
         // Create x-axis for context
         const xAxisContext = d3.svg.axis()
             .scale(xScale)
-            .orient("bottom");
+            .orient("bottom")
+            .tickFormat(dateOnlyTickFormat()); // no "01 AM" on DST days (core/date-axis-format.js)
 
         // Create simplified line
         const contextLine = d3.svg.line()
