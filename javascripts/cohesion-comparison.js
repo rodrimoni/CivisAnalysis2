@@ -697,7 +697,8 @@ function cohesionComparison() {
             .range([focusHeight, 0])
             .nice();
 
-        var xAxis = d3.svg.axis().scale(xScale).orient("bottom");
+        var xAxis = d3.svg.axis().scale(xScale).orient("bottom")
+            .tickFormat(dateOnlyTickFormat()); // no "01 AM" on DST days (core/date-axis-format.js)
         var yAxis = d3.svg.axis().scale(yFocusScale).orient("left")
             .ticks(8).tickFormat(d3.format(".3f"));
 
@@ -869,7 +870,8 @@ function cohesionComparison() {
             .style("font-weight", "500")
             .text("Full Range [0.0 \u2014 1.0] \u2014 Drag to zoom");
 
-        var xAxisContext = d3.svg.axis().scale(xScale).orient("bottom");
+        var xAxisContext = d3.svg.axis().scale(xScale).orient("bottom")
+            .tickFormat(dateOnlyTickFormat()); // no "01 AM" on DST days (core/date-axis-format.js)
 
         // Render each series as a line
         seriesList.forEach(function (series) {
